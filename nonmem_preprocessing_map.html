@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NONMEM Data Preprocessing Decision Map</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --bg-surface: #F3F2EE;
+  --bg-code: #EFEEE9;
+  --text-primary: #1A1A18;
+  --text-secondary: #5C5B57;
+  --text-tertiary: #8A8984;
+  --border: rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.15);
+  --accent-teal: #0F6E56;
+  --accent-teal-bg: #E1F5EE;
+  --accent-teal-light: #9FE1CB;
+  --accent-coral: #993C1D;
+  --accent-coral-bg: #FAECE7;
+  --accent-purple: #534AB7;
+  --accent-purple-bg: #EEEDFE;
+  --accent-amber: #854F0B;
+  --accent-amber-bg: #FAEEDA;
+  --accent-red: #A32D2D;
+  --accent-red-bg: #FCEBEB;
+  --accent-blue: #185FA5;
+  --accent-blue-bg: #E6F1FB;
+  --accent-green: #3B6D11;
+  --accent-green-bg: #EAF3DE;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font-sans: 'IBM Plex Sans', 'Noto Sans KR', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', monospace;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 0.5px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.07), 0 0 0 0.5px rgba(0,0,0,0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161614;
+    --bg-card: #1E1E1C;
+    --bg-surface: #232320;
+    --bg-code: #2A2A27;
+    --text-primary: #E8E8E4;
+    --text-secondary: #A5A49F;
+    --text-tertiary: #6E6D69;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --accent-teal: #5DCAA5;
+    --accent-teal-bg: #0A3028;
+    --accent-teal-light: #085041;
+    --accent-coral: #F0997B;
+    --accent-coral-bg: #3A1A0C;
+    --accent-purple: #AFA9EC;
+    --accent-purple-bg: #26215C;
+    --accent-amber: #FAC775;
+    --accent-amber-bg: #3A2805;
+    --accent-red: #F09595;
+    --accent-red-bg: #3A1212;
+    --accent-blue: #85B7EB;
+    --accent-blue-bg: #0A2640;
+    --accent-green: #97C459;
+    --accent-green-bg: #1A2A08;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 0 0 0.5px rgba(255,255,255,0.05);
+    --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(255,255,255,0.08);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.75;
+  font-size: 14.5px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Header ── */
+.hero {
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.hero-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-teal);
+  margin-bottom: 0.75rem;
+}
+.hero h1 {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+.hero-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+/* ── Quick Stats ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 1.5rem 0 2rem;
+}
+.stat-box {
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ── Table of Contents ── */
+.toc {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+.toc-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+}
+@media (max-width: 560px) { .toc-list { grid-template-columns: 1fr; } }
+.toc-list a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 5px 0;
+  transition: color 0.15s;
+}
+.toc-list a:hover { color: var(--accent-teal); }
+.toc-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ── Phase blocks ── */
+.phase {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 1rem;
+}
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  user-select: none;
+  transition: box-shadow 0.15s;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.phase-header:hover { box-shadow: var(--shadow-card-hover); }
+.phase-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.phase-info { flex: 1; }
+.phase-title {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.3;
+}
+.phase-sub {
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+.arrow-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.phase.open .arrow-icon { transform: rotate(90deg); }
+.phase-body {
+  display: none;
+  padding: 8px 0 0 0;
+}
+.phase.open .phase-body { display: block; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  margin: 8px 0;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+.card:hover { box-shadow: var(--shadow-card-hover); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.card-title {
+  font-weight: 500;
+  font-size: 14px;
+  flex: 1;
+}
+.card-arrow {
+  width: 14px;
+  height: 14px;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.card.open .card-arrow { transform: rotate(90deg); }
+.card-body {
+  display: none;
+  padding: 0 16px 16px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.card.open .card-body { display: block; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.b-freq-high { background: var(--accent-teal-bg); color: var(--accent-teal); }
+.b-freq-med { background: var(--accent-amber-bg); color: var(--accent-amber); }
+.b-freq-low { background: var(--bg-surface); color: var(--text-tertiary); }
+.b-critical { background: var(--accent-red-bg); color: var(--accent-red); }
+.b-tip { background: var(--accent-blue-bg); color: var(--accent-blue); }
+.b-warn { background: var(--accent-amber-bg); color: var(--accent-amber); }
+.b-ok { background: var(--accent-green-bg); color: var(--accent-green); }
+.b-purple { background: var(--accent-purple-bg); color: var(--accent-purple); }
+
+/* ── Content elements ── */
+.sub-section { margin: 10px 0; }
+.sub-title {
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sep { height: 1px; background: var(--border); margin: 14px 0; }
+
+.decision-box {
+  border-left: 3px solid var(--accent-purple);
+  padding: 8px 0 8px 14px;
+  margin: 8px 0;
+  font-size: 13.5px;
+}
+.decision-box.teal { border-left-color: var(--accent-teal); }
+.decision-box.red { border-left-color: var(--accent-red); }
+.decision-box.amber { border-left-color: var(--accent-amber); }
+.decision-box.blue { border-left-color: var(--accent-blue); }
+
+.qc-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 5px 0;
+  font-size: 13.5px;
+}
+.qc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+.dot-green { background: var(--accent-teal); }
+.dot-red { background: var(--accent-red); }
+.dot-amber { background: var(--accent-amber); }
+.dot-blue { background: var(--accent-blue); }
+
+code, .code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 8px;
+}
+@media (max-width: 500px) { .grid2 { grid-template-columns: 1fr; } }
+
+.mini-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.mini-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.mini-card-body {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── Table ── */
+.data-table {
+  width: 100%;
+  font-size: 12.5px;
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+.data-table th {
+  text-align: left;
+  padding: 6px 8px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  border-bottom: 1.5px solid var(--border);
+}
+.data-table td {
+  padding: 5px 8px;
+  border-bottom: 0.5px solid var(--border);
+  vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+
+/* ── Callout ── */
+.callout {
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.callout-title {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.callout.danger { background: var(--accent-red-bg); }
+.callout.info { background: var(--accent-blue-bg); }
+.callout.success { background: var(--accent-teal-bg); }
+
+/* ── Footer ── */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* ── Expand/Collapse All ── */
+.controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+.ctrl-btn {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ctrl-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+/* ── Print ── */
+@media print {
+  .phase-body, .card-body { display: block !important; }
+  .phase-header { position: static; }
+  .controls, .ctrl-btn { display: none; }
+  body { font-size: 11px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ══════ HERO ══════ -->
+<div class="hero">
+  <div class="hero-label">Pharmacometrics Reference</div>
+  <h1>NONMEM 데이터 전처리 Decision Map</h1>
+  <p class="hero-sub">
+    Raw 데이터 수령부터 NONMEM-ready 데이터셋 완성까지의 전체 의사결정 흐름.
+    실무 빈도 95% 이상을 포괄하는 케이스와 체크포인트를 Phase 0–6으로 정리.
+  </p>
+</div>
+
+<!-- ══════ STATS ══════ -->
+<div class="stats-row">
+  <div class="stat-box">
+    <div class="stat-label">총 Phase</div>
+    <div class="stat-value">7</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">의사결정 포인트</div>
+    <div class="stat-value">40+</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">QC 체크항목</div>
+    <div class="stat-value">25+</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">실무 커버리지</div>
+    <div class="stat-value">≥95%</div>
+  </div>
+</div>
+
+<!-- ══════ TOC ══════ -->
+<div class="toc">
+  <div class="toc-title">목차</div>
+  <ul class="toc-list">
+    <li><a href="#phase0"><span class="toc-num">0</span>Raw 데이터 수령 & 평가</a></li>
+    <li><a href="#phase1"><span class="toc-num">1</span>핵심 구성요소 조립</a></li>
+    <li><a href="#phase2"><span class="toc-num">2</span>TIME 변수 계산</a></li>
+    <li><a href="#phase3"><span class="toc-num">3</span>BLQ & 특수 데이터 처리</a></li>
+    <li><a href="#phase4"><span class="toc-num">4</span>공변량 전략</a></li>
+    <li><a href="#phase5"><span class="toc-num">5</span>데이터셋 구조 완성</a></li>
+    <li><a href="#phase6"><span class="toc-num">6</span>QC & Validation</a></li>
+  </ul>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" onclick="toggleAll(true)">모두 펼치기</button>
+  <button class="ctrl-btn" onclick="toggleAll(false)">모두 접기</button>
+</div>
+
+<div id="phases">
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 0 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase0">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-teal-bg);color:var(--accent-teal)">0</div>
+    <div class="phase-info">
+      <div class="phase-title">Raw 데이터 수령 & 평가</div>
+      <div class="phase-sub">어떤 형태로 받았는가? → 이후 전체 작업량 결정</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <div class="callout info">
+      <div class="callout-title">핵심 원칙</div>
+      어떤 형태의 raw 데이터든 최종 목표는 동일: <strong>6개 표준 입력 → 3대 building block (dosing, observation, covariates) 조립 → NONMEM-ready 단일 데이터셋</strong>. 소스가 달라도 도착지는 같다.
+    </div>
+
+    <!-- Card: SDTM -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-freq-high">빈도 최상</span>
+        <div class="card-title">SDTM 데이터셋</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">구성 도메인</div>
+          <strong>DM</strong> (demographics), <strong>EX</strong> (exposure/dosing), <strong>PC</strong> (pharmacoconcentrations), <strong>PP</strong> (PK parameters), <strong>LB</strong> (lab results), <strong>VS</strong> (vitals), <strong>AE</strong> (adverse events), <strong>CM</strong> (concomitant meds), <strong>DS</strong> (disposition) 등.
+          파일 형식은 SAS transport (<code>.xpt</code>) 또는 <code>.csv</code>.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">장점</div>
+          CDISC 표준화 → 변수명/구조 예측 가능. 대부분의 제약사/CRO에서 제공하는 표준 형태. 도메인 간 <code>USUBJID</code>로 일관된 merge 가능.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">수령 즉시 확인 체크리스트</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>SDTM version 확인 (3.2 vs 3.3 vs 3.4 → 변수명 차이 존재)</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>PC 도메인: <code>PCSTAT</code> (completion status), <code>PCORRES</code> (original result), <code>PCSTRESN</code> (numeric standardized result) 존재 여부</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>EX 도메인: <code>EXSTDTC</code>, <code>EXENDTC</code> datetime 형식 + 실제 투여 기록의 completeness</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>날짜 형식이 ISO 8601 (<code>YYYY-MM-DDThh:mm</code>)이 아닌 경우 변환 필요</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>PC에 <code>BLQ</code> 관련 flag가 <code>PCSTAT</code> 또는 <code>PCORRES</code>의 텍스트("BLQ","<LLOQ" 등)로 코딩되어 있는지 확인</div>
+        </div>
+        <div class="decision-box teal">핵심 의사결정: EX (dosing) + PC (observations) + DM (baseline covariates) 을 중심으로 조립. LB/VS는 공변량으로 merge. CM은 병용약물 effect 분석 시 활용.</div>
+      </div>
+    </div>
+
+    <!-- Card: ADaM -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-freq-med">빈도 중</span>
+        <div class="card-title">ADaM 데이터셋 (ADSL, ADPC, ADEX 등)</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">특징</div>
+          이미 analysis-ready 수준으로 가공된 상태. ADPC에 <code>AVAL</code> (농도), <code>ATPT</code> (timepoint), <code>PARAMCD</code> 등 포함. ADSL에 baseline demographics 총정리.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">주의사항</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>ADaM은 통계 분석(efficacy/safety)용이므로 NONMEM 구조와 다름</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>Dosing record가 별도 row로 존재하지 않는 경우가 많음 → ADEX에서 dosing 재구성 필요</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>ADPC의 시간 변수(<code>ATPT</code>, <code>AVISIT</code>)는 nominal time일 가능성 → actual time은 SDTM PC에서 확인</div>
+        </div>
+        <div class="decision-box amber">ADaM이 있어도 SDTM을 함께 요청하는 것이 안전. ADaM은 cross-check 및 covariate 추출 용도로 활용. ADSL의 baseline covariates는 직접 활용 가치 높음.</div>
+      </div>
+    </div>
+
+    <!-- Card: Raw CRF -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-freq-med">빈도 중</span>
+        <div class="card-title">Raw CRF/EDC export</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">형태</div>
+          Medidata Rave, Oracle InForm, REDCap 등에서 직접 export한 <code>.csv</code>/<code>.xlsx</code>. 변수명이 CRF page 기반으로 비표준적. 각 form이 별도 파일.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">핵심 도전</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>변수명 매핑 필요 (CRF 변수 → 표준 변수). DDT 없으면 protocol + CRF annotation 참조</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>날짜/시간이 분리되어 있거나, AM/PM 형식이거나, 다양한 locale 혼재</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>반복 투여 정보가 schedule table에 별도 존재하거나 누락</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>Subject ID 체계가 site별로 다를 수 있음</div>
+        </div>
+        <div class="decision-box red">DDT (Data Definition Table)를 반드시 먼저 작성/확보. 없으면 protocol과 CRF를 보고 직접 작성. DDT는 "어떤 소스 변수 → 어떤 NONMEM 변수, 어떤 변환 규칙"을 명시하는 명세서.</div>
+      </div>
+    </div>
+
+    <!-- Card: Excel -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-freq-low">빈도 낮음</span>
+        <div class="card-title">Investigator Excel / 학술 연구 데이터</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">특징</div>
+          연구자가 직접 정리한 스프레드시트. 가장 비표준적. merged cell, color coding, 주석, 여러 시트에 분산, 단위 혼재 빈발.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">필수 작업</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>Merged cell 해제 후 tidy format (1행 = 1관찰) 으로 변환</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>단위 통일: mg vs μg, L vs mL, hr vs min 등</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>Subject ID 형식 통일: "001" vs "1" vs "S-001" → 숫자 ID로 재코딩</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>문헌 데이터의 경우 aggregate (mean±SD) vs individual 구분 확인</div>
+        </div>
+        <div class="decision-box red">가장 오류 가능성 높음. 원본 절대 수정 금지 + 모든 변환을 R 스크립트로 기록 (traceability). <code>readxl::read_excel()</code>로 읽되 col_types 명시적 지정 권장.</div>
+      </div>
+    </div>
+
+    <!-- Card: Existing dataset -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-freq-med">빈도 중</span>
+        <div class="card-title">기존 NONMEM 데이터셋 수정/확장</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">상황</div>
+          이전 분석자의 데이터셋 인수인계, 새로운 코호트/study 추가, 공변량 추가, PD 엔드포인트 추가 등.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">핵심 체크</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div>기존 TIME 기준점(reference time) 파악이 최우선 — first dose? study day 1?</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div>기존 데이터의 FLAG/IGNORE 컬럼 convention 확인</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div>새 데이터와 기존 데이터의 ID 충돌 방지 (ID 재코딩 or offset)</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>Multi-study pooling 시: 단위 통일, STUDYID 컬럼 추가, study 간 assay 차이 확인</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>기존 control stream의 <code>$INPUT</code> 순서와 새 데이터 컬럼 순서 일치 확인</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 1 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase1">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-purple-bg);color:var(--accent-purple)">1</div>
+    <div class="phase-info">
+      <div class="phase-title">핵심 구성요소 조립</div>
+      <div class="phase-sub">3대 building block — 전체 작업의 60-70%</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <!-- Dosing -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">가장 중요</span>
+        <div class="card-title">Dosing records (EVID=1 또는 4)</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">필수 변수</div>
+          <code>ID</code> <code>TIME</code> <code>AMT</code> <code>CMT</code> <code>EVID=1</code> <code>MDV=1</code> <code>DV=0 또는 .</code>
+          — infusion 시 <code>RATE</code> 또는 <code>DUR</code> 추가.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">투여 경로별 의사결정 트리</div>
+          <div class="decision-box teal"><strong>경구 Bolus (가장 흔함):</strong> <code>RATE=0</code> (또는 생략), <code>AMT</code>=투여량(mg). 1st-order absorption은 모델($PK)에서 KA로 처리.</div>
+          <div class="decision-box teal"><strong>IV Bolus:</strong> <code>RATE=0</code>, <code>CMT</code>=central compartment (보통 2). 순간 투입.</div>
+          <div class="decision-box teal"><strong>IV Infusion (zero-order):</strong> 두 가지 옵션 — ① <code>RATE=AMT/주입시간(hr)</code> (양수), ② <code>RATE=-2</code> + <code>DUR</code> 컬럼에 주입시간 기록. 방법 ②가 데이터에서 직관적.</div>
+          <div class="decision-box teal"><strong>SC/IM 주사:</strong> 보통 bolus로 처리 (1st-order absorption model). 간혹 zero-order + 1st-order 혼합 모델.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">반복 투여 패턴</div>
+          <div class="decision-box"><strong>같은 용량, 같은 간격으로 반복:</strong> <code>ADDL</code>=추가 투여 횟수, <code>II</code>=투여 간격(hr). 행 수를 대폭 절감. 예: 매일 100mg × 28일 → 1행으로 <code>AMT=100, ADDL=27, II=24</code></div>
+          <div class="decision-box amber"><strong>용량 변경 있음:</strong> 변경 시점마다 별도 dosing record. ADDL/II는 같은 용량 구간 내에서만 사용.</div>
+          <div class="decision-box amber"><strong>투여 중단/재시작:</strong> 중단 기간 동안 dosing record 없음. 재시작 시 새 dosing record.</div>
+          <div class="decision-box red"><strong>Reset 필요? (EVID=4):</strong> 체내 약물량을 0으로 초기화하면서 동시에 투여. 예: 2nd course 시작, washout 후 재투여. 주의 — reset은 모든 compartment를 0으로 만듦.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Actual vs Planned dose</div>
+          <div class="decision-box blue"><strong>원칙:</strong> <code>AMT</code>는 반드시 실제 투여된 용량 (actual dose). Protocol에 정해진 planned dose가 아님. Planned dose는 별도 컬럼(<code>PDOSE</code> 등)으로 보존하되, NONMEM에는 actual dose를 사용. 부분 주입, 구토 등으로 실제 투여량이 다를 수 있음.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">특수 사례: CAR-T / 세포치료제</div>
+          세포치료제는 single infusion이지만 체내에서 expansion → contraction 패턴. Dosing은 infusion 시점 1회 (<code>AMT</code>=주입 세포수). 이후 cellular kinetics는 관찰값 (<code>EVID=0</code>)으로 처리. CAR-T 세포수가 DV. 전통적 PK와 다르게 DV가 dose 이후 증가하는 것이 정상.
+        </div>
+      </div>
+    </div>
+
+    <!-- Observations -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-tip">PK/PD 관찰값</span>
+        <div class="card-title">Observation records (EVID=0)</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">필수 변수</div>
+          <code>ID</code> <code>TIME</code> <code>DV</code> <code>CMT</code> <code>EVID=0</code> <code>MDV</code> (0=유효, 1=결측/제외) <code>AMT=0 또는 .</code>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">DV (Dependent Variable) 처리</div>
+          <div class="decision-box"><strong>단위 결정 (가장 먼저):</strong> 농도 단위를 모델과 일치시킴. AMT(mg) & DV(ng/mL) → CL 단위 = L/hr. 단위 조합이 파라미터 해석에 직결되므로 초기에 확정하고 data specification에 기록.</div>
+          <div class="decision-box"><strong>Log 변환:</strong> DV에 직접 ln()을 취해서 데이터에 넣을지, control stream에서 <code>Y=LOG(F)</code>로 처리할지 결정. 일반적으로 control stream에서 처리 권장 (원본 보존). 데이터에서 변환 시 DV=0인 record 처리 주의 (log(0) = -∞).</div>
+          <div class="decision-box amber"><strong>다중 분석물:</strong> parent + metabolite를 동시에 모델링 → 각각 다른 <code>CMT</code> 또는 <code>DVID</code> 할당. DV 단위가 다를 수 있으므로 scaling 필요 여부 확인.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Multiple endpoint (PK + PD) 처리</div>
+          <div class="decision-box blue"><strong>CMT 기반 구분:</strong> CMT=1 → PK 농도, CMT=2 → PD 바이오마커. 각 endpoint의 magnitude가 크게 다르면 residual error model을 endpoint별로 분리해야 하므로 데이터 단계에서 명확히 구분.</div>
+          <div class="decision-box"><strong>DVID 사용 패턴:</strong> 일부 모델러는 CMT 대신 <code>DVID</code> 컬럼으로 endpoint 구분 → control stream의 <code>$ERROR</code>에서 DVID에 따라 다른 error model 적용.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Covariates (brief here, detailed in Phase 4) -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-ok">Phase 4에서 상세</span>
+        <div class="card-title">Covariates (공변량) — 개요</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="grid2">
+          <div class="mini-card">
+            <div class="mini-card-title">시간불변 (Baseline)</div>
+            <div class="mini-card-body">AGE, SEX, RACE, WT(baseline), HT, BSA, 유전형, STUDYID 등. 각 ID당 1개 값.</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-title">시간가변 (Time-varying)</div>
+            <div class="mini-card-body">CLCR, ALB, ALT, 체중변화, 병용약물 on/off, 질병 상태 변화 등. 시점별로 값 변동.</div>
+          </div>
+        </div>
+        <div class="decision-box" style="margin-top:10px">공변량 전략은 Phase 4에서 상세히 다룸. 여기서는 DM 도메인에서 baseline covariates를 추출하고, LB/VS에서 time-varying covariates를 추출한다는 점만 인지.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 2 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase2">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-red-bg);color:var(--accent-red)">2</div>
+    <div class="phase-info">
+      <div class="phase-title">TIME 변수 — 가장 치명적인 단계</div>
+      <div class="phase-sub">버그의 #1 원인. 한 번 틀리면 전체 분석이 무의미</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">최다 오류</span>
+        <div class="card-title">TIME 계산 전략</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">기본 공식</div>
+          <code>TIME = (해당 이벤트의 datetime) − (reference datetime)</code>, 단위는 보통 hours.
+          모든 dosing + observation + covariate event에 동일 로직 적용.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Reference time 선택</div>
+          <div class="decision-box teal"><strong>표준 (가장 흔함):</strong> 각 ID의 첫 투여 시점 = TIME 0. Predose sample은 음수 또는 0.</div>
+          <div class="decision-box"><strong>대안 — Study Day 1:</strong> 이 경우 predose가 음수 TIME. Run-in period의 PD 관찰값도 포함 가능.</div>
+          <div class="decision-box red"><strong>절대 규칙:</strong> 같은 데이터셋 내 모든 ID가 동일한 reference 로직 사용. multi-study pooling 시에도 study별이 아닌 ID별 첫 투여 기준.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">날짜(Date) vs 날짜시간(Datetime)</div>
+          <div class="decision-box teal"><strong>PK 분석:</strong> 반드시 datetime 사용. 채혈-투여 간격이 분 단위로 PK 파라미터에 영향. 시간 정밀도 = 분석 정밀도.</div>
+          <div class="decision-box"><strong>PD 분석 (daily endpoints):</strong> AE 발생일, 종양 크기 측정일 등은 날짜만으로 충분한 경우 있음.</div>
+          <div class="decision-box amber"><strong>혼합 상황:</strong> PK+PD 통합 모델이면 datetime 기준 통일. PD 관찰의 시간이 없으면 convention 적용 (예: clinic visit = 오전 08:00 가정).</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">시간 결측(Missing time) Imputation 규칙</div>
+          <div class="decision-box blue"><strong>투여 시간 누락:</strong> protocol의 투여 스케줄 참조 (예: 아침 08:00 가정). 또는 해당 visit의 첫 기록 시간 활용.</div>
+          <div class="decision-box blue"><strong>채혈 시간 누락:</strong> nominal time (protocol 상 예정 시간) 사용. actual이 없을 때의 최후 수단.</div>
+          <div class="decision-box red"><strong>필수:</strong> imputed된 시간은 반드시 FLAG 컬럼 (<code>TIMEF</code> 등)으로 표시. Sensitivity analysis에서 imputed records 제외하여 영향 평가.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">실무 핵심</span>
+        <div class="card-title">시간 관련 함정 & 디버깅</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>Negative TIME:</strong> predose sample이 첫 투여 후로 잘못 배정되면 의도치 않은 음수. 허용될 수 있지만 반드시 의도적이어야 함. QC에서 음수 TIME 목록 출력 후 수동 확인.</div>
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>같은 TIME에 dose + obs:</strong> 허용되지만 정렬 순서가 결정적 — dose record가 반드시 먼저 와야 NONMEM이 "투여 후 관찰"로 해석. 역순이면 "투여 전 관찰"이 됨.</div>
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>TIME=0인 관찰값:</strong> 첫 투여와 동시 채혈인지, predose인지 구분. predose이면 TIME을 -0.01 등 미세 음수로 설정하는 convention 존재.</div>
+        <div class="qc-item"><div class="qc-dot dot-amber"></div><strong>Timezone 불일치:</strong> 다기관 국제 연구에서 각 센터의 timezone 불일치. 보통 local time 기준 통일 (시차 보정 불필요). 단, PK 시료가 중앙 lab에서 기록된 시간이면 주의.</div>
+        <div class="qc-item"><div class="qc-dot dot-amber"></div><strong>DST (Daylight Saving Time):</strong> 장기 연구에서 spring forward/fall back으로 1시간 오차 발생 가능. 드물지만 존재.</div>
+        <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>Actual vs Nominal time:</strong> Actual time 사용이 원칙. Nominal time은 exploratory plot 또는 actual 결측 시 imputation용. 데이터에 둘 다 보존 권장 (<code>TIME</code> = actual, <code>NTIME</code> = nominal).</div>
+
+        <div class="callout danger" style="margin-top:12px">
+          <div class="callout-title">R datetime 파싱 주의</div>
+          <code>lubridate::ymd_hms()</code> 등 사용 시 — timezone 인자 명시 (<code>tz="Asia/Seoul"</code> 등). 미지정 시 시스템 locale 따라감. <code>as.numeric(difftime(..., units="hours"))</code>로 TIME 계산. Date class와 POSIXct 혼합 연산 시 예기치 않은 결과 발생.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 3 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase3">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-amber-bg);color:var(--accent-amber)">3</div>
+    <div class="phase-info">
+      <div class="phase-title">BLQ & 특수 데이터 처리</div>
+      <div class="phase-sub">정량한계 미만, 이상치, 정상상태 등</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">분석 영향 大</span>
+        <div class="card-title">BLQ (정량한계 미만) 처리 — M1~M7</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">방법 비교</div>
+          <table class="data-table">
+            <tr><th>방법</th><th>DV 설정</th><th>MDV</th><th>장단점</th></tr>
+            <tr><td><strong>M1</strong></td><td>0</td><td>1 (제외)</td><td>가장 흔하고 간단. BLQ 비율 낮을 때 적절. 높으면 bias.</td></tr>
+            <tr><td><strong>M3</strong></td><td>0 (censored)</td><td>0 (포함)</td><td>Likelihood-based. 통계적으로 가장 우수. Control stream 복잡. <code>$ESTIMATION LAPLACIAN</code> 또는 <code>LIKELIHOOD</code> 필요.</td></tr>
+            <tr><td><strong>M5</strong></td><td>LLOQ/2</td><td>0</td><td>M1보다 덜 편향되지만 informative한 것처럼 보이는 문제.</td></tr>
+            <tr><td><strong>M7</strong></td><td>혼합</td><td>혼합</td><td>첫 BLQ만 M3, 이후 연속 BLQ는 M1. 균형 잡힌 접근.</td></tr>
+          </table>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">데이터셋 구현</div>
+          <div class="decision-box teal"><strong>공통:</strong> <code>BLQ</code> flag 컬럼 (0/1) + <code>LLOQ</code> 값 컬럼을 반드시 생성. 어떤 M-method를 쓰든 원본 정보 보존.</div>
+          <div class="decision-box"><strong>M1이면:</strong> <code>DV=0</code>, <code>MDV=1</code>. NONMEM이 해당 행을 likelihood에서 제외.</div>
+          <div class="decision-box"><strong>M3이면:</strong> <code>DV=0</code>, <code>MDV=0</code> 유지. Control stream의 <code>$ERROR</code>에서 censoring 로직 구현 (<code>IF(BLQ.EQ.1) YLO=0, YHI=LLOQ</code> 등).</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">선택 가이드</div>
+          <div class="decision-box blue">BLQ 비율 &lt;10% → M1으로 충분. 10-25% → M5 또는 M3 고려. &gt;25% → M3 강력 권장. 최종 결정은 모델러/팀과 협의.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-warn">케이스별</span>
+        <div class="card-title">Outlier, Predose, Steady-state, 기타 특수 처리</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">Outlier 처리</div>
+          <div class="decision-box"><strong>원칙 — 삭제하지 말고 FLAG:</strong> 의심 데이터를 데이터셋에서 삭제하지 않고 <code>EXCL</code> 컬럼 (0=포함, 1=제외, 이유코드 등)으로 표시. NONMEM에서 <code>IGNORE=(EXCL.GT.0)</code>으로 제외. 원본 보존 + sensitivity analysis 가능.</div>
+          <div class="decision-box amber"><strong>Outlier 판단 기준:</strong> ① conditional weighted residual (CWRES) > |5|, ② 약동학적 비현실성 (Cmax 전에 고농도, 생물학적 불가능 수치), ③ documented protocol deviation. 주관적 판단은 반드시 문서화.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Predose sample</div>
+          <div class="decision-box"><strong>Single dose study:</strong> 첫 투여 전 채혈 = baseline. DV=0 확인 (detectable이면 carry-over 또는 assay issue 검토).</div>
+          <div class="decision-box"><strong>Multiple dose study:</strong> predose = trough (C<sub>min</sub>). TIME은 이전 dose로부터의 경과 시간. 새 dosing cycle 시작 전 시점.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Steady-state (SS) 데이터</div>
+          <div class="decision-box amber"><strong>언제 사용:</strong> 이전 투여 이력이 불완전할 때. 예: 외래환자가 매일 복용 중이나 투여 기록이 clinic visit만 → <code>SS=1</code>, <code>II</code>=투여간격 (hr)으로 NONMEM에게 steady-state 가정을 알림.</div>
+          <div class="decision-box"><strong>데이터 구현:</strong> 해당 dosing record에 <code>SS=1</code>, <code>II=24</code>(매일 투여 시). NONMEM이 시뮬레이션으로 SS 도달 후 해당 dose 적용.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">체중 기반 투여 (mg/kg dosing)</div>
+          <div class="decision-box"><strong>AMT 기록법:</strong> absolute dose (mg)로 기록. mg/kg 아님. 예: 10mg/kg × 70kg = <code>AMT=700</code>. 체중은 covariate (<code>WT</code>)로 별도 기록. NONMEM이 내부적으로 WT-normalized CL 등 계산.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Rich vs Sparse sampling</div>
+          <div class="decision-box blue"><strong>Rich sampling:</strong> 한 ID에 8-15+ 채혈 시점. 전형적 Phase I. Individual parameter 추정 가능.</div>
+          <div class="decision-box blue"><strong>Sparse sampling:</strong> 한 ID에 1-3 채혈. Phase II/III. Population approach의 핵심 강점이 발휘되는 데이터. 데이터 구조는 동일하되 TIME 정확성이 더욱 중요 (시점이 적으므로 각 시점의 가치 극대화).</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 4 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase4">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-blue-bg);color:var(--accent-blue)">4</div>
+    <div class="phase-info">
+      <div class="phase-title">공변량(Covariate) 전략</div>
+      <div class="phase-sub">Demographics, labs, time-varying factors</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-tip">구조 설계</span>
+        <div class="card-title">Baseline covariates 처리</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">소스 & 추출</div>
+          <div class="decision-box teal"><strong>DM/ADSL 도메인에서:</strong> AGE, SEX, RACE, ETHNIC, COUNTRY. 변환 없이 직접 사용 가능 (숫자 코딩 확인).</div>
+          <div class="decision-box teal"><strong>VS 도메인에서:</strong> Baseline WT, HT, BMI. "baseline"의 정의 = 첫 투여 전 마지막 측정값 (screening 또는 Day 1 predose).</div>
+          <div class="decision-box"><strong>LB 도메인에서:</strong> Baseline CLCR (또는 eGFR), ALB, ALT, AST, BILI. 신기능/간기능 지표.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">결측 처리 의사결정</div>
+          <div class="decision-box amber"><strong>결측률 &lt;5%:</strong> Median imputation (연속형) 또는 mode imputation (범주형). 문서화 필수.</div>
+          <div class="decision-box amber"><strong>결측률 5-20%:</strong> Multiple imputation 고려. 또는 LOCF (Last Observation Carried Forward).</div>
+          <div class="decision-box red"><strong>결측률 &gt;20%:</strong> 해당 covariate를 모델에 포함하기 어려울 수 있음. 모델러와 논의.</div>
+          <div class="decision-box"><strong>NONMEM 데이터에서:</strong> 빈 셀 불가 → <code>-99</code> 또는 <code>.</code> 으로 코딩. Control stream에서 <code>IF(COV.EQ.-99) COV=MEDIAN</code> 등으로 처리.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">범주형 변수 코딩</div>
+          <div class="decision-box">NONMEM은 숫자만 처리 → SEX: Male=0, Female=1 (또는 역순). RACE: 0/1/2 등. 코딩 convention을 data specification에 명시. 이진 코딩이 해석에 가장 편리.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">파생 변수 계산</div>
+          <div class="decision-box blue"><strong>BSA:</strong> DuBois 공식: BSA = 0.007184 × WT<sup>0.425</sup> × HT<sup>0.725</sup>. R에서 계산 후 컬럼 추가.</div>
+          <div class="decision-box blue"><strong>CLCR (Cockcroft-Gault):</strong> ((140-AGE) × WT) / (72 × SCR) × (0.85 if female). SCR = serum creatinine. LB에서 추출.</div>
+          <div class="decision-box blue"><strong>LBW (Lean Body Weight):</strong> 비만 환자 분석 시 활용. Janmahasatian 공식 등.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-warn">복잡도 높음</span>
+        <div class="card-title">Time-varying covariates 처리</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">NONMEM의 처리 방식</div>
+          NONMEM은 각 record의 시점에서 해당 row에 기록된 covariate 값을 사용. 다음 record까지 그 값을 유지 (step function). 따라서 covariate 변경 시점에 covariate-only record를 삽입하거나, observation/dose record에 해당 시점의 covariate 값을 직접 기록.
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">Merge 전략</div>
+          <div class="decision-box teal"><strong>LOCF (Last Observation Carried Forward):</strong> 가장 흔한 방법. 각 record의 TIME보다 이전의 가장 가까운 covariate 측정값을 사용. R에서 <code>dplyr::fill()</code> 또는 <code>data.table::nafill()</code> 활용.</div>
+          <div class="decision-box"><strong>Time-point matching:</strong> Covariate 측정 시점과 PK 채혈 시점이 같은 visit에 해당하면 직접 merge. 시점이 다르면 LOCF.</div>
+          <div class="decision-box amber"><strong>Interpolation:</strong> 선형 보간. 잘 사용하지 않지만 체중 변화가 점진적일 때 고려 가능.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">실무 주의점</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>첫 투여 전 covariate 측정값이 없는 ID → baseline 결측. 이 ID의 모든 record에 covariate가 결측될 수 있음.</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>병용약물 (concomitant medication): on/off 이진 변수로 코딩. CM 시작일/종료일 → 해당 기간의 record에 <code>COMED=1</code>.</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>Renal/Hepatic function 변화: ICU 환자 등에서 급격히 변할 수 있으므로 time-varying 처리가 중요.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 5 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase5">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-green-bg);color:var(--accent-green)">5</div>
+    <div class="phase-info">
+      <div class="phase-title">데이터셋 구조 완성</div>
+      <div class="phase-sub">NONMEM이 요구하는 최종 형태로 마무리</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-tip">체크리스트</span>
+        <div class="card-title">필수 컬럼 & 정렬 규칙</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">컬럼 분류</div>
+          <div class="grid2">
+            <div class="mini-card">
+              <div class="mini-card-title">절대 필수</div>
+              <div class="mini-card-body"><code>ID</code> <code>TIME</code> <code>DV</code> <code>AMT</code> <code>CMT</code> <code>EVID</code> <code>MDV</code></div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-title">거의 항상 필요</div>
+              <div class="mini-card-body"><code>RATE</code> <code>ADDL</code> <code>II</code> <code>SS</code> <code>BLQ</code> <code>LLOQ</code></div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-title">공변량 (모델 의존)</div>
+              <div class="mini-card-body"><code>WT</code> <code>AGE</code> <code>SEX</code> <code>CRCL</code> <code>ALB</code> <code>HT</code>...</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-title">관리 / QC 용</div>
+              <div class="mini-card-body"><code>EXCL</code> <code>FLAG</code> <code>COMMENT</code> <code>STUDYID</code> <code>NMSEQNO</code> <code>DVID</code></div>
+            </div>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">정렬 규칙 (위반 시 NONMEM 오류 또는 잘못된 결과)</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div><strong>1차:</strong> ID 오름차순 (숫자)</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div><strong>2차:</strong> TIME 오름차순 (ID 내에서)</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div><strong>3차:</strong> 같은 TIME 내에서 EVID 우선순위: EVID=4 (reset+dose) > EVID=1 (dose) > EVID=2 (other) > EVID=0 (obs). 즉, dose가 observation 앞에.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">$INPUT 정합성</div>
+          <div class="decision-box blue">NONMEM control stream의 <code>$INPUT</code> 행에 나열된 변수 순서 = 데이터 파일의 컬럼 순서. 반드시 일치해야 함. 사용하지 않는 컬럼은 <code>DROP</code> 또는 <code>SKIP</code>으로 처리. 데이터 컬럼을 추가/삭제하면 $INPUT도 수정.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">규정 위반 = 실행 불가</span>
+        <div class="card-title">NONMEM 포맷 규칙</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>빈 셀 없음:</strong> 결측은 <code>.</code> (마침표) 사용. R의 <code>NA</code>를 <code>.</code>으로 변환 필수.</div>
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>소수점:</strong> 반드시 <code>.</code> (콤마 안 됨). 유럽 locale 데이터 주의.</div>
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>문자열 불가:</strong> 모든 값은 숫자 또는 <code>.</code>. header를 제외하고 알파벳 포함 불가.</div>
+        <div class="qc-item"><div class="qc-dot dot-red"></div><strong>Header row:</strong> 정확히 1줄. NONMEM이 첫 줄을 변수명으로 읽음.</div>
+        <div class="qc-item"><div class="qc-dot dot-amber"></div><strong>구분자:</strong> 공백 또는 콤마 (<code>.csv</code>). 일관성 유지. 탭은 비권장.</div>
+        <div class="qc-item"><div class="qc-dot dot-amber"></div><strong>파일 인코딩:</strong> ASCII 또는 UTF-8 (BOM 없이). Excel에서 저장 시 "CSV UTF-8" 형식 주의.</div>
+        <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>컬럼명:</strong> 최대 8자 권장 (구버전 NONMEM 호환). 특수문자 불가. 밑줄(_)은 사용 가능하지만 비권장.</div>
+        <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>행 수 제한:</strong> NONMEM 7.4+ 에서는 사실상 무제한이지만, 매우 큰 데이터셋(&gt;100만 행)은 <code>$SIZES</code>에서 LIM 조정 필요할 수 있음.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-purple">암기 권장</span>
+        <div class="card-title">EVID & MDV 조합 패턴 — 완전 정리</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <tr><th>상황</th><th>EVID</th><th>MDV</th><th>AMT</th><th>DV</th><th>비고</th></tr>
+          <tr><td>투여 기록</td><td>1</td><td>1</td><td>용량</td><td>0 or .</td><td>가장 기본적인 dosing event</td></tr>
+          <tr><td>정상 관찰값</td><td>0</td><td>0</td><td>0 or .</td><td>측정값</td><td>likelihood에 기여하는 핵심 데이터</td></tr>
+          <tr><td>BLQ (M1)</td><td>0</td><td>1</td><td>0 or .</td><td>0</td><td>제외되지만 행은 보존</td></tr>
+          <tr><td>BLQ (M3)</td><td>0</td><td>0</td><td>0 or .</td><td>0</td><td>censored data로 likelihood 기여</td></tr>
+          <tr><td>결측 관찰</td><td>0</td><td>1</td><td>0 or .</td><td>.</td><td>covariate 기록 유지 용도</td></tr>
+          <tr><td>Reset + 재투여</td><td>4</td><td>1</td><td>용량</td><td>0 or .</td><td>모든 compartment 0으로 초기화 후 투여</td></tr>
+          <tr><td>Reset only</td><td>3</td><td>1</td><td>0</td><td>0 or .</td><td>초기화만, 투여 없음</td></tr>
+          <tr><td>Other type event</td><td>2</td><td>1</td><td>0</td><td>0 or .</td><td>turnover model의 input 등 특수 용도</td></tr>
+        </table>
+        <div class="callout info" style="margin-top:10px">
+          <div class="callout-title">실무 팁</div>
+          EVID=1일 때 MDV는 항상 1 (투여 기록에 관찰값 없음). EVID=0일 때 MDV=0이면 유효 관찰, MDV=1이면 NONMEM이 해당 행의 DV를 무시 (but covariate는 사용). 이 조합만 확실히 이해하면 90% 해결.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PHASE 6 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="phase" id="phase6">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:var(--accent-coral-bg);color:var(--accent-coral)">6</div>
+    <div class="phase-info">
+      <div class="phase-title">QC & Validation</div>
+      <div class="phase-sub">NONMEM 실행 전 최종 점검 — 여기를 건너뛰면 시간 낭비</div>
+    </div>
+    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+  <div class="phase-body">
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-ok">자동화 가능</span>
+        <div class="card-title">구조적 체크 (Programmatic QC)</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">필수 자동 체크 목록</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>모든 ID에 최소 1개 dosing record (EVID=1 or 4) 존재?</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>모든 ID에 최소 1개 observation record (EVID=0, MDV=0) 존재?</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>TIME이 ID 내에서 non-decreasing (단조 비감소)?</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>EVID=1일 때 AMT > 0? EVID=0일 때 AMT=0 or .?</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>DV 컬럼에 문자열이나 R의 NA 없음? (모두 숫자 or .)</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>중복 행 없음? (ID + TIME + EVID + CMT 기준)</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>CMT 값이 모델의 compartment 정의와 일치?</div>
+          <div class="qc-item"><div class="qc-dot dot-green"></div>첫 번째 record가 dosing record인 ID 비율 확인 (첫 event가 observation이면 의도적인지 확인)</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>공변량 범위 체크: WT∈[30,250]kg, AGE∈[0,120], CLCR∈[5,300] 등 생물학적으로 가능한 범위</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>ADDL/II 사용 시: II > 0, ADDL ≥ 0, EVID=1 or 4 인지?</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>SS=1인 record에 II 값이 존재하는지?</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div>컬럼명 길이 ≤ 8자 확인 (호환성)</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div>파일에 non-ASCII 문자 없는지 확인</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">도구</div>
+          <div class="decision-box teal"><code>NMdata::NMcheckData()</code>: 위 체크 대부분을 한 번에 수행. NONMEM이 보는 그대로의 데이터를 검증. 실행 전 반드시 통과시킬 것.</div>
+          <div class="decision-box">직접 R 스크립트로 구현해도 됨 — 핵심은 체크를 자동화하여 매번 수동 확인하지 않는 것.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">자동화 불가 — 눈으로 확인</span>
+        <div class="card-title">시각적 QC (Visual Inspection)</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">필수 플롯 5종</div>
+          <div class="decision-box teal"><strong>① Individual PK-Time profiles:</strong> 각 ID별 DV vs TIME (linear + log scale). 투여 시점을 vertical line 또는 marker로 표시. dose-concentration 시간 정합성을 확인하는 가장 강력한 도구. <em>전체 ID를 다 봐야 함.</em></div>
+          <div class="decision-box teal"><strong>② Dose vs TIME overview:</strong> AMT vs TIME scatter (전체 ID). 용량 변경, 투여 중단, 누락 패턴을 한눈에 파악.</div>
+          <div class="decision-box"><strong>③ Covariate distributions:</strong> Histogram/boxplot으로 각 covariate의 분포, 이상치, 결측 패턴 확인. Covariate 간 상관관계 pairs plot도 유용.</div>
+          <div class="decision-box"><strong>④ BLQ 패턴:</strong> BLQ 비율 vs TIME (binned). Terminal phase에서 BLQ 증가 = 정상. 초기 시점 BLQ = 의심 (dosing error? assay issue?).</div>
+          <div class="decision-box amber"><strong>⑤ Spaghetti plot:</strong> 전체 ID overlay (linear + log). 전반적 PK 경향, 극단값(outlier ID), dose-proportionality 시각적 확인.</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">눈으로 잡아야 할 Red Flags</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>투여 직후에 농도가 0인 ID → dosing record 누락 또는 TIME 오류</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>농도가 시간에 따라 지속적으로 증가 (accumulation 아닌 상황에서) → TIME 계산 오류 (보통 reference time 문제)</div>
+          <div class="qc-item"><div class="qc-dot dot-red"></div>같은 시점에 극단적으로 다른 농도 → 단위 오류 또는 데이터 입력 오류</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>Dose 직전에 비현실적으로 높은 trough → carry-over, 투여 기록 누락, 또는 TIME 오류</div>
+          <div class="qc-item"><div class="qc-dot dot-amber"></div>특정 site/center에서만 비정상 패턴 → site-specific 데이터 입력 오류 가능</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-tip">Traceability</span>
+        <div class="card-title">최종 산출물 & 문서화</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="sub-section">
+          <div class="sub-title">필수 산출물 목록</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>NONMEM-ready 데이터 파일</strong> (<code>.csv</code>) — 최종 결과물</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>R 전처리 스크립트</strong> — raw 데이터에서 최종 데이터까지 재현 가능해야 함. 누가 실행해도 같은 결과.</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>Data Specification Document</strong> — 각 컬럼 정의, 단위, 코딩 규칙, 결측 처리 방법 명시</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>QC 플롯 모음</strong> (PDF 또는 HTML report) — 시각적 QC 결과 보존</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>제외 기준 요약</strong> — 몇 명/몇 개 record를 왜 제외했는지 (flowchart 형태 권장)</div>
+          <div class="qc-item"><div class="qc-dot dot-blue"></div><strong>Data review meeting notes</strong> — 모델러/임상팀과 협의한 의사결정 사항</div>
+        </div>
+        <div class="sep"></div>
+        <div class="sub-section">
+          <div class="sub-title">NMdata workflow (Philip Delff 방식)</div>
+          <div class="decision-box teal"><code>NMdata::NMcheckData()</code>: 실행 전 구조적 체크 한 번에 수행. 모든 문제를 리포트로 출력.</div>
+          <div class="decision-box teal"><code>NMdata::NMscanData()</code>: NONMEM output에서 데이터를 읽어 원본과 자동 대조. 모델이 실제로 어떤 데이터를 사용했는지 역추적 가능. 디버깅의 핵심.</div>
+          <div class="decision-box"><code>NMdata::NMwriteData()</code>: NONMEM 형식 규칙을 자동 적용하여 데이터 파일 생성 (NA→., 정렬, header 등).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Common Mistakes -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <span class="badge b-critical">반드시 숙지</span>
+        <div class="card-title">Top 10 실무 실수 & 방지법</div>
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <tr><th style="width:30px">#</th><th>실수</th><th>결과</th><th>방지법</th></tr>
+          <tr><td>1</td><td>TIME 계산에서 reference time 불일치</td><td>PK 파라미터 전체 틀림</td><td>reference time 로직을 R 함수로 정의하고 전체 데이터에 일괄 적용</td></tr>
+          <tr><td>2</td><td>같은 TIME에 obs가 dose보다 먼저 정렬</td><td>predose로 해석되어 예측값 이상</td><td>정렬 시 EVID 우선순위 반영: <code>arrange(ID, TIME, desc(EVID))</code></td></tr>
+          <tr><td>3</td><td>AMT에 planned dose 사용 (actual 대신)</td><td>CL/V 추정 편향</td><td>EX 도메인의 actual dose 컬럼 확인. 부분 투여 기록 확인.</td></tr>
+          <tr><td>4</td><td>NA를 <code>.</code>으로 미변환</td><td>NONMEM 실행 오류</td><td>R 저장 시 <code>write.csv(..., na=".")</code> 또는 <code>NMwriteData()</code> 사용</td></tr>
+          <tr><td>5</td><td>단위 불일치 (mg vs μg, L vs mL)</td><td>CL이 1000배 차이</td><td>Data spec에 단위 명시. 변환 로직 스크립트에 기록.</td></tr>
+          <tr><td>6</td><td>BLQ를 그냥 0으로 두고 MDV=0 (제외 안 함)</td><td>terminal phase bias</td><td>BLQ flag 생성 + M-method 명시적 적용</td></tr>
+          <tr><td>7</td><td>ADDL/II에서 용량 변경 시점 무시</td><td>NONMEM이 잘못된 용량으로 추가 투여</td><td>용량 변경 시점에서 ADDL 끊고 새 dosing record 시작</td></tr>
+          <tr><td>8</td><td>Covariate merge 후 row 수 변동</td><td>데이터 증폭 또는 소실</td><td>merge 전후 <code>nrow()</code> 비교. 1:1 merge 확인.</td></tr>
+          <tr><td>9</td><td>$INPUT 순서와 데이터 컬럼 순서 불일치</td><td>변수 값이 뒤바뀜 (silent error)</td><td>control stream 작성 시 데이터 header와 1:1 대조</td></tr>
+          <tr><td>10</td><td>Outlier를 행 삭제로 처리</td><td>원본 복원 불가, sensitivity analysis 불가</td><td>EXCL flag 사용. IGNORE statement로 제외.</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end #phases -->
+
+<div class="footer">
+  NONMEM Data Preprocessing Decision Map v2.0 &nbsp;·&nbsp; Last updated: 2026-04-13 &nbsp;·&nbsp; Based on NMdata workflow (P. Delff), NONMEM best practices, CDISC standards
+</div>
+
+</div><!-- end .container -->
+
+<script>
+function togglePhase(header) {
+  header.closest('.phase').classList.toggle('open');
+}
+function toggleCard(header) {
+  header.closest('.card').classList.toggle('open');
+}
+function toggleAll(open) {
+  document.querySelectorAll('.phase').forEach(p => {
+    if (open) p.classList.add('open'); else p.classList.remove('open');
+  });
+  document.querySelectorAll('.card').forEach(c => {
+    if (open) c.classList.add('open'); else c.classList.remove('open');
+  });
+}
+document.querySelectorAll('.toc-list a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add('open');
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
