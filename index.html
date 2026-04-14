@@ -4,47 +4,390 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mingushin3's Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-            line-height: 1.6; 
-            padding: 40px 20px; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            background-color: #f9f9f9;
-            color: #333;
+        /* ── Lovable Palette Tokens ─────────────────────────────────── */
+        :root {
+            --cream:         #f7f4ed;
+            --cream-border:  #eceae4;
+            --charcoal:      #1c1c1c;
+            --charcoal-83:   rgba(28,28,28,0.83);
+            --charcoal-40:   rgba(28,28,28,0.40);
+            --charcoal-04:   rgba(28,28,28,0.04);
+            --muted:         #5f5f5d;
+            --off-white:     #fcfbf8;
+            --shadow-inset:  rgba(255,255,255,0.2) 0px 0.5px 0px 0px inset,
+                             rgba(0,0,0,0.2) 0px 0px 0px 0.5px inset,
+                             rgba(0,0,0,0.05) 0px 1px 2px 0px;
+            --shadow-focus:  rgba(0,0,0,0.1) 0px 4px 12px;
         }
-        h1 { border-bottom: 2px solid #eaecef; padding-bottom: 10px; }
-        .category { margin-top: 30px; font-size: 1.2em; font-weight: bold; color: #555; }
-        ul { list-style-type: none; padding-left: 0; }
-        li { margin-bottom: 12px; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        a { text-decoration: none; color: #0366d6; font-size: 16px; display: block; font-weight: 500; }
-        a:hover { color: #0056b3; text-decoration: underline; }
-        .version-tag { font-size: 0.85em; color: #fff; background-color: #28a745; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ── Nav ─────────────────────────────────────────────────────── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--cream);
+            border-bottom: 1px solid var(--cream-border);
+            padding: 0 48px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--charcoal);
+            text-decoration: none;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-badge {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--muted);
+            border: 1px solid var(--charcoal-40);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        /* ── Hero ─────────────────────────────────────────────────────── */
+        .hero {
+            padding: 80px 48px 72px;
+            max-width: 760px;
+            position: relative;
+        }
+
+        /* Warm atmospheric gradient behind hero */
+        .hero::before {
+            content: '';
+            position: fixed;
+            top: 0; right: 0;
+            width: 50vw; height: 60vh;
+            background: radial-gradient(ellipse at 80% 20%,
+                rgba(255,200,180,0.18) 0%,
+                rgba(180,200,255,0.10) 40%,
+                transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--muted);
+            background: var(--charcoal-04);
+            border: 1px solid var(--cream-border);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 400;
+            line-height: 1.08;
+            letter-spacing: -1.2px;
+            color: var(--charcoal);
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 17px;
+            font-weight: 400;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 480px;
+        }
+
+        /* ── Main ─────────────────────────────────────────────────────── */
+        main {
+            max-width: 760px;
+            padding: 0 48px 96px;
+        }
+
+        /* ── Category ─────────────────────────────────────────────────── */
+        .category {
+            margin-bottom: 48px;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        .category:nth-child(1) { animation-delay: 0ms; }
+        .category:nth-child(2) { animation-delay: 100ms; }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--cream-border);
+        }
+
+        .cat-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .cat-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+            color: var(--charcoal);
+        }
+
+        .cat-count {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--muted);
+            border: 1px solid var(--cream-border);
+            padding: 2px 10px;
+            border-radius: 9999px;
+            margin-left: auto;
+        }
+
+        /* ── List ─────────────────────────────────────────────────────── */
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        li {
+            border: 1px solid var(--cream-border);
+            border-radius: 12px;
+            background: var(--cream);
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+
+        li:hover {
+            border-color: var(--charcoal-40);
+            box-shadow: var(--shadow-focus);
+        }
+
+        a {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            text-decoration: none;
+            color: var(--charcoal-83);
+            font-size: 15px;
+            font-weight: 400;
+            gap: 14px;
+            border-radius: 12px;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        li:hover a {
+            color: var(--charcoal);
+        }
+
+        .link-num {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--muted);
+            width: 20px;
+            flex-shrink: 0;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .link-label { flex: 1; }
+
+        /* Arrow pill */
+        .arrow {
+            width: 28px; height: 28px;
+            border-radius: 9999px;
+            background: var(--charcoal-04);
+            border: 1px solid var(--cream-border);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        li:hover .arrow {
+            background: var(--charcoal);
+            border-color: var(--charcoal);
+        }
+
+        .arrow svg {
+            width: 11px; height: 11px;
+            stroke: var(--muted);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.15s;
+        }
+
+        li:hover .arrow svg { stroke: var(--off-white); }
+
+        /* ── Version Tag ──────────────────────────────────────────────── */
+        .version-tag {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--charcoal);
+            background: var(--cream);
+            border: 1px solid var(--charcoal-40);
+            padding: 2px 9px;
+            border-radius: 9999px;
+            letter-spacing: 0.1px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-inset);
+        }
+
+        /* ── Divider ──────────────────────────────────────────────────── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--cream-border);
+            margin: 0 0 48px;
+        }
+
+        /* ── Footer ───────────────────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--cream-border);
+            padding: 24px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        /* ── Responsive ───────────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            nav, .hero, main, footer { padding-left: 20px; padding-right: 20px; }
+            nav { height: 52px; }
+            .hero { padding-top: 48px; padding-bottom: 48px; }
+        }
+
+        /* ── Animation ────────────────────────────────────────────────── */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <h1>📋 전체 HTML 문서 목록</h1>
-    <p>아래 링크를 클릭하여 원하는 페이지로 이동하세요.</p>
 
-    <div class="category">💊 Pharmacometrics & NONMEM</div>
-    <ul>
-        <li><a href="./pk_simulator.html">PK Simulator</a></li>
-        <li><a href="./nonmem_preprocessing_map.html">NONMEM Preprocessing Map</a></li>
-        <li>
-            <a href="./nonmem_question_sequence_v4.html">NONMEM Question Sequence 
-                <span class="version-tag">최신버전 v4</span>
-            </a>
-        </li>
-        <li><a href="./nonmem_question_sequence_v3.html">NONMEM Question Sequence (v3)</a></li>
-        <li><a href="./nonmem_question_sequence_v2.html">NONMEM Question Sequence (v2)</a></li>
-        <li><a href="./nonmem_question_sequence.html">NONMEM Question Sequence (v1)</a></li>
-    </ul>
+    <!-- Nav -->
+    <nav>
+        <a class="nav-logo" href="#">mingushin3</a>
+        <span class="nav-badge">Archive</span>
+    </nav>
 
-    <div class="category">⏱️ Productivity Tools</div>
-    <ul>
-        <li><a href="./TimeBox_Planner_Mobile.html">TimeBox Planner (Mobile)</a></li>
-    </ul>
+    <!-- Hero -->
+    <section class="hero">
+        <span class="hero-label">전체 HTML 문서 목록</span>
+        <h1>원하는 페이지로<br>바로 이동하세요</h1>
+        <p>아래 링크를 클릭하여 원하는 페이지로 이동하세요.</p>
+    </section>
+
+    <!-- Main -->
+    <main>
+
+        <!-- Pharmacometrics -->
+        <section class="category">
+            <div class="category-header">
+                <span class="cat-icon">💊</span>
+                <span class="cat-title">Pharmacometrics &amp; NONMEM</span>
+                <span class="cat-count">6</span>
+            </div>
+            <ul>
+                <li>
+                    <a href="./pk_simulator.html">
+                        <span class="link-num">01</span>
+                        <span class="link-label">PK Simulator</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="./nonmem_preprocessing_map.html">
+                        <span class="link-num">02</span>
+                        <span class="link-label">NONMEM Preprocessing Map</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="./nonmem_question_sequence_v4.html">
+                        <span class="link-num">03</span>
+                        <span class="link-label">NONMEM Question Sequence</span>
+                        <span class="version-tag">최신버전 v4</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="./nonmem_question_sequence_v3.html">
+                        <span class="link-num">04</span>
+                        <span class="link-label">NONMEM Question Sequence (v3)</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="./nonmem_question_sequence_v2.html">
+                        <span class="link-num">05</span>
+                        <span class="link-label">NONMEM Question Sequence (v2)</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="./nonmem_question_sequence.html">
+                        <span class="link-num">06</span>
+                        <span class="link-label">NONMEM Question Sequence (v1)</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <hr class="divider">
+
+        <!-- Productivity -->
+        <section class="category">
+            <div class="category-header">
+                <span class="cat-icon">⏱️</span>
+                <span class="cat-title">Productivity Tools</span>
+                <span class="cat-count">1</span>
+            </div>
+            <ul>
+                <li>
+                    <a href="./TimeBox_Planner_Mobile.html">
+                        <span class="link-num">01</span>
+                        <span class="link-label">TimeBox Planner (Mobile)</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <span>© 2025 mingushin3</span>
+        <span>Mingushin3's Archive</span>
+    </footer>
 
 </body>
 </html>
