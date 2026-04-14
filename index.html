@@ -7,177 +7,169 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* ── Lovable Palette Tokens ─────────────────────────────────── */
         :root {
-            --cream:         #f7f4ed;
-            --cream-border:  #eceae4;
-            --charcoal:      #1c1c1c;
-            --charcoal-83:   rgba(28,28,28,0.83);
-            --charcoal-40:   rgba(28,28,28,0.40);
-            --charcoal-04:   rgba(28,28,28,0.04);
-            --muted:         #5f5f5d;
-            --off-white:     #fcfbf8;
-            --shadow-inset:  rgba(255,255,255,0.2) 0px 0.5px 0px 0px inset,
-                             rgba(0,0,0,0.2) 0px 0px 0px 0.5px inset,
-                             rgba(0,0,0,0.05) 0px 1px 2px 0px;
-            --shadow-focus:  rgba(0,0,0,0.1) 0px 4px 12px;
+            --cream:        #f7f4ed;
+            --cream-border: #eceae4;
+            --charcoal:     #1c1c1c;
+            --charcoal-83:  rgba(28,28,28,0.83);
+            --charcoal-40:  rgba(28,28,28,0.40);
+            --charcoal-04:  rgba(28,28,28,0.04);
+            --muted:        #5f5f5d;
+            --off-white:    #fcfbf8;
+            --shadow-inset: rgba(255,255,255,0.2) 0px 0.5px 0px 0px inset,
+                            rgba(0,0,0,0.2) 0px 0px 0px 0.5px inset,
+                            rgba(0,0,0,0.05) 0px 1px 2px 0px;
+            --shadow-focus: rgba(0,0,0,0.08) 0px 4px 12px;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { -webkit-font-smoothing: antialiased; }
+        html, body { height: 100%; -webkit-font-smoothing: antialiased; }
 
         body {
             font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
             background: var(--cream);
             color: var(--charcoal);
-            min-height: 100vh;
-            line-height: 1.5;
+            /* Single-page layout: nav + hero + main fill viewport */
+            display: flex;
+            flex-direction: column;
         }
 
-        /* ── Nav ─────────────────────────────────────────────────────── */
+        /* ── Nav ──────────────────────────────────────────────── */
         nav {
-            position: sticky;
-            top: 0;
-            z-index: 50;
             background: var(--cream);
             border-bottom: 1px solid var(--cream-border);
-            padding: 0 48px;
-            height: 60px;
+            padding: 0 40px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
 
         .nav-logo {
             font-family: 'DM Serif Display', serif;
-            font-size: 18px;
-            font-weight: 400;
+            font-size: 16px;
             color: var(--charcoal);
             text-decoration: none;
-            letter-spacing: -0.3px;
+            letter-spacing: -0.2px;
         }
 
         .nav-badge {
-            font-size: 13px;
-            font-weight: 400;
+            font-size: 12px;
             color: var(--muted);
             border: 1px solid var(--charcoal-40);
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 6px;
         }
 
-        /* ── Hero ─────────────────────────────────────────────────────── */
+        /* ── Hero — compact ───────────────────────────────────── */
         .hero {
-            padding: 80px 48px 72px;
-            max-width: 760px;
+            padding: 28px 40px 20px;
+            flex-shrink: 0;
             position: relative;
+            overflow: hidden;
         }
 
-        /* Warm atmospheric gradient behind hero */
         .hero::before {
             content: '';
-            position: fixed;
-            top: 0; right: 0;
-            width: 50vw; height: 60vh;
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 280px; height: 180px;
             background: radial-gradient(ellipse at 80% 20%,
-                rgba(255,200,180,0.18) 0%,
-                rgba(180,200,255,0.10) 40%,
+                rgba(255,200,180,0.16) 0%,
+                rgba(180,200,255,0.09) 50%,
                 transparent 70%);
             pointer-events: none;
-            z-index: 0;
         }
 
         .hero-label {
             display: inline-block;
-            font-size: 13px;
-            font-weight: 400;
+            font-size: 11px;
             color: var(--muted);
             background: var(--charcoal-04);
             border: 1px solid var(--cream-border);
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 9999px;
-            margin-bottom: 24px;
+            margin-bottom: 10px;
         }
 
         .hero h1 {
             font-family: 'DM Serif Display', serif;
-            font-size: clamp(36px, 5vw, 56px);
+            font-size: 26px;            /* ← 56px → 26px */
             font-weight: 400;
-            line-height: 1.08;
-            letter-spacing: -1.2px;
+            line-height: 1.15;
+            letter-spacing: -0.6px;
             color: var(--charcoal);
-            margin-bottom: 16px;
+            margin-bottom: 6px;
         }
 
         .hero p {
-            font-size: 17px;
-            font-weight: 400;
+            font-size: 13px;
             color: var(--muted);
-            line-height: 1.6;
-            max-width: 480px;
+            line-height: 1.5;
         }
 
-        /* ── Main ─────────────────────────────────────────────────────── */
+        /* ── Main ─────────────────────────────────────────────── */
         main {
-            max-width: 760px;
-            padding: 0 48px 96px;
+            flex: 1;
+            padding: 20px 40px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            min-height: 0;          /* allows flex children to shrink */
         }
 
-        /* ── Category ─────────────────────────────────────────────────── */
+        /* ── Category ─────────────────────────────────────────── */
         .category {
-            margin-bottom: 48px;
-            animation: fadeIn 0.5s ease both;
+            animation: fadeIn 0.4s ease both;
         }
 
         .category:nth-child(1) { animation-delay: 0ms; }
-        .category:nth-child(2) { animation-delay: 100ms; }
+        .category:nth-child(2) { animation-delay: 80ms; }
 
         .category-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
+            gap: 8px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--cream-border);
+            margin-bottom: 8px;
         }
 
-        .cat-icon {
-            font-size: 16px;
-            line-height: 1;
-        }
+        .cat-icon { font-size: 14px; line-height: 1; }
 
         .cat-title {
             font-family: 'DM Serif Display', serif;
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 400;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
             color: var(--charcoal);
         }
 
         .cat-count {
-            font-size: 12px;
-            font-weight: 400;
+            font-size: 11px;
             color: var(--muted);
             border: 1px solid var(--cream-border);
-            padding: 2px 10px;
+            padding: 1px 8px;
             border-radius: 9999px;
             margin-left: auto;
         }
 
-        /* ── List ─────────────────────────────────────────────────────── */
+        /* ── List ─────────────────────────────────────────────── */
         ul {
             list-style: none;
             padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
+            margin-bottom: 18px;
         }
 
         li {
             border: 1px solid var(--cream-border);
-            border-radius: 12px;
+            border-radius: 9px;
             background: var(--cream);
-            transition: border-color 0.18s, box-shadow 0.18s;
+            transition: border-color 0.16s, box-shadow 0.16s;
         }
 
         li:hover {
@@ -188,25 +180,22 @@
         a {
             display: flex;
             align-items: center;
-            padding: 16px 20px;
+            padding: 10px 14px;     /* ← 16px 20px → 10px 14px */
             text-decoration: none;
             color: var(--charcoal-83);
-            font-size: 15px;
+            font-size: 13.5px;
             font-weight: 400;
-            gap: 14px;
-            border-radius: 12px;
-            transition: color 0.15s, background 0.15s;
+            gap: 12px;
+            border-radius: 9px;
+            transition: color 0.14s;
         }
 
-        li:hover a {
-            color: var(--charcoal);
-        }
+        li:hover a { color: var(--charcoal); }
 
         .link-num {
-            font-size: 12px;
-            font-weight: 400;
+            font-size: 11px;
             color: var(--muted);
-            width: 20px;
+            width: 18px;
             flex-shrink: 0;
             text-align: right;
             font-variant-numeric: tabular-nums;
@@ -214,15 +203,14 @@
 
         .link-label { flex: 1; }
 
-        /* Arrow pill */
         .arrow {
-            width: 28px; height: 28px;
+            width: 24px; height: 24px;
             border-radius: 9999px;
             background: var(--charcoal-04);
             border: 1px solid var(--cream-border);
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
-            transition: background 0.15s, border-color 0.15s;
+            transition: background 0.14s, border-color 0.14s;
         }
 
         li:hover .arrow {
@@ -231,83 +219,75 @@
         }
 
         .arrow svg {
-            width: 11px; height: 11px;
+            width: 10px; height: 10px;
             stroke: var(--muted);
             fill: none;
             stroke-width: 2;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: stroke 0.15s;
+            transition: stroke 0.14s;
         }
 
         li:hover .arrow svg { stroke: var(--off-white); }
 
-        /* ── Version Tag ──────────────────────────────────────────────── */
+        /* ── Version Tag ──────────────────────────────────────── */
         .version-tag {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
             color: var(--charcoal);
             background: var(--cream);
             border: 1px solid var(--charcoal-40);
-            padding: 2px 9px;
+            padding: 2px 8px;
             border-radius: 9999px;
-            letter-spacing: 0.1px;
             flex-shrink: 0;
             box-shadow: var(--shadow-inset);
         }
 
-        /* ── Divider ──────────────────────────────────────────────────── */
+        /* ── Divider ──────────────────────────────────────────── */
         .divider {
             border: none;
             border-top: 1px solid var(--cream-border);
-            margin: 0 0 48px;
+            margin: 0 0 18px;
         }
 
-        /* ── Footer ───────────────────────────────────────────────────── */
+        /* ── Footer ───────────────────────────────────────────── */
         footer {
             border-top: 1px solid var(--cream-border);
-            padding: 24px 48px;
+            padding: 12px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            font-weight: 400;
+            font-size: 12px;
             color: var(--muted);
+            flex-shrink: 0;
         }
 
-        /* ── Responsive ───────────────────────────────────────────────── */
+        /* ── Responsive ───────────────────────────────────────── */
         @media (max-width: 600px) {
             nav, .hero, main, footer { padding-left: 20px; padding-right: 20px; }
-            nav { height: 52px; }
-            .hero { padding-top: 48px; padding-bottom: 48px; }
         }
 
-        /* ── Animation ────────────────────────────────────────────────── */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to   { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Nav -->
     <nav>
         <a class="nav-logo" href="#">mingushin3</a>
         <span class="nav-badge">Archive</span>
     </nav>
 
-    <!-- Hero -->
     <section class="hero">
         <span class="hero-label">전체 HTML 문서 목록</span>
-        <h1>원하는 페이지로<br>바로 이동하세요</h1>
+        <h1>원하는 페이지로 바로 이동하세요</h1>
         <p>아래 링크를 클릭하여 원하는 페이지로 이동하세요.</p>
     </section>
 
-    <!-- Main -->
     <main>
 
-        <!-- Pharmacometrics -->
         <section class="category">
             <div class="category-header">
                 <span class="cat-icon">💊</span>
@@ -315,55 +295,42 @@
                 <span class="cat-count">6</span>
             </div>
             <ul>
-                <li>
-                    <a href="./pk_simulator.html">
-                        <span class="link-num">01</span>
-                        <span class="link-label">PK Simulator</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="./nonmem_preprocessing_map.html">
-                        <span class="link-num">02</span>
-                        <span class="link-label">NONMEM Preprocessing Map</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="./nonmem_question_sequence_v4.html">
-                        <span class="link-num">03</span>
-                        <span class="link-label">NONMEM Question Sequence</span>
-                        <span class="version-tag">최신버전 v4</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="./nonmem_question_sequence_v3.html">
-                        <span class="link-num">04</span>
-                        <span class="link-label">NONMEM Question Sequence (v3)</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="./nonmem_question_sequence_v2.html">
-                        <span class="link-num">05</span>
-                        <span class="link-label">NONMEM Question Sequence (v2)</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="./nonmem_question_sequence.html">
-                        <span class="link-num">06</span>
-                        <span class="link-label">NONMEM Question Sequence (v1)</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
+                <li><a href="./pk_simulator.html">
+                    <span class="link-num">01</span>
+                    <span class="link-label">PK Simulator</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
+                <li><a href="./nonmem_preprocessing_map.html">
+                    <span class="link-num">02</span>
+                    <span class="link-label">NONMEM Preprocessing Map</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
+                <li><a href="./nonmem_question_sequence_v4.html">
+                    <span class="link-num">03</span>
+                    <span class="link-label">NONMEM Question Sequence</span>
+                    <span class="version-tag">최신버전 v4</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
+                <li><a href="./nonmem_question_sequence_v3.html">
+                    <span class="link-num">04</span>
+                    <span class="link-label">NONMEM Question Sequence (v3)</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
+                <li><a href="./nonmem_question_sequence_v2.html">
+                    <span class="link-num">05</span>
+                    <span class="link-label">NONMEM Question Sequence (v2)</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
+                <li><a href="./nonmem_question_sequence.html">
+                    <span class="link-num">06</span>
+                    <span class="link-label">NONMEM Question Sequence (v1)</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
             </ul>
         </section>
 
         <hr class="divider">
 
-        <!-- Productivity -->
         <section class="category">
             <div class="category-header">
                 <span class="cat-icon">⏱️</span>
@@ -371,19 +338,16 @@
                 <span class="cat-count">1</span>
             </div>
             <ul>
-                <li>
-                    <a href="./TimeBox_Planner_Mobile.html">
-                        <span class="link-num">01</span>
-                        <span class="link-label">TimeBox Planner (Mobile)</span>
-                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                    </a>
-                </li>
+                <li><a href="./TimeBox_Planner_Mobile.html">
+                    <span class="link-num">01</span>
+                    <span class="link-label">TimeBox Planner (Mobile)</span>
+                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </a></li>
             </ul>
         </section>
 
     </main>
 
-    <!-- Footer -->
     <footer>
         <span>© 2025 mingushin3</span>
         <span>Mingushin3's Archive</span>
