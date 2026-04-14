@@ -1,3 +1,6 @@
+---
+layout: null
+---
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -29,7 +32,7 @@
             font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
             background: var(--cream);
             color: var(--charcoal);
-            /* Single-page layout: nav + hero + main fill viewport */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -62,7 +65,7 @@
             border-radius: 6px;
         }
 
-        /* ── Hero — compact ───────────────────────────────────── */
+        /* ── Hero ─────────────────────────────────────────────── */
         .hero {
             padding: 28px 40px 20px;
             flex-shrink: 0;
@@ -95,7 +98,7 @@
 
         .hero h1 {
             font-family: 'DM Serif Display', serif;
-            font-size: 26px;            /* ← 56px → 26px */
+            font-size: 26px;
             font-weight: 400;
             line-height: 1.15;
             letter-spacing: -0.6px;
@@ -115,19 +118,11 @@
             padding: 20px 40px 24px;
             display: flex;
             flex-direction: column;
-            gap: 0;
-            min-height: 0;          /* allows flex children to shrink */
+            min-height: 0;
         }
 
-        /* ── Category ─────────────────────────────────────────── */
-        .category {
-            animation: fadeIn 0.4s ease both;
-        }
-
-        .category:nth-child(1) { animation-delay: 0ms; }
-        .category:nth-child(2) { animation-delay: 80ms; }
-
-        .category-header {
+        /* ── Section Header ───────────────────────────────────── */
+        .section-header {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -136,9 +131,7 @@
             margin-bottom: 8px;
         }
 
-        .cat-icon { font-size: 14px; line-height: 1; }
-
-        .cat-title {
+        .section-title {
             font-family: 'DM Serif Display', serif;
             font-size: 16px;
             font-weight: 400;
@@ -146,7 +139,7 @@
             color: var(--charcoal);
         }
 
-        .cat-count {
+        .section-count {
             font-size: 11px;
             color: var(--muted);
             border: 1px solid var(--cream-border);
@@ -162,7 +155,6 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            margin-bottom: 18px;
         }
 
         li {
@@ -170,6 +162,7 @@
             border-radius: 9px;
             background: var(--cream);
             transition: border-color 0.16s, box-shadow 0.16s;
+            animation: fadeIn 0.4s ease both;
         }
 
         li:hover {
@@ -180,7 +173,7 @@
         a {
             display: flex;
             align-items: center;
-            padding: 10px 14px;     /* ← 16px 20px → 10px 14px */
+            padding: 10px 14px;
             text-decoration: none;
             color: var(--charcoal-83);
             font-size: 13.5px;
@@ -202,6 +195,18 @@
         }
 
         .link-label { flex: 1; }
+
+        .file-type {
+            font-size: 10px;
+            color: var(--muted);
+            background: var(--charcoal-04);
+            border: 1px solid var(--cream-border);
+            padding: 1px 7px;
+            border-radius: 9999px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
         .arrow {
             width: 24px; height: 24px;
@@ -230,26 +235,6 @@
 
         li:hover .arrow svg { stroke: var(--off-white); }
 
-        /* ── Version Tag ──────────────────────────────────────── */
-        .version-tag {
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--charcoal);
-            background: var(--cream);
-            border: 1px solid var(--charcoal-40);
-            padding: 2px 8px;
-            border-radius: 9999px;
-            flex-shrink: 0;
-            box-shadow: var(--shadow-inset);
-        }
-
-        /* ── Divider ──────────────────────────────────────────── */
-        .divider {
-            border: none;
-            border-top: 1px solid var(--cream-border);
-            margin: 0 0 18px;
-        }
-
         /* ── Footer ───────────────────────────────────────────── */
         footer {
             border-top: 1px solid var(--cream-border);
@@ -262,15 +247,18 @@
             flex-shrink: 0;
         }
 
-        /* ── Responsive ───────────────────────────────────────── */
         @media (max-width: 600px) {
             nav, .hero, main, footer { padding-left: 20px; padding-right: 20px; }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to   { opacity: 1; transform: translateY(0); }
         }
+
+        {% for i in (1..50) %}
+        li:nth-child({{ i }}) { animation-delay: {{ i | times: 35 }}ms; }
+        {% endfor %}
     </style>
 </head>
 <body>
@@ -288,69 +276,49 @@
 
     <main>
 
-        <section class="category">
-            <div class="category-header">
-                <span class="cat-icon">💊</span>
-                <span class="cat-title">Pharmacometrics &amp; NONMEM</span>
-                <span class="cat-count">6</span>
-            </div>
-            <ul>
-                <li><a href="./pk_simulator.html">
-                    <span class="link-num">01</span>
-                    <span class="link-label">PK Simulator</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-                <li><a href="./nonmem_preprocessing_map.html">
-                    <span class="link-num">02</span>
-                    <span class="link-label">NONMEM Preprocessing Map</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-                <li><a href="./nonmem_question_sequence_v4.html">
-                    <span class="link-num">03</span>
-                    <span class="link-label">NONMEM Question Sequence</span>
-                    <span class="version-tag">최신버전 v4</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-                <li><a href="./nonmem_question_sequence_v3.html">
-                    <span class="link-num">04</span>
-                    <span class="link-label">NONMEM Question Sequence (v3)</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-                <li><a href="./nonmem_question_sequence_v2.html">
-                    <span class="link-num">05</span>
-                    <span class="link-label">NONMEM Question Sequence (v2)</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-                <li><a href="./nonmem_question_sequence.html">
-                    <span class="link-num">06</span>
-                    <span class="link-label">NONMEM Question Sequence (v1)</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-            </ul>
-        </section>
+        {% assign static_html = site.static_files | where_exp: "f", "f.extname == '.html'" %}
+        {% assign pages_filtered = site.pages | where_exp: "p", "p.name != 'index.html'" %}
+        {% assign total = static_html.size | plus: pages_filtered.size %}
 
-        <hr class="divider">
+        <div class="section-header">
+            <span class="section-title">📁 전체 파일</span>
+            <span class="section-count">{{ total }}개</span>
+        </div>
 
-        <section class="category">
-            <div class="category-header">
-                <span class="cat-icon">⏱️</span>
-                <span class="cat-title">Productivity Tools</span>
-                <span class="cat-count">1</span>
-            </div>
-            <ul>
-                <li><a href="./TimeBox_Planner_Mobile.html">
-                    <span class="link-num">01</span>
-                    <span class="link-label">TimeBox Planner (Mobile)</span>
-                    <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-                </a></li>
-            </ul>
-        </section>
+        <ul>
+            {% assign counter = 0 %}
+
+            {% for file in static_html %}
+                {% assign counter = counter | plus: 1 %}
+                <li>
+                    <a href="{{ site.baseurl }}{{ file.path }}">
+                        <span class="link-num">{{ counter | prepend: '00' | slice: -2, 2 }}</span>
+                        <span class="link-label">{{ file.basename }}</span>
+                        <span class="file-type">html</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+            {% endfor %}
+
+            {% for page in pages_filtered %}
+                {% assign counter = counter | plus: 1 %}
+                {% assign ext = page.name | split: '.' | last %}
+                <li>
+                    <a href="{{ site.baseurl }}{{ page.url }}">
+                        <span class="link-num">{{ counter | prepend: '00' | slice: -2, 2 }}</span>
+                        <span class="link-label">{{ page.name | replace_first: page.ext, '' }}</span>
+                        <span class="file-type">{{ ext }}</span>
+                        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
 
     </main>
 
     <footer>
-        <span>© 2025 mingushin3</span>
-        <span>Mingushin3's Archive</span>
+        <span>© {{ 'now' | date: '%Y' }} mingushin3</span>
+        <span>GitHub Pages · 자동 업데이트</span>
     </footer>
 
 </body>
