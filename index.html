@@ -1,445 +1,50 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PK Closed-Form Solutions</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', 'Noto Sans KR', sans-serif; background: #f8fafc; color: #1e293b; font-size: 13px; padding: 16px; }
-  h1 { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
-  .subtitle { font-size: 11px; color: #64748b; margin-bottom: 14px; }
-
-  /* Filter buttons */
-  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .filter-btn { padding: 4px 11px; border-radius: 20px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .filter-btn.active { background: #1e40af; border-color: #1e40af; color: #fff; }
-
-  /* Table */
-  .table-wrap { overflow-x: auto; border-radius: 10px; box-shadow: 0 1px 6px #0001; }
-  table { width: 100%; border-collapse: collapse; background: #fff; }
-  thead tr { background: #1e293b; }
-  thead th { padding: 9px 10px; color: #e2e8f0; font-size: 11px; font-weight: 700; text-align: left; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .1s; }
-  tbody tr:hover { background: #f0f7ff; }
-  tbody tr.hidden { display: none; }
-  td { padding: 8px 10px; vertical-align: top; line-height: 1.55; }
-
-  /* Rank badge */
-  .rank { display: inline-flex; align-items: center; justify-content: center;
-    width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 800; }
-  .r1 { background:#fef08a; color:#713f12; }
-  .r2 { background:#fde68a; color:#92400e; }
-  .r3 { background:#fed7aa; color:#9a3412; }
-  .r4 { background:#e0f2fe; color:#075985; }
-  .r5 { background:#dbeafe; color:#1e40af; }
-  .rN { background:#f1f5f9; color:#64748b; }
-
-  /* ADVAN badge */
-  .advan { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #1e293b; color: #e2e8f0; white-space: nowrap; }
-  .advan.a1  { background:#1e40af; }
-  .advan.a2  { background:#7c3aed; }
-  .advan.a3  { background:#0f766e; }
-  .advan.a4  { background:#065f46; }
-  .advan.a10 { background:#b45309; }
-  .advan.a11 { background:#6b21a8; }
-  .advan.a12 { background:#831843; }
-  .advan.a13 { background:#dc2626; }
-
-  /* Equation box */
-  .eq { font-family: 'Courier New', monospace; font-size: 11.5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 5px 8px; color: #0f172a; line-height: 1.7; white-space: pre-wrap; margin-top: 3px; }
-  .eq-sub { font-family: 'Courier New', monospace; font-size: 10.5px; color: #64748b; margin-top: 3px; }
-
-  /* Tags */
-  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin: 1px; }
-  .tag-iv   { background:#dbeafe; color:#1e40af; }
-  .tag-oral { background:#dcfce7; color:#166534; }
-  .tag-inf  { background:#fef9c3; color:#713f12; }
-  .tag-md   { background:#fce7f3; color:#9d174d; }
-  .tag-2c   { background:#ede9fe; color:#5b21b6; }
-  .tag-3c   { background:#fdf4ff; color:#7e22ce; }
-  .tag-nl   { background:#fee2e2; color:#b91c1c; }
-  .tag-ss   { background:#f0fdf4; color:#15803d; }
-
-  /* Situation */
-  .sit { font-size: 11px; color: #374151; }
-  .cond { font-size: 10px; color: #ef4444; font-weight: 600; margin-top: 2px; }
-
-  /* Param */
-  .param { font-size: 10.5px; color: #475569; }
-  .param b { color: #1e40af; }
-
-  /* Note */
-  .note { font-size: 10.5px; color: #6b7280; font-style: italic; }
-
-  /* Category row header */
-  .cat-row td { background: #f1f5f9; font-weight: 700; font-size: 11px; color: #374151; padding: 5px 10px; }
-
-  /* Legend */
-  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #64748b; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mingushin3's Archive</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            line-height: 1.6; 
+            padding: 40px 20px; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 { border-bottom: 2px solid #eaecef; padding-bottom: 10px; }
+        .category { margin-top: 30px; font-size: 1.2em; font-weight: bold; color: #555; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 12px; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        a { text-decoration: none; color: #0366d6; font-size: 16px; display: block; font-weight: 500; }
+        a:hover { color: #0056b3; text-decoration: underline; }
+        .version-tag { font-size: 0.85em; color: #fff; background-color: #28a745; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+    </style>
 </head>
 <body>
+    <h1>📋 전체 HTML 문서 목록</h1>
+    <p>아래 링크를 클릭하여 원하는 페이지로 이동하세요.</p>
 
-<h1>PK Closed-Form (해석적) 해 × ADVAN 대조표</h1>
-<p class="subtitle">미분방정식을 대수식으로 풀어놓은 해답지 — 중요도 순 정렬. NONMEM이 내부적으로 이 식들을 계산한다.</p>
+    <div class="category">💊 Pharmacometrics & NONMEM</div>
+    <ul>
+        <li><a href="./pk_simulator.html">PK Simulator</a></li>
+        <li><a href="./nonmem_preprocessing_map.html">NONMEM Preprocessing Map</a></li>
+        <li>
+            <a href="./nonmem_question_sequence_v4.html">NONMEM Question Sequence 
+                <span class="version-tag">최신버전 v4</span>
+            </a>
+        </li>
+        <li><a href="./nonmem_question_sequence_v3.html">NONMEM Question Sequence (v3)</a></li>
+        <li><a href="./nonmem_question_sequence_v2.html">NONMEM Question Sequence (v2)</a></li>
+        <li><a href="./nonmem_question_sequence.html">NONMEM Question Sequence (v1)</a></li>
+    </ul>
 
-<div class="filters">
-  <button class="filter-btn active" onclick="filterAll(this)">전체</button>
-  <button class="filter-btn" onclick="filterTag('iv',this)">IV 볼루스</button>
-  <button class="filter-btn" onclick="filterTag('inf',this)">IV 주입</button>
-  <button class="filter-btn" onclick="filterTag('oral',this)">경구(PO)</button>
-  <button class="filter-btn" onclick="filterTag('md',this)">반복투여/SS</button>
-  <button class="filter-btn" onclick="filterTag('2c',this)">2구획</button>
-  <button class="filter-btn" onclick="filterTag('nl',this)">비선형</button>
-</div>
+    <div class="category">⏱️ Productivity Tools</div>
+    <ul>
+        <li><a href="./TimeBox_Planner_Mobile.html">TimeBox Planner (Mobile)</a></li>
+    </ul>
 
-<div class="table-wrap">
-<table id="mainTable">
-<thead>
-  <tr>
-    <th style="width:32px">순위</th>
-    <th style="width:90px">ADVAN / TRANS</th>
-    <th style="width:100px">모델명</th>
-    <th style="width:220px">C(t) 해석해</th>
-    <th style="width:130px">언제 쓰나</th>
-    <th style="width:140px">핵심 파라미터</th>
-    <th>실무 주의사항</th>
-  </tr>
-</thead>
-<tbody>
-
-<!-- ===== 1-COMP IV ===== -->
-<tr class="cat-row"><td colspan="7">① 1구획 선형 — 가장 많이 접하는 기본형</td></tr>
-
-<tr data-tags="iv">
-  <td><span class="rank r1">1</span></td>
-  <td><span class="advan a1">ADVAN1</span><br><span style="font-size:9px;color:#64748b">TRANS2</span></td>
-  <td><b>1구획 IV 볼루스</b></td>
-  <td>
-    <div class="eq">C(t) = C₀ · e^(−K·t)</div>
-    <div class="eq-sub">C₀ = Dose/V
-K  = CL/V</div>
-  </td>
-  <td>
-    <span class="tag tag-iv">IV 볼루스</span>
-    <div class="sit">TDM 약물(반코, 아미노글리코사이드), 단순 PK 특성화, 학습 진입점</div>
-  </td>
-  <td class="param"><b>CL, V</b><br>(또는 K, V)</td>
-  <td><span class="note">Semi-log plot → 직선 1개. 기울기=−K, 절편=ln(C₀)</span></td>
-</tr>
-
-<tr data-tags="inf">
-  <td><span class="rank r1">2</span></td>
-  <td><span class="advan a1">ADVAN1</span><br><span style="font-size:9px;color:#64748b">TRANS2</span></td>
-  <td><b>1구획 IV 주입</b></td>
-  <td>
-    <div class="eq">주입 중 (0 ≤ t ≤ T_inf):
-C(t) = (R_in/CL)·(1−e^(−K·t))
-
-주입 후 (t > T_inf):
-C(t) = C(T_inf)·e^(−K·(t−T_inf))</div>
-    <div class="eq-sub">Css = R_in / CL  [t→∞]</div>
-  </td>
-  <td>
-    <span class="tag tag-inf">IV 주입</span>
-    <div class="sit">항생제(vancomycin AUC-guided), 항암제 지속주입, ICU 약물</div>
-    <div class="cond">⚠ T_inf 종료 시점 정확히 입력 필수</div>
-  </td>
-  <td class="param"><b>CL, V</b><br>R_in = Dose/T_inf</td>
-  <td><span class="note">가브리엘슨 2.27~2.31이 이 식 기반. 주입 중 잔차법으로 K 추정 가능</span></td>
-</tr>
-
-<tr data-tags="oral">
-  <td><span class="rank r2">3</span></td>
-  <td><span class="advan a2">ADVAN2</span><br><span style="font-size:9px;color:#64748b">TRANS2</span></td>
-  <td><b>1구획 경구</b></td>
-  <td>
-    <div class="eq">C(t) = (F·D·Ka) / (V·(Ka−K))
-      · [e^(−K·t) − e^(−Ka·t)]</div>
-    <div class="eq-sub">Ka ≠ K 조건 필수 (flip-flop 주의)</div>
-  </td>
-  <td>
-    <span class="tag tag-oral">경구</span>
-    <div class="sit">대부분의 경구 소분자 약물 1차 분석. PopPK 워크플로우 첫 모델</div>
-    <div class="cond">⚠ Ka &lt; K → flip-flop: terminal=흡수 반감기!</div>
-  </td>
-  <td class="param"><b>CL, V, Ka</b><br>F(생체이용률)</td>
-  <td><span class="note">Tmax = ln(Ka/K)/(Ka−K). 흡수상 데이터 부족 시 Ka 추정 불안정</span></td>
-</tr>
-
-<tr data-tags="md ss iv oral">
-  <td><span class="rank r2">4</span></td>
-  <td><span class="advan a1">ADVAN1</span><br><span class="advan a2" style="margin-top:3px;display:inline-block">ADVAN2</span></td>
-  <td><b>1구획 반복투여 / 정상상태</b></td>
-  <td>
-    <div class="eq">n회 투여 후 trough (τ·n 직전):
-Cmin = C₀·e^(−K·τ) / (1−e^(−K·τ))
-
-n회 투여 후 peak (IV 볼루스):
-Cmax = C₀ / (1−e^(−K·τ))
-
-정상상태 AUCss = AUC_단회 = Dose/CL</div>
-  </td>
-  <td>
-    <span class="tag tag-md">반복투여</span>
-    <span class="tag tag-ss">SS</span>
-    <div class="sit">TDM 목표농도 설정, 축적비 계산, 용량 조정 근거</div>
-  </td>
-  <td class="param"><b>CL, V</b><br>τ(투여간격)</td>
-  <td><span class="note">축적비 R = 1/(1−e^(−K·τ)). 5×t½ 후 SS 도달</span></td>
-</tr>
-
-<!-- ===== 2-COMP ===== -->
-<tr class="cat-row"><td colspan="7">② 2구획 선형 — 임상약리학 실무의 핵심</td></tr>
-
-<tr data-tags="iv 2c">
-  <td><span class="rank r3">5</span></td>
-  <td><span class="advan a3">ADVAN3</span><br><span style="font-size:9px;color:#64748b">TRANS4</span></td>
-  <td><b>2구획 IV 볼루스</b></td>
-  <td>
-    <div class="eq">C(t) = A·e^(−α·t) + B·e^(−β·t)
-
-α = ½[(K₁₀+K₁₂+K₂₁) + √Δ]
-β = ½[(K₁₀+K₁₂+K₂₁) − √Δ]
-Δ = (K₁₀+K₁₂+K₂₁)²−4·K₁₀·K₂₁
-
-A = (Dose/V₁)·(α−K₂₁)/(α−β)
-B = (Dose/V₁)·(K₂₁−β)/(α−β)</div>
-  </td>
-  <td>
-    <span class="tag tag-iv">IV 볼루스</span>
-    <span class="tag tag-2c">2구획</span>
-    <div class="sit">분포상이 뚜렷한 약물(digoxin, amiodarone, vancomycin 밀집샘플링). Semi-log에서 꺾임(biexponential)</div>
-  </td>
-  <td class="param"><b>CL, Vc, Q, Vp</b><br>→ 내부적으로<br>K₁₀, K₁₂, K₂₁ 변환</td>
-  <td><span class="note">TRANS4: CL/V/Q/Vp 입력 → NONMEM이 K로 변환. 초기 α-phase 샘플링 없으면 2구획 과소추정</span></td>
-</tr>
-
-<tr data-tags="oral 2c">
-  <td><span class="rank r3">6</span></td>
-  <td><span class="advan a4">ADVAN4</span><br><span style="font-size:9px;color:#64748b">TRANS4</span></td>
-  <td><b>2구획 경구</b></td>
-  <td>
-    <div class="eq">C(t) = P·e^(−Ka·t) + A·e^(−α·t) + B·e^(−β·t)
-
-P = −(A_ka + B_ka)
-(세 지수항의 합, 계수는 Ka/α/β 조합)</div>
-    <div class="eq-sub">Ka &gt; α &gt; β 조건에서 삼지수 곡선</div>
-  </td>
-  <td>
-    <span class="tag tag-oral">경구</span>
-    <span class="tag tag-2c">2구획</span>
-    <div class="sit">대부분의 임상 PopPK 제출 모델(FDA/EMA). PK 구조모델 전체의 약 28%</div>
-    <div class="cond">⚠ CMT 번호: depot=1, central=2, peripheral=3</div>
-  </td>
-  <td class="param"><b>CL, Vc, Q, Vp, Ka</b></td>
-  <td><span class="note">ADVAN4에서 CMT 1씩 밀림 주의. ADVAN3(IV)와 비교 시 CMT 불일치 오류 흔함</span></td>
-</tr>
-
-<tr data-tags="inf 2c">
-  <td><span class="rank r4">7</span></td>
-  <td><span class="advan a3">ADVAN3</span><br><span style="font-size:9px;color:#64748b">TRANS4</span></td>
-  <td><b>2구획 IV 주입</b></td>
-  <td>
-    <div class="eq">주입 중:
-C(t) = R_in·[A'·(1−e^(−α·t))
-         + B'·(1−e^(−β·t))]
-
-주입 후:
-C(t) = [A'·(1−e^(−α·T))·e^(−α·(t−T))
-      + B'·(1−e^(−β·T))·e^(−β·(t−T))]</div>
-    <div class="eq-sub">A' = A/α,  B' = B/β</div>
-  </td>
-  <td>
-    <span class="tag tag-inf">IV 주입</span>
-    <span class="tag tag-2c">2구획</span>
-    <div class="sit">항암제(paclitaxel, docetaxel), 단백질 의약품 IV 주입</div>
-  </td>
-  <td class="param"><b>CL, Vc, Q, Vp</b></td>
-  <td><span class="note">주입 중·후 두 단계를 NONMEM이 자동 처리. RATE=-1(추정) 옵션 사용 가능</span></td>
-</tr>
-
-<!-- ===== 3-COMP ===== -->
-<tr class="cat-row"><td colspan="7">③ 3구획 선형 — 극지용성 약물 한정, 매우 드묾</td></tr>
-
-<tr data-tags="iv 3c">
-  <td><span class="rank r5">8</span></td>
-  <td><span class="advan a11">ADVAN11</span><br><span style="font-size:9px;color:#64748b">TRANS4</span></td>
-  <td><b>3구획 IV 볼루스</b></td>
-  <td>
-    <div class="eq">C(t) = A·e^(−α·t) + B·e^(−β·t) + C·e^(−γ·t)
-
-(α &gt; β &gt; γ, 삼지수 감소)</div>
-    <div class="eq-sub">α,β,γ: 세 hybrid rate constant</div>
-  </td>
-  <td>
-    <span class="tag tag-iv">IV 볼루스</span>
-    <span class="tag tag-3c">3구획</span>
-    <div class="sit">propofol, thiopental, fentanyl (초밀집 샘플링 필수). 임상 PopPK에서 드묾(&lt;2%)</div>
-    <div class="cond">⚠ PO+3구획 = 식별성 상실 → 사용 금지</div>
-  </td>
-  <td class="param"><b>CL, V1, Q2, V2, Q3, V3</b></td>
-  <td><span class="note">Triexponential decline 관찰 시에만. 파라미터 추정 불안정 위험 높음</span></td>
-</tr>
-
-<tr data-tags="oral 3c">
-  <td><span class="rank rN">9</span></td>
-  <td><span class="advan a12">ADVAN12</span><br><span style="font-size:9px;color:#64748b">TRANS4</span></td>
-  <td><b>3구획 경구</b></td>
-  <td>
-    <div class="eq">C(t) = P·e^(−Ka·t) + A·e^(−α·t)
-       + B·e^(−β·t) + C·e^(−γ·t)
-(4지수항)</div>
-  </td>
-  <td>
-    <span class="tag tag-oral">경구</span>
-    <span class="tag tag-3c">3구획</span>
-    <div class="sit">이론적 존재. 실무에서 거의 사용 안 함</div>
-    <div class="cond">⚠ 구조적 식별성 상실 → 실무 폐기 수준</div>
-  </td>
-  <td class="param">ADVAN11과 동일 + Ka</td>
-  <td><span class="note">4지수 동시 추정 불가 수준. ADVAN13+$DES가 더 실용적</span></td>
-</tr>
-
-<!-- ===== NONLINEAR ===== -->
-<tr class="cat-row"><td colspan="7">④ 비선형 — 포화 동태, 해석해가 존재하는 특수 경우</td></tr>
-
-<tr data-tags="nl iv">
-  <td><span class="rank r4">10</span></td>
-  <td><span class="advan a10">ADVAN10</span><br><span style="font-size:9px;color:#64748b">(MM전용)</span></td>
-  <td><b>1구획 Michaelis-Menten</b></td>
-  <td>
-    <div class="eq">dA/dt = −Vmax·C / (Km + C)
-→ 해석해 없음. 수치적분 필요.
-
-단, C ≫ Km (포화):
-C(t) ≈ C₀ − (Vmax/V)·t  [0차 감소]
-
-단, C ≪ Km (희박):
-C(t) ≈ C₀·e^(−(Vmax/Km)·t) [1차 감소]</div>
-    <div class="eq-sub">⚠ ADVAN10의 KM = amount(mg) 단위! concentration 아님</div>
-  </td>
-  <td>
-    <span class="tag tag-nl">비선형</span>
-    <span class="tag tag-iv">IV</span>
-    <div class="sit">페니토인(phenytoin), 에탄올. Dose-normalized C-t 비중첩 → 비선형 의심</div>
-    <div class="cond">⚠ ADVAN10은 1구획 MM만. 다구획 → ADVAN13 필수</div>
-  </td>
-  <td class="param"><b>Vmax, Km</b><br>(KM: amount 단위)</td>
-  <td><span class="note">Hockey stick 곡선 특징. 저용량↔고용량 비교 시 AUC∝Dose^β에서 β&gt;1이면 포화</span></td>
-</tr>
-
-<!-- ===== SS INFUSION ===== -->
-<tr class="cat-row"><td colspan="7">⑤ 정상상태(Steady-State) — 임상 용량 설계의 핵심</td></tr>
-
-<tr data-tags="ss inf">
-  <td><span class="rank r3">11</span></td>
-  <td><span class="advan a1">ADVAN1</span><br><span class="advan a3" style="margin-top:3px;display:inline-block">ADVAN3</span></td>
-  <td><b>정상상태 주입</b></td>
-  <td>
-    <div class="eq">Css = R_in / CL
-
-도달 시간: 5 × t½ (97% Css)</div>
-    <div class="eq-sub">t½ = 0.693 / K = 0.693·V / CL</div>
-  </td>
-  <td>
-    <span class="tag tag-ss">SS</span>
-    <span class="tag tag-inf">주입</span>
-    <div class="sit">ICU 지속주입, 목표농도(Css) 역산으로 R_in 설계. CL 직접 추정 가능</div>
-  </td>
-  <td class="param"><b>CL</b><br>(Css·CL = R_in)</td>
-  <td><span class="note">가장 실용적인 용량 계산식. 신기능 저하 시 CL 감소 → Css 상승 패턴</span></td>
-</tr>
-
-<tr data-tags="ss oral md">
-  <td><span class="rank r3">12</span></td>
-  <td><span class="advan a2">ADVAN2</span><br><span class="advan a4" style="margin-top:3px;display:inline-block">ADVAN4</span></td>
-  <td><b>경구 정상상태 AUC</b></td>
-  <td>
-    <div class="eq">AUCss(0→τ) = F·Dose / CL
-           = AUC∞ (단회)
-
-Cavg,ss = F·Dose / (CL·τ)
-
-Peak-trough 변동폭:
-PTF = (Cmax−Cmin)/Cavg,ss · 100%</div>
-  </td>
-  <td>
-    <span class="tag tag-ss">SS</span>
-    <span class="tag tag-oral">경구</span>
-    <span class="tag tag-md">반복투여</span>
-    <div class="sit">생동성 시험 AUCss 해석, 투여간격 설계, MR 제형 PTF 비교</div>
-  </td>
-  <td class="param"><b>CL, F</b><br>τ(투여간격)</td>
-  <td><span class="note">AUCss = AUC∞ 동치는 선형 PK에서만. 비선형이면 반드시 직접 측정</span></td>
-</tr>
-
-</tbody>
-</table>
-</div>
-
-<!-- Key concepts -->
-<div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-
-<div style="padding:10px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
-  <div style="font-weight:700;font-size:12px;color:#1e40af;margin-bottom:6px">📌 해석해(Closed-form)가 있는 ADVAN 계열</div>
-  <div style="font-size:11px;line-height:1.7;color:#1e293b">
-    <b>ADVAN1~4, 10, 11, 12</b>: 수학자들이 미리 풀어놓은 식. NONMEM이 대입만 함.<br>
-    → 빠르고 안정적. 수치 오차 없음.<br><br>
-    <b>ADVAN13 + $DES</b>: 해석해 없음 → NONMEM이 매 스텝 수치적분(ODE solver).<br>
-    → 느리지만 어떤 모델이든 표현 가능. 복잡 흡수·TMDD·비선형 전부 여기.
-  </div>
-</div>
-
-<div style="padding:10px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;">
-  <div style="font-weight:700;font-size:12px;color:#166534;margin-bottom:6px">🎯 지금 당장 암기할 우선순위 (T+0 → T+12 구간)</div>
-  <div style="font-size:11px;line-height:1.7;color:#1e293b">
-    <b>1순위</b>: C(t) = C₀·e^(−Kt) — 모든 PK의 뿌리<br>
-    <b>2순위</b>: 1구획 경구식 (이지수식) — 가브리엘슨 스터디 핵심<br>
-    <b>3순위</b>: Css = R_in/CL — 임상 용량 설계의 전부<br>
-    <b>4순위</b>: 2구획 이지수식 (A·e^(−αt)+B·e^(−βt)) — PopPK 구조모델의 28%
-  </div>
-</div>
-
-</div>
-
-<div style="margin-top:10px;padding:8px 12px;background:#fefce8;border-radius:7px;border:1px solid #fde68a;font-size:11px;color:#713f12;">
-  <b>핵심 원칙:</b> ADVAN1~12는 모두 이 표의 해석해를 내부적으로 계산한다. 
-  해석해가 없는 복잡한 모델(비선형+다구획, TMDD, 복합흡수)은 예외 없이 <b>ADVAN13 + $DES</b>로 간다. 
-  이 두 갈래를 구분하는 눈이 NONMEM 코딩의 첫 번째 판단 기준이다.
-</div>
-
-<script>
-function filterAll(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('#mainTable tbody tr:not(.cat-row)').forEach(r => r.classList.remove('hidden'));
-  updateCatRows();
-}
-
-function filterTag(tag, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('#mainTable tbody tr:not(.cat-row)').forEach(r => {
-    const tags = (r.dataset.tags || '').split(' ');
-    r.classList.toggle('hidden', !tags.includes(tag));
-  });
-  updateCatRows();
-}
-
-function updateCatRows() {
-  document.querySelectorAll('.cat-row').forEach(cr => {
-    let next = cr.nextElementSibling;
-    let hasVisible = false;
-    while (next && !next.classList.contains('cat-row')) {
-      if (!next.classList.contains('hidden')) hasVisible = true;
-      next = next.nextElementSibling;
-    }
-    cr.classList.toggle('hidden', !hasVisible);
-  });
-}
-</script>
 </body>
 </html>
