@@ -179,18 +179,18 @@ em{color:var(--txb);font-style:italic}
     <div class="viz-title">Mermaid · 원인 감별 및 임상 패턴 분류</div>
     <div style="padding:16px;overflow-x:auto">
       <div class="mermaid" id="mmd1">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor':'#1c1c1f','primaryTextColor':'#c8c4bc','primaryBorderColor':'#38383d','lineColor':'#c49a3c','secondaryColor':'#161618','tertiaryColor':'#0f0f10','edgeLabelBackground':'#1c1c1f','clusterBkg':'#161618','titleColor':'#edeae4','fontFamily':'IBM Plex Mono','fontSize':'13px'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor':'#1c1c1f','primaryTextColor':'#c8c4bc','primaryBorderColor':'#38383d','lineColor':'#c49a3c','secondaryColor':'#161618','tertiaryColor':'#0f0f10','fontFamily':'IBM Plex Mono','fontSize':'13px'}}}%%
 flowchart TD
-    A["🔍 비선형 PK 의심\nDose-norm AUC/D 변화\nSuperposition 위반"] --> B{언제 나타나나?}
-    B -->|단회 투여 후\n즉각 관찰| C{"AUC/Dose\n용량↑ 시?"}
-    B -->|반복 투여 후\n점진적 변화| D["⏱ 2. 시간의존 Time\n자가/이종 유도 → Cl↑\n예: Carbamazepine, Methadone"]
-    C -->|"증가↑\n(Saturable elimination)"| E["⚡ 1. 대사 포화 Capacity\nMM elimination → Cl↓\nt½ 농도의존\n예: Phenytoin, Ethanol"]
-    C -->|"감소↓\n(Feedback)"| F["🔄 피드백 억제\nt½ 고농도에서 감소\n예: Immunoglobulins"]
-    C -->|"V·Cl 변화?"| G{"첫 투여 vs\n이후 투여"}
-    G -->|"V↑ Cl↑\n1st dose >> later"| H["🔗 3. 단백결합 포화 Binding\nfu↑ → Vd↑, Cl↑\n예: Valproic acid"]
-    G -->|"Tmax·F 변화"| I["🚪 4. 수송체 포화 Transport\nAbs/Secretion 포화\n예: Gabapentin"]
-    E --> E1["진단: Dose-norm C-t\n프로파일 비겹침\nAUC/D vs D 급증"]
-    D --> D1["진단: Repeated dose\nCp↓ 패턴 확인\nkout(enzyme) 추정"]
+    A["비선형 PK 의심<br/>Dose-norm AUC/D 변화<br/>Superposition 위반"] --> B{언제 나타나나?}
+    B -->|단회 투여 후 즉각 관찰| C{AUC/Dose 용량 증가시?}
+    B -->|반복 투여 후 점진적 변화| D["2. 시간의존 Time<br/>자가/이종 유도 - CL 증가<br/>예: Carbamazepine, Methadone"]
+    C -->|AUC/D 증가 - Saturable| E["1. 대사 포화 Capacity<br/>MM elimination - CL 감소<br/>예: Phenytoin, Ethanol"]
+    C -->|AUC/D 감소 - Feedback| F["피드백 억제<br/>예: Immunoglobulins"]
+    C -->|V, CL 변화 여부| G{첫 투여 vs 이후 투여}
+    G -->|V 증가 CL 증가 1st dose 크다| H["3. 단백결합 포화 Binding<br/>fu 증가 - Vd 증가, CL 증가<br/>예: Valproic acid"]
+    G -->|Tmax F 변화| I["4. 수송체 포화 Transport<br/>흡수/분비 포화<br/>예: Gabapentin"]
+    E --> E1["진단: Dose-norm C-t 비겹침<br/>AUC/D vs D 급증"]
+    D --> D1["진단: 반복 투여 Cp 감소<br/>kout 추정"]
       </div>
     </div>
   </div>
