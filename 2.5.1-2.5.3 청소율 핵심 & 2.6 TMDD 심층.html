@@ -7,35 +7,20 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f0f10;
-  --s1: #161618;
-  --s2: #1c1c1f;
-  --s3: #242428;
-  --b1: #2a2a2e;
-  --b2: #38383d;
-  --acc: #c49a3c;
-  --acc2: #7fb3e8;
-  --acc3: #5fb87a;
-  --acc4: #e07070;
-  --tx: #c8c4bc;
-  --txd: #6b6760;
-  --txb: #edeae4;
-  --fw: 260px;
-  --fh: 48px;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans KR', sans-serif;
+  --bg: #0f0f10; --s1: #161618; --s2: #1c1c1f; --s3: #242428;
+  --b1: #2a2a2e; --b2: #38383d;
+  --acc: #c49a3c; --acc2: #7fb3e8; --acc3: #5fb87a; --acc4: #e07070;
+  --tx: #c8c4bc; --txd: #6b6760; --txb: #edeae4;
+  --fw: 260px; --fh: 48px;
+  --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans KR', sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15px;line-height:1.7;min-height:100vh}
-
-/* HEADER */
 .hdr{position:fixed;top:0;left:0;right:0;height:var(--fh);background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;z-index:200;gap:12px}
 .hdr-mark{width:2px;height:22px;background:var(--acc);flex-shrink:0}
 .hdr-t{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--txd);text-transform:uppercase}
 .hdr-r{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--acc);opacity:.7;letter-spacing:.1em}
-
-/* SIDEBAR */
 .side{position:fixed;top:var(--fh);left:0;bottom:0;width:var(--fw);background:var(--s1);border-right:1px solid var(--b1);overflow-y:auto;padding:16px 0;scrollbar-width:none}
 .side::-webkit-scrollbar{display:none}
 .sl{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc);padding:16px 16px 6px;opacity:.65;text-transform:uppercase}
@@ -45,11 +30,7 @@ body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15px
 .si .ic{font-family:var(--mono);font-size:10px;min-width:18px;opacity:.5}
 .si.sub{padding-left:42px;font-size:11.5px}
 .sdiv{height:1px;background:var(--b1);margin:10px 16px}
-
-/* MAIN */
 .main{margin-left:var(--fw);margin-top:var(--fh);padding:40px 52px 100px;max-width:860px}
-
-/* SECTIONS */
 .sec{margin-bottom:72px;scroll-margin-top:calc(var(--fh) + 20px)}
 .eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc);margin-bottom:10px;opacity:.75;text-transform:uppercase}
 h1.stitle{font-size:26px;font-weight:600;color:var(--txb);line-height:1.2;margin-bottom:6px;letter-spacing:-.01em}
@@ -57,14 +38,10 @@ h2.sh{font-size:17px;font-weight:600;color:var(--txb);margin:36px 0 14px;padding
 h3.sth{font-size:14px;font-weight:600;color:var(--acc);margin:24px 0 8px;letter-spacing:.01em}
 .lead{font-size:14px;color:var(--txd);font-style:italic;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--b1)}
 p{margin-bottom:14px;font-size:14px}
-
-/* FORMULA */
 .fml{background:var(--s2);border:1px solid var(--b1);border-left:2px solid var(--acc);border-radius:3px;padding:12px 16px;margin:12px 0;font-family:var(--mono);font-size:12px;color:var(--acc);line-height:1.9;overflow-x:auto}
 .fml .lbl{font-size:9px;color:var(--txd);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;display:block}
 .fml .eq{display:block;padding:1px 0}
 .fml .cm{color:var(--txd);font-size:11px}
-
-/* CALLOUTS */
 .box{border-radius:3px;padding:14px 16px;margin:16px 0;border:1px solid}
 .box .bh{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
 .box p{margin-bottom:6px;font-size:13px}
@@ -74,10 +51,8 @@ p{margin-bottom:14px;font-size:14px}
 .box.ins{background:#160f02;border-color:#5c4010}.box.ins .bh{color:var(--acc)}
 code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:2px;color:var(--acc)}
 em{color:var(--txb);font-style:italic}
-
-/* ACCORDION */
 .acc-wrap{margin:20px 0}
-.acc{border:1px solid var(--b1);border-radius:3px;margin-bottom:6px;overflow:hidden;transition:border-color .15s}
+.acc{border:1px solid var(--b1);border-radius:3px;margin-bottom:6px;overflow:hidden}
 .acc:hover{border-color:var(--b2)}
 .acc.open{border-color:var(--acc)}
 .acc-hdr{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:var(--s2);user-select:none}
@@ -88,23 +63,17 @@ em{color:var(--txb);font-style:italic}
 .acc.open .aarrow{transform:rotate(180deg);color:var(--acc)}
 .acc-body{display:none;padding:16px;background:var(--s1);border-top:1px solid var(--b1)}
 .acc.open .acc-body{display:block}
-
-/* TABLES */
 .tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:12.5px}
 .tbl th{background:var(--s2);padding:8px 12px;text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);border-bottom:1px solid var(--b2);font-weight:500}
 .tbl td{padding:8px 12px;border-bottom:1px solid var(--b1);vertical-align:top;line-height:1.5}
 .tbl tr:hover td{background:var(--s2)}
-.g{color:var(--acc3);font-weight:500}
-.r{color:var(--acc4)}
-.hl{color:var(--acc);font-weight:600}
+.g{color:var(--acc3);font-weight:500}.r{color:var(--acc4)}.hl{color:var(--acc);font-weight:600}
 .divline{height:1px;background:linear-gradient(to right,var(--b2),transparent);margin:52px 0;opacity:.6}
-
-/* VISUALIZATION CONTAINERS */
-.viz{background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:0;margin:16px 0;position:relative;overflow:hidden}
+/* VIZ — KEY: fixed height container so canvas knows its size */
+.viz{background:var(--s2);border:1px solid var(--b1);border-radius:3px;margin:16px 0;overflow:hidden}
 .viz-title{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--txd);padding:10px 14px 8px;border-bottom:1px solid var(--b1);text-transform:uppercase}
-.viz canvas,.viz svg{display:block;width:100%;height:auto}
-
-/* STEP FLOW */
+/* CHART WRAP — critical for canvas sizing */
+.chart-wrap{position:relative;width:100%}
 .flow{display:flex;margin:14px 0;overflow-x:auto}
 .fstep{flex:1;min-width:120px;background:var(--s2);border:1px solid var(--b1);border-right:none;padding:12px 14px}
 .fstep:first-child{border-radius:3px 0 0 3px}
@@ -113,23 +82,21 @@ em{color:var(--txb);font-style:italic}
 .fstep-n{font-size:13px;font-weight:600;color:var(--txb);margin-bottom:3px}
 .fstep-p{font-family:var(--mono);font-size:9.5px;color:var(--txd);line-height:1.6}
 .farrow{display:flex;align-items:center;justify-content:center;width:18px;background:var(--s3);border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);flex-shrink:0;color:var(--txd);font-family:var(--mono);font-size:12px}
-
-/* PARAM GRID */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:12px 0}
 .pcrd{background:var(--s2);border:1px solid var(--b1);border-radius:2px;padding:8px 10px}
 .psym{font-family:var(--mono);font-size:12px;color:var(--acc);margin-bottom:2px}
 .pdesc{font-size:11px;color:var(--txd);line-height:1.4}
-
-/* REVEAL */
 .rv{opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s}
 .rv.vis{opacity:1;transform:none}
-
-/* INTERACTIVE CONTROLS */
+/* slider */
 .slider-wrap{display:flex;align-items:center;gap:12px;margin:8px 0}
-.slider-wrap label{font-family:var(--mono);font-size:11px;color:var(--txd);min-width:100px}
-.slider-wrap input[type=range]{flex:1;accent-color:var(--acc);height:2px}
-.slider-wrap .val{font-family:var(--mono);font-size:11px;color:var(--acc);min-width:50px;text-align:right}
-
+.slider-wrap label{font-family:var(--mono);font-size:11px;color:var(--txd);min-width:120px}
+.slider-wrap input[type=range]{flex:1;accent-color:var(--acc);height:2px;cursor:pointer}
+.slider-wrap .val{font-family:var(--mono);font-size:12px;color:var(--acc);min-width:60px;text-align:right;font-weight:600}
+/* stat bar — inline AUC readout */
+.stat-bar{display:flex;gap:20px;padding:10px 16px;border-top:1px solid var(--b1);font-family:var(--mono);font-size:11px;flex-wrap:wrap}
+.stat-item .sl{font-size:8px;letter-spacing:.15em;color:var(--txd);text-transform:uppercase;padding:0;margin:0;opacity:1}
+.stat-item .sv{font-size:18px;font-weight:600;color:var(--acc)}
 @media(max-width:800px){.side{display:none}.main{margin-left:0;padding:28px 18px 80px}}
 </style>
 </head>
@@ -167,21 +134,20 @@ em{color:var(--txb);font-style:italic}
 <section class="sec rv" id="cl-base">
   <div class="eyebrow">Chapter 2.5 · Clearance Concepts</div>
   <h1 class="stitle">소실청소율(CL): 약동학의 심장</h1>
-  <p class="lead">CL은 단순한 숫자가 아니라 — 간·신장·혈류가 약물을 어떻게 "처리"하는지의 총합적 생리학적 역량이다. TDM에서 매일 묻던 "이 환자는 왜 농도가 높나?"의 수학적 답이 여기 있다.</p>
+  <p class="lead">CL은 단순한 숫자가 아니라 — 간·신장·혈류가 약물을 어떻게 "처리"하는지의 총합적 생리학적 역량이다.</p>
 
   <h2 class="sh">1.1 정의와 AUC 역관계</h2>
-  <p>CL은 단위 시간당 약물을 완전히 제거하는 <em>가상의 혈장 부피</em>다. 소실속도와 농도 사이의 비례상수로 정의된다:</p>
   <div class="fml">
     <span class="lbl">기본 정의 — Eq 2:180</span>
     <span class="eq">dX/dt = CL · Cp &nbsp;&nbsp;<span class="cm">// 소실속도 = CL × 혈장농도</span></span>
     <span class="eq">CL(IV) = D_iv / AUC_iv(0→∞)</span>
-    <span class="eq">CL/F(PO) = D_po / AUC_po &nbsp;<span class="cm">// CL↑ ↔ AUC↓ (반비례)</span></span>
+    <span class="eq">CL/F(PO) = D_po / AUC_po &nbsp;<span class="cm">// CL↑ → AUC↓ (반비례)</span></span>
   </div>
 
-  <!-- INTERACTIVE: AUC-CL Visualization -->
+  <!-- AUC INTERACTIVE — FIXED -->
   <div class="viz">
-    <div class="viz-title">인터랙티브 — CL이 AUC에 미치는 영향 (슬라이더로 조절)</div>
-    <div style="padding:12px 16px">
+    <div class="viz-title">인터랙티브 — CL과 Dose가 AUC에 미치는 영향</div>
+    <div style="padding:12px 16px 8px">
       <div class="slider-wrap">
         <label>CL (L/h)</label>
         <input type="range" id="sl-cl" min="1" max="20" value="5" step="0.5">
@@ -193,20 +159,39 @@ em{color:var(--txb);font-style:italic}
         <span class="val" id="dose-val">200</span>
       </div>
     </div>
-    <canvas id="cvAUC" height="180" style="padding:0 12px 12px"></canvas>
+    <!-- FIX 1: chart-wrap with fixed height so clientHeight != 0 -->
+    <div class="chart-wrap" style="height:200px;padding:0 12px 0">
+      <canvas id="cvAUC"></canvas>
+    </div>
+    <!-- FIX 2: readout in HTML, not canvas text — always visible -->
+    <div class="stat-bar" id="auc-statbar">
+      <div class="stat-item">
+        <div class="sl">AUC (mg·h/L)</div>
+        <div class="sv" id="auc-display">40.0</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">Cmax (mg/L)</div>
+        <div class="sv" id="cmax-display">6.7</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">t½ (h)</div>
+        <div class="sv" id="thalf-display">4.2</div>
+      </div>
+      <div class="stat-item" style="margin-left:auto;align-self:center">
+        <div style="font-size:10px;color:var(--txd)">V = 30 L (고정)</div>
+      </div>
+    </div>
   </div>
 
   <div class="box pit">
     <div class="bh">⚠️ 초보자의 함정 — CL ≠ 소실속도</div>
-    <p><strong>CL ≠ 소실속도(elimination rate)</strong>. 소실속도는 CL × Cp이므로 농도에 따라 변하지만, CL 자체는 선형 PK에서 <em>농도와 무관한 고정 파라미터</em>다. NONMEM에서 <code>THETA(CL)</code>은 비례상수이지, 현재 제거되는 속도가 아니다.</p>
+    <p><strong>CL ≠ 소실속도(elimination rate)</strong>. 소실속도는 CL × Cp이므로 농도에 따라 변하지만, CL 자체는 선형 PK에서 <em>농도와 무관한 고정 파라미터</em>다.</p>
   </div>
 </section>
 
 <!-- ═══ SECTION 2: EXTRACTION ═══ -->
 <section class="sec rv" id="cl-ext">
   <h2 class="sh">1.2 추출비(ER)와 Well-Stirred Model</h2>
-  <p>간을 통과하는 약물의 운명은 세 변수가 결정한다: 혈류(Q_H), 비결합 분율(f_u), 고유 대사 역량(Cl_int).</p>
-
   <div class="fml">
     <span class="lbl">Well-Stirred Model — Eq 2:186–2:195</span>
     <span class="eq">E_H = (C_in − C_out) / C_in</span>
@@ -214,10 +199,9 @@ em{color:var(--txb);font-style:italic}
     <span class="eq">F_H  = 1 − E_H = Q_H / (Q_H + f_u · Cl_int)</span>
   </div>
 
-  <!-- INTERACTIVE: Extraction Ratio Simulator -->
   <div class="viz">
-    <div class="viz-title">인터랙티브 — 추출비 시뮬레이터 (조립라인 모델)</div>
-    <div style="padding:12px 16px">
+    <div class="viz-title">인터랙티브 — 추출비 시뮬레이터</div>
+    <div style="padding:12px 16px 8px">
       <div class="slider-wrap">
         <label>Q_H (L/h)</label>
         <input type="range" id="sl-qh" min="10" max="120" value="90" step="5">
@@ -229,14 +213,34 @@ em{color:var(--txb);font-style:italic}
         <span class="val" id="clint-val">180</span>
       </div>
     </div>
-    <canvas id="cvExt" height="200" style="padding:0 12px 12px"></canvas>
+    <div class="chart-wrap" style="height:200px;padding:0 12px 0">
+      <canvas id="cvExt"></canvas>
+    </div>
+    <div class="stat-bar">
+      <div class="stat-item">
+        <div class="sl">E_H</div>
+        <div class="sv" id="eh-display">66.7%</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">F_H</div>
+        <div class="sv" id="fh-display">33.3%</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">Cl_H (L/h)</div>
+        <div class="sv" id="clh-display">60.0</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">유형</div>
+        <div class="sv" id="ext-type" style="font-size:12px;padding-top:4px">중간 추출</div>
+      </div>
+    </div>
   </div>
 
   <table class="tbl">
     <thead><tr><th>유형</th><th>조건</th><th>Cl_H 근사</th><th>결정 인자</th><th>예시</th></tr></thead>
     <tbody>
-      <tr><td class="hl">고추출 &gt;0.7</td><td>f_u·Cl_int ≫ Q_H</td><td><code>≈ Q_H</code></td><td class="g">간혈류</td><td>Propranolol, Morphine</td></tr>
-      <tr><td class="hl">저추출 &lt;0.3</td><td>f_u·Cl_int ≪ Q_H</td><td><code>≈ f_u·Cl_int</code></td><td class="g">효소·단백결합</td><td>Warfarin, Theophylline</td></tr>
+      <tr><td class="hl">고추출 &gt;0.7</td><td>f_u·Cl_int >> Q_H</td><td><code>≈ Q_H</code></td><td class="g">간혈류</td><td>Propranolol, Morphine</td></tr>
+      <tr><td class="hl">저추출 &lt;0.3</td><td>f_u·Cl_int &lt;&lt; Q_H</td><td><code>≈ f_u·Cl_int</code></td><td class="g">효소·단백결합</td><td>Warfarin, Theophylline</td></tr>
     </tbody>
   </table>
 
@@ -250,14 +254,63 @@ em{color:var(--txb);font-style:italic}
 <section class="sec rv" id="cl-route">
   <h2 class="sh">1.3 투여 경로가 노출을 바꾸는 방식</h2>
 
-  <!-- INTERACTIVE: IV vs PO comparison -->
   <div class="viz">
-    <div class="viz-title">IV vs PO 정상상태 농도 — 고추출 약물의 극적 차이</div>
-    <canvas id="cvRoute" height="200" style="padding:8px 12px 12px"></canvas>
-    <div style="padding:0 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:20px">
-      <span><span style="color:var(--acc2)">●</span> IV 투여</span>
-      <span><span style="color:var(--acc3)">●</span> PO 투여</span>
-      <span style="margin-left:auto">고추출 약물 (E_H = 0.75) · Q_H 변화 시뮬레이션</span>
+    <div class="viz-title">인터랙티브 — IV vs PO 약물 분자 시뮬레이터 (4파라미터 실시간 조절)</div>
+    <div style="padding:12px 16px 8px;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px">
+      <div class="slider-wrap">
+        <label>R₀ 투여속도</label>
+        <input type="range" id="rt-r0" min="20" max="300" value="100" step="10">
+        <span class="val" id="rt-r0-v">100</span>
+      </div>
+      <div class="slider-wrap">
+        <label>Q_H 간혈류 (L/h)</label>
+        <input type="range" id="rt-qh" min="20" max="120" value="90" step="5">
+        <span class="val" id="rt-qh-v">90</span>
+      </div>
+      <div class="slider-wrap">
+        <label>f_u 비결합 분율</label>
+        <input type="range" id="rt-fu" min="0.01" max="0.50" value="0.10" step="0.01">
+        <span class="val" id="rt-fu-v">0.10</span>
+      </div>
+      <div class="slider-wrap">
+        <label>Cl_int 고유CL (L/h)</label>
+        <input type="range" id="rt-clint" min="50" max="800" value="300" step="10">
+        <span class="val" id="rt-clint-v">300</span>
+      </div>
+    </div>
+    <!-- Two-panel particle simulation canvas -->
+    <div class="chart-wrap" style="height:370px">
+      <canvas id="cvRoute"></canvas>
+    </div>
+    <!-- HTML stat readout — always visible regardless of canvas state -->
+    <div class="stat-bar" style="flex-wrap:wrap;gap:12px 20px">
+      <div class="stat-item">
+        <div class="sl" style="color:var(--acc2)">IV · E_H</div>
+        <div class="sv" id="rt-eh" style="color:var(--acc2);font-size:15px">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl" style="color:var(--acc2)">IV · C_total</div>
+        <div class="sv" id="rt-civ" style="color:var(--acc2);font-size:15px">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">IV · C_u 활성</div>
+        <div class="sv" id="rt-cuiv" style="color:#9ec8f0;font-size:15px">—</div>
+      </div>
+      <div class="stat-item" style="border-left:1px solid var(--b1);padding-left:16px">
+        <div class="sl" style="color:var(--acc3)">PO · F_H</div>
+        <div class="sv" id="rt-fh" style="color:var(--acc3);font-size:15px">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl" style="color:var(--acc3)">PO · C_total</div>
+        <div class="sv" id="rt-cpo" style="color:var(--acc3);font-size:15px">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="sl">PO · C_u 활성</div>
+        <div class="sv" id="rt-cupo" style="color:#9ec8f0;font-size:15px">—</div>
+      </div>
+    </div>
+    <div id="rt-insight" style="padding:8px 16px 10px;font-family:var(--mono);font-size:10px;border-top:1px solid var(--b1);color:var(--txd);line-height:1.8">
+      f_u 슬라이더를 움직여 보세요 — PO C_u는 변하지 않습니다
     </div>
   </div>
 
@@ -322,7 +375,6 @@ em{color:var(--txb);font-style:italic}
           <span class="eq">CL   = F × (CL/F) &nbsp;&nbsp;&nbsp;<span class="cm">// F를 모르면 CL도 모른다</span></span>
           <span class="eq">CL=10, F=0.5 ≡ CL=5, F=1 → 동일한 AUC 생성</span>
         </div>
-        <p>NONMEM에서 <code>THETA(CL)</code>은 경구 모델에서 사실상 CL/F를 추정한다. CL과 F는 공선성(collinearity) 수준의 결합으로, IV 데이터나 문헌 F 없이는 분리 불가능하다.</p>
         <table class="tbl">
           <thead><tr><th>데이터</th><th>추정 가능</th><th>불가능</th></tr></thead>
           <tbody>
@@ -333,7 +385,7 @@ em{color:var(--txb);font-style:italic}
         </table>
         <div class="box fda">
           <div class="bh">🏛️ FDA 함의</div>
-          <p>PopPK 보고서에서 PO 기반 CL/F를 "CL"로 기재하면 심사관이 즉시 지적한다. DDI 예측, PBPK 입력값, 기관별 CL 분리 목적에는 반드시 IV 파트가 필요하다.</p>
+          <p>PopPK 보고서에서 PO 기반 CL/F를 "CL"로 기재하면 심사관이 즉시 지적한다. DDI 예측, PBPK 입력값에는 반드시 IV 파트가 필요하다.</p>
         </div>
       </div>
     </div>
@@ -379,29 +431,30 @@ em{color:var(--txb);font-style:italic}
   <p class="lead">항체의약품 시대에 TMDD를 모르면 임상 PK 해석에서 반드시 틀린다. "왜 초기엔 t½이 짧다가 반복 투여 후 길어지는가?" — 이 질문의 답이 TMDD다.</p>
 
   <h2 class="sh">2.1 생물학적 본질 — 수용체가 소각로다</h2>
-  <p>소분자 약물은 수용체에 결합해도 <em>복합체 자체가 제거 경로가 되지 않는다</em>. 그러나 mAb(≈150 kDa)는 표적 결합 후 수용체 매개 내재화로 리소솜에서 분해 → <strong>농도 의존적 추가 제거 경로</strong>를 만든다.</p>
+  <p>소분자 약물은 수용체에 결합해도 복합체 자체가 제거 경로가 되지 않는다. 그러나 mAb는 표적 결합 후 수용체 매개 내재화로 리소솜에서 분해 → <strong>농도 의존적 추가 제거 경로</strong>를 만든다.</p>
 
-  <!-- INTERACTIVE: TMDD Concentration-Time -->
   <div class="viz">
     <div class="viz-title">인터랙티브 — TMDD 비선형 PK: Dose-normalized 농도-시간</div>
-    <div style="padding:10px 16px 6px;display:flex;gap:16px;align-items:center">
-      <div class="slider-wrap" style="flex:1">
+    <div style="padding:10px 16px 6px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div class="slider-wrap" style="flex:1;min-width:200px">
         <label>K_SS (nM)</label>
         <input type="range" id="sl-kss" min="1" max="50" value="10" step="1">
         <span class="val" id="kss-val">10</span>
       </div>
-      <div class="slider-wrap" style="flex:1">
+      <div class="slider-wrap" style="flex:1;min-width:200px">
         <label>R₀ (nM)</label>
         <input type="range" id="sl-r0" min="1" max="30" value="8" step="1">
         <span class="val" id="r0-val">8</span>
       </div>
     </div>
-    <canvas id="cvTMDD" height="210" style="padding:0 12px 12px"></canvas>
-    <div style="padding:0 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:16px;flex-wrap:wrap">
+    <div class="chart-wrap" style="height:220px;padding:0 12px 0">
+      <canvas id="cvTMDD"></canvas>
+    </div>
+    <div style="padding:6px 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:16px;flex-wrap:wrap">
       <span><span style="color:#e07070">●</span> 저용량 (비선형 구간)</span>
       <span><span style="color:#f0b040">●</span> 중간용량</span>
       <span><span style="color:#5fb87a">●</span> 고용량 (선형 근사)</span>
-      <span style="margin-left:auto;color:var(--txd)">Dose-normalized: 선형이면 겹쳐야 함</span>
+      <span style="margin-left:auto">Dose-normalized: 선형이면 겹쳐야 함</span>
     </div>
   </div>
 </section>
@@ -410,10 +463,9 @@ em{color:var(--txb);font-style:italic}
 <section class="sec rv" id="tmdd-full">
   <h2 class="sh">2.2 Full TMDD 모델 (Mager & Jusko 2001)</h2>
 
-  <!-- INTERACTIVE: Full TMDD ODEs Diagram -->
   <div class="viz">
     <div class="viz-title">Full TMDD 구획 다이어그램</div>
-    <svg id="svgTMDD" viewBox="0 0 700 200" style="padding:8px"></svg>
+    <svg id="svgTMDD" viewBox="0 0 700 200" style="padding:8px;width:100%;height:auto"></svg>
   </div>
 
   <div class="fml">
@@ -436,11 +488,11 @@ em{color:var(--txb);font-style:italic}
 
   <div class="box pit">
     <div class="bh">⚠️ 식별성 함정 — 파라미터가 너무 많다</div>
-    <p>Full TMDD는 9+개 파라미터. 희소 임상 PK 데이터(환자당 3–6개 채혈)로는 <strong>k_on, k_off를 개별 추정 불가</strong>. 이 둘은 오직 K_SS = (k_off+k_int)/k_on의 조합으로만 데이터에 나타난다. NONMEM 실행 시 %RSE &gt; 100% 또는 수렴 실패가 일반적.</p>
+    <p>Full TMDD는 9+개 파라미터. 희소 임상 PK 데이터로는 <strong>k_on, k_off를 개별 추정 불가</strong>. 이 둘은 오직 K_SS = (k_off+k_int)/k_on의 조합으로만 데이터에 나타난다. NONMEM 실행 시 %RSE &gt; 100% 또는 수렴 실패가 일반적.</p>
   </div>
 </section>
 
-<!-- ═══ SECTION 6: TMDD HIERARCHY ═══ -->
+<!-- ═══ SECTION 6: HIERARCHY ═══ -->
 <section class="sec rv" id="tmdd-hier">
   <h2 class="sh">2.3 모델 계층: Full → QSS → MM</h2>
 
@@ -467,11 +519,10 @@ em{color:var(--txb);font-style:italic}
   <h3 class="sth">QSS 핵심 방정식 (dLR/dt = 0 가정)</h3>
   <div class="fml">
     <span class="eq">K_SS = (k_off + k_int) / k_on &nbsp;<span class="cm">// 항상 K_D보다 크다</span></span>
-    <span class="eq">L_free = ½·[(L_tot−R_tot−K_SS) + √((L_tot−R_tot−K_SS)²+4·K_SS·L_tot)]</span>
+    <span class="eq">L_free = half·[(L_tot-R_tot-K_SS) + sqrt((L_tot-R_tot-K_SS)^2 + 4·K_SS·L_tot)]</span>
     <span class="cm">// 이차방정식 → 비선형 PK의 수학적 근원</span>
   </div>
 
-  <!-- INTERACTIVE: Model comparison -->
   <div class="viz">
     <div class="viz-title">인터랙티브 — Full TMDD vs QSS vs MM 예측 비교</div>
     <div style="padding:10px 16px 6px">
@@ -481,26 +532,28 @@ em{color:var(--txb);font-style:italic}
         <span class="val" id="dmod-val">×2</span>
       </div>
     </div>
-    <canvas id="cvMod" height="200" style="padding:0 12px 12px"></canvas>
-    <div style="padding:0 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:16px">
+    <div class="chart-wrap" style="height:200px;padding:0 12px 0">
+      <canvas id="cvMod"></canvas>
+    </div>
+    <div style="padding:6px 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:16px">
       <span><span style="color:var(--acc)">—</span> Full TMDD</span>
       <span><span style="color:var(--acc3)">—</span> QSS</span>
-      <span><span style="color:var(--acc2)">-- </span> MM</span>
-      <span><span style="color:var(--acc4)">-- </span> Linear</span>
+      <span><span style="color:var(--acc2)">--</span> MM</span>
+      <span><span style="color:var(--acc4)">--</span> Linear</span>
     </div>
   </div>
 
   <table class="tbl">
     <thead><tr><th>모델</th><th>핵심 가정</th><th>충실도</th><th>추정 용이성</th><th>적용 상황</th></tr></thead>
     <tbody>
-      <tr><td class="hl">Full TMDD</td><td>없음</td><td class="g">★★★★★</td><td class="r">★★☆ (RSE&gt;100% 흔함)</td><td>학술·풍부 PD+PK</td></tr>
-      <tr><td class="hl">QSS</td><td>복합체 &gt;&gt; PK 속도</td><td class="g">★★★★☆</td><td class="g">★★★★☆</td><td><strong>mAb BLA 표준</strong></td></tr>
-      <tr><td class="hl">MM</td><td>L ≫ K_SS 항상</td><td>★★★☆☆</td><td class="g">★★★★★</td><td>고용량 탐색 전용</td></tr>
+      <tr><td class="hl">Full TMDD</td><td>없음</td><td class="g">★★★★★</td><td class="r">★★☆ (RSE&gt;100%)</td><td>학술·풍부 PD+PK</td></tr>
+      <tr><td class="hl">QSS</td><td>복합체 >> PK 속도</td><td class="g">★★★★☆</td><td class="g">★★★★☆</td><td><strong>mAb BLA 표준</strong></td></tr>
+      <tr><td class="hl">MM</td><td>L >> K_SS 항상</td><td>★★★☆☆</td><td class="g">★★★★★</td><td>고용량 탐색 전용</td></tr>
       <tr><td>선형 2구획</td><td>치료 용량에서 포화</td><td>★★☆☆☆</td><td class="g">★★★★★</td><td>dose-proportional 확인 후</td></tr>
     </tbody>
   </table>
 
-  <!-- WHY-1 TRASTUZUMAB -->
+  <!-- WHY-1 -->
   <div id="w-trast" class="acc-wrap">
     <div class="acc" id="a-trast">
       <div class="acc-hdr" onclick="tog('a-trast')">
@@ -513,17 +566,18 @@ em{color:var(--txb);font-style:italic}
           <div class="bh">🩺 임상 상황</div>
           <p>허셉틴(HER2 표적). 1차 투여 후 t½ ≈ 1.4일 → 4주 반복 후 정상상태 t½ ≈ 28일. 동일 약·동일 환자에서 왜?</p>
         </div>
-        <!-- Mini visualization: saturation curve -->
         <div class="viz" style="margin:12px 0">
           <div class="viz-title">HER2 표적 포화에 따른 유효 제거속도 변화</div>
-          <canvas id="cvTrast" height="150" style="padding:8px 12px 10px"></canvas>
+          <div class="chart-wrap" style="height:160px;padding:8px 12px 4px">
+            <canvas id="cvTrast"></canvas>
+          </div>
         </div>
         <h3 class="sth">초기 투여 (포화 미달)</h3>
         <div class="fml">
           <span class="eq">k_eff ≈ k_el + k_int · R / (K_SS + L)</span>
-          <span class="cm">// L ≪ K_SS → k_eff ≈ k_el + k_int·R₀/K_SS (빠름)</span>
+          <span class="cm">// L &lt;&lt; K_SS → k_eff ≈ k_el + k_int·R₀/K_SS (빠름)</span>
         </div>
-        <p>HER2 과발현 → 유리 수용체 R₀ 풍부 → k_int 경로 최대 가동 → FcRn 경로보다 훨씬 빠른 제거 → 짧은 t½.</p>
+        <p>HER2 과발현 → 유리 수용체 R₀ 풍부 → k_int 경로 최대 가동 → 짧은 t½.</p>
         <h3 class="sth">반복 투여 후 정상상태 (포화)</h3>
         <p>누적 항체가 HER2 수용체를 포화 → 유리 R → 0 → k_int 경로 꺼짐 → FcRn 경로(k_el)만 남음 → t½ ≈ 28일.</p>
         <div class="box pit">
@@ -534,7 +588,7 @@ em{color:var(--txb);font-style:italic}
     </div>
   </div>
 
-  <!-- WHY-2 IDENTIFIABILITY -->
+  <!-- WHY-2 -->
   <div id="w-tid" class="acc-wrap">
     <div class="acc" id="a-tid">
       <div class="acc-hdr" onclick="tog('a-tid')">
@@ -543,13 +597,10 @@ em{color:var(--txb);font-style:italic}
         <span class="aarrow">▼</span>
       </div>
       <div class="acc-body">
-        <h3 class="sth" style="margin-top:4px">구조적 비식별성</h3>
-        <p>PK 데이터는 k_on과 k_off의 <em>비율</em>만 관찰한다. 개별값은 무한히 많은 조합이 동일한 데이터를 생성할 수 있다.</p>
         <div class="fml">
           <span class="eq">K_D  = k_off / k_on &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 평형 해리상수</span></span>
           <span class="eq">K_SS = (k_off + k_int) / k_on &nbsp;<span class="cm">// 항상 K_D보다 크다</span></span>
           <span class="eq">Full TMDD k_on: %RSE ≈ 180% ← 추정 불가</span>
-          <span class="eq">Full TMDD k_off: %RSE ≈ 220% ← 추정 불가</span>
           <span class="eq">QSS    K_SS: %RSE ≈ 15%  ← 잘 추정됨</span>
         </div>
         <table class="tbl">
@@ -558,19 +609,18 @@ em{color:var(--txb);font-style:italic}
             <tr><td>k_on, k_off 개별값</td><td class="g">이론상 가능</td><td class="r">K_SS만 추정</td></tr>
             <tr><td>실제 데이터 정밀도</td><td class="r">RSE&gt;100% 대부분</td><td class="g">RSE 10–30%</td></tr>
             <tr><td>수렴 안정성</td><td class="r">Bootstrap 실패 ~40%</td><td class="g">실패 &lt;5%</td></tr>
-            <tr><td>VPC 성능</td><td>유사</td><td class="g">유사</td></tr>
             <tr><td>FDA 수용성</td><td>학술 참조</td><td class="g">BLA 표준</td></tr>
           </tbody>
         </table>
         <div class="box ins">
           <div class="bh">💡 거장의 관점</div>
-          <p>모델 COU가 "농도 예측·용량 추천"이면 QSS로 충분하다. Full TMDD는 "수용체 생물학 이해"라는 다른 COU에 적합하다. FDA도 항상 가장 복잡한 모델이 아닌, <em>COU에 맞는 모델</em>을 원한다.</p>
+          <p>모델 COU가 "농도 예측·용량 추천"이면 QSS로 충분하다. FDA도 항상 가장 복잡한 모델이 아닌, <em>COU에 맞는 모델</em>을 원한다.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- WHY-3 BLA -->
+  <!-- WHY-3 -->
   <div id="w-bla" class="acc-wrap">
     <div class="acc" id="a-bla">
       <div class="acc-hdr" onclick="tog('a-bla')">
@@ -583,28 +633,26 @@ em{color:var(--txb);font-style:italic}
           <div class="bh">🏛️ FDA 가상 질의</div>
           <p>"Full TMDD 대신 QSS를 채택한 과학적 근거는? QSS 가정의 타당성을 어떻게 검증했는가?"</p>
         </div>
-        <!-- BLA defense visualization -->
         <div class="viz" style="margin:12px 0">
           <div class="viz-title">BLA 5-Layer 방어 구조</div>
-          <svg id="svgBLA" viewBox="0 0 620 160" style="padding:10px 14px"></svg>
+          <svg id="svgBLA" viewBox="0 0 620 160" style="width:100%;height:auto;padding:10px 14px"></svg>
         </div>
         <h3 class="sth">논거 1: 데이터 지지</h3>
         <div class="fml">
           <span class="eq">Full TMDD: k_on %RSE=178%, k_off %RSE=203%</span>
           <span class="eq">QSS:       K_SS %RSE=14%,  k_int %RSE=22%</span>
-          <span class="eq">k_on–k_off 상관계수: r=+0.97 (구조적 공선성)</span>
         </div>
         <h3 class="sth">논거 2: 수렴 안정성</h3>
-        <p>"1,000회 Bootstrap: Full TMDD 수렴 실패 43%, QSS 2%. 불안정 모델의 파라미터로는 신뢰할 수 있는 시뮬레이션 불가."</p>
+        <p>Bootstrap 1,000회: Full TMDD 수렴 실패 43%, QSS 2%.</p>
         <h3 class="sth">논거 3: VPC 동등성</h3>
-        <p>"Stratified VPC (Cycle 1, 정상상태, 신기능 하위군): Full 91% vs QSS 93% 피복률 — 유의한 차이 없음."</p>
+        <p>Stratified VPC: Full 91% vs QSS 93% 피복률 — 유의한 차이 없음.</p>
         <h3 class="sth">논거 4: 생물물리학적 근거</h3>
-        <p>"mAb 결합속도(k_on ~ 10⁵–10⁶ M⁻¹s⁻¹)는 PK 타임스케일(시간–일)보다 수십만 배 빠름 → QSS 가정 생물물리학적 타당. [확인 필요: Gibiansky et al. 2008, J Pharmacokinet Pharmacodyn]"</p>
+        <p>mAb 결합속도(k_on ~ 10⁵–10⁶ M⁻¹s⁻¹)는 PK 타임스케일(시간–일)보다 수십만 배 빠름 → QSS 가정 타당.</p>
         <h3 class="sth">논거 5: COU 적합성</h3>
-        <p>"본 모델 COU = 노출 특성화·용량 추천. 수용체 점유율 절대값 필요 시 Full TMDD를 별도 PD 분석에 사용."</p>
+        <p>모델 COU = 노출 특성화·용량 추천. 수용체 점유율 절대값 필요 시 Full TMDD를 별도 PD 분석에 사용.</p>
         <div class="box ins">
           <div class="bh">💡 방어의 황금 구조</div>
-          <p><em>데이터 지지 → 수렴 안정 → VPC 동등 → 문헌 근거 → COU 적합</em> — FDA는 단일 논거가 아닌 이 다층 구조를 원한다.</p>
+          <p><em>데이터 지지 → 수렴 안정 → VPC 동등 → 문헌 근거 → COU 적합</em></p>
         </div>
       </div>
     </div>
@@ -622,16 +670,13 @@ em{color:var(--txb);font-style:italic}
       <tr><td class="hl">CL vs CL/F</td><td>약물 제거 역량</td><td>CL = 절대값(IV 필요), CL/F = F 의존 (PO 기반)</td><td class="r">DDI·PBPK 입력 오류</td></tr>
       <tr><td class="hl">고추출 vs 저추출 IV</td><td>CL = Cl_H</td><td>고추출: Q_H 결정. 저추출: f_u·Cl_int 결정</td><td class="r">간경변 용량 오조절</td></tr>
       <tr><td class="hl">Full TMDD vs QSS</td><td>TMDD 기전 포착</td><td>Full: k_on/k_off 개별 추정. QSS: K_SS만 (식별성 확보)</td><td class="r">BLA 수렴 실패</td></tr>
-      <tr><td class="hl">QSS vs MM</td><td>Full TMDD 근사</td><td>QSS: 전 농도 범위. MM: L≫K_SS 고용량 전용</td><td class="r">저용량 예측 불량</td></tr>
+      <tr><td class="hl">QSS vs MM</td><td>Full TMDD 근사</td><td>QSS: 전 농도 범위. MM: L>>K_SS 고용량 전용</td><td class="r">저용량 예측 불량</td></tr>
       <tr><td class="hl">K_D vs K_SS</td><td>결합 친화도 표현</td><td>K_D = k_off/k_on. K_SS = (k_off+k_int)/k_on ≥ K_D</td><td class="r">K_D를 K_SS로 사용 → 과소추정</td></tr>
       <tr><td class="hl">k_el vs k_int</td><td>약물 소실 기여</td><td>k_el: 선형·FcRn 보호. k_int: 포화 가능·수용체 매개</td><td class="r">선형 모델 t½ 오추정</td></tr>
     </tbody>
   </table>
-
   <div class="box ins" style="margin-top:20px">
     <div class="bh">📋 PIPET-Vault 가이드</div>
-    <p><strong>경로:</strong> <code>PIPET-Vault/01_PopPK/</code> + <code>04_Regulatory/</code></p>
-    <p><strong>파일명:</strong> <code>2026-04-15_CL-TMDD-통찰_TYPE4-개념.md</code></p>
     <p><strong>태그:</strong> #PopPK #CL #TMDD #Biologics #Regulatory #NONMEM #mAb</p>
     <p><strong>연결:</strong> [[ADVAN3-ADVAN4]] [[mAb-PK-기본]] [[BLA-제출전략]] [[공변량-모델링]]</p>
   </div>
@@ -641,577 +686,753 @@ em{color:var(--txb);font-style:italic}
 
 <script>
 // ─── UTILITIES ───
-const C = (id) => document.getElementById(id);
-const ctx = (id) => C(id).getContext('2d');
-
-function px(canvas) {
-  const r = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  canvas.width = w * r; canvas.height = h * r;
-  const c = canvas.getContext('2d');
-  c.scale(r, r);
-  return { c, w, h };
-}
-
-const colors = {
-  acc: '#c49a3c', acc2: '#7fb3e8', acc3: '#5fb87a', acc4: '#e07070',
-  grid: '#222228', tx: '#6b6760', bg: '#1c1c1f'
+const G = (id) => document.getElementById(id);
+const COLORS = {
+  acc:'#c49a3c', acc2:'#7fb3e8', acc3:'#5fb87a', acc4:'#e07070',
+  grid:'#222228', tx:'#6b6760', bg:'#1c1c1f', txb:'#edeae4'
 };
 
-function drawGrid(c, w, h, xLabel, yLabel) {
-  c.strokeStyle = colors.grid; c.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = h * 0.1 + (h * 0.8) * i / 4;
-    c.beginPath(); c.moveTo(w * 0.08, y); c.lineTo(w * 0.95, y); c.stroke();
-  }
-  for (let i = 0; i <= 5; i++) {
-    const x = w * 0.08 + (w * 0.87) * i / 5;
-    c.beginPath(); c.moveTo(x, h * 0.1); c.lineTo(x, h * 0.9); c.stroke();
-  }
-  c.fillStyle = colors.tx; c.font = '10px IBM Plex Mono';
-  c.textAlign = 'center'; c.fillText(xLabel, w / 2, h - 2);
-  c.save(); c.translate(10, h / 2); c.rotate(-Math.PI / 2);
-  c.textAlign = 'center'; c.fillText(yLabel, 0, 0); c.restore();
+// FIX: use clientWidth/clientHeight from the .chart-wrap parent, not canvas itself
+function getSize(canvasId) {
+  const canvas = G(canvasId);
+  const wrap = canvas.parentElement;
+  // Use the wrapper's client size — always reliable since wrapper has fixed CSS height
+  const w = wrap.clientWidth || 600;
+  const h = wrap.clientHeight || 200;
+  const r = window.devicePixelRatio || 1;
+  canvas.width  = Math.floor(w * r);
+  canvas.height = Math.floor(h * r);
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(r, r);
+  return { ctx, w, h };
 }
 
-// ─── 1. AUC-CL Chart ───
+function gridLines(ctx, x0, y0, xw, yh, nx=5, ny=4) {
+  ctx.strokeStyle = COLORS.grid; ctx.lineWidth = 1;
+  for (let i=0; i<=ny; i++) {
+    const y = y0 - yh*i/ny;
+    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0+xw, y); ctx.stroke();
+  }
+  for (let i=0; i<=nx; i++) {
+    const x = x0 + xw*i/nx;
+    ctx.beginPath(); ctx.moveTo(x, y0-yh); ctx.lineTo(x, y0); ctx.stroke();
+  }
+}
+
+// ─── 1. AUC-CL — FIXED ───
+// BUG WAS: yScale = yh / (C0 * 1.1) → auto-scales with dose → curve always looks identical
+// FIX: fixed ymax = maxDose/V so increasing dose clearly raises the curve peak
+const V_FIXED = 30;
+const MAX_DOSE = 500;
+const FIXED_YMAX = MAX_DOSE / V_FIXED * 1.2; // 20 mg/L ceiling — never changes
+
 function drawAUC() {
-  const canvas = C('cvAUC');
-  const {c, w, h} = px(canvas);
-  const CL = parseFloat(C('sl-cl').value);
-  const dose = parseFloat(C('sl-dose').value);
-  c.clearRect(0, 0, w, h);
-  drawGrid(c, w, h, 'Time (h)', 'Conc');
+  const { ctx, w, h } = getSize('cvAUC');
+  const CL   = parseFloat(G('sl-cl').value);
+  const dose = parseFloat(G('sl-dose').value);
+  const k    = CL / V_FIXED;
+  const C0   = dose / V_FIXED;
+  const tmax = 24;
+  const steps = 300;
 
-  const V = 30, k = CL / V;
-  const tmax = 24, steps = 200;
-  const x0 = w * 0.08, xw = w * 0.87, y0 = h * 0.9, yh = h * 0.8;
-  const C0 = dose / V;
-  const yScale = yh / (C0 * 1.1);
+  ctx.clearRect(0, 0, w, h);
 
-  // Concentration curve
-  c.beginPath(); c.strokeStyle = colors.acc; c.lineWidth = 2;
-  for (let i = 0; i <= steps; i++) {
-    const t = (i / steps) * tmax;
-    const conc = C0 * Math.exp(-k * t);
-    const px2 = x0 + (t / tmax) * xw;
-    const py = y0 - conc * yScale;
-    i === 0 ? c.moveTo(px2, py) : c.lineTo(px2, py);
+  // Layout
+  const x0 = w*0.10, xw = w*0.84, yBase = h*0.88, yH = h*0.76;
+  const yScale = yH / FIXED_YMAX; // FIXED scale — dose now visually changes curve height
+
+  // Grid
+  gridLines(ctx, x0, yBase, xw, yH, 6, 4);
+
+  // Y-axis labels (fixed scale)
+  ctx.fillStyle = COLORS.tx; ctx.font = '9px IBM Plex Mono'; ctx.textAlign = 'right';
+  for (let i=0; i<=4; i++) {
+    const val = (FIXED_YMAX * i / 4).toFixed(1);
+    ctx.fillText(val, x0-4, yBase - yH*i/4 + 3);
   }
-  c.stroke();
+  // X-axis labels
+  ctx.textAlign = 'center';
+  [0,6,12,18,24].forEach(t => {
+    ctx.fillText(t, x0 + (t/tmax)*xw, yBase+12);
+  });
+  ctx.fillText('Time (h)', x0+xw/2, h-2);
+  ctx.save(); ctx.translate(10, h/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Cp (mg/L)', 0, 0); ctx.restore();
 
-  // AUC fill
-  c.beginPath(); c.fillStyle = 'rgba(196,154,60,0.08)';
-  c.moveTo(x0, y0);
-  for (let i = 0; i <= steps; i++) {
-    const t = (i / steps) * tmax;
-    const conc = C0 * Math.exp(-k * t);
-    c.lineTo(x0 + (t / tmax) * xw, y0 - conc * yScale);
+  // AUC fill under curve
+  ctx.beginPath();
+  ctx.fillStyle = 'rgba(196,154,60,0.12)';
+  ctx.moveTo(x0, yBase);
+  for (let i=0; i<=steps; i++) {
+    const t = i/steps*tmax;
+    const cp = C0 * Math.exp(-k*t);
+    ctx.lineTo(x0 + t/tmax*xw, yBase - cp*yScale);
   }
-  c.lineTo(x0 + xw, y0); c.closePath(); c.fill();
+  ctx.lineTo(x0+xw, yBase);
+  ctx.closePath(); ctx.fill();
 
-  // AUC label
+  // Curve
+  ctx.beginPath(); ctx.strokeStyle = COLORS.acc; ctx.lineWidth = 2.5;
+  for (let i=0; i<=steps; i++) {
+    const t = i/steps*tmax;
+    const cp = C0 * Math.exp(-k*t);
+    const px = x0 + t/tmax*xw;
+    const py = yBase - cp*yScale;
+    i===0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Cmax dot
+  ctx.beginPath();
+  ctx.fillStyle = COLORS.acc;
+  ctx.arc(x0, yBase - C0*yScale, 4, 0, Math.PI*2); ctx.fill();
+
+  // Update HTML readouts (always visible, never "zero" like canvas text can be)
   const auc = dose / CL;
-  c.fillStyle = colors.acc; c.font = '11px IBM Plex Mono';
-  c.textAlign = 'left';
-  c.fillText(`AUC = ${auc.toFixed(1)} mg·h/L`, x0 + xw * 0.55, y0 - yh * 0.15);
-  c.fillStyle = colors.tx; c.font = '10px IBM Plex Mono';
-  c.fillText(`CL=${CL}, D=${dose}`, x0 + xw * 0.55, y0 - yh * 0.06);
+  const thalf = Math.log(2) / k;
+  G('auc-display').textContent  = auc.toFixed(1);
+  G('cmax-display').textContent = C0.toFixed(1);
+  G('thalf-display').textContent = thalf.toFixed(1);
+  // Color coding for AUC
+  G('cl-val').textContent   = CL.toFixed(1);
+  G('dose-val').textContent = dose;
 }
 
-C('sl-cl').addEventListener('input', () => { C('cl-val').textContent = parseFloat(C('sl-cl').value).toFixed(1); drawAUC(); });
-C('sl-dose').addEventListener('input', () => { C('dose-val').textContent = C('sl-dose').value; drawAUC(); });
+G('sl-cl').addEventListener('input',   drawAUC);
+G('sl-dose').addEventListener('input', drawAUC);
 
 // ─── 2. Extraction Ratio ───
 function drawExt() {
-  const canvas = C('cvExt');
-  const {c, w, h} = px(canvas);
-  const QH = parseFloat(C('sl-qh').value);
-  const fuClint = parseFloat(C('sl-clint').value);
-  const EH = fuClint / (QH + fuClint);
+  const { ctx, w, h } = getSize('cvExt');
+  const QH     = parseFloat(G('sl-qh').value);
+  const fuClint = parseFloat(G('sl-clint').value);
+  const EH  = fuClint / (QH + fuClint);
   const ClH = QH * EH;
-  const FH = 1 - EH;
+  const FH  = 1 - EH;
 
-  c.clearRect(0, 0, w, h);
+  ctx.clearRect(0, 0, w, h);
 
-  // Bar chart
   const bars = [
-    { label: 'Q_H', val: QH, max: 120, color: colors.acc2 },
-    { label: 'f_u·Cl_int', val: fuClint, max: 400, color: colors.acc3 },
-    { label: 'Cl_H', val: ClH, max: 120, color: colors.acc },
+    { label:'Q_H',        val:QH,      max:120, color:COLORS.acc2 },
+    { label:'f_u·Cl_int', val:fuClint, max:400, color:COLORS.acc3 },
+    { label:'Cl_H',       val:ClH,     max:120, color:COLORS.acc  },
   ];
-  const bw = 50, gap = (w - 80) / bars.length - bw;
-  const maxH = h * 0.65;
+  const maxH = h*0.65, top = h*0.18;
+  const bw = Math.floor(w*0.14), perBar = Math.floor(w/bars.length);
 
   bars.forEach((b, i) => {
-    const bh2 = (b.val / b.max) * maxH;
-    const bx = 60 + i * ((w - 80) / bars.length);
-    const by = h * 0.15 + maxH - bh2;
-    c.fillStyle = b.color + '30';
-    c.fillRect(bx, h * 0.15, bw, maxH);
-    c.fillStyle = b.color;
-    c.fillRect(bx, by, bw, bh2);
-    c.fillStyle = colors.tx; c.font = '10px IBM Plex Mono'; c.textAlign = 'center';
-    c.fillText(b.label, bx + bw/2, h * 0.88);
-    c.fillStyle = b.color; c.font = '11px IBM Plex Mono';
-    c.fillText(b.val.toFixed(0), bx + bw/2, by - 4);
+    const bh2 = (Math.min(b.val, b.max) / b.max) * maxH;
+    const bx  = Math.floor(perBar*i + (perBar-bw)/2);
+    const by  = top + maxH - bh2;
+    // Background track
+    ctx.fillStyle = b.color + '20';
+    ctx.fillRect(bx, top, bw, maxH);
+    // Bar
+    ctx.fillStyle = b.color;
+    ctx.fillRect(bx, by, bw, bh2);
+    // Label
+    ctx.fillStyle = COLORS.tx; ctx.font='10px IBM Plex Mono'; ctx.textAlign='center';
+    ctx.fillText(b.label, bx+bw/2, top+maxH+16);
+    ctx.fillStyle = b.color; ctx.font='600 11px IBM Plex Mono';
+    ctx.fillText(b.val.toFixed(0), bx+bw/2, by-5);
   });
 
-  // Summary text
-  const eType = EH > 0.7 ? '고추출 (flow-limited)' : EH < 0.3 ? '저추출 (capacity-limited)' : '중간 추출';
-  c.fillStyle = colors.acc; c.font = '600 12px IBM Plex Mono'; c.textAlign = 'left';
-  c.fillText(`E_H = ${(EH * 100).toFixed(1)}%  F_H = ${(FH * 100).toFixed(1)}%`, 20, h * 0.08);
-  c.fillStyle = colors.tx; c.font = '11px IBM Plex Mono';
-  c.fillText(eType, 20, h * 0.14);
+  // Summary
+  const eType = EH>0.7 ? '고추출 (flow-limited)' : EH<0.3 ? '저추출 (capacity-limited)' : '중간 추출';
+  ctx.fillStyle = COLORS.acc; ctx.font='600 12px IBM Plex Mono'; ctx.textAlign='left';
+  ctx.fillText(`E_H=${(EH*100).toFixed(1)}%  F_H=${(FH*100).toFixed(1)}%  Cl_H=${ClH.toFixed(0)} L/h`, 16, h*0.1);
+  ctx.fillStyle = COLORS.tx; ctx.font='11px IBM Plex Mono';
+  ctx.fillText(eType, 16, h*0.1+16);
+
+  // HTML readouts
+  G('qh-val').textContent    = QH;
+  G('clint-val').textContent = fuClint;
+  G('eh-display').textContent  = (EH*100).toFixed(1)+'%';
+  G('fh-display').textContent  = (FH*100).toFixed(1)+'%';
+  G('clh-display').textContent = ClH.toFixed(1);
+  const typeColor = EH>0.7 ? COLORS.acc4 : EH<0.3 ? COLORS.acc3 : COLORS.acc;
+  G('ext-type').style.color = typeColor;
+  G('ext-type').textContent = eType;
 }
 
-C('sl-qh').addEventListener('input', () => { C('qh-val').textContent = C('sl-qh').value; drawExt(); });
-C('sl-clint').addEventListener('input', () => { C('clint-val').textContent = C('sl-clint').value; drawExt(); });
+G('sl-qh').addEventListener('input',    drawExt);
+G('sl-clint').addEventListener('input', drawExt);
 
-// ─── 3. IV vs PO ───
-function drawRoute() {
-  const canvas = C('cvRoute');
-  const {c, w, h} = px(canvas);
-  c.clearRect(0, 0, w, h);
-  drawGrid(c, w, h, 'Q_H (liver blood flow)', 'Css at steady state');
+// ─── 3. IV vs PO PARTICLE SIMULATION ───
+const RT_PROT=[{rx:.18,ry:.30},{rx:.50,ry:.22},{rx:.80,ry:.36},{rx:.32,ry:.60},{rx:.67,ry:.58}];
+const RT={
+  R0:100,QH:90,fu:0.10,Clint:300,
+  ctx:null,w:0,h:0,animId:null,
+  iv:{particles:[]},po:{particles:[]},
+  priv:[],prpo:[]
+};
 
-  const x0 = w * 0.08, xw = w * 0.87, y0 = h * 0.9, yh = h * 0.8;
-  const R0 = 100, fu = 0.3, Clint = 600;
-  const EH0 = 0.75;
-  const QHmin = 10, QHmax = 120;
-  const steps = 100;
+function rtCompute(){
+  const{R0,QH,fu,Clint}=RT;
+  const EH=Math.min(.9999,(fu*Clint)/(QH+fu*Clint));
+  const FH=1-EH,ClH=QH*EH;
+  const C_iv=ClH>0?R0/ClH:9999,Cu_iv=fu*C_iv;
+  const C_po=fu*Clint>0?R0/(fu*Clint):9999,Cu_po=Clint>0?R0/Clint:9999;
+  return{EH,FH,C_iv,Cu_iv,C_po,Cu_po};
+}
 
-  // IV high extraction: Css ≈ R0/QH
-  let maxIV = R0 / QHmin;
-  let maxPO = R0 / (fu * Clint);
-
-  const yScale = yh / (maxIV * 1.1);
-
-  // IV curve
-  c.beginPath(); c.strokeStyle = colors.acc2; c.lineWidth = 2;
-  for (let i = 0; i <= steps; i++) {
-    const QH = QHmin + (QHmax - QHmin) * i / steps;
-    const css = R0 / QH; // high extraction IV
-    const px2 = x0 + (i / steps) * xw;
-    const py = y0 - css * yScale;
-    i === 0 ? c.moveTo(px2, py) : c.lineTo(px2, py);
+class RTP{
+  constructor(x,y,pw,pzH,free,tx,ty){
+    this.x=x;this.y=y;
+    this.vx=(Math.random()-.5)*1.6;this.vy=(Math.random()-.5)*1.6;
+    this.free=free;this.pw=pw;this.pzH=pzH;
+    this.r=free?4.5:3;this.tx=tx??x;this.ty=ty??y;
+    this.phase=Math.random()*6.28;
   }
-  c.stroke();
-
-  // PO curve (flat, Q_H independent)
-  const poCss = R0 / (fu * Clint);
-  const poY = y0 - poCss * yScale;
-  c.beginPath(); c.strokeStyle = colors.acc3; c.lineWidth = 2;
-  c.setLineDash([6, 3]);
-  c.moveTo(x0, poY); c.lineTo(x0 + xw, poY);
-  c.stroke(); c.setLineDash([]);
-
-  // Labels
-  c.fillStyle = colors.acc2; c.font = '10px IBM Plex Mono';
-  c.textAlign = 'left';
-  c.fillText('IV: Css ≈ R₀/Q_H (Q_H 의존)', x0 + 5, h * 0.2);
-  c.fillStyle = colors.acc3;
-  c.fillText('PO: Css = R₀/(f_u·Cl_int) (Q_H 무관)', x0 + 5, poY - 8);
-
-  // Q_H axis labels
-  c.fillStyle = colors.tx; c.font = '9px IBM Plex Mono'; c.textAlign = 'center';
-  [30, 60, 90, 120].forEach(v => {
-    const px2 = x0 + ((v - QHmin) / (QHmax - QHmin)) * xw;
-    c.fillText(v, px2, y0 + 12);
-  });
+  update(){
+    this.phase+=.04;
+    if(this.free){
+      this.vx+=(Math.random()-.5)*.35;this.vy+=(Math.random()-.5)*.35;
+      const s=Math.hypot(this.vx,this.vy);if(s>2.5){this.vx*=2.5/s;this.vy*=2.5/s;}
+    }else{
+      const or=7+Math.sin(this.phase)*3;
+      const ox=this.tx+Math.cos(this.phase)*or,oy=this.ty+Math.sin(this.phase)*or;
+      this.vx+=(ox-this.x)*.12;this.vy+=(oy-this.y)*.12;
+      this.vx*=.88;this.vy*=.88;
+    }
+    this.x+=this.vx;this.y+=this.vy;
+    const m=this.r+2;
+    if(this.x<m){this.x=m;this.vx=Math.abs(this.vx);}
+    if(this.x>this.pw-m){this.x=this.pw-m;this.vx=-Math.abs(this.vx);}
+    if(this.y<m){this.y=m;this.vy=Math.abs(this.vy);}
+    if(this.y>this.pzH-m){this.y=this.pzH-m;this.vy=-Math.abs(this.vy);}
+  }
+  draw(ctx,ox){
+    const px=this.x+ox,py=this.y;
+    if(this.free){
+      const g=ctx.createRadialGradient(px,py,0,px,py,this.r*3);
+      g.addColorStop(0,'rgba(190,225,255,0.95)');
+      g.addColorStop(.5,'rgba(120,180,240,0.4)');
+      g.addColorStop(1,'rgba(80,140,200,0)');
+      ctx.beginPath();ctx.fillStyle=g;ctx.arc(px,py,this.r*3,0,6.28);ctx.fill();
+      ctx.beginPath();ctx.fillStyle='#e0f2ff';ctx.arc(px,py,this.r,0,6.28);ctx.fill();
+    }else{
+      ctx.beginPath();ctx.fillStyle='rgba(196,154,60,0.52)';
+      ctx.arc(px,py,this.r,0,6.28);ctx.fill();
+    }
+  }
 }
 
-// ─── 4. TMDD Nonlinear PK ───
+function rtSyncPanel(panel,targetFree,targetBound,pw,pzH,prots){
+  const free=panel.particles.filter(p=>p.free);
+  const bound=panel.particles.filter(p=>!p.free);
+  const ms=3;
+  const df=targetFree-free.length;
+  if(df>0){for(let i=0;i<Math.min(df,ms);i++)panel.particles.push(new RTP(
+    Math.random()*pw*.8+pw*.1,Math.random()*pzH*.68+pzH*.05,pw,pzH,true));}
+  else if(df<0){let r=0,n=Math.min(-df,ms);panel.particles=panel.particles.filter(p=>{
+    if(!p.free||r>=n)return true;r++;return false;});}
+  const db=targetBound-bound.length;
+  if(db>0){for(let i=0;i<Math.min(db,ms);i++){
+    const pr=prots[Math.floor(Math.random()*prots.length)];
+    const a=Math.random()*6.28,d=9+Math.random()*8;
+    panel.particles.push(new RTP(pr.x+Math.cos(a)*d,pr.y+Math.sin(a)*d,pw,pzH,false,pr.x,pr.y));
+  }}else if(db<0){let r=0,n=Math.min(-db,ms);panel.particles=panel.particles.filter(p=>{
+    if(p.free||r>=n)return true;r++;return false;});}
+}
+
+function rtDrawFrame(){
+  if(!RT.ctx||!RT.w)return;
+  const ctx=RT.ctx,w=RT.w,h=RT.h;
+  ctx.clearRect(0,0,w,h);
+  const{EH,FH,C_iv,Cu_iv,C_po,Cu_po}=rtCompute();
+  const pw=Math.floor(w/2)-4,pzH=Math.floor(h*.70);
+  // FIX: fixed reference so R₀ slider changes visibly alter particle count
+  // Default: EH=0.25,ClH=22.5,C_iv≈4.44. Use PREF=5 so 1.5×default fills half panel.
+  const PREF=5.0,MAX_P=50;
+  function pc(c,cu){
+    const t=Math.min(Math.round(c/PREF*MAX_P),MAX_P);
+    const f=Math.max(0,Math.round(t*(cu/Math.max(c,.001))));
+    return{f,b:Math.max(0,t-f)};
+  }
+  const iP=pc(C_iv,Cu_iv),pP=pc(C_po,Cu_po);
+  rtSyncPanel(RT.iv,iP.f,iP.b,pw,pzH,RT.priv);
+  rtSyncPanel(RT.po,pP.f,pP.b,pw,pzH,RT.prpo);
+
+  [
+    {pan:RT.iv,prots:RT.priv,ox:0,     lbl:'IV 정맥주사',col:'#7fb3e8',C:C_iv,Cu:Cu_iv,ef:EH,  elbl:`E_H=${(EH*100).toFixed(0)}%  (${EH>.7?'고추출':EH<.3?'저추출':'중간'})`},
+    {pan:RT.po,prots:RT.prpo,ox:pw+8,  lbl:'PO 경구투여',col:'#5fb87a',C:C_po,Cu:Cu_po,ef:1-FH,elbl:`First-pass 제거 ${((1-FH)*100).toFixed(0)}%  ·  F_H=${(FH*100).toFixed(0)}%`}
+  ].forEach(({pan,prots,ox,lbl,col,C,Cu,ef,elbl})=>{
+    // Panel background
+    ctx.fillStyle='#13151a';ctx.fillRect(ox,0,pw,h);
+    // Particle zone
+    ctx.fillStyle='#181b20';ctx.strokeStyle='#23262d';ctx.lineWidth=1;
+    ctx.beginPath();ctx.rect(ox+3,22,pw-6,pzH-24);ctx.fill();ctx.stroke();
+    // Panel title
+    ctx.fillStyle=col;ctx.font='600 11px IBM Plex Mono';ctx.textAlign='center';
+    ctx.fillText(lbl,ox+pw/2,14);
+
+    // Albumin protein blobs
+    prots.forEach((pr,i)=>{
+      ctx.save();ctx.translate(ox+pr.x,pr.y);
+      ctx.beginPath();ctx.fillStyle='#1e1208';ctx.strokeStyle='#5a3510';ctx.lineWidth=1.5;
+      // Manual ellipse (no roundRect needed)
+      ctx.save();ctx.scale(1,0.65);ctx.arc(0,0,20,0,6.28);ctx.restore();
+      ctx.fill();ctx.stroke();
+      ctx.fillStyle='#8a5a20';ctx.font='7px IBM Plex Mono';ctx.textAlign='center';
+      ctx.fillText('ALB',0,2.5);ctx.restore();
+    });
+
+    // Draw + update particles
+    pan.particles.forEach(p=>{p.update();p.draw(ctx,ox);});
+
+    // Concentration label overlay
+    ctx.fillStyle='rgba(0,0,0,0.55)';
+    ctx.fillRect(ox+3,pzH-34,pw-6,34);
+    ctx.fillStyle='#4a5060';ctx.font='9px IBM Plex Mono';ctx.textAlign='center';
+    ctx.fillText('C_total = '+(C>999?'>999':C.toFixed(2)),ox+pw/2,pzH-20);
+    ctx.fillStyle='#9ec8f0';ctx.font='600 10px IBM Plex Mono';
+    ctx.fillText('C_u = '+(Cu>999?'>999':Cu.toFixed(3))+'  ← 활성 비결합',ox+pw/2,pzH-5);
+
+    // Liver/extraction zone
+    const liverY=pzH+4,liverH=h-liverY-3;
+    ctx.fillStyle='#110808';ctx.strokeStyle=ef>.5?'#3a1010':'#202020';ctx.lineWidth=1;
+    ctx.beginPath();ctx.rect(ox+4,liverY,pw-8,liverH);ctx.fill();ctx.stroke();
+    // Extraction bar
+    const bw=Math.min(ef,1)*(pw-16);
+    ctx.fillStyle=ef>.7?'#e07070':ef>.3?'#c49a3c':'#5fb87a';ctx.globalAlpha=.75;
+    ctx.fillRect(ox+8,liverY+3,bw,5);ctx.globalAlpha=1;
+    ctx.fillStyle='#5a5850';ctx.font='9px IBM Plex Mono';ctx.textAlign='center';
+    ctx.fillText(elbl,ox+pw/2,liverY+liverH/2+4);
+  });
+
+  // Center divider
+  ctx.fillStyle='#23262d';ctx.fillRect(pw+4,0,4,h);
+
+  // Update HTML stat bar
+  G('rt-eh').textContent=(EH*100).toFixed(1)+'%';
+  G('rt-fh').textContent=(FH*100).toFixed(1)+'%';
+  G('rt-civ').textContent=C_iv>999?'>999':C_iv.toFixed(2);
+  G('rt-cuiv').textContent=Cu_iv>999?'>999':Cu_iv.toFixed(3);
+  G('rt-cpo').textContent=C_po>999?'>999':C_po.toFixed(2);
+  G('rt-cupo').textContent=Cu_po>999?'>999':Cu_po.toFixed(3);
+
+  // Key insight label
+  const ins=G('rt-insight');
+  if(ins){
+    const cuPO=(RT.Clint>0?(RT.R0/RT.Clint).toFixed(3):'—');
+    ins.innerHTML=
+      '<span style="color:#7fb3e8">IV</span>: f_u 변화 → C_u 변함 (고추출일수록 강하게 영향받음) &nbsp;·&nbsp; '+
+      '<span style="color:#5fb87a">PO</span>: f_u 아무리 바꿔도 C_u = R₀/Cl_int = '+
+      '<strong style="color:#9ec8f0">'+cuPO+'</strong> 항상 불변! &nbsp;·&nbsp; '+
+      '<span style="background:#1a2d40;color:#9ec8f0;padding:1px 6px;border-radius:2px;font-size:9px">빛나는 점 = 활성 C_u</span> '+
+      '<span style="background:#2a1e08;color:#c49a3c;padding:1px 6px;border-radius:2px;font-size:9px">흐린 점 = 단백결합 C_bound</span>';
+  }
+}
+
+function rtAnimate(){
+  rtDrawFrame();
+  RT.animId=requestAnimationFrame(rtAnimate);
+}
+
+function rtInit(){
+  const canvas=G('cvRoute');if(!canvas)return;
+  if(RT.animId){cancelAnimationFrame(RT.animId);RT.animId=null;}
+  const wrap=canvas.parentElement;
+  const w=wrap.clientWidth||700,h=wrap.clientHeight||370;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=Math.floor(w*dpr);canvas.height=Math.floor(h*dpr);
+  canvas.style.width=w+'px';canvas.style.height=h+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  RT.ctx=ctx;RT.w=w;RT.h=h;
+  const pw=Math.floor(w/2)-4,pzH=Math.floor(h*.70);
+  RT.priv=RT_PROT.map(p=>({x:p.rx*pw*.85+pw*.07,y:p.ry*pzH}));
+  RT.prpo=RT_PROT.map(p=>({x:p.rx*pw*.85+pw*.07,y:p.ry*pzH}));
+  RT.iv.particles=[];RT.po.particles=[];
+  RT.animId=requestAnimationFrame(rtAnimate);
+}
+
+function rtUpdate(){
+  RT.R0=parseFloat(G('rt-r0').value);
+  RT.QH=parseFloat(G('rt-qh').value);
+  RT.fu=parseFloat(G('rt-fu').value);
+  RT.Clint=parseFloat(G('rt-clint').value);
+  G('rt-r0-v').textContent=RT.R0;
+  G('rt-qh-v').textContent=RT.QH;
+  G('rt-fu-v').textContent=RT.fu.toFixed(2);
+  G('rt-clint-v').textContent=RT.Clint;
+}
+['rt-r0','rt-qh','rt-fu','rt-clint'].forEach(id=>G(id).addEventListener('input',rtUpdate));
+
+// ─── 4. TMDD ───
 function drawTMDD() {
-  const canvas = C('cvTMDD');
-  const {c, w, h} = px(canvas);
-  const KSS = parseFloat(C('sl-kss').value);
-  const R0 = parseFloat(C('sl-r0').value);
+  const { ctx, w, h } = getSize('cvTMDD');
+  const KSS = parseFloat(G('sl-kss').value);
+  const R0  = parseFloat(G('sl-r0').value);
+  ctx.clearRect(0, 0, w, h);
 
-  c.clearRect(0, 0, w, h);
-
-  const x0 = w * 0.09, xw = w * 0.87, y0 = h * 0.88, yh = h * 0.78;
-  const tmax = 30, steps = 200;
-  const kint = 0.3, kel = 0.02;
+  const x0=w*0.09, xw=w*0.87, yBase=h*0.88, yH=h*0.76;
+  const tmax=30, steps=200, kint=0.3, kel=0.02;
   const doses = [
-    { dose: 0.5 * KSS * 5, color: colors.acc4, label: '저용량' },
-    { dose: 3 * KSS * 5, color: colors.acc, label: '중간용량' },
-    { dose: 15 * KSS * 5, color: colors.acc3, label: '고용량' }
+    { dose:0.5*KSS*5,  color:COLORS.acc4, label:'저용량' },
+    { dose:3*KSS*5,    color:'#f0b040',   label:'중간용량' },
+    { dose:15*KSS*5,   color:COLORS.acc3, label:'고용량' }
   ];
 
-  // For dose-normalized view, normalize by dose
-  const maxCnorm = doses.map(d => {
-    let L = d.dose, R = R0, LR = 0;
-    let maxC = L / d.dose;
-    const dt = tmax / steps;
-    for (let i = 0; i < steps; i++) {
-      const kon = kint / (KSS);
-      const dL = -kel * L - kon * L * R + kon * KSS * LR * 0.2;
-      const dR = -kon * L * R + kon * KSS * LR * 0.2;
-      const dLR = kon * L * R - kon * KSS * LR * 0.2 - kint * LR;
-      L = Math.max(0, L + dL * dt);
-      R = Math.max(0, R + dR * dt);
-      LR = Math.max(0, LR + dLR * dt);
-      maxC = Math.max(maxC, L / d.dose);
-    }
-    return maxC;
-  });
-  const globalMax = Math.max(...maxCnorm);
-
-  // Draw grid
-  c.strokeStyle = colors.grid; c.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = h * 0.1 + yh * i / 4;
-    c.beginPath(); c.moveTo(x0, y); c.lineTo(x0 + xw, y); c.stroke();
-  }
-
-  doses.forEach(d => {
-    let L = d.dose, R = R0, LR = 0;
-    const dt = tmax / steps;
-    c.beginPath(); c.strokeStyle = d.color; c.lineWidth = 2;
-    for (let i = 0; i <= steps; i++) {
-      const t = i * dt;
-      const cnorm = L / d.dose;
-      const px2 = x0 + (t / tmax) * xw;
-      const py = y0 - (cnorm / globalMax) * yh;
-      i === 0 ? c.moveTo(px2, py) : c.lineTo(px2, py);
-      if (i < steps) {
-        const kon = kint / KSS;
-        const dL = -kel * L - kon * L * R + kon * KSS * LR * 0.15;
-        const dR = -kon * L * R + kon * KSS * LR * 0.15;
-        const dLR = kon * L * R - kon * KSS * LR * 0.15 - kint * LR;
-        L = Math.max(0, L + dL * dt);
-        R = Math.max(0, R + dR * dt);
-        LR = Math.max(0, LR + dLR * dt);
+  // Compute all trajectories first to find global max for fixed scale
+  const trajs = doses.map(d => {
+    let L=d.dose, R=R0, LR=0;
+    const dt=tmax/steps, kon=kint/KSS;
+    const pts=[];
+    for (let i=0; i<=steps; i++) {
+      pts.push(L / d.dose); // dose-normalized
+      if (i<steps) {
+        const dL = -kel*L - kon*L*R + kon*KSS*LR*0.15;
+        const dR = -kon*L*R + kon*KSS*LR*0.15;
+        const dLR= kon*L*R - kon*KSS*LR*0.15 - kint*LR;
+        L=Math.max(0,L+dL*dt); R=Math.max(0,R+dR*dt); LR=Math.max(0,LR+dLR*dt);
       }
     }
-    c.stroke();
+    return pts;
+  });
+  const gMax = Math.max(...trajs.map(t=>Math.max(...t)));
+  const yScale = yH/gMax;
+
+  gridLines(ctx, x0, yBase, xw, yH);
+
+  trajs.forEach((pts, idx) => {
+    ctx.beginPath(); ctx.strokeStyle=doses[idx].color; ctx.lineWidth=2;
+    pts.forEach((v, i) => {
+      const px=x0+i/steps*xw, py=yBase-v*yScale;
+      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    });
+    ctx.stroke();
+    // Label at right end
+    ctx.fillStyle=doses[idx].color; ctx.font='9px IBM Plex Mono'; ctx.textAlign='left';
+    ctx.fillText(doses[idx].label, x0+xw+3, yBase-pts[steps]*yScale+4);
   });
 
-  // Labels
-  c.fillStyle = colors.tx; c.font = '9px IBM Plex Mono'; c.textAlign = 'center';
-  c.fillText('K_SS=' + KSS + ' nM  R₀=' + R0 + ' nM', x0 + xw * 0.85, h * 0.1 - 2);
+  // Linear reference (what linear PK would look like — flat dose-normalized)
+  ctx.beginPath(); ctx.strokeStyle=COLORS.tx+'60'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.moveTo(x0, yBase-trajs[2][0]*yScale); ctx.lineTo(x0+xw, yBase-trajs[2][steps]*yScale);
+  ctx.stroke(); ctx.setLineDash([]);
 
-  // Time axis
-  [0, 10, 20, 30].forEach(v => {
-    c.fillStyle = colors.tx; c.font = '9px IBM Plex Mono'; c.textAlign = 'center';
-    c.fillText(v, x0 + (v / tmax) * xw, y0 + 12);
+  // X-axis
+  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('Time (days)', x0+xw/2, h-1);
+  [0,10,20,30].forEach(v => { ctx.fillText(v, x0+v/tmax*xw, yBase+12); });
+  // Y-axis label
+  ctx.save(); ctx.translate(8,h*0.5); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Dose-normalized Cp  (AU)', 0, 0); ctx.restore();
+  // Y-axis ticks (0→1 normalized)
+  ctx.textAlign='right';
+  ['1.0','0.75','0.5','0.25','0'].forEach((v,i)=>{
+    ctx.fillText(v, x0-3, h*0.1+yH*i/4+3);
   });
-  c.fillText('Time (d)', x0 + xw / 2, h - 1);
+  // Annotation: linear would overlap
+  ctx.fillStyle=COLORS.tx+'60'; ctx.font='8px IBM Plex Mono'; ctx.textAlign='left';
+  ctx.fillText('← 선형 PK라면 세 곡선이 겹쳐야 함', x0+xw*0.25, h*0.13);
+  G('kss-val').textContent=KSS; G('r0-val').textContent=R0;
 }
 
-C('sl-kss').addEventListener('input', () => { C('kss-val').textContent = C('sl-kss').value; drawTMDD(); });
-C('sl-r0').addEventListener('input', () => { C('r0-val').textContent = C('sl-r0').value; drawTMDD(); });
+G('sl-kss').addEventListener('input', drawTMDD);
+G('sl-r0').addEventListener('input',  drawTMDD);
 
-// ─── 5. TMDD SVG Diagram ───
+// ─── 5. TMDD SVG ───
 function drawTMDDSvg() {
-  const svg = C('svgTMDD');
-  svg.innerHTML = `
-    <!-- Drug compartment -->
-    <rect x="20" y="60" width="130" height="80" rx="3" fill="#1c1c1f" stroke="#38383d"/>
-    <text x="85" y="90" fill="#c49a3c" font-size="12" font-family="IBM Plex Mono" text-anchor="middle" font-weight="600">유리 약물 L</text>
-    <text x="85" y="108" fill="#6b6760" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">dL/dt =</text>
-    <text x="85" y="122" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">Input−k_el·L−k_on·L·R</text>
-    <text x="85" y="134" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">+k_off·LR</text>
+  G('svgTMDD').innerHTML = `
+  <defs>
+    <marker id="mk_acc"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c49a3c"/></marker>
+    <marker id="mk_grn"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#5fb87a"/></marker>
+    <marker id="mk_red"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#e07070"/></marker>
+    <marker id="mk_blu"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#7fb3e8"/></marker>
+  </defs>
 
-    <!-- Receptor compartment -->
-    <rect x="280" y="10" width="140" height="80" rx="3" fill="#1c1c1f" stroke="#38383d"/>
-    <text x="350" y="36" fill="#5fb87a" font-size="12" font-family="IBM Plex Mono" text-anchor="middle" font-weight="600">유리 수용체 R</text>
-    <text x="350" y="54" fill="#6b6760" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">dR/dt =</text>
-    <text x="350" y="68" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">k_syn − k_deg·R</text>
-    <text x="350" y="82" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">−k_on·L·R + k_off·LR</text>
+  <!-- ─── Free Drug L (left) ─── -->
+  <rect x="18" y="55" width="150" height="110" rx="4" fill="#1a1c1f" stroke="#c49a3c" stroke-width="1.2" stroke-opacity="0.6"/>
+  <text x="93" y="76"  text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="#c49a3c">유리 약물 (L)</text>
+  <text x="93" y="93"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">dL/dt =</text>
+  <text x="93" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">Input − k_el·L</text>
+  <text x="93" y="117" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">− k_on·L·R</text>
+  <text x="93" y="129" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">+ k_off·LR</text>
+  <text x="93" y="155" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#888060" font-style="italic">혈장 유리 약물</text>
 
-    <!-- Complex compartment -->
-    <rect x="280" y="110" width="140" height="80" rx="3" fill="#1c1c1f" stroke="#38383d"/>
-    <text x="350" y="136" fill="#7fb3e8" font-size="12" font-family="IBM Plex Mono" text-anchor="middle" font-weight="600">복합체 LR</text>
-    <text x="350" y="154" fill="#6b6760" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">dLR/dt =</text>
-    <text x="350" y="168" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">k_on·L·R − k_off·LR</text>
-    <text x="350" y="182" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">−k_int·LR</text>
+  <!-- ─── Free Receptor R (top-right) ─── -->
+  <rect x="400" y="8" width="148" height="90" rx="4" fill="#1a201a" stroke="#5fb87a" stroke-width="1.2" stroke-opacity="0.6"/>
+  <text x="474" y="28"  text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="#5fb87a">유리 수용체 (R)</text>
+  <text x="474" y="46"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#506050">dR/dt = k_syn</text>
+  <text x="474" y="58"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#506050">− k_deg·R</text>
+  <text x="474" y="70"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#506050">− k_on·L·R + k_off·LR</text>
+  <text x="474" y="88"  text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#608060" font-style="italic">세포 표면 수용체</text>
 
-    <!-- Arrows -->
-    <!-- L → LR (k_on) -->
-    <path d="M150 110 Q220 110 280 155" fill="none" stroke="#c49a3c" stroke-width="1.5" marker-end="url(#arr)"/>
-    <text x="205" y="126" fill="#c49a3c" font-size="9" font-family="IBM Plex Mono">k_on</text>
+  <!-- ─── Complex LR (bottom-right) ─── -->
+  <rect x="400" y="120" width="148" height="90" rx="4" fill="#181a28" stroke="#7fb3e8" stroke-width="1.2" stroke-opacity="0.6"/>
+  <text x="474" y="140"  text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="#7fb3e8">복합체 (LR)</text>
+  <text x="474" y="158"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#505870">dLR/dt =</text>
+  <text x="474" y="170"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#505870">k_on·L·R − k_off·LR</text>
+  <text x="474" y="182"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#505870">− k_int·LR</text>
+  <text x="474" y="198"  text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#5080a0" font-style="italic">약물-수용체 복합체</text>
 
-    <!-- LR → L (k_off) -->
-    <path d="M280 145 Q220 90 150 90" fill="none" stroke="#5fb87a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
-    <text x="195" y="90" fill="#5fb87a" font-size="9" font-family="IBM Plex Mono">k_off</text>
+  <!-- ─── Input → L (top) ─── -->
+  <line x1="93" y1="22" x2="93" y2="55" stroke="#7fb3e8" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#mk_blu)"/>
+  <text x="100" y="40" font-family="IBM Plex Mono" font-size="9" fill="#7fb3e8">Input (R₀)</text>
 
-    <!-- L → elimination (k_el) -->
-    <path d="M20 100 L0 100" fill="none" stroke="#e07070" stroke-width="1.5" marker-end="url(#arr3)"/>
-    <text x="2" y="118" fill="#e07070" font-size="9" font-family="IBM Plex Mono">k_el</text>
+  <!-- ─── k_el ← L (left) ─── -->
+  <line x1="18" y1="110" x2="0" y2="110" stroke="#e07070" stroke-width="2" marker-end="url(#mk_red)"/>
+  <text x="1"  y="104" font-family="IBM Plex Mono" font-size="10" font-weight="600" fill="#e07070">k_el</text>
+  <text x="1"  y="122" font-family="IBM Plex Mono" font-size="7.5" fill="#e07070">(FcRn)</text>
 
-    <!-- LR → elimination (k_int) -->
-    <path d="M420 150 L460 150" fill="none" stroke="#e07070" stroke-width="2" marker-end="url(#arr3)"/>
-    <text x="465" y="154" fill="#e07070" font-size="10" font-family="IBM Plex Mono" font-weight="600">k_int</text>
-    <text x="465" y="168" fill="#e07070" font-size="9" font-family="IBM Plex Mono">(소각로!)</text>
+  <!-- ─── k_syn → R (top) ─── -->
+  <line x1="474" y1="0" x2="474" y2="8" stroke="#5fb87a" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#mk_grn)"/>
+  <text x="480" y="7" font-family="IBM Plex Mono" font-size="9" fill="#5fb87a">k_syn</text>
 
-    <!-- R → synthesis -->
-    <path d="M350 10 L350 0" fill="none" stroke="#5fb87a" stroke-width="1.5" stroke-dasharray="4,3" marker-start="url(#arr4)"/>
-    <text x="355" y="8" fill="#5fb87a" font-size="9" font-family="IBM Plex Mono">k_syn</text>
+  <!-- ─── k_deg ← R (right out) ─── -->
+  <line x1="548" y1="52" x2="580" y2="52" stroke="#5fb87a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#mk_grn)"/>
+  <text x="582" y="56" font-family="IBM Plex Mono" font-size="8.5" fill="#5fb87a">k_deg</text>
 
-    <!-- Input to L -->
-    <path d="M85 60 L85 40" fill="none" stroke="#7fb3e8" stroke-width="1.5" stroke-dasharray="4,3"/>
-    <text x="90" y="32" fill="#7fb3e8" font-size="9" font-family="IBM Plex Mono">Input</text>
+  <!-- ─── R-LR connector (cell surface) ─── -->
+  <line x1="474" y1="98" x2="474" y2="120" stroke="#2a4040" stroke-width="1" stroke-dasharray="3,3"/>
 
-    <defs>
-      <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-        <path d="M0,0 L6,3 L0,6 Z" fill="#c49a3c"/>
-      </marker>
-      <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-        <path d="M0,0 L6,3 L0,6 Z" fill="#5fb87a"/>
-      </marker>
-      <marker id="arr3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-        <path d="M0,0 L6,3 L0,6 Z" fill="#e07070"/>
-      </marker>
-      <marker id="arr4" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto">
-        <path d="M6,0 L0,3 L6,6 Z" fill="#5fb87a"/>
-      </marker>
-    </defs>
+  <!-- ─── k_on: L + R → LR  (main binding, solid) ─── -->
+  <path d="M 168 120 C 240 90 330 100 400 145" fill="none" stroke="#c49a3c" stroke-width="2.2" marker-end="url(#mk_acc)"/>
+  <text x="255" y="84"  font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#c49a3c">k_on</text>
+  <text x="255" y="97"  font-family="IBM Plex Mono" font-size="8" fill="#c49a3c" opacity="0.85">L + R → LR (결합)</text>
+
+  <!-- ─── k_off: LR → L  (reverse, dashed) ─── -->
+  <path d="M 400 160 C 330 185 240 180 168 148" fill="none" stroke="#c49a3c" stroke-width="1.6" stroke-dasharray="6,3" marker-end="url(#mk_acc)"/>
+  <text x="248" y="196" font-family="IBM Plex Mono" font-size="9" fill="#c49a3c" opacity="0.8">k_off  (해리)</text>
+
+  <!-- ─── k_int: LR → degraded (right, thick) ─── -->
+  <line x1="548" y1="165" x2="692" y2="165" stroke="#e07070" stroke-width="2.8" marker-end="url(#mk_red)"/>
+  <text x="555" y="155" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#e07070">k_int</text>
+  <text x="555" y="178" font-family="IBM Plex Mono" font-size="8" fill="#e07070">내재화 · 소각</text>
+  <rect x="694" y="153" width="4" height="24" fill="#e07070" opacity="0.7" rx="1"/>
   `;
 }
 
 // ─── 6. Model comparison ───
 function drawModel() {
-  const canvas = C('cvMod');
-  const {c, w, h} = px(canvas);
-  const dmult = parseInt(C('sl-dmod').value);
-  C('dmod-val').textContent = '×' + dmult;
+  const { ctx, w, h } = getSize('cvMod');
+  const dmult = parseInt(G('sl-dmod').value);
+  G('dmod-val').textContent = '×'+dmult;
+  ctx.clearRect(0, 0, w, h);
 
-  c.clearRect(0, 0, w, h);
-  const x0 = w * 0.08, xw = w * 0.87, y0 = h * 0.88, yh = h * 0.78;
-  const tmax = 20, steps = 200;
-  const KSS = 10, R0 = 8, kint = 0.3, kel = 0.025, Vmax = kint * R0, Km = KSS;
-  const dose = dmult * KSS * 3;
+  const x0=w*0.08, xw=w*0.87, yBase=h*0.88, yH=h*0.76;
+  const tmax=20, steps=200, KSS=10, R0=8, kint=0.3, kel=0.025;
+  const Vmax=kint*R0, Km=KSS, dose=dmult*KSS*3;
 
-  // Grid
-  c.strokeStyle = colors.grid; c.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = h * 0.1 + yh * i / 4;
-    c.beginPath(); c.moveTo(x0, y); c.lineTo(x0 + xw, y); c.stroke();
-  }
+  gridLines(ctx, x0, yBase, xw, yH);
 
-  const curves = [
-    { name: 'Full', color: colors.acc, sim: (L, R, LR) => {
-      const kon = kint / KSS;
-      const dL = -kel * L - kon * L * R + kon * KSS * LR * 0.15;
-      const dR = -kon * L * R + kon * KSS * LR * 0.15;
-      const dLR = kon * L * R - kon * KSS * LR * 0.15 - kint * LR;
-      return { dL, dR: dR, dLR };
-    }, dash: [] },
-    { name: 'QSS', color: colors.acc3, sim: null, dash: [] },
-    { name: 'MM', color: colors.acc2, sim: null, dash: [5, 3] },
-    { name: 'Linear', color: colors.acc4, sim: null, dash: [2, 3] }
-  ];
-
-  let globalMax = dose;
-
-  // Full TMDD trajectory
-  const trajFull = [];
-  {
-    let L = dose, R = R0, LR = 0;
-    const dt = tmax / steps;
-    for (let i = 0; i <= steps; i++) {
+  // Full TMDD
+  const trajFull=[];
+  { let L=dose,R=R0,LR=0;
+    const dt=tmax/steps, kon=kint/KSS;
+    for(let i=0;i<=steps;i++){
       trajFull.push(L);
-      globalMax = Math.max(globalMax, L);
-      if (i < steps) {
-        const kon = kint / KSS;
-        const dL = -kel * L - kon * L * R + kon * KSS * LR * 0.15;
-        const dR = -kon * L * R + kon * KSS * LR * 0.15;
-        const dLR = kon * L * R - kon * KSS * LR * 0.15 - kint * LR;
-        L = Math.max(0, L + dL * dt);
-        R = Math.max(0, R + dR * dt);
-        LR = Math.max(0, LR + dLR * dt);
+      if(i<steps){
+        const dL=-kel*L-kon*L*R+kon*KSS*LR*0.15;
+        const dR=-kon*L*R+kon*KSS*LR*0.15;
+        const dLR=kon*L*R-kon*KSS*LR*0.15-kint*LR;
+        L=Math.max(0,L+dL*dt); R=Math.max(0,R+dR*dt); LR=Math.max(0,LR+dLR*dt);
       }
     }
   }
-
-  // QSS trajectory (approximate using quadratic)
-  const trajQSS = [];
-  {
-    let Ltot = dose, Rtot = R0;
-    const dt = tmax / steps;
-    for (let i = 0; i <= steps; i++) {
-      const disc = (Ltot - Rtot - KSS) ** 2 + 4 * KSS * Ltot;
-      const Lfree = 0.5 * ((Ltot - Rtot - KSS) + Math.sqrt(Math.max(0, disc)));
-      trajQSS.push(Lfree);
-      if (i < steps) {
-        const LR = Ltot - Lfree;
-        const dLtot = -kel * Lfree - kint * LR;
-        const dRtot = -kint * LR;
-        Ltot = Math.max(0, Ltot + dLtot * dt);
-        Rtot = Math.max(0, Rtot + dRtot * dt);
+  // QSS
+  const trajQSS=[];
+  { let Ltot=dose, Rtot=R0;
+    const dt=tmax/steps;
+    for(let i=0;i<=steps;i++){
+      const disc=(Ltot-Rtot-KSS)**2+4*KSS*Ltot;
+      const Lf=0.5*((Ltot-Rtot-KSS)+Math.sqrt(Math.max(0,disc)));
+      trajQSS.push(Lf);
+      if(i<steps){
+        const LR=Ltot-Lf;
+        Ltot=Math.max(0,Ltot+(-kel*Lf-kint*LR)*dt);
+        Rtot=Math.max(0,Rtot+(-kint*LR)*dt);
       }
     }
   }
-
   // MM
-  const trajMM = [];
-  {
-    let L = dose;
-    const dt = tmax / steps;
-    for (let i = 0; i <= steps; i++) {
+  const trajMM=[];
+  { let L=dose; const dt=tmax/steps;
+    for(let i=0;i<=steps;i++){
       trajMM.push(L);
-      if (i < steps) {
-        const dL = -kel * L - Vmax * L / (Km + L);
-        L = Math.max(0, L + dL * dt);
-      }
+      if(i<steps) L=Math.max(0,L+(-kel*L-Vmax*L/(Km+L))*dt);
     }
   }
-
   // Linear
-  const trajLin = [];
-  {
-    let L = dose;
-    const dt = tmax / steps;
-    const keff = kel + Vmax / Km;
-    for (let i = 0; i <= steps; i++) {
+  const trajLin=[];
+  { let L=dose; const dt=tmax/steps;
+    const keff=kel+Vmax/Km;
+    for(let i=0;i<=steps;i++){
       trajLin.push(L);
-      if (i < steps) L = Math.max(0, L - keff * L * dt);
+      if(i<steps) L=Math.max(0,L-keff*L*dt);
     }
   }
 
-  const trajs = [trajFull, trajQSS, trajMM, trajLin];
-  const colorList = [colors.acc, colors.acc3, colors.acc2, colors.acc4];
-  const dashList = [[], [], [5,3], [2,3]];
-
-  trajs.forEach((traj, idx) => {
-    c.beginPath();
-    c.strokeStyle = colorList[idx]; c.lineWidth = 2;
-    c.setLineDash(dashList[idx]);
-    traj.forEach((val, i) => {
-      const px2 = x0 + (i / steps) * xw;
-      const py = y0 - (val / globalMax) * yh;
-      i === 0 ? c.moveTo(px2, py) : c.lineTo(px2, py);
+  const gMax=Math.max(...trajFull, ...trajQSS, ...trajMM, ...trajLin, 0.001);
+  const yScale=yH/gMax;
+  const curves=[
+    {t:trajFull, color:COLORS.acc,  dash:[]},
+    {t:trajQSS,  color:COLORS.acc3, dash:[]},
+    {t:trajMM,   color:COLORS.acc2, dash:[5,3]},
+    {t:trajLin,  color:COLORS.acc4, dash:[2,3]}
+  ];
+  curves.forEach(cv=>{
+    ctx.beginPath(); ctx.strokeStyle=cv.color; ctx.lineWidth=2; ctx.setLineDash(cv.dash);
+    cv.t.forEach((v,i)=>{
+      const px=x0+i/steps*xw, py=yBase-v*yScale;
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
     });
-    c.stroke(); c.setLineDash([]);
+    ctx.stroke(); ctx.setLineDash([]);
   });
 
-  c.fillStyle = colors.tx; c.font = '9px IBM Plex Mono'; c.textAlign = 'center';
-  c.fillText(`Dose = ${dmult}×K_SS·V `, x0 + xw * 0.8, h * 0.12);
+  // X-axis
+  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('Time (days)', x0+xw/2, h-1);
+  [0,5,10,15,20].forEach(v=>ctx.fillText(v, x0+v/tmax*xw, yBase+12));
+  // Y-axis label
+  ctx.save(); ctx.translate(8,h*0.5); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Concentration  (a.u.)', 0, 0); ctx.restore();
+  // Y-axis ticks
+  ctx.textAlign='right';
+  ctx.fillText('D₀/V', x0-3, h*0.1+3);
+  ctx.fillText('0',    x0-3, yBase+3);
 }
 
-C('sl-dmod').addEventListener('input', drawModel);
+G('sl-dmod').addEventListener('input', drawModel);
 
-// ─── 7. Trastuzumab saturation ───
+// ─── 7. Trastuzumab ───
 function drawTrast() {
-  const canvas = C('cvTrast');
-  const {c, w, h} = px(canvas);
-  c.clearRect(0, 0, w, h);
+  if (!G('cvTrast')) return;
+  const { ctx, w, h } = getSize('cvTrast');
+  ctx.clearRect(0, 0, w, h);
 
-  const x0 = w * 0.1, xw = w * 0.85, y0 = h * 0.88, yh = h * 0.72;
-  const KSS = 10, R0 = 8, kint = 0.4, kel = 0.02;
-  const steps = 100;
+  // Parameters calibrated to Trastuzumab clinical data:
+  //  Saturated t½ ≈ 28 days  → k_el = ln2/(28×24h) ≈ 0.00103 h⁻¹
+  //  Initial   t½ ≈ 1.4 days → k_eff_max = ln2/(1.4×24h) ≈ 0.0206 h⁻¹
+  //  → k_int×R₀/K_SS ≈ 0.0196 h⁻¹
+  const KSS=10, R0=8, kint=0.0245, kel=0.00103;
+  const keffMax = kel + kint*R0/KSS;  // ≈ 0.0206 h⁻¹
+  const Lmax=60;
+  const thalf_init = (Math.log(2)/keffMax/24).toFixed(1);  // ≈ 1.4 days
+  const thalf_sat  = Math.round(Math.log(2)/kel/24);        // ≈ 28 days
 
-  // k_eff vs L
-  c.strokeStyle = colors.grid; c.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = h * 0.15 + yh * i / 4;
-    c.beginPath(); c.moveTo(x0, y); c.lineTo(x0 + xw, y); c.stroke();
+  const x0=w*0.13, xw=w*0.80, yBase=h*0.84, yH=h*0.68;
+  const yScale = yH/keffMax;
+  const steps=120;
+
+  gridLines(ctx, x0, yBase, xw, yH, 5, 4);
+
+  // k_eff curve (TMDD effective elimination rate)
+  ctx.beginPath(); ctx.strokeStyle=COLORS.acc; ctx.lineWidth=2.5;
+  for(let i=0;i<=steps;i++){
+    const L=i/steps*Lmax;
+    const keff=kel+kint*R0/(KSS+L);
+    const px=x0+i/steps*xw, py=yBase-keff*yScale;
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // k_el-only baseline
+  const kelY=yBase-kel*yScale;
+  ctx.beginPath(); ctx.strokeStyle=COLORS.acc2; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+  ctx.moveTo(x0,kelY); ctx.lineTo(x0+xw,kelY); ctx.stroke(); ctx.setLineDash([]);
+
+  // t½ annotation lines & labels
+  const yInit=yBase-keffMax*yScale;
+  ctx.beginPath(); ctx.strokeStyle=COLORS.acc+'50'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+  ctx.moveTo(x0,yInit); ctx.lineTo(x0+xw*0.08,yInit); ctx.stroke(); ctx.setLineDash([]);
+
+  ctx.fillStyle=COLORS.acc; ctx.font='600 9px IBM Plex Mono'; ctx.textAlign='left';
+  ctx.fillText('초기 t½ ≈ '+thalf_init+'일', x0+2, h*0.12);
+  ctx.fillStyle=COLORS.txd; ctx.font='8px IBM Plex Mono';
+  ctx.fillText('(k_int 경로 최대 — HER2 비포화)', x0+2, h*0.20);
+  ctx.fillStyle=COLORS.acc2; ctx.font='600 9px IBM Plex Mono';
+  ctx.fillText('포화 후 t½ ≈ '+thalf_sat+'일', x0+xw*0.55, kelY-5);
+  ctx.fillStyle=COLORS.txd; ctx.font='8px IBM Plex Mono';
+  ctx.fillText('(k_el만 남음 — FcRn 경로)', x0+xw*0.55, kelY+10);
+
+  // K_SS marker
+  const kssX=x0+(KSS/Lmax)*xw;
+  ctx.beginPath(); ctx.strokeStyle=COLORS.acc+'50'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.moveTo(kssX,h*0.08); ctx.lineTo(kssX,yBase); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=COLORS.acc+'80'; ctx.font='8px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('K_SS', kssX, h*0.07);
+
+  // Y-axis label + ticks
+  ctx.save(); ctx.translate(8,h*0.5); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('유효 제거속도  k_eff  (h⁻¹)', 0, 0); ctx.restore();
+  ctx.fillStyle=COLORS.tx; ctx.textAlign='right'; ctx.font='8px IBM Plex Mono';
+  for(let i=0;i<=4;i++){
+    const v=(keffMax*i/4);
+    ctx.fillText(v<0.01?v.toFixed(4):v.toFixed(3), x0-3, yBase-yH*i/4+3);
   }
 
-  c.beginPath(); c.strokeStyle = colors.acc; c.lineWidth = 2.5;
-  for (let i = 0; i <= steps; i++) {
-    const L = (i / steps) * 60;
-    const keff = kel + kint * R0 / (KSS + L);
-    const px2 = x0 + (i / steps) * xw;
-    const ymax = kel + kint * R0 / KSS;
-    const py = y0 - (keff / ymax) * yh;
-    i === 0 ? c.moveTo(px2, py) : c.lineTo(px2, py);
-  }
-  c.stroke();
-
-  // k_el baseline
-  const ymax2 = kel + kint * R0 / KSS;
-  c.beginPath(); c.strokeStyle = colors.acc2; c.lineWidth = 1.5; c.setLineDash([4,3]);
-  const kelY = y0 - (kel / ymax2) * yh;
-  c.moveTo(x0, kelY); c.lineTo(x0 + xw, kelY); c.stroke(); c.setLineDash([]);
-
-  c.fillStyle = colors.acc2; c.font = '9px IBM Plex Mono'; c.textAlign = 'left';
-  c.fillText('k_el (FcRn만)', x0 + 5, kelY - 4);
-  c.fillStyle = colors.acc;
-  c.fillText('초기: k_int 경로 최대', x0 + 5, h * 0.2);
-  c.fillStyle = colors.tx; c.font = '9px IBM Plex Mono'; c.textAlign = 'center';
-  c.fillText('약물 농도 L (포화도)', x0 + xw / 2, h - 1);
-  c.fillText('낮음 (포화 미달)', x0 + xw * 0.1, y0 + 12);
-  c.fillText('높음 (포화)', x0 + xw * 0.85, y0 + 12);
+  // X-axis
+  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('약물 농도 L  (낮음 ← 비포화 | 포화 → 높음)', x0+xw/2, h-1);
 }
 
-// ─── 8. BLA Defense SVG ───
+// ─── 8. BLA SVG ───
 function drawBLA() {
-  const svg = C('svgBLA');
-  const layers = [
-    { n: '1', label: '데이터 지지', sub: 'k_on RSE>150%\nK_SS RSE<20%', color: '#c49a3c' },
-    { n: '2', label: '수렴 안정성', sub: 'Bootstrap\n실패 43%→2%', color: '#7fb3e8' },
-    { n: '3', label: 'VPC 동등성', sub: '91% ≈ 93%\n피복률', color: '#5fb87a' },
-    { n: '4', label: '문헌 근거', sub: '결합속도\n>>PK 타임스케일', color: '#c49a3c' },
-    { n: '5', label: 'COU 적합', sub: '용량 추천에\nQSS 충분', color: '#7fb3e8' }
+  const layers=[
+    {n:'1', label:'데이터 지지',  sub:['k_on RSE>150%','K_SS RSE<20%'], color:'#c49a3c'},
+    {n:'2', label:'수렴 안정성', sub:['Bootstrap','실패 43%→2%'],  color:'#7fb3e8'},
+    {n:'3', label:'VPC 동등성',  sub:['91% vs 93%','피복률'], color:'#5fb87a'},
+    {n:'4', label:'문헌 근거',   sub:['결합속도>>','PK 타임스케일'], color:'#c49a3c'},
+    {n:'5', label:'COU 적합',   sub:['용량 추천에','QSS 충분'], color:'#7fb3e8'}
   ];
-  const bw = 108, gap = 10;
-  svg.innerHTML = layers.map((l, i) => {
-    const x = i * (bw + gap) + 10;
+  const bw=108, gap=10;
+  G('svgBLA').innerHTML = layers.map((l,i)=>{
+    const x=i*(bw+gap)+10;
     return `
       <rect x="${x}" y="20" width="${bw}" height="120" rx="3" fill="#1c1c1f" stroke="${l.color}40"/>
       <rect x="${x}" y="20" width="${bw}" height="4" rx="2" fill="${l.color}"/>
-      <circle cx="${x + 16}" cy="46" r="10" fill="${l.color}20" stroke="${l.color}" stroke-width="1"/>
-      <text x="${x + 16}" y="50" fill="${l.color}" font-size="11" font-family="IBM Plex Mono" text-anchor="middle" font-weight="600">${l.n}</text>
-      <text x="${x + bw/2}" y="70" fill="#edeae4" font-size="11" font-family="IBM Plex Mono" text-anchor="middle" font-weight="500">${l.label}</text>
-      <text x="${x + bw/2}" y="92" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">${l.sub.split('\n')[0]}</text>
-      <text x="${x + bw/2}" y="108" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">${l.sub.split('\n')[1] || ''}</text>
-    `;
-  }).join('') + `
-    <text x="305" y="154" fill="#c49a3c" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">→ FDA는 단일 논거가 아닌 다층 구조를 원한다</text>
-  `;
+      <circle cx="${x+16}" cy="46" r="10" fill="${l.color}20" stroke="${l.color}" stroke-width="1"/>
+      <text x="${x+16}" y="50" fill="${l.color}" font-size="11" font-family="IBM Plex Mono" text-anchor="middle" font-weight="600">${l.n}</text>
+      <text x="${x+bw/2}" y="70" fill="#edeae4" font-size="11" font-family="IBM Plex Mono" text-anchor="middle" font-weight="500">${l.label}</text>
+      <text x="${x+bw/2}" y="92" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">${l.sub[0]}</text>
+      <text x="${x+bw/2}" y="108" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">${l.sub[1]}</text>`;
+  }).join('')+`
+    <text x="305" y="155" fill="#c49a3c" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">FDA는 단일 논거가 아닌 다층 구조를 원한다</text>`;
 }
 
 // ─── ACCORDION ───
-function tog(id) {
-  const el = C(id);
-  el.classList.toggle('open');
-}
+function tog(id) { G(id).classList.toggle('open'); }
 
 // ─── SCROLL SPY ───
-const secs = document.querySelectorAll('.sec[id]');
-const navs = document.querySelectorAll('.si[href]');
-function updateNav() {
-  let cur = '';
-  secs.forEach(s => { if (s.getBoundingClientRect().top <= 72) cur = s.id; });
-  navs.forEach(n => {
-    n.classList.remove('active');
-    if (n.getAttribute('href') === '#' + cur) n.classList.add('active');
-  });
+const secs=document.querySelectorAll('.sec[id]');
+const navs=document.querySelectorAll('.si[href]');
+function updateNav(){
+  let cur='';
+  secs.forEach(s=>{if(s.getBoundingClientRect().top<=72) cur=s.id;});
+  navs.forEach(n=>{n.classList.remove('active');if(n.getAttribute('href')==='#'+cur) n.classList.add('active');});
 }
-navs.forEach(n => n.addEventListener('click', e => {
-  const href = n.getAttribute('href');
-  if (href.startsWith('#')) {
-    e.preventDefault();
-    const t = document.querySelector(href);
-    if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 56, behavior: 'smooth' });
-  }
+navs.forEach(n=>n.addEventListener('click',e=>{
+  const h=n.getAttribute('href');
+  if(h.startsWith('#')){e.preventDefault();const t=document.querySelector(h);if(t) window.scrollTo({top:t.getBoundingClientRect().top+scrollY-56,behavior:'smooth'});}
 }));
-window.addEventListener('scroll', updateNav);
+window.addEventListener('scroll',updateNav);
 
 // ─── REVEAL ───
-const rvEls = document.querySelectorAll('.rv');
-const ro = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); }), { threshold: 0.05 });
-rvEls.forEach(r => ro.observe(r));
+const rvEls=document.querySelectorAll('.rv');
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.05});
+rvEls.forEach(r=>ro.observe(r));
 
-// ─── INIT ALL CHARTS ───
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    // Size canvases first
-    ['cvAUC','cvExt','cvRoute','cvTMDD','cvMod','cvTrast'].forEach(id => {
-      const el = C(id);
-      if (el) { el.style.width = '100%'; }
-    });
-    drawAUC(); drawExt(); drawRoute(); drawTMDD(); drawTMDDSvg(); drawModel(); drawTrast(); drawBLA();
-  }, 100);
+// ─── INIT ───
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    drawAUC(); drawExt(); rtInit(); drawTMDD();
+    drawTMDDSvg(); drawModel(); drawBLA();
+    // Trastuzumab chart only draws when accordion opens
+    G('a-trast').addEventListener('click',()=>{ setTimeout(drawTrast,50); });
+    updateNav();
+  },150);
 });
 
-window.addEventListener('resize', () => {
-  drawAUC(); drawExt(); drawRoute(); drawTMDD(); drawModel(); drawTrast();
+window.addEventListener('resize',()=>{
+  drawAUC(); drawExt(); rtInit(); drawTMDD(); drawModel();
+  if(G('a-trast').classList.contains('open')) drawTrast();
 });
-updateNav();
 </script>
 </body>
 </html>
