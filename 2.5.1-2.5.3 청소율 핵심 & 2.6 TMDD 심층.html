@@ -3,1436 +3,1595 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PK Insight — CL & TMDD</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>PK/PD Mastery — Clearance & Turnover (§2.5–2.6)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #0f0f10; --s1: #161618; --s2: #1c1c1f; --s3: #242428;
-  --b1: #2a2a2e; --b2: #38383d;
-  --acc: #c49a3c; --acc2: #7fb3e8; --acc3: #5fb87a; --acc4: #e07070;
-  --tx: #c8c4bc; --txd: #6b6760; --txb: #edeae4;
-  --fw: 260px; --fh: 48px;
-  --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans KR', sans-serif;
+  --bg: #09090e;
+  --bg2: #0f0f17;
+  --bg3: #14141f;
+  --bg4: #1a1a2a;
+  --text: #ede8df;
+  --text-muted: #9a9280;
+  --gold: #c9a84c;
+  --gold-dim: #8a6f30;
+  --gold-bright: #e8c870;
+  --red: #c05050;
+  --teal: #4a8fa8;
+  --green: #5a9e6f;
+  --border: #2a2838;
+  --border-gold: #3a3020;
+  --card-bg: #111118;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Noto Sans KR', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15px;line-height:1.7;min-height:100vh}
-.hdr{position:fixed;top:0;left:0;right:0;height:var(--fh);background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;z-index:200;gap:12px}
-.hdr-mark{width:2px;height:22px;background:var(--acc);flex-shrink:0}
-.hdr-t{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--txd);text-transform:uppercase}
-.hdr-r{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--acc);opacity:.7;letter-spacing:.1em}
-.side{position:fixed;top:var(--fh);left:0;bottom:0;width:var(--fw);background:var(--s1);border-right:1px solid var(--b1);overflow-y:auto;padding:16px 0;scrollbar-width:none}
-.side::-webkit-scrollbar{display:none}
-.sl{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc);padding:16px 16px 6px;opacity:.65;text-transform:uppercase}
-.si{display:flex;align-items:center;gap:8px;padding:6px 16px;cursor:pointer;font-size:12.5px;color:var(--txd);text-decoration:none;border-left:2px solid transparent;transition:all .15s}
-.si:hover{color:var(--tx);background:var(--s2)}
-.si.active{color:var(--acc);border-left-color:var(--acc);background:#1a1608}
-.si .ic{font-family:var(--mono);font-size:10px;min-width:18px;opacity:.5}
-.si.sub{padding-left:42px;font-size:11.5px}
-.sdiv{height:1px;background:var(--b1);margin:10px 16px}
-.main{margin-left:var(--fw);margin-top:var(--fh);padding:40px 52px 100px;max-width:860px}
-.sec{margin-bottom:72px;scroll-margin-top:calc(var(--fh) + 20px)}
-.eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc);margin-bottom:10px;opacity:.75;text-transform:uppercase}
-h1.stitle{font-size:26px;font-weight:600;color:var(--txb);line-height:1.2;margin-bottom:6px;letter-spacing:-.01em}
-h2.sh{font-size:17px;font-weight:600;color:var(--txb);margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--b1)}
-h3.sth{font-size:14px;font-weight:600;color:var(--acc);margin:24px 0 8px;letter-spacing:.01em}
-.lead{font-size:14px;color:var(--txd);font-style:italic;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--b1)}
-p{margin-bottom:14px;font-size:14px}
-.fml{background:var(--s2);border:1px solid var(--b1);border-left:2px solid var(--acc);border-radius:3px;padding:12px 16px;margin:12px 0;font-family:var(--mono);font-size:12px;color:var(--acc);line-height:1.9;overflow-x:auto}
-.fml .lbl{font-size:9px;color:var(--txd);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;display:block}
-.fml .eq{display:block;padding:1px 0}
-.fml .cm{color:var(--txd);font-size:11px}
-.box{border-radius:3px;padding:14px 16px;margin:16px 0;border:1px solid}
-.box .bh{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
-.box p{margin-bottom:6px;font-size:13px}
-.box.clin{background:#0c1710;border-color:#2a5c38}.box.clin .bh{color:var(--acc3)}
-.box.pit{background:#180c0c;border-color:#5c2a2a}.box.pit .bh{color:var(--acc4)}
-.box.fda{background:#0c1220;border-color:#2a3c5c}.box.fda .bh{color:var(--acc2)}
-.box.ins{background:#160f02;border-color:#5c4010}.box.ins .bh{color:var(--acc)}
-code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:2px;color:var(--acc)}
-em{color:var(--txb);font-style:italic}
-.acc-wrap{margin:20px 0}
-.acc{border:1px solid var(--b1);border-radius:3px;margin-bottom:6px;overflow:hidden}
-.acc:hover{border-color:var(--b2)}
-.acc.open{border-color:var(--acc)}
-.acc-hdr{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:var(--s2);user-select:none}
-.acc.open .acc-hdr{background:var(--s3)}
-.abadge{font-family:var(--mono);font-size:8px;background:#3a2e08;color:var(--acc);padding:2px 7px;border-radius:2px;letter-spacing:.1em;flex-shrink:0;text-transform:uppercase}
-.atitle{font-size:13px;font-weight:500;color:var(--txb);flex:1}
-.aarrow{color:var(--txd);font-size:10px;font-family:var(--mono);transition:transform .25s}
-.acc.open .aarrow{transform:rotate(180deg);color:var(--acc)}
-.acc-body{display:none;padding:16px;background:var(--s1);border-top:1px solid var(--b1)}
-.acc.open .acc-body{display:block}
-.tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:12.5px}
-.tbl th{background:var(--s2);padding:8px 12px;text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);border-bottom:1px solid var(--b2);font-weight:500}
-.tbl td{padding:8px 12px;border-bottom:1px solid var(--b1);vertical-align:top;line-height:1.5}
-.tbl tr:hover td{background:var(--s2)}
-.g{color:var(--acc3);font-weight:500}.r{color:var(--acc4)}.hl{color:var(--acc);font-weight:600}
-.divline{height:1px;background:linear-gradient(to right,var(--b2),transparent);margin:52px 0;opacity:.6}
-/* VIZ — KEY: fixed height container so canvas knows its size */
-.viz{background:var(--s2);border:1px solid var(--b1);border-radius:3px;margin:16px 0;overflow:hidden}
-.viz-title{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--txd);padding:10px 14px 8px;border-bottom:1px solid var(--b1);text-transform:uppercase}
-/* CHART WRAP — critical for canvas sizing */
-.chart-wrap{position:relative;width:100%}
-.flow{display:flex;margin:14px 0;overflow-x:auto}
-.fstep{flex:1;min-width:120px;background:var(--s2);border:1px solid var(--b1);border-right:none;padding:12px 14px}
-.fstep:first-child{border-radius:3px 0 0 3px}
-.fstep:last-child{border-right:1px solid var(--b1);border-radius:0 3px 3px 0}
-.fstep-l{font-family:var(--mono);font-size:8px;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
-.fstep-n{font-size:13px;font-weight:600;color:var(--txb);margin-bottom:3px}
-.fstep-p{font-family:var(--mono);font-size:9.5px;color:var(--txd);line-height:1.6}
-.farrow{display:flex;align-items:center;justify-content:center;width:18px;background:var(--s3);border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);flex-shrink:0;color:var(--txd);font-family:var(--mono);font-size:12px}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:12px 0}
-.pcrd{background:var(--s2);border:1px solid var(--b1);border-radius:2px;padding:8px 10px}
-.psym{font-family:var(--mono);font-size:12px;color:var(--acc);margin-bottom:2px}
-.pdesc{font-size:11px;color:var(--txd);line-height:1.4}
-.rv{opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s}
-.rv.vis{opacity:1;transform:none}
-/* slider */
-.slider-wrap{display:flex;align-items:center;gap:12px;margin:8px 0}
-.slider-wrap label{font-family:var(--mono);font-size:11px;color:var(--txd);min-width:120px}
-.slider-wrap input[type=range]{flex:1;accent-color:var(--acc);height:2px;cursor:pointer}
-.slider-wrap .val{font-family:var(--mono);font-size:12px;color:var(--acc);min-width:60px;text-align:right;font-weight:600}
-/* stat bar — inline AUC readout */
-.stat-bar{display:flex;gap:20px;padding:10px 16px;border-top:1px solid var(--b1);font-family:var(--mono);font-size:11px;flex-wrap:wrap}
-.stat-item .sl{font-size:8px;letter-spacing:.15em;color:var(--txd);text-transform:uppercase;padding:0;margin:0;opacity:1}
-.stat-item .sv{font-size:18px;font-weight:600;color:var(--acc)}
-@media(max-width:800px){.side{display:none}.main{margin-left:0;padding:28px 18px 80px}}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* ─── TYPOGRAPHY ─── */
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; color: var(--gold); letter-spacing: 0.03em; }
+h1 { font-size: 2.4rem; line-height: 1.2; }
+h2 { font-size: 1.8rem; margin-bottom: 1.2rem; }
+h3 { font-size: 1.35rem; margin-bottom: 0.8rem; color: var(--gold-bright); }
+h4 { font-size: 1.1rem; color: #d4b870; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; color: var(--text); }
+em { color: var(--gold-bright); font-style: italic; }
+strong { color: var(--gold-bright); font-weight: 700; }
+
+/* ─── LAYOUT ─── */
+.section { border-top: 1px solid var(--border); padding: 3rem 0; }
+.section:first-child { border-top: none; }
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.8rem;
+  margin: 1.5rem 0;
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+  border-radius: 6px 6px 0 0;
+}
+.concept-card { border-left: 3px solid var(--gold); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media(max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* ─── HEADER ─── */
+.session-header {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--border-gold);
+}
+.edition-badge {
+  display: inline-block;
+  background: var(--border-gold);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 3px;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+.big-idea {
+  background: linear-gradient(135deg, #1a1500, #0f0f17);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 1.2rem 1.8rem;
+  margin: 1.5rem 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--gold-bright);
+}
+.nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+.nav-pill {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-pill:hover { background: var(--border-gold); border-color: var(--gold-dim); }
+
+/* ─── MATH ─── */
+.eq-block {
+  background: #0a0a14;
+  border-left: 3px solid var(--gold-dim);
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  border-radius: 0 4px 4px 0;
+}
+.eq-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--gold-dim);
+  float: right;
+}
+
+/* ─── CODE ─── */
+pre, code {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: #b8d4c0;
+}
+pre {
+  background: #080810;
+  border: 1px solid #1e1e30;
+  border-radius: 5px;
+  padding: 1.2rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+.code-comment { color: #556655; }
+.code-keyword { color: #c0a060; }
+.code-string { color: #80b090; }
+
+/* ─── TABS ─── */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-btn:hover { color: var(--text); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── SIMULATOR ─── */
+.sim-container {
+  background: #090912;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.8rem;
+  margin: 1.5rem 0;
+}
+.slider-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+  margin: 1.2rem 0;
+}
+.slider-item label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+.slider-item label span { color: var(--gold-bright); font-weight: 500; }
+input[type=range] {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+}
+.param-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.8rem;
+  margin: 1.2rem 0;
+}
+.param-box {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.7rem 1rem;
+  text-align: center;
+}
+.param-box .pname {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  display: block;
+}
+.param-box .pval {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  color: var(--gold-bright);
+  font-weight: 500;
+}
+.chart-wrapper { position: relative; height: 320px; margin: 1rem 0; }
+.scale-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.toggle-btn {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.toggle-btn.active { background: var(--border-gold); color: var(--gold); border-color: var(--gold-dim); }
+
+/* ─── MISSION ─── */
+.mission-box {
+  background: linear-gradient(135deg, #0d1020, #0f0f17);
+  border: 1px solid #2a3050;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.2rem 0;
+}
+.mission-box h4 { color: #6090d0; margin-bottom: 0.8rem; }
+.reveal-btn {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.8rem;
+  transition: all 0.2s;
+}
+.reveal-btn:hover { background: var(--border-gold); }
+.reveal-content { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.reveal-content.open { display: block; }
+
+/* ─── CONFUSION TABLE ─── */
+.conf-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.88rem; }
+.conf-table th { background: var(--bg4); color: var(--gold); font-family: var(--sans); font-weight: 700; padding: 0.7rem 1rem; border: 1px solid var(--border); text-align: left; }
+.conf-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; }
+.conf-table tr:nth-child(even) td { background: #0c0c18; }
+.conf-table td:first-child { color: var(--gold-dim); font-weight: 700; font-size: 0.8rem; }
+
+/* ─── SELF TEST ─── */
+.question-block {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.question-header {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: background 0.2s;
+}
+.question-header:hover { background: var(--bg4); }
+.q-text { flex: 1; }
+.q-meta { display: flex; gap: 0.5rem; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.sr-badge {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.sr-core { background: #2a1800; color: #e8a040; border: 1px solid #5a3010; }
+.sr-imp { background: #1a2000; color: #90c040; border: 1px solid #304010; }
+.sr-std { background: #1a1a2a; color: #7090b0; border: 1px solid #303050; }
+.q-num { font-family: var(--mono); font-size: 0.75rem; color: var(--gold-dim); }
+.answer-block { display: none; padding: 1.2rem 1.5rem; border-top: 1px solid var(--border); background: #0a0a15; }
+.answer-block.open { display: block; }
+.next-depth { margin-top: 1rem; padding: 0.8rem 1rem; background: #0d1025; border-left: 3px solid var(--teal); border-radius: 0 4px 4px 0; font-size: 0.88rem; }
+.next-depth::before { content: '▶ 심화 질문: '; color: var(--teal); font-weight: 700; }
+
+/* ─── ZETTEL ─── */
+.zettel {
+  background: #08080f;
+  border: 1px solid #252535;
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.83rem;
+}
+.zettel-header { font-family: var(--mono); font-size: 0.72rem; color: var(--gold-dim); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+.zettel pre { background: none; border: none; padding: 0; font-size: 0.75rem; color: #7090a0; }
+
+/* ─── DIAGNOSTIC ─── */
+.diag-box {
+  background: #100808;
+  border: 1px solid #3a1515;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+.diag-box h4 { color: #d06060; }
+.signature {
+  display: inline-block;
+  background: #1a0a0a;
+  border: 1px solid #4a2020;
+  border-radius: 4px;
+  padding: 0.2rem 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: #e07070;
+  margin-right: 0.5rem;
+}
+
+/* ─── ISO MAP ─── */
+.iso-card {
+  background: #0a0a18;
+  border: 1px solid #202038;
+  border-radius: 6px;
+  padding: 1.2rem;
+  margin: 0.8rem 0;
+}
+.iso-domain { font-family: var(--mono); font-size: 0.72rem; color: var(--teal); margin-bottom: 0.4rem; }
+
+/* ─── DIVIDER ─── */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  margin: 2.5rem 0;
+}
+
+/* ─── SECTION LABELS ─── */
+.sec-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.section-number {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--gold-dim);
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.7rem;
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+/* highlighter */
+.highlight { color: var(--gold-bright); background: rgba(201,168,76,0.08); padding: 0 3px; border-radius: 2px; }
+.warn { color: #e08040; }
+.note-box { background: #0a1020; border-left: 3px solid var(--teal); padding: 0.8rem 1.2rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
 </style>
 </head>
 <body>
 
-<header class="hdr">
-  <div class="hdr-mark"></div>
-  <div class="hdr-t">PK Insight · PIPET Lab</div>
-  <div class="hdr-r">G&W 5th · Ch 2.5–2.6</div>
-</header>
+<!-- ═══════════════════════════════════════ §1 HEADER ═══════════════════════════════════════ -->
+<div class="session-header" id="top">
+  <div class="sec-label">PK/PD Mastery Protocol · Session Log</div>
+  <div class="edition-badge">Gabrielsson &amp; Weiner · 5th Ed. · Chapter 2 · pp. 77–111</div>
+  <h1>Clearance &amp; Turnover<br><span style="font-size:1.2rem;color:var(--text-muted)">§2.5 청소율 개념 · §2.6 Turnover 이론</span></h1>
 
-<nav class="side">
-  <div class="sl">§ Clearance</div>
-  <a class="si active" href="#cl-base"><span class="ic">2.5</span>CL 기초</a>
-  <a class="si" href="#cl-ext"><span class="ic">↗</span>추출비 모델</a>
-  <a class="si" href="#cl-route"><span class="ic">⟳</span>투여 경로</a>
-  <a class="si sub" href="#w-cirr"><span class="ic">W1</span>간경변·Propranolol</a>
-  <a class="si sub" href="#w-iden"><span class="ic">W2</span>CL/F 식별 불능</a>
-  <a class="si sub" href="#w-renal"><span class="ic">W3</span>FDA 신기능 방어</a>
-  <div class="sdiv"></div>
-  <div class="sl">§ TMDD</div>
-  <a class="si" href="#tmdd-bio"><span class="ic">🎯</span>TMDD 개요</a>
-  <a class="si" href="#tmdd-full"><span class="ic">∑</span>Full 모델</a>
-  <a class="si" href="#tmdd-hier"><span class="ic">▽</span>계층 구조</a>
-  <a class="si sub" href="#w-trast"><span class="ic">W1</span>Trastuzumab t½</a>
-  <a class="si sub" href="#w-tid"><span class="ic">W2</span>식별성 한계</a>
-  <a class="si sub" href="#w-bla"><span class="ic">W3</span>BLA 방어 논리</a>
-  <div class="sdiv"></div>
-  <a class="si" href="#contrast"><span class="ic">≡</span>최종 대조표</a>
-</nav>
-
-<main class="main">
-
-<!-- ═══ SECTION 1: CL BASE ═══ -->
-<section class="sec rv" id="cl-base">
-  <div class="eyebrow">Chapter 2.5 · Clearance Concepts</div>
-  <h1 class="stitle">소실청소율(CL): 약동학의 심장</h1>
-  <p class="lead">CL은 단순한 숫자가 아니라 — 간·신장·혈류가 약물을 어떻게 "처리"하는지의 총합적 생리학적 역량이다.</p>
-
-  <h2 class="sh">1.1 정의와 AUC 역관계</h2>
-  <div class="fml">
-    <span class="lbl">기본 정의 — Eq 2:180</span>
-    <span class="eq">dX/dt = CL · Cp &nbsp;&nbsp;<span class="cm">// 소실속도 = CL × 혈장농도</span></span>
-    <span class="eq">CL(IV) = D_iv / AUC_iv(0→∞)</span>
-    <span class="eq">CL/F(PO) = D_po / AUC_po &nbsp;<span class="cm">// CL↑ → AUC↓ (반비례)</span></span>
+  <div class="big-idea">
+    <strong>Big Idea:</strong> 약물의 청소율(clearance)은 단순한 제거 속도가 아니라
+    <em>혈류(Q<sub>H</sub>), 단백결합(f<sub>u</sub>), 내재청소율(Cl<sub>int</sub>)</em>의
+    삼각 균형에서 결정되며, 이 동일한 수학 구조가 내인성 물질의 turnover 모델과 정확히 동형(isomorphic)이다.
   </div>
 
-  <!-- AUC INTERACTIVE — FIXED -->
-  <div class="viz">
-    <div class="viz-title">인터랙티브 — CL과 Dose가 AUC에 미치는 영향</div>
-    <div style="padding:12px 16px 8px">
-      <div class="slider-wrap">
-        <label>CL (L/h)</label>
-        <input type="range" id="sl-cl" min="1" max="20" value="5" step="0.5">
-        <span class="val" id="cl-val">5.0</span>
-      </div>
-      <div class="slider-wrap">
-        <label>Dose (mg)</label>
-        <input type="range" id="sl-dose" min="50" max="500" value="200" step="50">
-        <span class="val" id="dose-val">200</span>
-      </div>
-    </div>
-    <!-- FIX 1: chart-wrap with fixed height so clientHeight != 0 -->
-    <div class="chart-wrap" style="height:200px;padding:0 12px 0">
-      <canvas id="cvAUC"></canvas>
-    </div>
-    <!-- FIX 2: readout in HTML, not canvas text — always visible -->
-    <div class="stat-bar" id="auc-statbar">
-      <div class="stat-item">
-        <div class="sl">AUC (mg·h/L)</div>
-        <div class="sv" id="auc-display">40.0</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">Cmax (mg/L)</div>
-        <div class="sv" id="cmax-display">6.7</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">t½ (h)</div>
-        <div class="sv" id="thalf-display">4.2</div>
-      </div>
-      <div class="stat-item" style="margin-left:auto;align-self:center">
-        <div style="font-size:10px;color:var(--txd)">V = 30 L (고정)</div>
-      </div>
-    </div>
+  <div class="nav-pills">
+    <a class="nav-pill" href="#concept-cl">청소율 유도</a>
+    <a class="nav-pill" href="#concept-extraction">간 추출비</a>
+    <a class="nav-pill" href="#concept-wellstirred">Well-Stirred 모델</a>
+    <a class="nav-pill" href="#concept-route">투여경로 영향</a>
+    <a class="nav-pill" href="#concept-iviv">In vitro/In vivo 외삽</a>
+    <a class="nav-pill" href="#concept-turnover">Turnover 모델</a>
+    <a class="nav-pill" href="#concept-feedback">Feedback</a>
+    <a class="nav-pill" href="#sim">시뮬레이터</a>
+    <a class="nav-pill" href="#confpairs">혼동 쌍 분석</a>
+    <a class="nav-pill" href="#scenarios">임상 시나리오</a>
+    <a class="nav-pill" href="#selftest">자기 테스트</a>
+    <a class="nav-pill" href="#meta">메타 프레임</a>
   </div>
 
-  <div class="box pit">
-    <div class="bh">⚠️ 초보자의 함정 — CL ≠ 소실속도</div>
-    <p><strong>CL ≠ 소실속도(elimination rate)</strong>. 소실속도는 CL × Cp이므로 농도에 따라 변하지만, CL 자체는 선형 PK에서 <em>농도와 무관한 고정 파라미터</em>다.</p>
+  <div class="card" style="margin-top:1.5rem;">
+    <h4>지식 그래프 위치</h4>
+    <p><strong>선행 개념:</strong> 1구획·2구획 약동학 모델, AUC의 기하학적 의미, 일차 제거 동력학, 볼륨 분포 개념 (§2.1–2.4)</p>
+    <p><strong>현재 내용:</strong> 청소율의 생리학적 유도(§2.5), 간 추출 모델(§2.5.2–2.5.5), In vitro/in vivo 외삽(§2.5.4), Turnover 이론 및 단백질·호르몬 동력학(§2.6)</p>
+    <p><strong>열리는 개념:</strong> 비선형 약동학(Michaelis-Menten), 집단약동학(PopPK)에서의 공변량 모델링, PBPK 모델, TMDD(Target-Mediated Drug Disposition), 약력학 반응 Turnover 모델(§3.7)</p>
   </div>
-</section>
+</div>
 
-<!-- ═══ SECTION 2: EXTRACTION ═══ -->
-<section class="sec rv" id="cl-ext">
-  <h2 class="sh">1.2 추출비(ER)와 Well-Stirred Model</h2>
-  <div class="fml">
-    <span class="lbl">Well-Stirred Model — Eq 2:186–2:195</span>
-    <span class="eq">E_H = (C_in − C_out) / C_in</span>
-    <span class="eq">Cl_H = Q_H · f_u · Cl_int / (Q_H + f_u · Cl_int)</span>
-    <span class="eq">F_H  = 1 − E_H = Q_H / (Q_H + f_u · Cl_int)</span>
-  </div>
+<!-- ═══════════════════════════════════════ §2 CONCEPT CARDS ═══════════════════════════════════════ -->
+<div class="section" id="sec2">
+  <div class="section-number">§2 — 개념 해부 카드</div>
+  <h2>핵심 개념 해부</h2>
 
-  <div class="viz">
-    <div class="viz-title">인터랙티브 — 추출비 시뮬레이터</div>
-    <div style="padding:12px 16px 8px">
-      <div class="slider-wrap">
-        <label>Q_H (L/h)</label>
-        <input type="range" id="sl-qh" min="10" max="120" value="90" step="5">
-        <span class="val" id="qh-val">90</span>
+  <!-- ─── CARD 1: Clearance ─── -->
+  <div class="card concept-card" id="concept-cl">
+    <h3>개념 1 · Clearance (청소율) 의 유도</h3>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab(this,'cl-def')">A. 정의</button>
+      <button class="tab-btn" onclick="showTab(this,'cl-deriv')">B. 유도</button>
+      <button class="tab-btn" onclick="showTab(this,'cl-struct')">C. 구조적 필연성</button>
+      <button class="tab-btn" onclick="showTab(this,'cl-assump')">D. 가정 &amp; 한계</button>
+      <button class="tab-btn" onclick="showTab(this,'cl-zettel')">Z. Zettelkasten</button>
+    </div>
+
+    <div id="cl-def" class="tab-content active">
+      <p>청소율(Clearance, <em>Cl</em>)은 단위 시간당 약물이 완전히 제거되는 <strong>혈장(혹은 혈액)의 부피</strong>이다. 이는 제거율(elimination rate)과 농도(concentration) 사이의 비례 인자로 정의된다:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:180</span>
+        $$\frac{dX}{dt} = Cl \cdot C_p$$
       </div>
-      <div class="slider-wrap">
-        <label>f_u · Cl_int (L/h)</label>
-        <input type="range" id="sl-clint" min="5" max="400" value="180" step="5">
-        <span class="val" id="clint-val">180</span>
+      <p>즉, 제거율-농도 플롯에서 기울기(slope)가 바로 $Cl$이다. 단위는 <strong>부피/시간</strong> (e.g., L·h⁻¹, mL·min⁻¹)이다.</p>
+      <p>정맥 투여 후 전신 청소율은 용량(dose)을 AUC로 나누어 추정한다:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:181</span>
+        $$Cl = \frac{D_{iv}}{AUC_0^{\infty}(iv)} = \frac{D_{iv}}{AUC_0^{\tau}(iv)}$$
+      </div>
+      <p>경구 청소율(apparent oral clearance, $Cl/F$)은 경구 용량을 경구 AUC로 나눈 값이며, 생체이용률 $F$로 나누어야 진정한 전신 청소율이 된다:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:182–183</span>
+        $$\frac{Cl}{F} = \frac{D_{po}}{AUC_0^{\infty}(po)}, \quad Cl = F \cdot Cl_o$$
+      </div>
+      <p>비결합 청소율(unbound clearance)과의 관계: 총 청소율은 비결합분율 $f_u$와 비결합 청소율 $Cl_u$의 곱이다:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:185</span>
+        $$Cl = f_u \cdot Cl_u$$
       </div>
     </div>
-    <div class="chart-wrap" style="height:200px;padding:0 12px 0">
-      <canvas id="cvExt"></canvas>
+
+    <div id="cl-deriv" class="tab-content">
+      <p>청소율의 유도는 질량 균형(mass balance)에서 시작한다. 선형 약동학 하에서 체내 약물량 $X$의 감소율이 농도에 비례한다고 가정하면:</p>
+      <div class="eq-block">$$\frac{dX}{dt} = -Cl \cdot C_p$$</div>
+      <p>양변을 시간 0에서 무한대까지 적분하면:</p>
+      <div class="eq-block">$$X_0 = Cl \cdot \int_0^\infty C_p \, dt = Cl \cdot AUC_0^\infty$$</div>
+      <p>정맥 투여에서 $X_0 = D_{iv}$이므로:</p>
+      <div class="eq-block">$$Cl = \frac{D_{iv}}{AUC_0^\infty}$$</div>
+      <p>이것이 비구획 분석(NCA)에서 청소율을 추정하는 핵심 공식이다. 청소율은 <strong>1차 파라미터</strong>이고, AUC는 이로부터 유도되는 <strong>2차 파라미터</strong>임을 Gabrielsson은 명시적으로 강조한다. AUC 추정이 잘못되면 청소율 추정도 틀리지만, 방향은 반대이다: AUC를 과소추정하면 Cl을 과대추정한다.</p>
     </div>
-    <div class="stat-bar">
-      <div class="stat-item">
-        <div class="sl">E_H</div>
-        <div class="sv" id="eh-display">66.7%</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">F_H</div>
-        <div class="sv" id="fh-display">33.3%</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">Cl_H (L/h)</div>
-        <div class="sv" id="clh-display">60.0</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">유형</div>
-        <div class="sv" id="ext-type" style="font-size:12px;padding-top:4px">중간 추출</div>
+
+    <div id="cl-struct" class="tab-content">
+      <p>왜 청소율 방정식이 정확히 $Cl = D/AUC$의 형태를 취하는가? 이는 선형 시불변계(linear time-invariant system)의 수학적 필연성이다:</p>
+      <p>선형 시스템에서 제거는 항상 <strong>상태 변수(농도)에 비례</strong>해야 한다. 이는 첫째로 중첩의 원리(superposition principle)를 만족시키고, 둘째로 실험적으로 관찰되는 일차 지수 감소를 생성한다. 만약 청소율이 농도에 의존한다면(비선형 제거), 위 적분 관계는 성립하지 않는다.</p>
+      <p>$Cl = D/AUC$는 본질적으로 <strong>비율 보존 법칙(conservation of flux)</strong>이다: 단위 시간당 제거되는 약물의 양은 농도 × 부피 흐름이며, 전체 노출(AUC)은 투여 용량을 이 흐름률로 나눈 것이다.</p>
+    </div>
+
+    <div id="cl-assump" class="tab-content">
+      <p><strong>핵심 가정들:</strong></p>
+      <ul style="margin-left:1.5rem;margin-bottom:1rem;line-height:2">
+        <li><span class="highlight">선형성(linearity)</span>: 용량-비례적 동력학. 위반 시 청소율이 농도 의존적이 되어 단일 값으로 요약 불가.</li>
+        <li><span class="highlight">정상 상태 단백결합</span>: $f_u$가 시간과 농도에 독립적. 높은 결합률 약물에서 비선형 단백결합이 문제.</li>
+        <li><span class="highlight">완전한 AUC 추정</span>: $AUC_0^\infty$ 에서 terminal phase의 외삽이 정확해야 함. Sparse sampling에서 큰 불확실성 발생.</li>
+        <li><span class="highlight">단일 투여 경로</span>: 여러 청소 경로가 있을 때 총 Cl은 부분 Cl의 합.</li>
+      </ul>
+      <p><strong>한계:</strong> 전신 청소율은 청소 기관들의 기여를 구분하지 못한다. 신장·간·폐 청소율의 개별 기여를 알려면 별도의 실험 설계(신장: 요중 배설 측정; 간: 간 적출 또는 문맥혈 채취)가 필요하다.</p>
+    </div>
+
+    <div id="cl-zettel" class="tab-content">
+      <div class="zettel">
+        <div class="zettel-header">─── PERMANENT NOTE ───</div>
+        <pre>---
+aliases: [Clearance, 청소율, Cl, 전신청소율]
+tags: [pharmacometrics/pk, nca, primary-parameter]
+up: "[[PK Parameter MOC]]"
+related: ["[[AUC]]", "[[Volume of Distribution]]", "[[Hepatic Extraction]]"]
+source: "Gabrielsson & Weiner, 5th Ed., p. 77-78, Eq. 2:180-2:185"
+---</pre>
+        <p style="margin-top:0.8rem;font-size:0.85rem;">청소율(Cl)은 <em>제거율(dX/dt)과 농도(C) 사이의 비례상수</em>로 정의되며, 정맥 투여 후 Cl = D/AUC로 추정된다. 이는 선형 약동학 시스템에서 수학적 필연성이다. AUC는 청소율로부터 유도되는 이차 파라미터이지, 그 반대가 아님을 Gabrielsson은 강조한다. 비결합 청소율과의 관계: $Cl = f_u \cdot Cl_u$. 경구 청소율($Cl/F$)은 생체이용률이 포함되어 있어 진정한 전신 청소율보다 크거나 같다.</p>
       </div>
     </div>
   </div>
 
-  <table class="tbl">
-    <thead><tr><th>유형</th><th>조건</th><th>Cl_H 근사</th><th>결정 인자</th><th>예시</th></tr></thead>
-    <tbody>
-      <tr><td class="hl">고추출 &gt;0.7</td><td>f_u·Cl_int >> Q_H</td><td><code>≈ Q_H</code></td><td class="g">간혈류</td><td>Propranolol, Morphine</td></tr>
-      <tr><td class="hl">저추출 &lt;0.3</td><td>f_u·Cl_int &lt;&lt; Q_H</td><td><code>≈ f_u·Cl_int</code></td><td class="g">효소·단백결합</td><td>Warfarin, Theophylline</td></tr>
-    </tbody>
+  <!-- ─── CARD 2: Hepatic Extraction ─── -->
+  <div class="card concept-card" id="concept-extraction">
+    <h3>개념 2 · 간 추출비(Hepatic Extraction Ratio) &amp; Well-Stirred Model</h3>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab(this,'ext-def')">A. 정의</button>
+      <button class="tab-btn" onclick="showTab(this,'ext-deriv')">B. 유도</button>
+      <button class="tab-btn" onclick="showTab(this,'ext-struct')">C. 구조적 필연성</button>
+      <button class="tab-btn" onclick="showTab(this,'ext-models')">D. 4가지 모델</button>
+      <button class="tab-btn" onclick="showTab(this,'ext-zettel')">Z. Zettelkasten</button>
+    </div>
+
+    <div id="ext-def" class="tab-content active">
+      <p>간 추출비($E_H$)는 간을 통과할 때 제거되는 약물의 분율이다:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:186</span>
+        $$E_H = \frac{C_{in} - C_{out}}{C_{in}}$$
+      </div>
+      <p>$E_H$의 범위: $0 \leq E_H \leq 1$. 간 청소율은 혈류량과 추출비의 곱이다:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:187</span>
+        $$Cl_H = Q_H \cdot E_H = Q_H \cdot \frac{C_{in} - C_{out}}{C_{in}}$$
+      </div>
+      <p><strong>내재청소율(Intrinsic clearance, $Cl_{int}$)</strong>은 혈류의 제한 없이 간이 약물을 청소할 수 있는 최대 능력이다. Well-stirred model에서:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:195/2:229</span>
+        $$Cl_H = \frac{Q_H \cdot f_u \cdot Cl_{int}}{Q_H + f_u \cdot Cl_{int}}$$
+      </div>
+      <p>이 공식은 Gabrielsson의 <strong>어셈블리 라인 비유</strong>로 직관적으로 이해된다: $Q_H$는 병을 채우는 속도(Subject A), $Cl_{int}$는 코르크를 막는 속도(Subject B). 두 공정 중 느린 것이 전체 생산율(= 청소율)을 결정한다.</p>
+    </div>
+
+    <div id="ext-deriv" class="tab-content">
+      <p>Well-stirred model의 유도는 간 내부에서의 질량 균형에서 출발한다. 간 내 약물 농도를 $C_H$, 간 부피를 $V_H$라 하면:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:188</span>
+        $$V_H \cdot \frac{dC_H}{dt} = Q_H \cdot C_{in} - Q_H \cdot C_{out} - f_u \cdot Cl_{int} \cdot C_{out}$$
+      </div>
+      <p>우변 세 항의 의미: (1) $Q_H \cdot C_{in}$: 유입 속도, (2) $Q_H \cdot C_{out}$: 유출 속도, (3) $f_u \cdot Cl_{int} \cdot C_{out}$: 대사 제거 속도. Well-stirred model의 핵심 가정은 간 전체가 균일하게 혼합되어 $C_H = C_{out}$임이다.</p>
+      <p>정상 상태($dC_H/dt = 0$)에서:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:190–191</span>
+        $$Q_H \cdot C_{in} - Q_H \cdot C_{out} - f_u \cdot Cl_{int} \cdot C_{out} = 0$$
+        $$\Rightarrow C_{out} = \frac{Q_H}{Q_H + f_u \cdot Cl_{int}} \cdot C_{in}$$
+      </div>
+      <p>이를 추출비 정의(Eq. 2:186)에 대입하면:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:194</span>
+        $$E_H = \frac{f_u \cdot Cl_{int}}{Q_H + f_u \cdot Cl_{int}}$$
+      </div>
+      <p>따라서 $Cl_H = Q_H \cdot E_H$를 계산하면 Eq. 2:195를 얻는다. 간 가용성(hepatic availability):</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:196</span>
+        $$F_H = 1 - E_H = \frac{Q_H}{Q_H + f_u \cdot Cl_{int}} = \frac{Q_H}{Q_H + Cl_o}$$
+      </div>
+      <p>간 청소율이 50%의 최대값에 도달하는 것은 $Q_H = f_u \cdot Cl_{int}$일 때이다 (Figure 2.67).</p>
+
+      <p style="margin-top:1rem;"><strong>고추출/저추출 극한 근사:</strong></p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:204 (고추출: E<sub>H</sub> &gt; 0.7)</span>
+        $$Cl_{H, high} = \frac{Q_H \cdot f_u \cdot Cl_{int}}{Q_H \ll f_u \cdot Cl_{int}} \approx Q_H$$
+      </div>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:205 (저추출: E<sub>H</sub> &lt; 0.3)</span>
+        $$Cl_{H, low} = \frac{Q_H \cdot f_u \cdot Cl_{int}}{Q_H \gg f_u \cdot Cl_{int}} \approx f_u \cdot Cl_{int}$$
+      </div>
+    </div>
+
+    <div id="ext-struct" class="tab-content">
+      <p>Well-stirred model 방정식은 수학적으로 <strong>병렬 저항 공식</strong>과 동형이다. $Q_H$와 $f_u \cdot Cl_{int}$를 각각 두 도전체의 컨덕턴스라 할 때, 총 청소율은 harmonic mean이 된다:</p>
+      <div class="eq-block">
+        $$Cl_H = \frac{1}{\frac{1}{Q_H} + \frac{1}{f_u \cdot Cl_{int}}}^{-1} \cdot \text{(scaling)}$$
+      </div>
+      <p>이 형태는 병목 공정(bottleneck process)이 지배하는 모든 직렬 시스템에서 나타난다. 두 저항 중 <em>작은 것</em>이 전체 흐름을 결정한다. 이것이 왜 고추출 약물(flow-limited)과 저추출 약물(capacity-limited)이 전혀 다른 임상적 거동을 보이는지의 수학적 근거이다.</p>
+      <p>Parallel tube model은 이 구조에서 벗어나 지수 함수적 추출을 가정한다($C_{out} = C_{in} \cdot e^{-f_u Cl_{int}/Q_H}$). 분산 모델(dispersion model)과 distributed model은 이 두 극단 사이의 연속체를 표현한다.</p>
+    </div>
+
+    <div id="ext-models" class="tab-content">
+      <p>Gabrielsson의 Table 2.9는 네 가지 간 청소율 모델을 요약한다:</p>
+      <table class="conf-table">
+        <tr>
+          <th>모델</th><th>$C_{out}$ / $F_H$</th><th>$Cl_H$</th><th>파라미터</th>
+        </tr>
+        <tr>
+          <td><strong>Well-Stirred</strong><br>(Venous Equilibrium)</td>
+          <td>$C_{in} \cdot \frac{Q_H}{Q_H + f_u Cl_{int}}$</td>
+          <td>$\frac{Q_H \cdot f_u Cl_{int}}{Q_H + f_u Cl_{int}}$</td>
+          <td>$Cl_{int}$</td>
+        </tr>
+        <tr>
+          <td><strong>Parallel Tube</strong><br>(Sinusoidal)</td>
+          <td>$C_{in} \cdot e^{-f_u Cl_{int}/Q_H}$</td>
+          <td>$Q_H \cdot (1 - e^{-f_u Cl_{int}/Q_H})$</td>
+          <td>$Cl_{int}$</td>
+        </tr>
+        <tr>
+          <td><strong>Distributed</strong></td>
+          <td>복잡한 지수 (Eq. 2:233)</td>
+          <td>Eq. 2:234 ($\varepsilon^2$ 포함)</td>
+          <td>$\varepsilon, Cl_{int}$</td>
+        </tr>
+        <tr>
+          <td><strong>Dispersion</strong></td>
+          <td>Eq. 2:235 ($D_N$ 포함)</td>
+          <td>Eq. 2:236</td>
+          <td>$R_N, D_N$</td>
+        </tr>
+      </table>
+      <p class="note-box">Dispersion number $D_N \to \infty$이면 Well-Stirred, $D_N \to 0$이면 Parallel Tube 모델로 수렴한다. 실제 간의 혈류 혼합 정도는 이 두 극단 사이에 있다.</p>
+    </div>
+
+    <div id="ext-zettel" class="tab-content">
+      <div class="zettel">
+        <div class="zettel-header">─── PERMANENT NOTE ───</div>
+        <pre>---
+aliases: [Hepatic Extraction, 간추출비, Well-Stirred Model, EH, FH]
+tags: [pharmacometrics/pk, hepatic-clearance, extraction-ratio]
+up: "[[Clearance MOC]]"
+related: ["[[Intrinsic Clearance]]", "[[First-Pass Effect]]", "[[Protein Binding]]"]
+source: "Gabrielsson & Weiner, 5th Ed., p. 79-94, Eq. 2:186-2:236"
+---</pre>
+        <p style="margin-top:0.8rem;font-size:0.85rem;">간 청소율은 혈류($Q_H$)와 내재청소율($f_u \cdot Cl_{int}$)의 조화 평균적 상호작용으로 결정된다 (Eq. 2:195). 고추출약물($E_H > 0.7$): 청소율 ≈ $Q_H$ → 혈류 의존적. 저추출약물($E_H < 0.3$): 청소율 ≈ $f_u \cdot Cl_{int}$ → 내재능력 의존적. 이 구별은 DDI(약물-약물 상호작용)와 질병 상태 예측에 핵심적이다. Well-stirred model은 간이 완전 혼합 반응기(CSTR)라는 가정이며, Parallel tube model은 플러그 흐름 반응기(PFR) 가정이다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CARD 3: Route of Administration ─── -->
+  <div class="card concept-card" id="concept-route">
+    <h3>개념 3 · 투여 경로가 $C_{ss}$에 미치는 영향</h3>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab(this,'route-main')">핵심 내용</button>
+      <button class="tab-btn" onclick="showTab(this,'route-table')">요약표</button>
+    </div>
+
+    <div id="route-main" class="tab-content active">
+      <p>Gabrielsson의 Figure 2.61은 이 세션의 가장 임상적으로 중요한 통찰을 담고 있다. 정상 상태 농도는 기본적으로:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:206</span>
+        $$C_{ss} = \frac{R_0}{Cl}$$
+      </div>
+      <p>그러나 투여 경로와 추출 특성에 따라 $Cl$을 결정하는 파라미터가 근본적으로 달라진다:</p>
+      <p><strong>정맥 투여, 고추출 약물:</strong> $Cl \approx Q_H$ → 혈류가 청소율을 결정하므로 $f_u$ 변화의 영향 없음. 단, 비결합 농도 $C_{u,ss} = f_u \cdot C_{ss} \approx f_u \cdot R_0/Q_H$는 $f_u$에 의존함 → <span class="warn">⚠ 단백결합 변화가 비결합 농도를 바꾼다!</span></p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:207–208</span>
+        $$C_{ss} \approx \frac{R_0}{Q_H}, \quad C_{u,ss} \approx \frac{f_u \cdot R_0}{Q_H}$$
+      </div>
+      <p><strong>정맥 투여, 저추출 약물:</strong> $Cl \approx f_u \cdot Cl_{int}$ → 총 농도는 $f_u$와 $Cl_{int}$ 모두에 의존하지만, 비결합 농도는 $f_u$에 독립적이다.</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:209–210</span>
+        $$C_{ss} \approx \frac{R_0}{f_u \cdot Cl_{int}}, \quad C_{u,ss} = \frac{R_0}{Cl_{int}}$$
+      </div>
+      <p><strong>경구 투여 (어떤 추출 특성이든):</strong> $F_H$와 Cl의 $Q_H/(Q_H + f_u Cl_{int})$ 항이 상쇄되어:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:212–213</span>
+        $$C_{ss} = \frac{R_0}{f_u \cdot Cl_{int}}, \quad C_{u,ss} = \frac{R_0}{Cl_{int}}$$
+      </div>
+      <p class="note-box"><strong>핵심 통찰:</strong> 경구 투여에서는 고추출/저추출에 관계없이 정상상태 농도가 동일한 식으로 표현된다. 비결합 농도는 항상 $R_0/Cl_{int}$이다. 이것이 경구 약물 모니터링에서 $Cl_{int}$ 변화(예: CYP 유도제/억제제)가 임상적으로 중요한 이유이다.</p>
+    </div>
+
+    <div id="route-table" class="tab-content">
+      <table class="conf-table" style="font-size:0.82rem;">
+        <tr><th>투여 경로</th><th>추출 특성</th><th>$C_{ss}$ (총)</th><th>$C_{u,ss}$ (비결합)</th><th>$f_u$ 변화 영향</th></tr>
+        <tr><td>IV</td><td>고추출 ($E_H > 0.7$)</td><td>$\approx R_0/Q_H$</td><td>$\approx f_u R_0/Q_H$</td><td>$C_{u,ss}$ 변함</td></tr>
+        <tr><td>IV</td><td>저추출 ($E_H < 0.3$)</td><td>$\approx R_0/(f_u Cl_{int})$</td><td>$= R_0/Cl_{int}$</td><td>무관</td></tr>
+        <tr><td>PO</td><td>고추출 또는 저추출</td><td>$= R_0/(f_u Cl_{int})$</td><td>$= R_0/Cl_{int}$</td><td>무관</td></tr>
+      </table>
+      <p style="margin-top:1rem;font-size:0.85rem;color:var(--text-muted);">* 완전 장벽 흡수(Fa = 1)와 간이 유일 소실 경로라는 가정 하에서. Etidocaine은 고추출 + 낮은 Vd의 예외적 경고 사례로 Gabrielsson이 언급.</p>
+    </div>
+  </div>
+
+  <!-- ─── CARD 4: In vitro / In vivo ─── -->
+  <div class="card concept-card" id="concept-iviv">
+    <h3>개념 4 · In vitro/In vivo 청소율 외삽 (IVIVE)</h3>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab(this,'iviv-main')">핵심 개념</button>
+      <button class="tab-btn" onclick="showTab(this,'iviv-pitfall')">함정 &amp; 데이터 응축 문제</button>
+    </div>
+
+    <div id="iviv-main" class="tab-content active">
+      <p>인간 조직을 이용한 시험관 내 효소 운동학 데이터에서 내재청소율을 예측할 수 있다. 여러 효소 경로가 병렬로 존재할 때:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:214–216</span>
+        $$Cl_{int} = \sum_{i=1}^{n} \frac{V_{max,i}}{K_{m,i} + C}$$
+        <br>
+        $$\xrightarrow{K_{m,i} \gg C} \quad Cl_{int} \approx \sum_{i=1}^{n} \frac{V_{max,i}}{K_{m,i}}$$
+      </div>
+      <p>시험관 내 결합 차이를 고려해야 할 때 ($f_u \gg f_{u,inc}$):</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:220</span>
+        $$Cl \approx \frac{Q_H \cdot V_{max}/K_m}{Q_H + V_{max}/K_m}$$
+      </div>
+      <p>종간 외삽(interspecies scaling)에서 Gabrielsson은 Table 2.7의 실제 데이터를 제시한다: 인간의 간 혈류(1,450 mL/min)는 랫드(13.8 mL/min)의 100배 이상이다. 미세소체 단백 함량(MMP)의 보정계수 오류가 추출비 분류 자체를 잘못 바꿀 수 있음을 Table 2.8이 보여준다.</p>
+    </div>
+
+    <div id="iviv-pitfall" class="tab-content">
+      <p>Gabrielsson이 특별히 강조하는 <strong>데이터 응축(data condensation) 문제</strong>:</p>
+      <p>전통적인 IVIVE는 In vitro 농도-시간 데이터를 초기 속도($v_0$)로 변환한 후, $v_0$ vs $C_0$ 플롯에서 $V_{max}$와 $K_m$을 추정한다. 이 과정에서:</p>
+      <ul style="margin-left:1.5rem;line-height:2">
+        <li>정보 풍부한 데이터(time series)가 정보 희박한 데이터(5개 점)로 응축됨 (Figure 2.64, 2.65)</li>
+        <li>비선형성이 분명한 원시 데이터의 패턴이 선형처럼 보이도록 마스킹됨</li>
+        <li>두 쌍의 $V_{max}$, $K_m$ (저농도 고친화력: $V_{max}$ 0.97, $K_m$ 0.091; 고농도 저친화력: $V_{max}$ 1.02, $K_m$ 8.9)이 5점 변환 플롯에서는 구분 불가</li>
+      </ul>
+      <p class="note-box"><strong>Gabrielsson의 처방:</strong> 원시 농도-시간 데이터를 직접 비선형 모델로 피팅하라. 데이터를 변환하고 응축하는 것은 정보를 버리는 행위이다. '단일 점(single point)' 방법은 농도 의존적인 $Cl_{int}$를 상수로 잘못 가정하게 만든다.</p>
+    </div>
+  </div>
+
+  <!-- ─── CARD 5: Turnover ─── -->
+  <div class="card concept-card" id="concept-turnover">
+    <h3>개념 5 · Turnover 모델: $k_{in}$, $k_{out}$, 정상 상태</h3>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab(this,'to-def')">A. 정의 &amp; 유도</button>
+      <button class="tab-btn" onclick="showTab(this,'to-examples')">B. 실험 사례</button>
+      <button class="tab-btn" onclick="showTab(this,'to-compare')">C. 모델 비교</button>
+      <button class="tab-btn" onclick="showTab(this,'to-zettel')">Z. Zettelkasten</button>
+    </div>
+
+    <div id="to-def" class="tab-content active">
+      <p>내인성 물질(호르몬, 단백질, 효소)의 항상성은 생산(synthesis, secretion)과 손실(catabolism, filtration)의 균형으로 유지된다. Turnover 모델의 기본 ODE:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:237</span>
+        $$\frac{dA}{dt} = k_{in} - k_{out} \cdot A$$
+      </div>
+      <p>$k_{in}$: 영차 생산율 [양/시간], $k_{out}$: 일차 분율 제거율 [1/시간]. 정상 상태($dA/dt = 0$)에서:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:239–241</span>
+        $$k_{in} = k_{out} \cdot A_0 \quad \Rightarrow \quad A_0 = \frac{k_{in}}{k_{out}}$$
+      </div>
+      <p>Turnover time($t_t$): 시스템 내 총 양을 생산율로 나눈 값 = Mean Residence Time:</p>
+      <div class="eq-block">
+        <span class="eq-label">Eq. 2:242–244</span>
+        $$t_t = \bar{t} = \frac{A_0}{k_{in}} = \frac{1}{k_{out}} = MRT = \frac{V_{ss}}{Cl}$$
+        $$t_{1/2} = \ln(2) \cdot t_t = \frac{\ln(2)}{k_{out}}$$
+      </div>
+      <p><strong>임상적 핵심 구분 (Figure 2.70):</strong></p>
+      <ul style="margin-left:1.5rem;line-height:2.2">
+        <li><span class="highlight">$k_{in}$ 변화</span> (생산율 자극/억제): 새로운 정상 상태 수준은 변하지만 <em>정상 상태 도달 시간($T_{ss}$)은 변하지 않는다</em></li>
+        <li><span class="highlight">$k_{out}$ 변화</span> (제거율 자극/억제): 새로운 정상 상태 수준도 변하고 <em>$T_{ss}$도 함께 변한다</em> ($t_{1/2}$가 바뀌기 때문)</li>
+      </ul>
+      <p class="note-box">이 구분은 약력학 반응 모델(§3.7)에서 약물이 $k_{in}$을 자극/억제하는지, $k_{out}$을 자극/억제하는지를 구별하는 것과 정확히 같은 수학 구조이다.</p>
+    </div>
+
+    <div id="to-examples" class="tab-content">
+      <p><strong>사례 1: IgX (성장 호르몬) — Case Study PK30</strong></p>
+      <p>건강한 자원자에게 40 µg·kg⁻¹ 피하 투여 후 혈장 농도 측정. 기저 농도 32 µg·L⁻¹. 기저 농도 없이는 $k_{in}$과 청소율을 분리할 수 없으므로($C_{IgX} = R_{in}/Cl$의 비율), 외인성 투여가 필수적이다. 추정값: $Cl/F = 0.03$ L·h⁻¹·kg⁻¹, $V/F = 0.10$ L·kg⁻¹, 합성율 $k_{in} = 0.78$ µg·h⁻¹·kg⁻¹, $t_{1/2} = 2.5$ h, $k_{out} = 0.27$ h⁻¹.</p>
+      <p><strong>사례 2: Estradiol — Case Study PK31</strong></p>
+      <p>폐경 후 여성 15명에게 rapid IV infusion 후 이구획 모델 피팅. 결과: $Cl$ = 1.6 L·min⁻¹ (0.76–2.9), $V_{ss}$ = 50 L, $t_{1/2}$ = 26 min (Table 2.12). <strong>핵심 발견:</strong> 폐경 후 estradiol 수준 저하는 clearance 증가가 아닌 <em>$k_{in}$ (생산율) 감소</em>에 기인한다. Clearance는 가임기 여성과 유사했다.</p>
+      <p><strong>사례 3: r-hSOD — Case Study PK52</strong></p>
+      <p>정상 및 신장 절제 랫드에 20 mg IV bolus. 이구획 모델: 정상 $Cl = 3.0$ mL·h⁻¹, $V_{ss} = 45$ mL; 신절제 $Cl = 0.22$ mL·h⁻¹, $V_{ss} = 30$ mL. 신장이 중심 구획의 일부임을 시사 → 신절제 시 $V_c$ 감소.</p>
+    </div>
+
+    <div id="to-compare" class="tab-content">
+      <p>Gabrielsson의 Table 2.13은 세 모델 구조의 수학적 동형성을 명시적으로 보여준다:</p>
+      <table class="conf-table" style="font-size:0.82rem;">
+        <tr>
+          <th>항목</th>
+          <th>청소율 모델 (Clearance)</th>
+          <th>Turnover 모델</th>
+          <th>반응 모델 (PD)</th>
+        </tr>
+        <tr><td>1차 변수</td><td>$C$ (농도)</td><td>$A$ (양)</td><td>$R$ (반응)</td></tr>
+        <tr><td>파라미터</td><td>$V, Cl$</td><td>$k_{in}, k_{out}$</td><td>$k_{in}, k_{out}$</td></tr>
+        <tr><td>ODE</td><td>$V\frac{dC}{dt} = In - Cl \cdot C$</td><td>$\frac{dA}{dt} = k_{in} - k_{out} A$</td><td>$\frac{dR}{dt} = k_{in} - k_{out} R$</td></tr>
+        <tr><td>정상 상태</td><td>$C_{ss} = In/Cl$</td><td>$A_{ss} = k_{in}/k_{out}$</td><td>$R_{ss} = k_{in}/k_{out}$</td></tr>
+        <tr><td>반감기</td><td>$t_{1/2} = \ln(2) \cdot V_{ss}/Cl$</td><td>$t_{1/2} = \ln(2)/k_{out}$</td><td>$t_{1/2} = \ln(2)/k_{out}$</td></tr>
+        <tr><td>MRT/Turnover time</td><td>$V_{ss}/Cl$</td><td>$1/k_{out}$</td><td>$1/k_{out}$</td></tr>
+        <tr><td>스케일링</td><td>$Cl \propto BW^b$</td><td>$k_{in} \propto BW^b$</td><td>$k_{in} \propto BW^b$</td></tr>
+      </table>
+      <p class="note-box">이 동형성은 약동학과 약력학이 하나의 수학 언어를 공유함을 보여준다. $k_{out}$의 역수는 항상 시스템의 평균 체류 시간 = 반응 반감기의 1/ln(2)이다.</p>
+    </div>
+
+    <div id="to-zettel" class="tab-content">
+      <div class="zettel">
+        <div class="zettel-header">─── PERMANENT NOTE ───</div>
+        <pre>---
+aliases: [Turnover Model, kin, kout, 생산율, 분획제거율, 전환시간]
+tags: [pharmacometrics/pk, pharmacometrics/pd, turnover, endogenous]
+up: "[[PK/PD Model MOC]]"
+related: ["[[Clearance]]", "[[MRT]]", "[[PD Response Model]]", "[[Feedback]]"]
+source: "Gabrielsson & Weiner, 5th Ed., p. 94-111, Eq. 2:237-2:255"
+---</pre>
+        <p style="margin-top:0.8rem;font-size:0.85rem;">Turnover 모델: $dA/dt = k_{in} - k_{out} \cdot A$. 정상 상태 $A_0 = k_{in}/k_{out}$. Turnover time $t_t = 1/k_{out} = MRT$. 핵심: $k_{in}$ 변화는 새 정상 상태만 변경($T_{ss}$ 불변); $k_{out}$ 변화는 $T_{ss}$도 함께 변경. 이 구조는 청소율 모델 및 약력학 반응 모델과 수학적으로 동형이며, 체중 스케일링 지수도 동일하다 ($k_{out} \propto BW^{-0.25}$). Gabrielsson 사례: estradiol 폐경 저하는 $k_{in}$ 감소, IgX 합성율 0.78 µg·h⁻¹·kg⁻¹, 수반 신절제 랫드 r-hSOD.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CARD 6: Feedback ─── -->
+  <div class="card concept-card" id="concept-feedback">
+    <h3>개념 6 · Feedback — 내재적, 양성, 음성</h3>
+    <p>Gabrielsson은 세 가지 피드백을 §2.6.7에서 분류한다:</p>
+    <div class="grid2">
+      <div class="iso-card">
+        <div class="iso-domain">내재적 피드백 (Inherent)</div>
+        <div class="eq-block" style="margin:0.5rem 0;">$$\frac{dC}{dt} = -k \cdot C$$</div>
+        <p style="font-size:0.85rem;">농도가 낮아질수록 제거 속도가 느려진다. 일차 동력학 자체가 이미 피드백 구조를 내포한다.</p>
+      </div>
+      <div class="iso-card">
+        <div class="iso-domain">양성 피드백 (Positive) — 세균 성장</div>
+        <div class="eq-block" style="margin:0.5rem 0;">$$\frac{dA}{dt} = k_{growth} \cdot A - k_{kill} \cdot A \cdot C(t)$$</div>
+        <p style="font-size:0.85rem;">균이 많을수록 성장률이 빨라진다. 항생제 $C(t)$는 $k_{kill}$을 통해 억제. 지수 성장 → sigmoid → 포화의 전형적 패턴.</p>
+      </div>
+    </div>
+    <p style="margin-top:1rem;"><strong>음성 피드백 (Negative Feedback) — Ackerman 모델 적용:</strong></p>
+    <div class="eq-block">
+      <span class="eq-label">Eq. 2:261–262</span>
+      $$\frac{dR}{dt} = k_{in} \cdot H(C) - k_{out} \cdot M, \quad \frac{dM}{dt} = k_{tol} \cdot R - k_{tol} \cdot M$$
+    </div>
+    <p>적절률($k_{out}$)은 조절자(moderator) $M$에 비선형적으로 의존: 슬로프 $= k_{out} \cdot (1 + R/M_{50})$. 이는 고농도에서 반감기가 단축되는 IgG의 특성 설명 (IgG 30 mg·mL⁻¹에서 반감기 최소 ~11일).</p>
+    <p><strong>체온 Circadian 모델 (Peletier, §2.6.6):</strong> 두 개의 결합 oscillator ($B_1$, $B_2$)와 Zeitgeber $g(t)$ (12/12h 명암 주기)로 기술:</p>
+    <div class="eq-block">
+      <span class="eq-label">Eq. 2:256</span>
+      $$\frac{dB_1}{dt} = \alpha(B_1 - B_2) - B_1^3 + g(t), \quad \frac{dB_2}{dt} = \beta(B_1 - B_2)$$
+    </div>
+    <p>8-OH-DPAT (5HT₁A 작용제)로 유발된 저체온 데이터 (Case Study PD28): 랫드 5군, 피하 0/30/125/500/2,000 µg 투여, 체온 감소 반응으로 $ID_{50}$, $I_{max}$, $n$ 추정.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ §3 ISOMORPHISM ═══════════════════════════════════════ -->
+<div class="section" id="sec3">
+  <div class="section-number">§3 — 구조적 동형 지도</div>
+  <h2>수학적 구조 동형 (Structural Isomorphism Map)</h2>
+
+  <p>이 세션의 두 핵심 방정식 — Well-Stirred 청소율 모델과 Turnover ODE — 은 서로 다른 물리 도메인에서 정확히 같은 수학 구조로 나타난다.</p>
+
+  <h3 style="margin-top:2rem;">동형 I · Well-Stirred 모델 $= \frac{Q \cdot k}{Q + k}$ 구조</h3>
+  <div class="eq-block">$$Cl_H = \frac{Q_H \cdot (f_u Cl_{int})}{Q_H + (f_u Cl_{int})}$$</div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0;">
+    <div class="iso-card">
+      <div class="iso-domain">전기 공학 · 병렬 저항</div>
+      $$R_{total} = \frac{R_1 R_2}{R_1 + R_2}$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">두 저항이 병렬로 연결될 때 총 저항. $Q_H \leftrightarrow 1/R_1$, $f_u Cl_{int} \leftrightarrow 1/R_2$. 두 컨덕턴스 중 작은 것이 지배.</p>
+    </div>
+    <div class="iso-card">
+      <div class="iso-domain">화학 공학 · 직렬 반응기 (CSTR + 반응)</div>
+      $$k_{eff} = \frac{F \cdot k_{rxn}}{F + k_{rxn} \cdot V}$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">유속(F) 제한 vs. 반응 속도(k) 제한의 경쟁. 혈류 제한 약물 = flow-limited CSTR.</p>
+    </div>
+    <div class="iso-card">
+      <div class="iso-domain">생태학 · 포식자-피식자 포화 섭취</div>
+      $$\text{Grazing} = \frac{G_{max} \cdot P}{k_s + P}$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">포식 속도가 prey 밀도(P)와 포화 상수(k_s)에 의존. Michaelis-Menten = 동일 구조. $K_m \leftrightarrow Q_H/(f_u \cdot Cl_{int})$.</p>
+    </div>
+    <div class="iso-card">
+      <div class="iso-domain">열역학 · 두 열 저항의 직렬 전달</div>
+      $$U = \frac{h_1 h_2}{h_1 + h_2}$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">대류 열전달 계수 $h_1$, $h_2$가 직렬로 있을 때 총 열전달. 더 낮은 $h$가 전체 열류를 제한.</p>
+    </div>
+  </div>
+  <p><strong>왜 같은 형태가 나타나는가?</strong> 모든 이 시스템은 <em>두 과정이 직렬로 경쟁</em>할 때 발생한다. 하나는 "공급"(혈류, 전류, 유속), 다른 하나는 "처리"(대사, 저항, 반응). 병목 원리(Liebig's law of the minimum): 총 처리율은 두 속도 중 느린 것에 의해 결정된다. 수학적으로 이는 조화 평균(harmonic mean)의 구조를 낳는다.</p>
+
+  <div class="gold-divider"></div>
+
+  <h3>동형 II · Turnover ODE $\frac{dA}{dt} = k_{in} - k_{out} A$ 구조</h3>
+  <div class="eq-block">$$\frac{dA}{dt} = k_{in} - k_{out} \cdot A, \quad A(t) = \frac{k_{in}}{k_{out}}\left(1 - e^{-k_{out} t}\right) + A_0 e^{-k_{out} t}$$</div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0;">
+    <div class="iso-card">
+      <div class="iso-domain">물리학 · Newton 냉각 (외부 열원 포함)</div>
+      $$\frac{dT}{dt} = q_{in} - k(T - T_{env})$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">일정 열 공급 + 일차 냉각. $k_{in} \leftrightarrow q_{in}$, $k_{out} \leftrightarrow k$, 환경 온도 = baseline. 약물의 $k_{out}$ = 냉각 상수.</p>
+    </div>
+    <div class="iso-card">
+      <div class="iso-domain">전기 공학 · RC 회로 충전</div>
+      $$C \frac{dV}{dt} = I_0 - \frac{V}{R}$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">일정 전류 $I_0$로 충전, 저항 $R$을 통해 방전. $\tau = RC \leftrightarrow 1/k_{out}$. 정상 상태 $V_{ss} = I_0 R \leftrightarrow k_{in}/k_{out}$.</p>
+    </div>
+    <div class="iso-card">
+      <div class="iso-domain">인구 생태학 · 이민-사망 모델</div>
+      $$\frac{dN}{dt} = I - \mu \cdot N$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">이민율 $I$ (= $k_{in}$), 사망률 $\mu$ (= $k_{out}$). 평형 인구 = $I/\mu$. 사망률 변화 = $T_{ss}$ 변화, 이민율 변화 = 수준만 변화.</p>
+    </div>
+    <div class="iso-card">
+      <div class="iso-domain">경제학 · 재고 모델 (Just-in-Time)</div>
+      $$\frac{dI}{dt} = P_{rate} - D_{rate} \cdot I$$
+      <p style="font-size:0.83rem;margin-top:0.5rem;">생산율 $P_{rate}$ 일정, 수요(소비)율 재고에 비례. 재고 반감기 = $\ln(2)/D_{rate}$. 생산 증가 → 재고 수준만 증가, 소비율 변화 → 재고 수준 + 반감기 둘 다 변화.</p>
+    </div>
+  </div>
+  <p><strong>L2↔L3 연결:</strong> Turnover ODE의 해인 지수 수렴 곡선($A(t) \to A_{ss}$)은 반로그 플롯에서 직선이 되어야 한다 — 이것이 기하학적(L2) 관찰이다. 그 이유는(L3) 시스템의 수학적 핵심이 선형 자율 ODE이기 때문이며, 이는 모든 위 도메인에서 동일하게 지수 감쇠 해를 가진다. 시상수(time constant) $\tau = 1/k_{out}$은 시스템이 새로운 정상 상태의 63.2%에 도달하는 시간이다.</p>
+</div>
+
+<!-- ═══════════════════════════════════════ §4 SIMULATOR ═══════════════════════════════════════ -->
+<div class="section" id="sec4">
+  <div class="section-number">§4 — 인터랙티브 시뮬레이터</div>
+  <h2 id="sim">간 청소율 &amp; Turnover 통합 시뮬레이터</h2>
+
+  <div class="sim-container">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchSimTab('hepatic')">간 추출 모델</button>
+      <button class="tab-btn" onclick="switchSimTab('turnover')">Turnover 모델</button>
+    </div>
+
+    <!-- ─── Hepatic Sim ─── -->
+    <div id="sim-hepatic" class="sim-panel">
+      <div class="slider-group">
+        <div class="slider-item">
+          <label>Q<sub>H</sub> — 간 혈류 <span id="qh-val">90 L/h</span></label>
+          <input type="range" id="sl-qh" min="20" max="200" value="90" step="5" oninput="updateHepSim()">
+          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-muted);">정상: ~90 L/h (인간) · 범위: 20–200</div>
+        </div>
+        <div class="slider-item">
+          <label>f<sub>u</sub>·Cl<sub>int</sub> — 유효 내재청소율 <span id="fclint-val">90 L/h</span></label>
+          <input type="range" id="sl-fclint" min="1" max="500" value="90" step="5" oninput="updateHepSim()">
+          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-muted);">고추출: >> QH · 저추출: << QH</div>
+        </div>
+        <div class="slider-item">
+          <label>R<sub>0</sub> — 투여율 (IV infusion) <span id="r0-val">100 mg/h</span></label>
+          <input type="range" id="sl-r0" min="10" max="500" value="100" step="10" oninput="updateHepSim()">
+          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-muted);">정상 상태 농도 결정 (Css = R0/Cl)</div>
+        </div>
+        <div class="slider-item">
+          <label>f<sub>u</sub> — 비결합 분율 <span id="fu-val">0.10</span></label>
+          <input type="range" id="sl-fu" min="0.01" max="1.0" value="0.10" step="0.01" oninput="updateHepSim()">
+          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-muted);">0 (완전 결합) → 1.0 (비결합)</div>
+        </div>
+      </div>
+
+      <div class="param-display" id="hep-params"></div>
+
+      <div class="scale-toggle">
+        <span style="font-family:var(--mono);font-size:0.72rem;color:var(--text-muted);margin-right:0.5rem;">농도축:</span>
+        <button class="toggle-btn active" id="hep-lin-btn" onclick="setHepScale('linear')">선형</button>
+        <button class="toggle-btn" id="hep-log-btn" onclick="setHepScale('logarithmic')">로그</button>
+      </div>
+      <div class="chart-wrapper"><canvas id="hepChart"></canvas></div>
+
+      <div style="margin-top:1rem;">
+        <h4>E<sub>H</sub> vs Q<sub>H</sub> 관계 (Well-Stirred Model)</h4>
+        <div class="chart-wrapper" style="height:220px;"><canvas id="ehChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ─── Turnover Sim ─── -->
+    <div id="sim-turnover" class="sim-panel" style="display:none;">
+      <div class="slider-group">
+        <div class="slider-item">
+          <label>k<sub>in</sub> — 생산율 <span id="kin-val">10 units/h</span></label>
+          <input type="range" id="sl-kin" min="1" max="100" value="10" step="1" oninput="updateTurnSim()">
+        </div>
+        <div class="slider-item">
+          <label>k<sub>out</sub> — 분율 제거율 <span id="kout-val">0.20 h⁻¹</span></label>
+          <input type="range" id="sl-kout" min="0.01" max="2.0" value="0.20" step="0.01" oninput="updateTurnSim()">
+        </div>
+        <div class="slider-item">
+          <label>Perturbation 시작 (t) <span id="pert-t-val">10 h</span></label>
+          <input type="range" id="sl-pert-t" min="2" max="30" value="10" step="1" oninput="updateTurnSim()">
+        </div>
+        <div class="slider-item">
+          <label>k<sub>in</sub> 배율 (자극 후) <span id="pert-kin-val">2.0×</span></label>
+          <input type="range" id="sl-pert-kin" min="0.1" max="5.0" value="2.0" step="0.1" oninput="updateTurnSim()">
+        </div>
+      </div>
+      <div class="param-display" id="turn-params"></div>
+      <div class="chart-wrapper"><canvas id="turnChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Mission 1 -->
+  <div class="mission-box">
+    <h4>🎯 임상 미션 1 — 간경변 환자 용량 조정</h4>
+    <p>간경변으로 인해 간 혈류가 정상의 50%로 감소하고 단백결합도 저하(hypoalbuminemia)로 $f_u$가 0.10 → 0.30으로 증가한 환자가 있다. 약물 A는 고추출 약물($E_H$ = 0.80, 정상)이다.</p>
+    <p><strong>목표:</strong> 정상인과 동일한 $C_{u,ss}$ (비결합 농도)를 유지하려면 IV infusion rate를 어떻게 조정해야 하는가?</p>
+    <p style="font-family:var(--mono);font-size:0.8rem;color:var(--gold);">시뮬레이터를 조작하여 정상 조건($Q_H=90, f_u=0.10$)과 간경변 조건($Q_H=45, f_u=0.30$)에서 $C_{u,ss}$를 비교하라.</p>
+    <button class="reveal-btn" onclick="toggleReveal('m1-reveal')">정답 보기</button>
+    <div id="m1-reveal" class="reveal-content">
+      <p><strong>분석:</strong> 고추출 약물, IV 투여. $C_{u,ss} \approx f_u \cdot R_0 / Q_H$.</p>
+      <p>정상: $C_{u,ss} = 0.10 \times 100 / 90 = 0.111$ (임의 단위)</p>
+      <p>간경변 (조정 없이): $C_{u,ss} = 0.30 \times 100 / 45 = 0.667$ → <strong>6배 증가!</strong></p>
+      <p><strong>필요 용량 조정:</strong> $R_0^{new} = R_0^{old} \times \frac{Q_H^{new}}{Q_H^{old}} \times \frac{f_u^{old}}{f_u^{new}} = 100 \times \frac{45}{90} \times \frac{0.10}{0.30} = 16.7$ mg/h</p>
+      <p><strong>생리학적 기전:</strong> 고추출 IV 약물에서 비결합 농도는 $f_u \cdot R_0 / Q_H$에 의존한다. 간경변에서 혈류 감소($\downarrow Q_H$)와 단백결합 저하($\uparrow f_u$)가 동시에 작용하여 비결합 농도가 상승한다. 용량을 16.7%로 줄여야 동일한 비결합 노출이 유지된다.</p>
+    </div>
+  </div>
+
+  <!-- Mission 2 -->
+  <div class="mission-box">
+    <h4>🎯 임상 미션 2 — CYP3A4 억제제 DDI 예측 (저추출 약물)</h4>
+    <p>약물 B는 저추출 약물($E_H = 0.05$, $f_u = 0.05$, $Cl_{int} = 50$ L/h). 환자가 강력한 CYP3A4 억제제를 병용하여 $Cl_{int}$가 90% 감소했다.</p>
+    <p><strong>목표:</strong> 경구 투여 시 $C_{ss}$는 몇 배 증가하는가? IV 투여 시는?</p>
+    <button class="reveal-btn" onclick="toggleReveal('m2-reveal')">정답 보기</button>
+    <div id="m2-reveal" class="reveal-content">
+      <p><strong>경구 투여:</strong> $C_{ss} = R_0/(f_u \cdot Cl_{int})$.</p>
+      <p>$Cl_{int}$ 90% 감소 → $Cl_{int}^{new} = 5$ L/h. 따라서 $C_{ss}$ 배율 = $50/5 = $ <strong>10배 증가</strong></p>
+      <p><strong>IV 투여:</strong> $C_{ss} = R_0/(f_u \cdot Cl_{int})$ (저추출이므로 동일 식). 역시 <strong>10배 증가</strong></p>
+      <p><strong>생리학적 의의:</strong> 저추출 약물은 투여 경로에 관계없이 $Cl_{int}$ 변화에 동일하게 민감하다. 이것이 항진균제(ketoconazole), Ritonavir 같은 강력 CYP 억제제가 저추출 약물과 심각한 DDI를 일으키는 이유다. 반면 고추출 IV 약물에서는 $Cl_{int}$ 억제의 영향이 미미하다 ($Cl \approx Q_H$이므로).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ §5 CONFUSION PAIRS ═══════════════════════════════════════ -->
+<div class="section" id="sec5">
+  <div class="section-number">§5 — 혼동 쌍 분석</div>
+  <h2 id="confpairs">개념 혼동 쌍 해부</h2>
+
+  <h3>혼동 쌍 1 · $Cl_{int}$ (내재청소율) vs. $Cl_H$ (간 청소율)</h3>
+  <table class="conf-table">
+    <tr><th>비교 차원</th><th>$Cl_{int}$ — 내재청소율</th><th>$Cl_H$ — 간 청소율</th></tr>
+    <tr><td>표면 유사성</td><td colspan="2">둘 다 "청소율" (L/h 단위), 간에서의 제거 능력을 표현하는 것처럼 보임</td></tr>
+    <tr><td>수학적 형태</td><td>$Cl_{int} = \sum V_{max,i}/K_{m,i}$ (혈류 제한 없는 최대 능력)</td><td>$Cl_H = Q_H \cdot f_u \cdot Cl_{int}/(Q_H + f_u \cdot Cl_{int})$ (혈류 제한 포함)</td></tr>
+    <tr><td>생리학적 의미</td><td>간세포 효소 능력만을 반영. 혈류가 무한대라면 달성 가능한 청소율.</td><td>실제 생체내에서 측정 가능한 청소율. 혈류와 효소능력 양쪽이 반영.</td></tr>
+    <tr><td>범위</td><td>0 → ∞ (이론적 상한 없음)</td><td>0 → $Q_H$ (간 혈류가 절대 상한)</td></tr>
+    <tr><td>임상적 결과</td><td>$Cl_{int}$만 알면 실제 청소율 예측 불가. 반드시 $Q_H$와 $f_u$와 결합해야 함.</td><td>$Cl_H$로 용량 예측 가능. DDI 예측 시 방해 약물이 $Cl_{int}$에 작용함을 주의.</td></tr>
+    <tr><td>기억 앵커</td><td colspan="2"><strong>"Int(rinsic)는 In vitro."</strong> 내재청소율은 시험관 내에서 혈류 없이 측정하는 것, 간 청소율은 혈류라는 파이프라인과 내재능력이 경쟁한 <em>실제 체내 결과</em>이다.</td></tr>
   </table>
 
-  <div class="box pit">
-    <div class="bh">⚠️ 간경변에서 단백결합 보정 오류</div>
-    <p>저추출 약물: 간경변 → 알부민↓ → f_u↑, 동시에 Cl_int↓. 두 효과가 상쇄되어 총 CL이 별로 변하지 않는 것처럼 보일 수 있다. 실제로는 약물마다 다르므로 <em>비결합 Cl_u = f_u·Cl_int</em>를 별도로 추적해야 한다.</p>
-  </div>
-</section>
+  <div class="gold-divider"></div>
 
-<!-- ═══ SECTION 3: ROUTE ═══ -->
-<section class="sec rv" id="cl-route">
-  <h2 class="sh">1.3 투여 경로가 노출을 바꾸는 방식</h2>
-
-  <div class="viz">
-    <div class="viz-title">인터랙티브 — IV vs PO 약물 분자 시뮬레이터 (4파라미터 실시간 조절)</div>
-    <div style="padding:12px 16px 8px;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px">
-      <div class="slider-wrap">
-        <label>R₀ 투여속도</label>
-        <input type="range" id="rt-r0" min="20" max="300" value="100" step="10">
-        <span class="val" id="rt-r0-v">100</span>
-      </div>
-      <div class="slider-wrap">
-        <label>Q_H 간혈류 (L/h)</label>
-        <input type="range" id="rt-qh" min="20" max="120" value="90" step="5">
-        <span class="val" id="rt-qh-v">90</span>
-      </div>
-      <div class="slider-wrap">
-        <label>f_u 비결합 분율</label>
-        <input type="range" id="rt-fu" min="0.01" max="0.50" value="0.10" step="0.01">
-        <span class="val" id="rt-fu-v">0.10</span>
-      </div>
-      <div class="slider-wrap">
-        <label>Cl_int 고유CL (L/h)</label>
-        <input type="range" id="rt-clint" min="50" max="800" value="300" step="10">
-        <span class="val" id="rt-clint-v">300</span>
-      </div>
-    </div>
-    <!-- Two-panel particle simulation canvas -->
-    <div class="chart-wrap" style="height:370px">
-      <canvas id="cvRoute"></canvas>
-    </div>
-    <!-- HTML stat readout — always visible regardless of canvas state -->
-    <div class="stat-bar" style="flex-wrap:wrap;gap:12px 20px">
-      <div class="stat-item">
-        <div class="sl" style="color:var(--acc2)">IV · E_H</div>
-        <div class="sv" id="rt-eh" style="color:var(--acc2);font-size:15px">—</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl" style="color:var(--acc2)">IV · C_total</div>
-        <div class="sv" id="rt-civ" style="color:var(--acc2);font-size:15px">—</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">IV · C_u 활성</div>
-        <div class="sv" id="rt-cuiv" style="color:#9ec8f0;font-size:15px">—</div>
-      </div>
-      <div class="stat-item" style="border-left:1px solid var(--b1);padding-left:16px">
-        <div class="sl" style="color:var(--acc3)">PO · F_H</div>
-        <div class="sv" id="rt-fh" style="color:var(--acc3);font-size:15px">—</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl" style="color:var(--acc3)">PO · C_total</div>
-        <div class="sv" id="rt-cpo" style="color:var(--acc3);font-size:15px">—</div>
-      </div>
-      <div class="stat-item">
-        <div class="sl">PO · C_u 활성</div>
-        <div class="sv" id="rt-cupo" style="color:#9ec8f0;font-size:15px">—</div>
-      </div>
-    </div>
-    <div id="rt-insight" style="padding:8px 16px 10px;font-family:var(--mono);font-size:10px;border-top:1px solid var(--b1);color:var(--txd);line-height:1.8">
-      f_u 슬라이더를 움직여 보세요 — PO C_u는 변하지 않습니다
-    </div>
-  </div>
-
-  <table class="tbl">
-    <thead><tr><th>경로 × 추출비</th><th>C_ss (총)</th><th>C_u,ss (비결합)</th><th>주의</th></tr></thead>
-    <tbody>
-      <tr><td>IV · 고추출</td><td><code>≈ R₀/Q_H</code></td><td><code>≈ f_u·R₀/Q_H</code></td><td class="r">f_u 변화 → C_u 변화!</td></tr>
-      <tr><td>IV · 저추출</td><td><code>≈ R₀/(f_u·Cl_int)</code></td><td><code>≈ R₀/Cl_int</code></td><td class="g">C_u는 f_u에 독립</td></tr>
-      <tr><td>PO (고·저 모두)</td><td><code>= R₀/(f_u·Cl_int)</code></td><td><code>= R₀/Cl_int</code></td><td class="g">Q_H 항 상쇄</td></tr>
-    </tbody>
+  <h3>혼동 쌍 2 · $k_{in}$ 변화 vs. $k_{out}$ 변화 — Turnover 교란 효과</h3>
+  <table class="conf-table">
+    <tr><th>비교 차원</th><th>$k_{in}$ 변화 (생산율 교란)</th><th>$k_{out}$ 변화 (제거율 교란)</th></tr>
+    <tr><td>표면 유사성</td><td colspan="2">둘 다 정상 상태 수준을 변화시킴. 농도-시간 플롯이 새로운 수준으로 이동하는 것처럼 보임.</td></tr>
+    <tr><td>수학적 형태</td><td>$A_{ss}^{new} = k_{in}^{new}/k_{out}$ (정상 상태 변화). $T_{ss} = 4/k_{out}$ (불변)</td><td>$A_{ss}^{new} = k_{in}/k_{out}^{new}$ (변화) + $T_{ss} = 4/k_{out}^{new}$ (변화)</td></tr>
+    <tr><td>생리학적 의미</td><td>호르몬 분비 자극(e.g., LH → 테스토스테론 생산 증가), 효소 유도에 의한 합성 증가</td><td>신기능 저하로 $k_{out}$ 감소, 경쟁적 용혈에 의한 RBC 파괴 증가</td></tr>
+    <tr><td>행동적 차이</td><td>$T_{ss}$ 불변 → 시스템 동특성(반감기)이 유지됨</td><td>$T_{ss}$ 변화 → 새 정상 상태 도달이 더 빠르거나 느려짐</td></tr>
+    <tr><td>임상적 결과</td><td>$k_{in}$ 변화를 $k_{out}$ 변화로 오해하면 반감기 예측 오류 발생. 예: 에스트로겐 결핍은 $k_{in}$ 감소이지만 $k_{out}$ 증가로 잘못 해석 가능.</td><td>신부전에서 크레아티닌 상승은 $k_{out}$ 감소(GFR 저하)이지 생산 증가가 아님.</td></tr>
+    <tr><td>기억 앵커</td><td colspan="2"><strong>"$k_{in}$은 수도꼭지(수량만 변경), $k_{out}$은 배수구 크기(수량도 변경, 채우는 시간도 변경)."</strong> 수도꼭지 흐름을 두 배로 해도 욕조의 반감기(배수 속도)는 그대로. 배수구를 절반으로 막으면 욕조가 가득 차는 시간도, 최종 수준도 변한다.</td></tr>
   </table>
 
-  <div class="box ins">
-    <div class="bh">💡 경구 투여의 수학적 마법</div>
-    <p>PO 정상상태 농도에서 Q_H/(Q_H + f_u·Cl_int) 항이 분자·분모에서 상쇄된다. 결과적으로 <em>고추출이든 저추출이든 f_u·Cl_int로 수렴</em> — 이것이 CL/F에서 F를 분리할 수 없는 수학적 이유다.</p>
-  </div>
+  <div class="gold-divider"></div>
 
-  <!-- WHY-1 -->
-  <div id="w-cirr" class="acc-wrap">
-    <div class="acc" id="a-cirr">
-      <div class="acc-hdr" onclick="tog('a-cirr')">
-        <span class="abadge">Why-1</span>
-        <span class="atitle">간경변 + Propranolol: 생체이용률 3배 증가 메커니즘</span>
-        <span class="aarrow">▼</span>
-      </div>
-      <div class="acc-body">
-        <div class="box clin" style="margin-top:0">
-          <div class="bh">🩺 임상 상황</div>
-          <p>Propranolol (ER ≈ 0.7, 고추출). 정상인: F ≈ 25%. 간경변 환자: 동일 경구 용량에서 AUC 3배↑, F ≈ 75%. 동일한 약, 왜?</p>
-        </div>
-        <h3 class="sth">메커니즘 1: 간혈류 감소</h3>
-        <p>고추출에서 <code>F_H = Q_H/(Q_H + f_u·Cl_int)</code>. 간경변 → Q_H↓ → F_H = 1−E_H↑. 혈류가 느릴수록 처리 시간 없이 통과.</p>
-        <h3 class="sth">메커니즘 2: 문맥-전신 단락 (Porto-systemic Shunting)</h3>
-        <p>문맥압↑ → 간을 우회하는 단락 형성. 경구 흡수된 약의 상당량이 first-pass를 완전 우회. 혈류 감소보다 훨씬 강력한 효과.</p>
-        <h3 class="sth">메커니즘 3: Cl_int 감소</h3>
-        <p>간세포 수↓, 효소 활성↓ → f_u·Cl_int↓ → E_H↓ → F_H↑. 세 메커니즘이 모두 같은 방향.</p>
-        <div class="box pit" style="margin-top:12px">
-          <div class="bh">⚠️ 저추출 약물(Warfarin)은 다르다</div>
-          <p>저추출에서 F_H는 처음부터 ≈1. 간혈류 감소가 F에 영향 없다. 대신 Cl_int↓ → CL↓ → t½ 연장이 주 문제.</p>
-        </div>
-        <div class="box fda" style="margin-top:8px">
-          <div class="bh">🏛️ 규제 시사점</div>
-          <p>Child-Pugh B/C 고추출 경구 약물: AUC 증가 3~5배 예상. FDA Hepatic Impairment Guidance는 F 변화를 별도로 요구.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- WHY-2 -->
-  <div id="w-iden" class="acc-wrap">
-    <div class="acc" id="a-iden">
-      <div class="acc-hdr" onclick="tog('a-iden')">
-        <span class="abadge">Why-2</span>
-        <span class="atitle">경구 데이터만으로 절대 CL을 보고할 수 없는 수학적 이유</span>
-        <span class="aarrow">▼</span>
-      </div>
-      <div class="acc-body">
-        <p><strong>결론:</strong> F와 CL은 경구 데이터만으로는 수학적으로 분리 불가능(structurally unidentifiable)하다.</p>
-        <div class="fml">
-          <span class="lbl">비식별 관계</span>
-          <span class="eq">CL/F = D_po / AUC_po &nbsp;<span class="cm">// 추정 가능</span></span>
-          <span class="eq">CL   = F × (CL/F) &nbsp;&nbsp;&nbsp;<span class="cm">// F를 모르면 CL도 모른다</span></span>
-          <span class="eq">CL=10, F=0.5 ≡ CL=5, F=1 → 동일한 AUC 생성</span>
-        </div>
-        <table class="tbl">
-          <thead><tr><th>데이터</th><th>추정 가능</th><th>불가능</th></tr></thead>
-          <tbody>
-            <tr><td>PO만</td><td class="g">CL/F, V/F</td><td class="r">절대 CL, V, F</td></tr>
-            <tr><td>IV+PO</td><td class="g">CL, V, F 모두</td><td>—</td></tr>
-            <tr><td>PO+문헌 F 고정</td><td class="g">CL, V (F 가정 하)</td><td class="r">F 불확실성 전파</td></tr>
-          </tbody>
-        </table>
-        <div class="box fda">
-          <div class="bh">🏛️ FDA 함의</div>
-          <p>PopPK 보고서에서 PO 기반 CL/F를 "CL"로 기재하면 심사관이 즉시 지적한다. DDI 예측, PBPK 입력값에는 반드시 IV 파트가 필요하다.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- WHY-3 -->
-  <div id="w-renal" class="acc-wrap">
-    <div class="acc" id="a-renal">
-      <div class="acc-hdr" onclick="tog('a-renal')">
-        <span class="abadge">Why-3</span>
-        <span class="atitle">FDA 신기능 질의 방어 — eGFR 공변량으로 CL/F를 지키는 법</span>
-        <span class="aarrow">▼</span>
-      </div>
-      <div class="acc-body">
-        <div class="box fda" style="margin-top:0">
-          <div class="bh">🏛️ FDA 가상 질의</div>
-          <p>"신장·간 CL을 분리하지 않은 상태에서 신장애 하위군 예측을 어떻게 보장할 것인가?"</p>
-        </div>
-        <h3 class="sth">전략 1: eGFR 공변량 모델링</h3>
-        <div class="fml">
-          <span class="eq">CL/F_i = θ_CL × (eGFR_i / eGFR_median)^θ_eGFR × exp(η_CL,i)</span>
-          <span class="cm">// θ_eGFR 추정값과 95%CI로 신기능 의존도 정량화</span>
-        </div>
-        <h3 class="sth">전략 2: 시뮬레이션 기반 용량 정당화</h3>
-        <p>eGFR 15/30/60 mL/min 집단 가상 시뮬레이션 → AUC_ss 분포 비교 → 노출 차이 정량화.</p>
-        <h3 class="sth">전략 3: Stratified VPC</h3>
-        <p>신기능 그룹별 VPC 생성 → 모든 하위군에서 90% 피복률 시각적 증명.</p>
-        <div class="box ins">
-          <div class="bh">💡 핵심</div>
-          <p>FDA는 "기관별 CL 분리"보다 "신기능 하위군 예측 정확도"를 더 중시한다. <em>공변량 + VPC + 시뮬레이션</em>의 삼각 구성이 방어의 황금률.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="divline"></div>
-
-<!-- ═══ SECTION 4: TMDD BIO ═══ -->
-<section class="sec rv" id="tmdd-bio">
-  <div class="eyebrow">Chapter 2.6 · Target-Mediated Drug Disposition</div>
-  <h1 class="stitle">TMDD: 항체가 표적에 결합하면 PK가 바뀐다</h1>
-  <p class="lead">항체의약품 시대에 TMDD를 모르면 임상 PK 해석에서 반드시 틀린다. "왜 초기엔 t½이 짧다가 반복 투여 후 길어지는가?" — 이 질문의 답이 TMDD다.</p>
-
-  <h2 class="sh">2.1 생물학적 본질 — 수용체가 소각로다</h2>
-  <p>소분자 약물은 수용체에 결합해도 복합체 자체가 제거 경로가 되지 않는다. 그러나 mAb는 표적 결합 후 수용체 매개 내재화로 리소솜에서 분해 → <strong>농도 의존적 추가 제거 경로</strong>를 만든다.</p>
-
-  <div class="viz">
-    <div class="viz-title">인터랙티브 — TMDD 비선형 PK: Dose-normalized 농도-시간</div>
-    <div style="padding:10px 16px 6px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-      <div class="slider-wrap" style="flex:1;min-width:200px">
-        <label>K_SS (nM)</label>
-        <input type="range" id="sl-kss" min="1" max="50" value="10" step="1">
-        <span class="val" id="kss-val">10</span>
-      </div>
-      <div class="slider-wrap" style="flex:1;min-width:200px">
-        <label>R₀ (nM)</label>
-        <input type="range" id="sl-r0" min="1" max="30" value="8" step="1">
-        <span class="val" id="r0-val">8</span>
-      </div>
-    </div>
-    <div class="chart-wrap" style="height:220px;padding:0 12px 0">
-      <canvas id="cvTMDD"></canvas>
-    </div>
-    <div style="padding:6px 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:16px;flex-wrap:wrap">
-      <span><span style="color:#e07070">●</span> 저용량 (비선형 구간)</span>
-      <span><span style="color:#f0b040">●</span> 중간용량</span>
-      <span><span style="color:#5fb87a">●</span> 고용량 (선형 근사)</span>
-      <span style="margin-left:auto">Dose-normalized: 선형이면 겹쳐야 함</span>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SECTION 5: FULL TMDD ═══ -->
-<section class="sec rv" id="tmdd-full">
-  <h2 class="sh">2.2 Full TMDD 모델 (Mager & Jusko 2001)</h2>
-
-  <div class="viz">
-    <div class="viz-title">Full TMDD 구획 다이어그램</div>
-    <svg id="svgTMDD" viewBox="0 0 700 200" style="padding:8px;width:100%;height:auto"></svg>
-  </div>
-
-  <div class="fml">
-    <span class="lbl">Full TMDD ODEs</span>
-    <span class="eq">dL/dt  = Input(t) − k_el·L − k_on·L·R + k_off·LR &nbsp;<span class="cm">// 유리 약물</span></span>
-    <span class="eq">dR/dt  = k_syn − k_deg·R − k_on·L·R + k_off·LR &nbsp;&nbsp;<span class="cm">// 유리 수용체</span></span>
-    <span class="eq">dLR/dt = k_on·L·R − k_off·LR − k_int·LR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 복합체</span></span>
-  </div>
-
-  <div class="pgrid">
-    <div class="pcrd"><div class="psym">k_on</div><div class="pdesc">결합 속도 상수 (M⁻¹s⁻¹)</div></div>
-    <div class="pcrd"><div class="psym">k_off</div><div class="pdesc">해리 속도 상수 (s⁻¹)</div></div>
-    <div class="pcrd"><div class="psym">k_int</div><div class="pdesc">복합체 내재화 (h⁻¹)</div></div>
-    <div class="pcrd"><div class="psym">k_syn</div><div class="pdesc">수용체 합성 속도</div></div>
-    <div class="pcrd"><div class="psym">k_deg</div><div class="pdesc">수용체 자연 분해</div></div>
-    <div class="pcrd"><div class="psym">k_el</div><div class="pdesc">선형 제거 (FcRn 경로)</div></div>
-    <div class="pcrd"><div class="psym">K_SS</div><div class="pdesc">= (k_off+k_int)/k_on</div></div>
-    <div class="pcrd"><div class="psym">R₀</div><div class="pdesc">= k_syn/k_deg (기저 수용체)</div></div>
-  </div>
-
-  <div class="box pit">
-    <div class="bh">⚠️ 식별성 함정 — 파라미터가 너무 많다</div>
-    <p>Full TMDD는 9+개 파라미터. 희소 임상 PK 데이터로는 <strong>k_on, k_off를 개별 추정 불가</strong>. 이 둘은 오직 K_SS = (k_off+k_int)/k_on의 조합으로만 데이터에 나타난다. NONMEM 실행 시 %RSE &gt; 100% 또는 수렴 실패가 일반적.</p>
-  </div>
-</section>
-
-<!-- ═══ SECTION 6: HIERARCHY ═══ -->
-<section class="sec rv" id="tmdd-hier">
-  <h2 class="sh">2.3 모델 계층: Full → QSS → MM</h2>
-
-  <div class="flow">
-    <div class="fstep">
-      <div class="fstep-l">가장 완전</div>
-      <div class="fstep-n">Full TMDD</div>
-      <div class="fstep-p">k_on, k_off, k_int<br>k_syn, k_deg, k_el<br>Vc, Vp, Q<br>≥ 9 params</div>
-    </div>
-    <div class="farrow">→</div>
-    <div class="fstep">
-      <div class="fstep-l">QSS 근사</div>
-      <div class="fstep-n">Quasi-Steady State</div>
-      <div class="fstep-p">K_SS, k_int, R₀<br>k_el, Vc, Vp, Q<br>7 params</div>
-    </div>
-    <div class="farrow">→</div>
-    <div class="fstep">
-      <div class="fstep-l">최단순</div>
-      <div class="fstep-n">Michaelis-Menten</div>
-      <div class="fstep-p">Vmax, Km, k_el<br>Vc, Vp, Q<br>6 params</div>
-    </div>
-  </div>
-
-  <h3 class="sth">QSS 핵심 방정식 (dLR/dt = 0 가정)</h3>
-  <div class="fml">
-    <span class="eq">K_SS = (k_off + k_int) / k_on &nbsp;<span class="cm">// 항상 K_D보다 크다</span></span>
-    <span class="eq">L_free = half·[(L_tot-R_tot-K_SS) + sqrt((L_tot-R_tot-K_SS)^2 + 4·K_SS·L_tot)]</span>
-    <span class="cm">// 이차방정식 → 비선형 PK의 수학적 근원</span>
-  </div>
-
-  <div class="viz">
-    <div class="viz-title">인터랙티브 — Full TMDD vs QSS vs MM 예측 비교</div>
-    <div style="padding:10px 16px 6px">
-      <div class="slider-wrap">
-        <label>투여 용량 (배수)</label>
-        <input type="range" id="sl-dmod" min="1" max="8" value="2" step="1">
-        <span class="val" id="dmod-val">×2</span>
-      </div>
-    </div>
-    <div class="chart-wrap" style="height:200px;padding:0 12px 0">
-      <canvas id="cvMod"></canvas>
-    </div>
-    <div style="padding:6px 16px 12px;font-family:var(--mono);font-size:10px;color:var(--txd);display:flex;gap:16px">
-      <span><span style="color:var(--acc)">—</span> Full TMDD</span>
-      <span><span style="color:var(--acc3)">—</span> QSS</span>
-      <span><span style="color:var(--acc2)">--</span> MM</span>
-      <span><span style="color:var(--acc4)">--</span> Linear</span>
-    </div>
-  </div>
-
-  <table class="tbl">
-    <thead><tr><th>모델</th><th>핵심 가정</th><th>충실도</th><th>추정 용이성</th><th>적용 상황</th></tr></thead>
-    <tbody>
-      <tr><td class="hl">Full TMDD</td><td>없음</td><td class="g">★★★★★</td><td class="r">★★☆ (RSE&gt;100%)</td><td>학술·풍부 PD+PK</td></tr>
-      <tr><td class="hl">QSS</td><td>복합체 >> PK 속도</td><td class="g">★★★★☆</td><td class="g">★★★★☆</td><td><strong>mAb BLA 표준</strong></td></tr>
-      <tr><td class="hl">MM</td><td>L >> K_SS 항상</td><td>★★★☆☆</td><td class="g">★★★★★</td><td>고용량 탐색 전용</td></tr>
-      <tr><td>선형 2구획</td><td>치료 용량에서 포화</td><td>★★☆☆☆</td><td class="g">★★★★★</td><td>dose-proportional 확인 후</td></tr>
-    </tbody>
+  <h3>혼동 쌍 3 · 고추출 약물 vs. 저추출 약물의 DDI 민감성</h3>
+  <table class="conf-table">
+    <tr><th>비교 차원</th><th>고추출 약물 ($E_H > 0.7$)</th><th>저추출 약물 ($E_H < 0.3$)</th></tr>
+    <tr><td>표면 유사성</td><td colspan="2">둘 다 간에서 대사됨. CYP 억제제가 $Cl_{int}$를 감소시키면 둘 다 영향받는 것처럼 보임.</td></tr>
+    <tr><td>IV 투여, CYP 억제 효과</td><td>$Cl \approx Q_H$ → $Cl_{int}$ 억제 효과 <strong>미미</strong></td><td>$Cl \approx f_u Cl_{int}$ → $Cl_{int}$ 억제 효과 <strong>직접적, 비례적</strong></td></tr>
+    <tr><td>경구 투여, CYP 억제 효과</td><td>$F_H = Q_H/(Q_H + f_u Cl_{int}) \to 1$ (이미 높음) → 억제 시 F 증가 + Cl 감소 → 복잡한 상호작용</td><td>$C_{ss} = R_0/(f_u Cl_{int})$ → $Cl_{int}$ 억제 시 농도 직접 증가</td></tr>
+    <tr><td>혈류 변화 민감성</td><td>$Cl \approx Q_H$ → <strong>혈류 변화에 매우 민감</strong> (운동, 심부전)</td><td>$Cl \approx f_u Cl_{int}$ → 혈류 변화에 상대적으로 둔감</td></tr>
+    <tr><td>임상적 결과</td><td>고추출 약물(리도카인, 프로프라놀롤)은 심부전 환자에서 혈류 감소로 독성 발현. CYP 억제제 영향은 경구 생체이용률 증가로 주로 나타남.</td><td>저추출 약물(와파린, 디곡신)은 CYP 억제제나 단백결합 치환에 의해 큰 DDI 발생.</td></tr>
+    <tr><td>기억 앵커</td><td colspan="2"><strong>"고추출은 혈류가 왕(King = Q<sub>H</sub>), 저추출은 효소가 왕(King = Cl<sub>int</sub>)."</strong> 왕이 바뀌지 않으면 왕국(농도)이 흔들리지 않는다.</td></tr>
   </table>
+</div>
 
-  <!-- WHY-1 -->
-  <div id="w-trast" class="acc-wrap">
-    <div class="acc" id="a-trast">
-      <div class="acc-hdr" onclick="tog('a-trast')">
-        <span class="abadge">Why-1</span>
-        <span class="atitle">Trastuzumab: 초기 t½ ~1.4일 → 반복 투여 후 ~28일로 늘어나는 이유</span>
-        <span class="aarrow">▼</span>
+<!-- ═══════════════════════════════════════ §6 SCENARIOS ═══════════════════════════════════════ -->
+<div class="section" id="sec6">
+  <div class="section-number">§6 — 실용 적용 시나리오</div>
+  <h2 id="scenarios">임상/개발 시나리오</h2>
+
+  <div class="card">
+    <h3>시나리오 1 · 신약 개발 — Phase 1 인간 청소율 예측 (IVIVE)</h3>
+    <p><strong>약물:</strong> XB-4471 — 신규 간 대사 항진균제 후보물질. 주요 대사 경로: CYP3A4 단일 경로 (in vitro 확인). 마우스, 랫드, 개에서 in vivo 청소율 측정 완료.</p>
+    <p><strong>설계 문제:</strong> Phase 1 임상시험에서 최초 인체 투여(FIH) 용량 범위 설정을 위해 인간 정상 상태 청소율을 예측하라.</p>
+    <p><strong>계산 과정:</strong></p>
+    <ol style="margin-left:1.5rem;line-height:2.2;">
+      <li>마이크로솜 인큐베이션에서 $V_{max}/K_m$ 비율을 각 종에서 측정 → Table 2.7의 MMP, 간 중량으로 스케일업 → 종별 $Cl_{int,liver}$ 추정</li>
+      <li>Well-stirred model 적용: $Cl_{H,animal} = Q_{H,animal} \cdot f_{u,animal} \cdot Cl_{int,animal}/(Q_{H,animal} + f_{u,animal} \cdot Cl_{int,animal})$</li>
+      <li>Predicted vs. observed (동물 in vivo)로 IVIVE 정확도 검증</li>
+      <li>인간 스케일업: $Cl_{int,human} = Cl_{int,invitro,human} \times$ MMP (50 mg/g, Table 2.7) × 간 중량 (1,500 g)</li>
+      <li>$f_{u,human}$을 인간 혈장 단백결합 실험으로 측정 → $Cl_H$ 예측</li>
+    </ol>
+    <p class="note-box"><strong>규제 적용:</strong> ICH M3(R2) 가이드라인에 따라 FIH 용량 설정. NOAEL 기반 안전 계수 적용. 예측 $Cl_H$와 $V_d$ 에서 $t_{1/2}$ 추정으로 샘플링 스케쥴 설계. NDA/IND CTD Module 2.6 (Pharmacology Written Summary) 및 Module 5.3.3.1 (PK Human Study Reports)에 기재.</p>
+  </div>
+
+  <div class="card">
+    <h3>시나리오 2 · 임상 — 신부전 환자 Turnover 해석</h3>
+    <p>크레아티닌 수치 5.2 mg/dL의 신부전 환자. 정상 상태 크레아티닌 1.0 mg/dL와 비교하여 의사가 "신장이 크레아티닌을 더 많이 생산하는 것이냐"고 묻는다.</p>
+    <p><strong>Turnover 분석:</strong> $A_{ss} = k_{in}/k_{out}$에서 크레아티닌은 근육 대사의 부산물로 생산율 $k_{in}$은 근육량에 비례, 비교적 안정적이다. GFR 감소 = $k_{out}$ 감소. 따라서:</p>
+    <div class="eq-block">$$A_{ss}^{new} = \frac{k_{in}}{k_{out}^{new}} = \frac{k_{in}}{k_{out}^{normal} \times 0.192} \approx 5.2 \text{ mg/dL}$$</div>
+    <p>이는 $k_{out}$이 약 1/5.2로 감소 = GFR이 정상의 약 19%임을 의미. 약물 정리를 위한 용량 조정 계산의 기초가 된다. <strong>$T_{ss}$ 변화:</strong> $k_{out}$ 감소로 새로운 정상 상태 도달 시간이 연장됨 → 신기능 저하 시 약물 축적 위험이 증가하는 이유.</p>
+  </div>
+
+  <div class="card">
+    <h3>코드 블록 · NONMEM — 1구획 + Turnover 기저선 모델</h3>
+<pre><span class="code-comment">; XB-4471 with endogenous baseline (turnover model)</span>
+<span class="code-keyword">$PROB</span> XB4471 Hepatic Clearance + Turnover Baseline Model
+
+<span class="code-keyword">$DATA</span> xb4471_final.csv IGNORE=@
+<span class="code-keyword">$INPUT</span> ID TIME DV AMT EVID CMT MDV BW BILI <span class="code-comment">; BILI = bilirubin (hepatic function covariate)</span>
+
+<span class="code-keyword">$SUBROUTINE</span> ADVAN13 TOL=6 <span class="code-comment">; General ODE solver</span>
+
+<span class="code-keyword">$MODEL</span>
+  COMP = (DEPOT)
+  COMP = (CENTRAL)
+  COMP = (RESPONSE) <span class="code-comment">; Turnover compartment for biomarker</span>
+
+<span class="code-keyword">$PK</span>
+  <span class="code-comment">; Allometric scaling by body weight</span>
+  KA = THETA(1)
+  CL = THETA(2) * (BW/70)**0.75 * EXP(ETA(1))
+  V  = THETA(3) * (BW/70)**1.00 * EXP(ETA(2))
+
+  <span class="code-comment">; Hepatic extraction covariates</span>
+  QH    = 90   <span class="code-comment">; L/h, fixed human hepatic blood flow</span>
+  CLINT = CL * (QH + CL) / (QH - CL + 1E-8)  <span class="code-comment">; Back-calc Clint from CL (well-stirred)</span>
+  EH    = CL / QH
+  FH    = 1 - EH
+
+  <span class="code-comment">; Turnover for biomarker R</span>
+  KIN  = THETA(4) * EXP(ETA(3))
+  KOUT = THETA(5) * EXP(ETA(4))
+  R0   = KIN / KOUT  <span class="code-comment">; Baseline (initial condition)</span>
+
+<span class="code-keyword">$DES</span>
+  C    = A(2) / V
+  DADT(1) = -KA * A(1)
+  DADT(2) =  KA * A(1) - CL * C
+  <span class="code-comment">; Drug inhibits kin (stimulation of kout model also possible)</span>
+  IMAX = THETA(6)
+  IC50 = THETA(7)
+  IEFF = IMAX * C / (IC50 + C)
+  DADT(3) = KIN * (1 - IEFF) - KOUT * A(3)
+
+<span class="code-keyword">$ERROR</span>
+  IPRED = A(2) / V
+  W     = SQRT(THETA(8)**2 + (THETA(9)*IPRED)**2)
+  Y     = IPRED + W * EPS(1)
+
+<span class="code-keyword">$THETA</span>
+  (0,1.5)    <span class="code-comment">; THETA(1) KA h-1</span>
+  (0,15)     <span class="code-comment">; THETA(2) CL L/h (70kg)</span>
+  (0,80)     <span class="code-comment">; THETA(3) V L (70kg)</span>
+  (0,10)     <span class="code-comment">; THETA(4) KIN units/h</span>
+  (0,0.2)    <span class="code-comment">; THETA(5) KOUT h-1</span>
+  (0,0.8,1)  <span class="code-comment">; THETA(6) IMAX (0-1)</span>
+  (0,5)      <span class="code-comment">; THETA(7) IC50 mg/L</span>
+  0.1        <span class="code-comment">; THETA(8) additive error</span>
+  0.15       <span class="code-comment">; THETA(9) proportional error</span>
+
+<span class="code-keyword">$OMEGA</span> BLOCK(2)
+  0.09       <span class="code-comment">; IIV CL</span>
+  0.01 0.09  <span class="code-comment">; CL-V correlation, IIV V</span>
+0.04         <span class="code-comment">; IIV KIN</span>
+0.09         <span class="code-comment">; IIV KOUT</span>
+
+<span class="code-keyword">$SIGMA</span> 1 FIX <span class="code-comment">; standardized residual</span>
+
+<span class="code-keyword">$ESTIMATION</span> METHOD=1 INTER MAXEVAL=9999 NOABORT PRINT=5
+             MSFO=xb4471.msf
+<span class="code-keyword">$COVARIANCE</span> PRINT=E
+<span class="code-keyword">$TABLE</span> ID TIME DV IPRED PRED CWRES NPDE ETA1 ETA2 ETA3 ETA4 EH FH
+       FILE=xb4471_sdtab NOPRINT ONEHEADER</pre>
+  </div>
+
+  <!-- Diagnostic Pathology -->
+  <div class="diag-box">
+    <h4>⚠ 진단 병리학 (Diagnostic Pathology)</h4>
+    <p>잘못된 구조 모델 사용 시 GOF 플롯에서 나타나는 특징적 패턴:</p>
+
+    <p style="margin-top:1rem;"><span class="signature">편향 파도 패턴 (Bias Wave)</span></p>
+    <p><strong>CWRES vs TIME:</strong> 시간에 따라 양성-음성-양성으로 체계적으로 반복되는 S자 패턴. <strong>의미:</strong> 흡수 또는 제거 과정의 개수가 잘못됨. 예: 경구 투여에서 이중 흡수 피크(장간 재순환, 다중 흡수 부위)를 단일 흡수로 모델링할 때 발생.</p>
+
+    <p style="margin-top:0.8rem;"><span class="signature">깔때기 패턴 (Funnel Pattern)</span></p>
+    <p><strong>CWRES vs PRED 또는 CWRES vs TIME:</strong> 낮은 농도/초기 시간에서 잔차 분산이 크고 높은 농도/후기 시간에서 작아지는 트럼펫(나팔) 형태. <strong>의미:</strong> 잔차 오류 구조 오설정 — 비례 오류(proportional error)가 있는데 가산 오류(additive error)만 사용했거나, 로그 변환이 필요한 경우.</p>
+
+    <p style="margin-top:0.8rem;"><span class="signature">이중봉 Eta 분포 (Bimodal ETA)</span></p>
+    <p><strong>ETA 히스토그램:</strong> 정규분포 대신 두 개의 봉우리가 나타남. <strong>의미:</strong> 숨겨진 공변량 (예: CYP2D6 poor metabolizer vs extensive metabolizer), 또는 이질적인 하위군이 데이터에 존재. η-shrinkage가 높은 경우 이를 탐지하기 어려우므로 VPC(Visual Predictive Check)로 보완 필요.</p>
+
+    <p style="margin-top:0.8rem;"><span class="signature">Turnover 모델 과적합 신호 (Turnover Overfit)</span></p>
+    <p><strong>증상:</strong> $k_{out}$의 상대 표준편차(RSE) > 50%, $\eta$-shrinkage for $k_{out}$ > 30%. <strong>의미:</strong> 기저 농도 측정이 불충분하거나 데이터가 $k_{in}$과 $k_{out}$을 동시에 추정하기에 부족. Gabrielsson이 지적: "Without additional information from sc dosing, we would not have been able to discriminate between clearance and rate of synthesis."</p>
+
+    <p style="margin-top:0.8rem;"><span class="signature">DV vs PRED 체계적 편향 (Systematic DV-PRED Bias)</span></p>
+    <p><strong>DV vs PRED:</strong> 회귀선이 단위선(identity line, 기울기=1)에서 체계적으로 벗어남 — 저농도에서 과소예측, 고농도에서 과대예측. <strong>의미:</strong> 선형 제거 모델로 비선형 Michaelis-Menten 제거를 설명하려는 경우. 특히 In vitro 데이터에서 두 쌍의 $V_{max}, K_m$을 가진 약물을 단일 선형 $Cl$로 피팅할 때 발생 (Gabrielsson의 Figure 2.65 상황).</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ §7 SELF TEST ═══════════════════════════════════════ -->
+<div class="section" id="sec7">
+  <div class="section-number">§7 — 자기 테스트: 능동 회상 모듈</div>
+  <h2 id="selftest">자기 테스트 (7문항)</h2>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q1')">
+      <div class="q-text"><span class="q-num">Q1 · 회상</span><br>정맥 투여 후 청소율을 추정하는 핵심 공식을 쓰고, AUC가 "2차 파라미터"인 이유를 설명하라.</div>
+      <div class="q-meta"><span class="sr-badge sr-core">★★ 핵심</span></div>
+    </div>
+    <div id="q1" class="answer-block">
+      <p>$Cl = D_{iv}/AUC_0^\infty$. AUC가 "2차 파라미터"인 이유: 청소율($Cl$)과 부피($V$)가 <em>일차 파라미터(primary parameters)</em>로, 이 두 파라미터가 결정되면 AUC는 자동으로 계산된다($AUC = D/Cl$). AUC를 먼저 측정하고 Cl을 계산하는 실험 절차와는 달리, 개념적으로 Cl이 원인이고 AUC는 결과이다. Gabrielsson은 이 점을 명시적으로 강조: "clearance and volume are the primary parameters and area is a derived secondary parameter."</p>
+      <div class="next-depth">청소율이 농도 의존적(비선형)이라면 $Cl = D/AUC$ 공식은 어떻게 변형해야 하는가? Michaelis-Menten 제거에서 AUC와 용량의 관계는 선형인가?</div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q2')">
+      <div class="q-text"><span class="q-num">Q2 · 회상</span><br>Well-Stirred 모델에서 $Cl_H = Q_H \cdot f_u \cdot Cl_{int}/(Q_H + f_u \cdot Cl_{int})$를 유도하는 단계를 설명하라. 어떤 가정이 핵심적인가?</div>
+      <div class="q-meta"><span class="sr-badge sr-core">★★ 핵심</span></div>
+    </div>
+    <div id="q2" class="answer-block">
+      <p>핵심 가정: <strong>간 내부가 완전 혼합(well-stirred)</strong>되어 $C_{liver} = C_{out}$. 유도: 간 질량 균형 $V_H \cdot dC_H/dt = Q_H C_{in} - Q_H C_{out} - f_u Cl_{int} C_{out}$. 정상 상태(dC/dt=0) 적용 → $C_{out} = Q_H C_{in}/(Q_H + f_u Cl_{int})$. 추출비 $E_H = (C_{in} - C_{out})/C_{in} = f_u Cl_{int}/(Q_H + f_u Cl_{int})$. $Cl_H = Q_H \cdot E_H$ 대입 → Eq. 2:195.</p>
+      <div class="next-depth">Parallel tube model의 $C_{out} = C_{in} \cdot e^{-f_u Cl_{int}/Q_H}$는 어떤 물리적 가정의 차이에서 나오는가? 동일한 $Cl_{int}$에서 두 모델이 예측하는 $Cl_H$를 비교하면?</div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q3')">
+      <div class="q-text"><span class="q-num">Q3 · 적용</span><br>약물 A: 고추출 ($E_H=0.85$), IV 투여 중. 환자가 심부전으로 심박출량이 감소하여 간 혈류($Q_H$)가 50% 감소했다. 총 정상 상태 농도($C_{ss}$)와 비결합 농도($C_{u,ss}$)는 각각 어떻게 변하는가?</div>
+      <div class="q-meta"><span class="sr-badge sr-core">★★ 핵심</span></div>
+    </div>
+    <div id="q3" class="answer-block">
+      <p>고추출 IV 약물에서 $Cl \approx Q_H$. $Q_H$ 50% 감소 → $Cl$ 약 50% 감소 → $C_{ss} = R_0/Cl \approx R_0/Q_H$ 에서 <strong>$C_{ss}$ 약 2배 증가</strong>. 비결합 농도 $C_{u,ss} = f_u \cdot C_{ss} \approx f_u \cdot R_0/Q_H$ → $Q_H$ 감소로 <strong>$C_{u,ss}$도 2배 증가</strong>. 임상 의의: 리도카인, 프로프라놀롤 같은 고추출 약물이 심부전 환자에서 독성 발현하는 기전이다. 용량을 50%로 감량하거나 $C_{ss}$ 모니터링이 필요.</p>
+      <div class="next-depth">같은 상황에서 약물 B가 저추출($E_H=0.05$)이라면? $Q_H$ 변화가 $C_{ss}$에 미치는 영향은 고추출 약물과 어떻게 다른가?</div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q4')">
+      <div class="q-text"><span class="q-num">Q4 · 적용</span><br>Turnover 모델에서 $k_{in}$을 2배로 증가시키는 자극이 가해졌다. 새로운 정상 상태 수준과 새 정상 상태 도달 시간($T_{ss}$)은 어떻게 변하는가? $k_{out}$을 0.5배로 감소시키는 경우와 비교하라.</div>
+      <div class="q-meta"><span class="sr-badge sr-core">★★ 핵심</span></div>
+    </div>
+    <div id="q4" class="answer-block">
+      <p><strong>$k_{in}$ 2배:</strong> $A_{ss}^{new} = 2k_{in}/k_{out} = 2 \times A_0$ (2배 증가). $T_{ss} = 4/k_{out}$ — <em>불변</em>. 반감기 $t_{1/2} = \ln 2/k_{out}$도 불변.</p>
+      <p><strong>$k_{out}$ 0.5배:</strong> $A_{ss}^{new} = k_{in}/(0.5 k_{out}) = 2 \times A_0$ (동일하게 2배 증가). $T_{ss} = 4/(0.5 k_{out}) = 2 \times T_{ss}^{original}$ — <em>2배 연장</em>. 반감기도 2배.</p>
+      <p>두 경우 최종 수준은 같지만, 도달하는 시간은 $k_{out}$ 감소에서 2배 더 걸린다 (Figure 2.70). 임상 적용: 신기능 저하($k_{out}$ 감소)로 인한 약물 축적은 수준 증가뿐 아니라 안정 도달 시간도 연장시킨다 → 용량 조정 후 새 $C_{ss}$ 관찰에 더 긴 시간이 필요.</p>
+      <div class="next-depth">경구 에스트라디올 보충 요법을 시작한 폐경 후 여성에서 endogenous $k_{in}$에 대한 feedback이 없다고 가정하면, 새로운 $C_{ss}$에 도달하는 시간은 Gabrielsson의 실험 데이터(MRT=18분)에서 어떻게 추정하는가?</div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q5')">
+      <div class="q-text"><span class="q-num">Q5 · 적용</span><br>In vitro 미세소체 실험에서 XB-4471의 $V_{max} = 2.1$ µmol·g⁻¹·min⁻¹, $K_m = 15$ µM, $f_{u,inc} = 0.02$, $f_u = 0.05$로 측정되었다. 선형 조건 ($C \ll K_{m,u}$)에서 인간 간 $Cl_{int}$를 추정하라. (MMP = 50 mg/g, 간 중량 = 1500 g)</div>
+      <div class="q-meta"><span class="sr-badge sr-imp">★ 중요</span></div>
+    </div>
+    <div id="q5" class="answer-block">
+      <p>비결합 $K_m$: $K_{m,u} = f_{u,inc} \cdot K_m = 0.02 \times 15 = 0.30$ µM.</p>
+      <p>미세소체 수준의 $Cl_{int}$: $Cl_{int,mic} = V_{max}/K_{m,u} = 2.1/0.30 = 7.0$ µmol·g mic⁻¹·min⁻¹ = 7.0 mL·g mic⁻¹·min⁻¹</p>
+      <p>인간 전체 간 스케일업: $Cl_{int,liver} = 7.0 \times 50 \text{ mg mic/g liver} \times 1500 \text{ g liver} = 525,000$ mL·min⁻¹ = 525 L·min⁻¹ (과대추정 가능성 주의)</p>
+      <p>$f_u > f_{u,inc}$이므로 보정 필요함. 이후 Well-Stirred model 적용: $Q_H = 1.45$ L·min⁻¹, $f_u \cdot Cl_{int} \gg Q_H$ → 고추출약물 예측 → $Cl_H \approx Q_H = 1.45$ L·min⁻¹. Table 2.8 경고: MMP 가정에 따라 추출비 분류 자체가 바뀔 수 있음.</p>
+      <div class="next-depth">MMP를 50 대신 20으로 가정하면 추출비는 어떻게 변하는가? 이 불확실성이 FIH 용량 설계에 미치는 영향은?</div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q6')">
+      <div class="q-text"><span class="q-num">Q6 · 적용</span><br>Gabrielsson의 IgX 면역글로불린 실험(PK30)에서 피하 투여 없이 정맥 투여 데이터만 있다면 왜 $k_{in}$을 추정하기 어려운가? 이를 설명하는 수학적 관계를 제시하라.</div>
+      <div class="q-meta"><span class="sr-badge sr-imp">★ 중요</span></div>
+    </div>
+    <div id="q6" class="answer-block">
+      <p>정맥 투여 데이터에서 관측되는 기저 농도($C_{baseline}$)는: $C_{baseline} = k_{in}/Cl$. 이 비율에서 $k_{in}$과 $Cl$은 <em>비식별가능(non-identifiable)</em>하다 — 무한히 많은 ($k_{in}$, $Cl$) 조합이 동일한 $C_{baseline}$을 설명할 수 있다.</p>
+      <p>피하 투여를 추가하면 농도가 $C_{baseline}$을 넘어 상승하는 구간이 생기고, 이 정보($C_{max} - C_{baseline}$의 크기와 시간적 패턴)로부터 $Cl/F$와 $V/F$를 독립적으로 추정 가능하다. 이를 통해 비율($k_{in}/Cl$) 대신 개별 값 추정이 가능해진다. Gabrielsson: "Without the additional information obtained from the sc dose, we would not have been able to discriminate between clearance and rate of synthesis."</p>
+      <div class="next-depth">베이지안 방법론을 사용하면 IV 데이터만으로 $k_{in}$에 사전 분포를 부여하여 추정 가능한가? 어떤 사전 정보가 필요한가?</div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-header" onclick="toggleAnswer('q7')">
+      <div class="q-text"><span class="q-num">Q7 · 심화 적용</span><br>Dispersion model의 $D_N$이 0에 가까워지면 Parallel tube model로, 무한대로 가면 Well-stirred model로 수렴한다. 이 두 극단 모델의 임상적 예측이 달라지는 구체적인 상황을 예시하라.</div>
+      <div class="q-meta"><span class="sr-badge sr-std">○ 표준</span></div>
+    </div>
+    <div id="q7" class="answer-block">
+      <p>$E_H$가 중간 범위(0.3–0.7)에서 두 모델의 예측 차이가 최대화된다. 예: $f_u \cdot Cl_{int}/Q_H = 1$ (효율비 = 1)인 약물에서:</p>
+      <p>Well-Stirred: $F_H = Q_H/(Q_H + f_u Cl_{int}) = 0.5$ (50% 생체이용률)</p>
+      <p>Parallel Tube: $F_H = e^{-f_u Cl_{int}/Q_H} = e^{-1} \approx 0.368$ (37% 생체이용률)</p>
+      <p>임상 의의: 경구 생체이용률이 37% vs 50%로 예측된다면 용량 설계와 변동성 예측이 크게 달라진다. 항상성 혈류 분포(정적 가정)와 실제 간 미세 순환의 불균일성 때문에 어느 모델이 실제 간을 더 잘 표현하는지는 여전히 연구 중이다. Gabrielsson은 Case Study PK23에서 이를 실험 데이터로 분석.</p>
+      <div class="next-depth">항암제 개발에서 간 전이 종양이 간 sinusoid 구조를 변형시켰을 때, 어떤 모델이 더 적합하며 이를 데이터로 어떻게 판별할 수 있는가?</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ §8 META FRAME ═══════════════════════════════════════ -->
+<div class="section" id="sec8">
+  <div class="section-number">§8 — 메타 프레임 &amp; 빅 픽처</div>
+  <h2 id="meta">지식 구조에서의 위치와 전문성의 해자(Moat)</h2>
+
+  <div class="card">
+    <h3>A. 지식 구조에서의 위치 (Positioning)</h3>
+    <div style="display:grid;grid-template-columns:1fr 2px 1fr 2px 1fr;gap:0;margin:1.5rem 0;">
+      <div style="background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:1rem;font-size:0.83rem;">
+        <div style="color:var(--text-muted);font-family:var(--mono);font-size:0.7rem;margin-bottom:0.5rem;">← 선행 개념</div>
+        <div>일차 동력학 / 이구획 모델 / AUC-NCA / 볼륨 분포 / 반감기</div>
       </div>
-      <div class="acc-body">
-        <div class="box clin" style="margin-top:0">
-          <div class="bh">🩺 임상 상황</div>
-          <p>허셉틴(HER2 표적). 1차 투여 후 t½ ≈ 1.4일 → 4주 반복 후 정상상태 t½ ≈ 28일. 동일 약·동일 환자에서 왜?</p>
-        </div>
-        <div class="viz" style="margin:12px 0">
-          <div class="viz-title">HER2 표적 포화에 따른 유효 제거속도 변화</div>
-          <div class="chart-wrap" style="height:160px;padding:8px 12px 4px">
-            <canvas id="cvTrast"></canvas>
-          </div>
-        </div>
-        <h3 class="sth">초기 투여 (포화 미달)</h3>
-        <div class="fml">
-          <span class="eq">k_eff ≈ k_el + k_int · R / (K_SS + L)</span>
-          <span class="cm">// L &lt;&lt; K_SS → k_eff ≈ k_el + k_int·R₀/K_SS (빠름)</span>
-        </div>
-        <p>HER2 과발현 → 유리 수용체 R₀ 풍부 → k_int 경로 최대 가동 → 짧은 t½.</p>
-        <h3 class="sth">반복 투여 후 정상상태 (포화)</h3>
-        <p>누적 항체가 HER2 수용체를 포화 → 유리 R → 0 → k_int 경로 꺼짐 → FcRn 경로(k_el)만 남음 → t½ ≈ 28일.</p>
-        <div class="box pit">
-          <div class="bh">⚠️ 흔한 오해</div>
-          <p>"반복 투여 t½ 증가 = ADA 없어서 축적?" — 아니다. ADA는 t½을 <em>단축</em>시킨다. 여기서 t½ 증가는 순수 TMDD 포화 메커니즘이다.</p>
-        </div>
+      <div style="background:linear-gradient(180deg,transparent,var(--gold),transparent);margin:1rem 0;"></div>
+      <div style="background:linear-gradient(135deg,#1a1000,#0a0a1a);border:2px solid var(--gold);border-radius:6px;padding:1rem;font-size:0.83rem;">
+        <div style="color:var(--gold);font-family:var(--mono);font-size:0.7rem;margin-bottom:0.5rem;">★ 현재 위치</div>
+        <div>청소율 생리학 / 간 추출 모델 / IVIVE / Turnover 개념 / Feedback</div>
+      </div>
+      <div style="background:linear-gradient(180deg,transparent,var(--gold),transparent);margin:1rem 0;"></div>
+      <div style="background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:1rem;font-size:0.83rem;">
+        <div style="color:var(--text-muted);font-family:var(--mono);font-size:0.7rem;margin-bottom:0.5rem;">→ 열리는 개념</div>
+        <div>비선형 PK / PopPK 공변량 모델 / PBPK / TMDD / PD Turnover (§3.7) / QSP</div>
       </div>
     </div>
   </div>
 
-  <!-- WHY-2 -->
-  <div id="w-tid" class="acc-wrap">
-    <div class="acc" id="a-tid">
-      <div class="acc-hdr" onclick="tog('a-tid')">
-        <span class="abadge">Why-2</span>
-        <span class="atitle">Full TMDD가 식별 불가능한 이유와 QSS Trade-off</span>
-        <span class="aarrow">▼</span>
-      </div>
-      <div class="acc-body">
-        <div class="fml">
-          <span class="eq">K_D  = k_off / k_on &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 평형 해리상수</span></span>
-          <span class="eq">K_SS = (k_off + k_int) / k_on &nbsp;<span class="cm">// 항상 K_D보다 크다</span></span>
-          <span class="eq">Full TMDD k_on: %RSE ≈ 180% ← 추정 불가</span>
-          <span class="eq">QSS    K_SS: %RSE ≈ 15%  ← 잘 추정됨</span>
-        </div>
-        <table class="tbl">
-          <thead><tr><th>항목</th><th>Full TMDD</th><th>QSS 근사</th></tr></thead>
-          <tbody>
-            <tr><td>k_on, k_off 개별값</td><td class="g">이론상 가능</td><td class="r">K_SS만 추정</td></tr>
-            <tr><td>실제 데이터 정밀도</td><td class="r">RSE&gt;100% 대부분</td><td class="g">RSE 10–30%</td></tr>
-            <tr><td>수렴 안정성</td><td class="r">Bootstrap 실패 ~40%</td><td class="g">실패 &lt;5%</td></tr>
-            <tr><td>FDA 수용성</td><td>학술 참조</td><td class="g">BLA 표준</td></tr>
-          </tbody>
-        </table>
-        <div class="box ins">
-          <div class="bh">💡 거장의 관점</div>
-          <p>모델 COU가 "농도 예측·용량 추천"이면 QSS로 충분하다. FDA도 항상 가장 복잡한 모델이 아닌, <em>COU에 맞는 모델</em>을 원한다.</p>
-        </div>
-      </div>
-    </div>
+  <div class="card">
+    <h3>B. 의존성 — 이 섹션을 모르면 발생하는 고급 모델링 실패</h3>
+    <p><strong>실패 모드 1: 잘못된 공변량 모델링 (PopPK)</strong></p>
+    <p>간경변 환자 데이터를 포함한 PopPK 모델에서 bilirubin을 Cl의 선형 공변량으로 추가하는 경우, 고추출 약물인지 저추출 약물인지에 따라 공변량 모델의 형태가 근본적으로 달라야 한다. 고추출 약물의 Cl은 $Q_H$에 의존하므로 portal hypertension 지표(예: HVPG)가 더 적절한 공변량이다. 이 구분 없이 bilirubin을 선형 공변량으로 쓰면 모델이 데이터를 피팅하더라도 예측력은 엉뚱한 방향을 향한다.</p>
+    <p><strong>실패 모드 2: 내인성 biomarker PK/PD 모델에서 baseline 처리 오류</strong></p>
+    <p>Turnover 개념 없이 내인성 biomarker(예: ALT, creatinine, cortisol)를 단순히 기저값에서 빼고 분석하는 "baseline subtraction" 접근법은 oscillating baseline(일주기 변동), feedback 조절 시스템에서 완전히 틀린 결과를 낳는다 (Figure 2.77). 이를 제대로 처리하려면 §2.6의 Turnover 모델 구조를 이해하고 ODE로 기저 상태를 명시적으로 모델링해야 한다.</p>
   </div>
 
-  <!-- WHY-3 -->
-  <div id="w-bla" class="acc-wrap">
-    <div class="acc" id="a-bla">
-      <div class="acc-hdr" onclick="tog('a-bla')">
-        <span class="abadge">Why-3</span>
-        <span class="atitle">BLA 제출 시 "Full 대신 QSS" — FDA 방어 5-layer 논리</span>
-        <span class="aarrow">▼</span>
-      </div>
-      <div class="acc-body">
-        <div class="box fda" style="margin-top:0">
-          <div class="bh">🏛️ FDA 가상 질의</div>
-          <p>"Full TMDD 대신 QSS를 채택한 과학적 근거는? QSS 가정의 타당성을 어떻게 검증했는가?"</p>
-        </div>
-        <div class="viz" style="margin:12px 0">
-          <div class="viz-title">BLA 5-Layer 방어 구조</div>
-          <svg id="svgBLA" viewBox="0 0 620 160" style="width:100%;height:auto;padding:10px 14px"></svg>
-        </div>
-        <h3 class="sth">논거 1: 데이터 지지</h3>
-        <div class="fml">
-          <span class="eq">Full TMDD: k_on %RSE=178%, k_off %RSE=203%</span>
-          <span class="eq">QSS:       K_SS %RSE=14%,  k_int %RSE=22%</span>
-        </div>
-        <h3 class="sth">논거 2: 수렴 안정성</h3>
-        <p>Bootstrap 1,000회: Full TMDD 수렴 실패 43%, QSS 2%.</p>
-        <h3 class="sth">논거 3: VPC 동등성</h3>
-        <p>Stratified VPC: Full 91% vs QSS 93% 피복률 — 유의한 차이 없음.</p>
-        <h3 class="sth">논거 4: 생물물리학적 근거</h3>
-        <p>mAb 결합속도(k_on ~ 10⁵–10⁶ M⁻¹s⁻¹)는 PK 타임스케일(시간–일)보다 수십만 배 빠름 → QSS 가정 타당.</p>
-        <h3 class="sth">논거 5: COU 적합성</h3>
-        <p>모델 COU = 노출 특성화·용량 추천. 수용체 점유율 절대값 필요 시 Full TMDD를 별도 PD 분석에 사용.</p>
-        <div class="box ins">
-          <div class="bh">💡 방어의 황금 구조</div>
-          <p><em>데이터 지지 → 수렴 안정 → VPC 동등 → 문헌 근거 → COU 적합</em></p>
-        </div>
-      </div>
-    </div>
+  <div class="card" style="border-color: var(--gold-dim);">
+    <h3>C. 전문성의 해자 (Professional Moat)</h3>
+    <p><em>질문: NONMEM을 실행하고 GOF 플롯을 생성할 수 있는 주니어 약물계량학자, 이구획 모델을 데이터에 피팅하는 AI 도구 — 이 둘이 할 수 없는 것을 §2.5–2.6을 구조적으로 이해한 연구자는 무엇을 할 수 있는가?</em></p>
+
+    <p>답은 단 하나의 역량으로 수렴한다: <strong>모델의 파라미터가 틀렸을 때, 그것이 왜 틀렸는지를 기전적으로 판별하는 능력</strong>.</p>
+
+    <p>구체적으로 세 가지 비복제 가능 역량이 있다:</p>
+
+    <p><strong>첫째, 파라미터 단절(disconnect) 감지.</strong> 피팅된 $Cl$ 값이 50 L/h인데 약물이 고추출 약물인 경우, 이 값은 인간 간 혈류(90 L/h)의 55% — 가능하지만 경계선. 만약 동일 약물의 경구 데이터에서도 $Cl/F = 55$ L/h가 나오면 무언가 잘못됐다($F \approx 1$이어야 하므로 Cl과 Cl/F가 동일해야 함). 이 불일치를 감지하려면 $Cl = Q_H \cdot f_u Cl_{int}/(Q_H + f_u Cl_{int})$의 물리적 제약을 머릿속에 가지고 있어야 한다. NONMEM은 이 제약 없이 순수 수치 최적화를 수행하므로 생물학적으로 불가능한 파라미터도 "최적값"으로 보고한다.</p>
+
+    <p><strong>둘째, 외삽 경계(extrapolation boundary) 설정.</strong> 피팅된 모델을 신부전 환자에 적용할 때, 저추출 약물(Cl ≈ f_u·Cl_int)과 고추출 약물(Cl ≈ Q_H)은 신기능 저하의 영향을 완전히 다른 방식으로 받는다. 이 구조를 내면화한 연구자는 "신기능 공변량을 Cl에 어떻게 추가할 것인가"의 함수 형태(선형? 멱함수? 물리 기반?)를 데이터 전에 이미 알 수 있다.</p>
+
+    <p><strong>셋째, 실험 설계와 모델 구조의 피드포워드 연결.</strong> Turnover 모델에서 $k_{in}$과 $k_{out}$을 독립적으로 추정하려면 기저 농도와 외인성 교란을 동시에 측정해야 함을 Gabrielsson의 IgX 사례가 보여준다. 이 이해 없이는 "데이터를 수집하고 모델을 피팅하는" 순서를 따른다. 이 이해가 있으면 "어떤 모델 파라미터를 추정할 것인지를 결정하고, 그 추정을 가능하게 하는 데이터를 설계한다"는 역순이 가능하다. 이것이 계량약리학자와 통계 소프트웨어 사용자의 근본 차이이다.</p>
   </div>
-</section>
+</div>
 
-<div class="divline"></div>
-
-<!-- ═══ FINAL CONTRAST ═══ -->
-<section class="sec rv" id="contrast">
-  <h2 class="sh">최종 대조표: 핵심 개념 경계선</h2>
-  <table class="tbl">
-    <thead><tr><th>개념 쌍</th><th>같은 점</th><th>결정적 차이</th><th>오류 결과</th></tr></thead>
-    <tbody>
-      <tr><td class="hl">CL vs CL/F</td><td>약물 제거 역량</td><td>CL = 절대값(IV 필요), CL/F = F 의존 (PO 기반)</td><td class="r">DDI·PBPK 입력 오류</td></tr>
-      <tr><td class="hl">고추출 vs 저추출 IV</td><td>CL = Cl_H</td><td>고추출: Q_H 결정. 저추출: f_u·Cl_int 결정</td><td class="r">간경변 용량 오조절</td></tr>
-      <tr><td class="hl">Full TMDD vs QSS</td><td>TMDD 기전 포착</td><td>Full: k_on/k_off 개별 추정. QSS: K_SS만 (식별성 확보)</td><td class="r">BLA 수렴 실패</td></tr>
-      <tr><td class="hl">QSS vs MM</td><td>Full TMDD 근사</td><td>QSS: 전 농도 범위. MM: L>>K_SS 고용량 전용</td><td class="r">저용량 예측 불량</td></tr>
-      <tr><td class="hl">K_D vs K_SS</td><td>결합 친화도 표현</td><td>K_D = k_off/k_on. K_SS = (k_off+k_int)/k_on ≥ K_D</td><td class="r">K_D를 K_SS로 사용 → 과소추정</td></tr>
-      <tr><td class="hl">k_el vs k_int</td><td>약물 소실 기여</td><td>k_el: 선형·FcRn 보호. k_int: 포화 가능·수용체 매개</td><td class="r">선형 모델 t½ 오추정</td></tr>
-    </tbody>
-  </table>
-  <div class="box ins" style="margin-top:20px">
-    <div class="bh">📋 PIPET-Vault 가이드</div>
-    <p><strong>태그:</strong> #PopPK #CL #TMDD #Biologics #Regulatory #NONMEM #mAb</p>
-    <p><strong>연결:</strong> [[ADVAN3-ADVAN4]] [[mAb-PK-기본]] [[BLA-제출전략]] [[공변량-모델링]]</p>
-  </div>
-</section>
-
-</main>
-
+<!-- ═══════════════════════════════════════ SCRIPTS ═══════════════════════════════════════ -->
 <script>
-// ─── UTILITIES ───
-const G = (id) => document.getElementById(id);
-const COLORS = {
-  acc:'#c49a3c', acc2:'#7fb3e8', acc3:'#5fb87a', acc4:'#e07070',
-  grid:'#222228', tx:'#6b6760', bg:'#1c1c1f', txb:'#edeae4'
-};
-
-// FIX: use clientWidth/clientHeight from the .chart-wrap parent, not canvas itself
-function getSize(canvasId) {
-  const canvas = G(canvasId);
-  const wrap = canvas.parentElement;
-  // Use the wrapper's client size — always reliable since wrapper has fixed CSS height
-  const w = wrap.clientWidth || 600;
-  const h = wrap.clientHeight || 200;
-  const r = window.devicePixelRatio || 1;
-  canvas.width  = Math.floor(w * r);
-  canvas.height = Math.floor(h * r);
-  canvas.style.width  = w + 'px';
-  canvas.style.height = h + 'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(r, r);
-  return { ctx, w, h };
+// ─── Tab System ───
+function showTab(btn, id) {
+  const card = btn.closest('.card');
+  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
 }
 
-function gridLines(ctx, x0, y0, xw, yh, nx=5, ny=4) {
-  ctx.strokeStyle = COLORS.grid; ctx.lineWidth = 1;
-  for (let i=0; i<=ny; i++) {
-    const y = y0 - yh*i/ny;
-    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0+xw, y); ctx.stroke();
-  }
-  for (let i=0; i<=nx; i++) {
-    const x = x0 + xw*i/nx;
-    ctx.beginPath(); ctx.moveTo(x, y0-yh); ctx.lineTo(x, y0); ctx.stroke();
-  }
+// ─── Accordion ───
+function toggleAnswer(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+function toggleReveal(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
 }
 
-// ─── 1. AUC-CL — FIXED ───
-// BUG WAS: yScale = yh / (C0 * 1.1) → auto-scales with dose → curve always looks identical
-// FIX: fixed ymax = maxDose/V so increasing dose clearly raises the curve peak
-const V_FIXED = 30;
-const MAX_DOSE = 500;
-const FIXED_YMAX = MAX_DOSE / V_FIXED * 1.2; // 20 mg/L ceiling — never changes
-
-function drawAUC() {
-  const { ctx, w, h } = getSize('cvAUC');
-  const CL   = parseFloat(G('sl-cl').value);
-  const dose = parseFloat(G('sl-dose').value);
-  const k    = CL / V_FIXED;
-  const C0   = dose / V_FIXED;
-  const tmax = 24;
-  const steps = 300;
-
-  ctx.clearRect(0, 0, w, h);
-
-  // Layout
-  const x0 = w*0.10, xw = w*0.84, yBase = h*0.88, yH = h*0.76;
-  const yScale = yH / FIXED_YMAX; // FIXED scale — dose now visually changes curve height
-
-  // Grid
-  gridLines(ctx, x0, yBase, xw, yH, 6, 4);
-
-  // Y-axis labels (fixed scale)
-  ctx.fillStyle = COLORS.tx; ctx.font = '9px IBM Plex Mono'; ctx.textAlign = 'right';
-  for (let i=0; i<=4; i++) {
-    const val = (FIXED_YMAX * i / 4).toFixed(1);
-    ctx.fillText(val, x0-4, yBase - yH*i/4 + 3);
-  }
-  // X-axis labels
-  ctx.textAlign = 'center';
-  [0,6,12,18,24].forEach(t => {
-    ctx.fillText(t, x0 + (t/tmax)*xw, yBase+12);
+// ─── Sim Tab Switch ───
+function switchSimTab(which) {
+  document.getElementById('sim-hepatic').style.display = which === 'hepatic' ? '' : 'none';
+  document.getElementById('sim-turnover').style.display = which === 'turnover' ? '' : 'none';
+  document.querySelectorAll('.sim-container .tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', (i===0 && which==='hepatic') || (i===1 && which==='turnover'));
   });
-  ctx.fillText('Time (h)', x0+xw/2, h-2);
-  ctx.save(); ctx.translate(10, h/2); ctx.rotate(-Math.PI/2);
-  ctx.fillText('Cp (mg/L)', 0, 0); ctx.restore();
-
-  // AUC fill under curve
-  ctx.beginPath();
-  ctx.fillStyle = 'rgba(196,154,60,0.12)';
-  ctx.moveTo(x0, yBase);
-  for (let i=0; i<=steps; i++) {
-    const t = i/steps*tmax;
-    const cp = C0 * Math.exp(-k*t);
-    ctx.lineTo(x0 + t/tmax*xw, yBase - cp*yScale);
-  }
-  ctx.lineTo(x0+xw, yBase);
-  ctx.closePath(); ctx.fill();
-
-  // Curve
-  ctx.beginPath(); ctx.strokeStyle = COLORS.acc; ctx.lineWidth = 2.5;
-  for (let i=0; i<=steps; i++) {
-    const t = i/steps*tmax;
-    const cp = C0 * Math.exp(-k*t);
-    const px = x0 + t/tmax*xw;
-    const py = yBase - cp*yScale;
-    i===0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-  }
-  ctx.stroke();
-
-  // Cmax dot
-  ctx.beginPath();
-  ctx.fillStyle = COLORS.acc;
-  ctx.arc(x0, yBase - C0*yScale, 4, 0, Math.PI*2); ctx.fill();
-
-  // Update HTML readouts (always visible, never "zero" like canvas text can be)
-  const auc = dose / CL;
-  const thalf = Math.log(2) / k;
-  G('auc-display').textContent  = auc.toFixed(1);
-  G('cmax-display').textContent = C0.toFixed(1);
-  G('thalf-display').textContent = thalf.toFixed(1);
-  // Color coding for AUC
-  G('cl-val').textContent   = CL.toFixed(1);
-  G('dose-val').textContent = dose;
 }
 
-G('sl-cl').addEventListener('input',   drawAUC);
-G('sl-dose').addEventListener('input', drawAUC);
+// ─── Hepatic Clearance Simulator ───
+let hepChart, ehChart;
+let hepScale = 'linear';
 
-// ─── 2. Extraction Ratio ───
-function drawExt() {
-  const { ctx, w, h } = getSize('cvExt');
-  const QH     = parseFloat(G('sl-qh').value);
-  const fuClint = parseFloat(G('sl-clint').value);
-  const EH  = fuClint / (QH + fuClint);
-  const ClH = QH * EH;
+function setHepScale(s) {
+  hepScale = s;
+  document.getElementById('hep-lin-btn').classList.toggle('active', s==='linear');
+  document.getElementById('hep-log-btn').classList.toggle('active', s==='logarithmic');
+  updateHepSim();
+}
+
+function updateHepSim() {
+  const QH     = parseFloat(document.getElementById('sl-qh').value);
+  const fClint = parseFloat(document.getElementById('sl-fclint').value);
+  const R0     = parseFloat(document.getElementById('sl-r0').value);
+  const fu     = parseFloat(document.getElementById('sl-fu').value);
+
+  document.getElementById('qh-val').textContent     = QH + ' L/h';
+  document.getElementById('fclint-val').textContent = fClint + ' L/h';
+  document.getElementById('r0-val').textContent     = R0 + ' mg/h';
+  document.getElementById('fu-val').textContent     = fu.toFixed(2);
+
+  const ClH = (QH * fClint) / (QH + fClint);
+  const EH  = fClint / (QH + fClint);
   const FH  = 1 - EH;
+  const Css = R0 / ClH;
+  const Cuss = fu * Css;
+  const t12 = 10; // simplified display
 
-  ctx.clearRect(0, 0, w, h);
-
-  const bars = [
-    { label:'Q_H',        val:QH,      max:120, color:COLORS.acc2 },
-    { label:'f_u·Cl_int', val:fuClint, max:400, color:COLORS.acc3 },
-    { label:'Cl_H',       val:ClH,     max:120, color:COLORS.acc  },
-  ];
-  const maxH = h*0.65, top = h*0.18;
-  const bw = Math.floor(w*0.14), perBar = Math.floor(w/bars.length);
-
-  bars.forEach((b, i) => {
-    const bh2 = (Math.min(b.val, b.max) / b.max) * maxH;
-    const bx  = Math.floor(perBar*i + (perBar-bw)/2);
-    const by  = top + maxH - bh2;
-    // Background track
-    ctx.fillStyle = b.color + '20';
-    ctx.fillRect(bx, top, bw, maxH);
-    // Bar
-    ctx.fillStyle = b.color;
-    ctx.fillRect(bx, by, bw, bh2);
-    // Label
-    ctx.fillStyle = COLORS.tx; ctx.font='10px IBM Plex Mono'; ctx.textAlign='center';
-    ctx.fillText(b.label, bx+bw/2, top+maxH+16);
-    ctx.fillStyle = b.color; ctx.font='600 11px IBM Plex Mono';
-    ctx.fillText(b.val.toFixed(0), bx+bw/2, by-5);
-  });
-
-  // Summary
-  const eType = EH>0.7 ? '고추출 (flow-limited)' : EH<0.3 ? '저추출 (capacity-limited)' : '중간 추출';
-  ctx.fillStyle = COLORS.acc; ctx.font='600 12px IBM Plex Mono'; ctx.textAlign='left';
-  ctx.fillText(`E_H=${(EH*100).toFixed(1)}%  F_H=${(FH*100).toFixed(1)}%  Cl_H=${ClH.toFixed(0)} L/h`, 16, h*0.1);
-  ctx.fillStyle = COLORS.tx; ctx.font='11px IBM Plex Mono';
-  ctx.fillText(eType, 16, h*0.1+16);
-
-  // HTML readouts
-  G('qh-val').textContent    = QH;
-  G('clint-val').textContent = fuClint;
-  G('eh-display').textContent  = (EH*100).toFixed(1)+'%';
-  G('fh-display').textContent  = (FH*100).toFixed(1)+'%';
-  G('clh-display').textContent = ClH.toFixed(1);
-  const typeColor = EH>0.7 ? COLORS.acc4 : EH<0.3 ? COLORS.acc3 : COLORS.acc;
-  G('ext-type').style.color = typeColor;
-  G('ext-type').textContent = eType;
-}
-
-G('sl-qh').addEventListener('input',    drawExt);
-G('sl-clint').addEventListener('input', drawExt);
-
-// ─── 3. IV vs PO PARTICLE SIMULATION ───
-const RT_PROT=[{rx:.18,ry:.30},{rx:.50,ry:.22},{rx:.80,ry:.36},{rx:.32,ry:.60},{rx:.67,ry:.58}];
-const RT={
-  R0:100,QH:90,fu:0.10,Clint:300,
-  ctx:null,w:0,h:0,animId:null,
-  iv:{particles:[]},po:{particles:[]},
-  priv:[],prpo:[]
-};
-
-function rtCompute(){
-  const{R0,QH,fu,Clint}=RT;
-  const EH=Math.min(.9999,(fu*Clint)/(QH+fu*Clint));
-  const FH=1-EH,ClH=QH*EH;
-  const C_iv=ClH>0?R0/ClH:9999,Cu_iv=fu*C_iv;
-  const C_po=fu*Clint>0?R0/(fu*Clint):9999,Cu_po=Clint>0?R0/Clint:9999;
-  return{EH,FH,C_iv,Cu_iv,C_po,Cu_po};
-}
-
-class RTP{
-  constructor(x,y,pw,pzH,free,tx,ty){
-    this.x=x;this.y=y;
-    this.vx=(Math.random()-.5)*1.6;this.vy=(Math.random()-.5)*1.6;
-    this.free=free;this.pw=pw;this.pzH=pzH;
-    this.r=free?4.5:3;this.tx=tx??x;this.ty=ty??y;
-    this.phase=Math.random()*6.28;
-  }
-  update(){
-    this.phase+=.04;
-    if(this.free){
-      this.vx+=(Math.random()-.5)*.35;this.vy+=(Math.random()-.5)*.35;
-      const s=Math.hypot(this.vx,this.vy);if(s>2.5){this.vx*=2.5/s;this.vy*=2.5/s;}
-    }else{
-      const or=7+Math.sin(this.phase)*3;
-      const ox=this.tx+Math.cos(this.phase)*or,oy=this.ty+Math.sin(this.phase)*or;
-      this.vx+=(ox-this.x)*.12;this.vy+=(oy-this.y)*.12;
-      this.vx*=.88;this.vy*=.88;
-    }
-    this.x+=this.vx;this.y+=this.vy;
-    const m=this.r+2;
-    if(this.x<m){this.x=m;this.vx=Math.abs(this.vx);}
-    if(this.x>this.pw-m){this.x=this.pw-m;this.vx=-Math.abs(this.vx);}
-    if(this.y<m){this.y=m;this.vy=Math.abs(this.vy);}
-    if(this.y>this.pzH-m){this.y=this.pzH-m;this.vy=-Math.abs(this.vy);}
-  }
-  draw(ctx,ox){
-    const px=this.x+ox,py=this.y;
-    if(this.free){
-      const g=ctx.createRadialGradient(px,py,0,px,py,this.r*3);
-      g.addColorStop(0,'rgba(190,225,255,0.95)');
-      g.addColorStop(.5,'rgba(120,180,240,0.4)');
-      g.addColorStop(1,'rgba(80,140,200,0)');
-      ctx.beginPath();ctx.fillStyle=g;ctx.arc(px,py,this.r*3,0,6.28);ctx.fill();
-      ctx.beginPath();ctx.fillStyle='#e0f2ff';ctx.arc(px,py,this.r,0,6.28);ctx.fill();
-    }else{
-      ctx.beginPath();ctx.fillStyle='rgba(196,154,60,0.52)';
-      ctx.arc(px,py,this.r,0,6.28);ctx.fill();
-    }
-  }
-}
-
-function rtSyncPanel(panel,targetFree,targetBound,pw,pzH,prots){
-  const free=panel.particles.filter(p=>p.free);
-  const bound=panel.particles.filter(p=>!p.free);
-  const ms=3;
-  const df=targetFree-free.length;
-  if(df>0){for(let i=0;i<Math.min(df,ms);i++)panel.particles.push(new RTP(
-    Math.random()*pw*.8+pw*.1,Math.random()*pzH*.68+pzH*.05,pw,pzH,true));}
-  else if(df<0){let r=0,n=Math.min(-df,ms);panel.particles=panel.particles.filter(p=>{
-    if(!p.free||r>=n)return true;r++;return false;});}
-  const db=targetBound-bound.length;
-  if(db>0){for(let i=0;i<Math.min(db,ms);i++){
-    const pr=prots[Math.floor(Math.random()*prots.length)];
-    const a=Math.random()*6.28,d=9+Math.random()*8;
-    panel.particles.push(new RTP(pr.x+Math.cos(a)*d,pr.y+Math.sin(a)*d,pw,pzH,false,pr.x,pr.y));
-  }}else if(db<0){let r=0,n=Math.min(-db,ms);panel.particles=panel.particles.filter(p=>{
-    if(p.free||r>=n)return true;r++;return false;});}
-}
-
-function rtDrawFrame(){
-  if(!RT.ctx||!RT.w)return;
-  const ctx=RT.ctx,w=RT.w,h=RT.h;
-  ctx.clearRect(0,0,w,h);
-  const{EH,FH,C_iv,Cu_iv,C_po,Cu_po}=rtCompute();
-  const pw=Math.floor(w/2)-4,pzH=Math.floor(h*.70);
-  // FIX: fixed reference so R₀ slider changes visibly alter particle count
-  // Default: EH=0.25,ClH=22.5,C_iv≈4.44. Use PREF=5 so 1.5×default fills half panel.
-  const PREF=5.0,MAX_P=50;
-  function pc(c,cu){
-    const t=Math.min(Math.round(c/PREF*MAX_P),MAX_P);
-    const f=Math.max(0,Math.round(t*(cu/Math.max(c,.001))));
-    return{f,b:Math.max(0,t-f)};
-  }
-  const iP=pc(C_iv,Cu_iv),pP=pc(C_po,Cu_po);
-  rtSyncPanel(RT.iv,iP.f,iP.b,pw,pzH,RT.priv);
-  rtSyncPanel(RT.po,pP.f,pP.b,pw,pzH,RT.prpo);
-
-  [
-    {pan:RT.iv,prots:RT.priv,ox:0,     lbl:'IV 정맥주사',col:'#7fb3e8',C:C_iv,Cu:Cu_iv,ef:EH,  elbl:`E_H=${(EH*100).toFixed(0)}%  (${EH>.7?'고추출':EH<.3?'저추출':'중간'})`},
-    {pan:RT.po,prots:RT.prpo,ox:pw+8,  lbl:'PO 경구투여',col:'#5fb87a',C:C_po,Cu:Cu_po,ef:1-FH,elbl:`First-pass 제거 ${((1-FH)*100).toFixed(0)}%  ·  F_H=${(FH*100).toFixed(0)}%`}
-  ].forEach(({pan,prots,ox,lbl,col,C,Cu,ef,elbl})=>{
-    // Panel background
-    ctx.fillStyle='#13151a';ctx.fillRect(ox,0,pw,h);
-    // Particle zone
-    ctx.fillStyle='#181b20';ctx.strokeStyle='#23262d';ctx.lineWidth=1;
-    ctx.beginPath();ctx.rect(ox+3,22,pw-6,pzH-24);ctx.fill();ctx.stroke();
-    // Panel title
-    ctx.fillStyle=col;ctx.font='600 11px IBM Plex Mono';ctx.textAlign='center';
-    ctx.fillText(lbl,ox+pw/2,14);
-
-    // Albumin protein blobs
-    prots.forEach((pr,i)=>{
-      ctx.save();ctx.translate(ox+pr.x,pr.y);
-      ctx.beginPath();ctx.fillStyle='#1e1208';ctx.strokeStyle='#5a3510';ctx.lineWidth=1.5;
-      // Manual ellipse (no roundRect needed)
-      ctx.save();ctx.scale(1,0.65);ctx.arc(0,0,20,0,6.28);ctx.restore();
-      ctx.fill();ctx.stroke();
-      ctx.fillStyle='#8a5a20';ctx.font='7px IBM Plex Mono';ctx.textAlign='center';
-      ctx.fillText('ALB',0,2.5);ctx.restore();
-    });
-
-    // Draw + update particles
-    pan.particles.forEach(p=>{p.update();p.draw(ctx,ox);});
-
-    // Concentration label overlay
-    ctx.fillStyle='rgba(0,0,0,0.55)';
-    ctx.fillRect(ox+3,pzH-34,pw-6,34);
-    ctx.fillStyle='#4a5060';ctx.font='9px IBM Plex Mono';ctx.textAlign='center';
-    ctx.fillText('C_total = '+(C>999?'>999':C.toFixed(2)),ox+pw/2,pzH-20);
-    ctx.fillStyle='#9ec8f0';ctx.font='600 10px IBM Plex Mono';
-    ctx.fillText('C_u = '+(Cu>999?'>999':Cu.toFixed(3))+'  ← 활성 비결합',ox+pw/2,pzH-5);
-
-    // Liver/extraction zone
-    const liverY=pzH+4,liverH=h-liverY-3;
-    ctx.fillStyle='#110808';ctx.strokeStyle=ef>.5?'#3a1010':'#202020';ctx.lineWidth=1;
-    ctx.beginPath();ctx.rect(ox+4,liverY,pw-8,liverH);ctx.fill();ctx.stroke();
-    // Extraction bar
-    const bw=Math.min(ef,1)*(pw-16);
-    ctx.fillStyle=ef>.7?'#e07070':ef>.3?'#c49a3c':'#5fb87a';ctx.globalAlpha=.75;
-    ctx.fillRect(ox+8,liverY+3,bw,5);ctx.globalAlpha=1;
-    ctx.fillStyle='#5a5850';ctx.font='9px IBM Plex Mono';ctx.textAlign='center';
-    ctx.fillText(elbl,ox+pw/2,liverY+liverH/2+4);
-  });
-
-  // Center divider
-  ctx.fillStyle='#23262d';ctx.fillRect(pw+4,0,4,h);
-
-  // Update HTML stat bar
-  G('rt-eh').textContent=(EH*100).toFixed(1)+'%';
-  G('rt-fh').textContent=(FH*100).toFixed(1)+'%';
-  G('rt-civ').textContent=C_iv>999?'>999':C_iv.toFixed(2);
-  G('rt-cuiv').textContent=Cu_iv>999?'>999':Cu_iv.toFixed(3);
-  G('rt-cpo').textContent=C_po>999?'>999':C_po.toFixed(2);
-  G('rt-cupo').textContent=Cu_po>999?'>999':Cu_po.toFixed(3);
-
-  // Key insight label
-  const ins=G('rt-insight');
-  if(ins){
-    const cuPO=(RT.Clint>0?(RT.R0/RT.Clint).toFixed(3):'—');
-    ins.innerHTML=
-      '<span style="color:#7fb3e8">IV</span>: f_u 변화 → C_u 변함 (고추출일수록 강하게 영향받음) &nbsp;·&nbsp; '+
-      '<span style="color:#5fb87a">PO</span>: f_u 아무리 바꿔도 C_u = R₀/Cl_int = '+
-      '<strong style="color:#9ec8f0">'+cuPO+'</strong> 항상 불변! &nbsp;·&nbsp; '+
-      '<span style="background:#1a2d40;color:#9ec8f0;padding:1px 6px;border-radius:2px;font-size:9px">빛나는 점 = 활성 C_u</span> '+
-      '<span style="background:#2a1e08;color:#c49a3c;padding:1px 6px;border-radius:2px;font-size:9px">흐린 점 = 단백결합 C_bound</span>';
-  }
-}
-
-function rtAnimate(){
-  rtDrawFrame();
-  RT.animId=requestAnimationFrame(rtAnimate);
-}
-
-function rtInit(){
-  const canvas=G('cvRoute');if(!canvas)return;
-  if(RT.animId){cancelAnimationFrame(RT.animId);RT.animId=null;}
-  const wrap=canvas.parentElement;
-  const w=wrap.clientWidth||700,h=wrap.clientHeight||370;
-  const dpr=window.devicePixelRatio||1;
-  canvas.width=Math.floor(w*dpr);canvas.height=Math.floor(h*dpr);
-  canvas.style.width=w+'px';canvas.style.height=h+'px';
-  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
-  RT.ctx=ctx;RT.w=w;RT.h=h;
-  const pw=Math.floor(w/2)-4,pzH=Math.floor(h*.70);
-  RT.priv=RT_PROT.map(p=>({x:p.rx*pw*.85+pw*.07,y:p.ry*pzH}));
-  RT.prpo=RT_PROT.map(p=>({x:p.rx*pw*.85+pw*.07,y:p.ry*pzH}));
-  RT.iv.particles=[];RT.po.particles=[];
-  RT.animId=requestAnimationFrame(rtAnimate);
-}
-
-function rtUpdate(){
-  RT.R0=parseFloat(G('rt-r0').value);
-  RT.QH=parseFloat(G('rt-qh').value);
-  RT.fu=parseFloat(G('rt-fu').value);
-  RT.Clint=parseFloat(G('rt-clint').value);
-  G('rt-r0-v').textContent=RT.R0;
-  G('rt-qh-v').textContent=RT.QH;
-  G('rt-fu-v').textContent=RT.fu.toFixed(2);
-  G('rt-clint-v').textContent=RT.Clint;
-}
-['rt-r0','rt-qh','rt-fu','rt-clint'].forEach(id=>G(id).addEventListener('input',rtUpdate));
-
-// ─── 4. TMDD ───
-function drawTMDD() {
-  const { ctx, w, h } = getSize('cvTMDD');
-  const KSS = parseFloat(G('sl-kss').value);
-  const R0  = parseFloat(G('sl-r0').value);
-  ctx.clearRect(0, 0, w, h);
-
-  const x0=w*0.09, xw=w*0.87, yBase=h*0.88, yH=h*0.76;
-  const tmax=30, steps=200, kint=0.3, kel=0.02;
-  const doses = [
-    { dose:0.5*KSS*5,  color:COLORS.acc4, label:'저용량' },
-    { dose:3*KSS*5,    color:'#f0b040',   label:'중간용량' },
-    { dose:15*KSS*5,   color:COLORS.acc3, label:'고용량' }
-  ];
-
-  // Compute all trajectories first to find global max for fixed scale
-  const trajs = doses.map(d => {
-    let L=d.dose, R=R0, LR=0;
-    const dt=tmax/steps, kon=kint/KSS;
-    const pts=[];
-    for (let i=0; i<=steps; i++) {
-      pts.push(L / d.dose); // dose-normalized
-      if (i<steps) {
-        const dL = -kel*L - kon*L*R + kon*KSS*LR*0.15;
-        const dR = -kon*L*R + kon*KSS*LR*0.15;
-        const dLR= kon*L*R - kon*KSS*LR*0.15 - kint*LR;
-        L=Math.max(0,L+dL*dt); R=Math.max(0,R+dR*dt); LR=Math.max(0,LR+dLR*dt);
-      }
-    }
-    return pts;
-  });
-  const gMax = Math.max(...trajs.map(t=>Math.max(...t)));
-  const yScale = yH/gMax;
-
-  gridLines(ctx, x0, yBase, xw, yH);
-
-  trajs.forEach((pts, idx) => {
-    ctx.beginPath(); ctx.strokeStyle=doses[idx].color; ctx.lineWidth=2;
-    pts.forEach((v, i) => {
-      const px=x0+i/steps*xw, py=yBase-v*yScale;
-      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-    });
-    ctx.stroke();
-    // Label at right end
-    ctx.fillStyle=doses[idx].color; ctx.font='9px IBM Plex Mono'; ctx.textAlign='left';
-    ctx.fillText(doses[idx].label, x0+xw+3, yBase-pts[steps]*yScale+4);
-  });
-
-  // Linear reference (what linear PK would look like — flat dose-normalized)
-  ctx.beginPath(); ctx.strokeStyle=COLORS.tx+'60'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-  ctx.moveTo(x0, yBase-trajs[2][0]*yScale); ctx.lineTo(x0+xw, yBase-trajs[2][steps]*yScale);
-  ctx.stroke(); ctx.setLineDash([]);
-
-  // X-axis
-  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
-  ctx.fillText('Time (days)', x0+xw/2, h-1);
-  [0,10,20,30].forEach(v => { ctx.fillText(v, x0+v/tmax*xw, yBase+12); });
-  // Y-axis label
-  ctx.save(); ctx.translate(8,h*0.5); ctx.rotate(-Math.PI/2);
-  ctx.fillText('Dose-normalized Cp  (AU)', 0, 0); ctx.restore();
-  // Y-axis ticks (0→1 normalized)
-  ctx.textAlign='right';
-  ['1.0','0.75','0.5','0.25','0'].forEach((v,i)=>{
-    ctx.fillText(v, x0-3, h*0.1+yH*i/4+3);
-  });
-  // Annotation: linear would overlap
-  ctx.fillStyle=COLORS.tx+'60'; ctx.font='8px IBM Plex Mono'; ctx.textAlign='left';
-  ctx.fillText('← 선형 PK라면 세 곡선이 겹쳐야 함', x0+xw*0.25, h*0.13);
-  G('kss-val').textContent=KSS; G('r0-val').textContent=R0;
-}
-
-G('sl-kss').addEventListener('input', drawTMDD);
-G('sl-r0').addEventListener('input',  drawTMDD);
-
-// ─── 5. TMDD SVG ───
-function drawTMDDSvg() {
-  G('svgTMDD').innerHTML = `
-  <defs>
-    <marker id="mk_acc"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c49a3c"/></marker>
-    <marker id="mk_grn"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#5fb87a"/></marker>
-    <marker id="mk_red"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#e07070"/></marker>
-    <marker id="mk_blu"  markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#7fb3e8"/></marker>
-  </defs>
-
-  <!-- ─── Free Drug L (left) ─── -->
-  <rect x="18" y="55" width="150" height="110" rx="4" fill="#1a1c1f" stroke="#c49a3c" stroke-width="1.2" stroke-opacity="0.6"/>
-  <text x="93" y="76"  text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="#c49a3c">유리 약물 (L)</text>
-  <text x="93" y="93"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">dL/dt =</text>
-  <text x="93" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">Input − k_el·L</text>
-  <text x="93" y="117" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">− k_on·L·R</text>
-  <text x="93" y="129" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#606268">+ k_off·LR</text>
-  <text x="93" y="155" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#888060" font-style="italic">혈장 유리 약물</text>
-
-  <!-- ─── Free Receptor R (top-right) ─── -->
-  <rect x="400" y="8" width="148" height="90" rx="4" fill="#1a201a" stroke="#5fb87a" stroke-width="1.2" stroke-opacity="0.6"/>
-  <text x="474" y="28"  text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="#5fb87a">유리 수용체 (R)</text>
-  <text x="474" y="46"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#506050">dR/dt = k_syn</text>
-  <text x="474" y="58"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#506050">− k_deg·R</text>
-  <text x="474" y="70"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#506050">− k_on·L·R + k_off·LR</text>
-  <text x="474" y="88"  text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#608060" font-style="italic">세포 표면 수용체</text>
-
-  <!-- ─── Complex LR (bottom-right) ─── -->
-  <rect x="400" y="120" width="148" height="90" rx="4" fill="#181a28" stroke="#7fb3e8" stroke-width="1.2" stroke-opacity="0.6"/>
-  <text x="474" y="140"  text-anchor="middle" font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="#7fb3e8">복합체 (LR)</text>
-  <text x="474" y="158"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#505870">dLR/dt =</text>
-  <text x="474" y="170"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#505870">k_on·L·R − k_off·LR</text>
-  <text x="474" y="182"  text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#505870">− k_int·LR</text>
-  <text x="474" y="198"  text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#5080a0" font-style="italic">약물-수용체 복합체</text>
-
-  <!-- ─── Input → L (top) ─── -->
-  <line x1="93" y1="22" x2="93" y2="55" stroke="#7fb3e8" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#mk_blu)"/>
-  <text x="100" y="40" font-family="IBM Plex Mono" font-size="9" fill="#7fb3e8">Input (R₀)</text>
-
-  <!-- ─── k_el ← L (left) ─── -->
-  <line x1="18" y1="110" x2="0" y2="110" stroke="#e07070" stroke-width="2" marker-end="url(#mk_red)"/>
-  <text x="1"  y="104" font-family="IBM Plex Mono" font-size="10" font-weight="600" fill="#e07070">k_el</text>
-  <text x="1"  y="122" font-family="IBM Plex Mono" font-size="7.5" fill="#e07070">(FcRn)</text>
-
-  <!-- ─── k_syn → R (top) ─── -->
-  <line x1="474" y1="0" x2="474" y2="8" stroke="#5fb87a" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#mk_grn)"/>
-  <text x="480" y="7" font-family="IBM Plex Mono" font-size="9" fill="#5fb87a">k_syn</text>
-
-  <!-- ─── k_deg ← R (right out) ─── -->
-  <line x1="548" y1="52" x2="580" y2="52" stroke="#5fb87a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#mk_grn)"/>
-  <text x="582" y="56" font-family="IBM Plex Mono" font-size="8.5" fill="#5fb87a">k_deg</text>
-
-  <!-- ─── R-LR connector (cell surface) ─── -->
-  <line x1="474" y1="98" x2="474" y2="120" stroke="#2a4040" stroke-width="1" stroke-dasharray="3,3"/>
-
-  <!-- ─── k_on: L + R → LR  (main binding, solid) ─── -->
-  <path d="M 168 120 C 240 90 330 100 400 145" fill="none" stroke="#c49a3c" stroke-width="2.2" marker-end="url(#mk_acc)"/>
-  <text x="255" y="84"  font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#c49a3c">k_on</text>
-  <text x="255" y="97"  font-family="IBM Plex Mono" font-size="8" fill="#c49a3c" opacity="0.85">L + R → LR (결합)</text>
-
-  <!-- ─── k_off: LR → L  (reverse, dashed) ─── -->
-  <path d="M 400 160 C 330 185 240 180 168 148" fill="none" stroke="#c49a3c" stroke-width="1.6" stroke-dasharray="6,3" marker-end="url(#mk_acc)"/>
-  <text x="248" y="196" font-family="IBM Plex Mono" font-size="9" fill="#c49a3c" opacity="0.8">k_off  (해리)</text>
-
-  <!-- ─── k_int: LR → degraded (right, thick) ─── -->
-  <line x1="548" y1="165" x2="692" y2="165" stroke="#e07070" stroke-width="2.8" marker-end="url(#mk_red)"/>
-  <text x="555" y="155" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#e07070">k_int</text>
-  <text x="555" y="178" font-family="IBM Plex Mono" font-size="8" fill="#e07070">내재화 · 소각</text>
-  <rect x="694" y="153" width="4" height="24" fill="#e07070" opacity="0.7" rx="1"/>
+  document.getElementById('hep-params').innerHTML = `
+    <div class="param-box"><span class="pname">Cl<sub>H</sub></span><span class="pval">${ClH.toFixed(1)} L/h</span></div>
+    <div class="param-box"><span class="pname">E<sub>H</sub></span><span class="pval">${(EH*100).toFixed(1)}%</span></div>
+    <div class="param-box"><span class="pname">F<sub>H</sub></span><span class="pval">${(FH*100).toFixed(1)}%</span></div>
+    <div class="param-box"><span class="pname">C<sub>ss</sub> (총)</span><span class="pval">${Css.toFixed(2)} mg/L</span></div>
+    <div class="param-box"><span class="pname">C<sub>u,ss</sub> (비결합)</span><span class="pval">${Cuss.toFixed(3)} mg/L</span></div>
+    <div class="param-box"><span class="pname">추출 분류</span><span class="pval" style="font-size:0.8rem;">${EH>0.7?'고추출':EH<0.3?'저추출':'중간'}</span></div>
   `;
-}
 
-// ─── 6. Model comparison ───
-function drawModel() {
-  const { ctx, w, h } = getSize('cvMod');
-  const dmult = parseInt(G('sl-dmod').value);
-  G('dmod-val').textContent = '×'+dmult;
-  ctx.clearRect(0, 0, w, h);
-
-  const x0=w*0.08, xw=w*0.87, yBase=h*0.88, yH=h*0.76;
-  const tmax=20, steps=200, KSS=10, R0=8, kint=0.3, kel=0.025;
-  const Vmax=kint*R0, Km=KSS, dose=dmult*KSS*3;
-
-  gridLines(ctx, x0, yBase, xw, yH);
-
-  // Full TMDD
-  const trajFull=[];
-  { let L=dose,R=R0,LR=0;
-    const dt=tmax/steps, kon=kint/KSS;
-    for(let i=0;i<=steps;i++){
-      trajFull.push(L);
-      if(i<steps){
-        const dL=-kel*L-kon*L*R+kon*KSS*LR*0.15;
-        const dR=-kon*L*R+kon*KSS*LR*0.15;
-        const dLR=kon*L*R-kon*KSS*LR*0.15-kint*LR;
-        L=Math.max(0,L+dL*dt); R=Math.max(0,R+dR*dt); LR=Math.max(0,LR+dLR*dt);
-      }
-    }
-  }
-  // QSS
-  const trajQSS=[];
-  { let Ltot=dose, Rtot=R0;
-    const dt=tmax/steps;
-    for(let i=0;i<=steps;i++){
-      const disc=(Ltot-Rtot-KSS)**2+4*KSS*Ltot;
-      const Lf=0.5*((Ltot-Rtot-KSS)+Math.sqrt(Math.max(0,disc)));
-      trajQSS.push(Lf);
-      if(i<steps){
-        const LR=Ltot-Lf;
-        Ltot=Math.max(0,Ltot+(-kel*Lf-kint*LR)*dt);
-        Rtot=Math.max(0,Rtot+(-kint*LR)*dt);
-      }
-    }
-  }
-  // MM
-  const trajMM=[];
-  { let L=dose; const dt=tmax/steps;
-    for(let i=0;i<=steps;i++){
-      trajMM.push(L);
-      if(i<steps) L=Math.max(0,L+(-kel*L-Vmax*L/(Km+L))*dt);
-    }
-  }
-  // Linear
-  const trajLin=[];
-  { let L=dose; const dt=tmax/steps;
-    const keff=kel+Vmax/Km;
-    for(let i=0;i<=steps;i++){
-      trajLin.push(L);
-      if(i<steps) L=Math.max(0,L-keff*L*dt);
-    }
+  // C-T infusion profile simulation (IV infusion to steady state)
+  const V = 30; // L
+  const ke = ClH / V;
+  const times = [];
+  const concs = [];
+  const concsMEC = [];
+  const concsTox = [];
+  for (let t = 0; t <= 48; t += 0.5) {
+    times.push(t);
+    const c = (R0/ClH) * (1 - Math.exp(-ke*t));
+    concs.push(c);
+    concsMEC.push(Css * 0.4);
+    concsTox.push(Css * 1.8);
   }
 
-  const gMax=Math.max(...trajFull, ...trajQSS, ...trajMM, ...trajLin, 0.001);
-  const yScale=yH/gMax;
-  const curves=[
-    {t:trajFull, color:COLORS.acc,  dash:[]},
-    {t:trajQSS,  color:COLORS.acc3, dash:[]},
-    {t:trajMM,   color:COLORS.acc2, dash:[5,3]},
-    {t:trajLin,  color:COLORS.acc4, dash:[2,3]}
+  const datasets = [
+    {
+      label: '혈장 농도 C(t)',
+      data: concs.map((c,i) => ({x: times[i], y: c})),
+      borderColor: '#c9a84c',
+      backgroundColor: 'rgba(201,168,76,0.12)',
+      borderWidth: 2.5,
+      fill: true,
+      tension: 0.4,
+      pointRadius: 0,
+    },
+    {
+      label: 'MEC (최소 유효 농도)',
+      data: times.map(t => ({x:t, y:Css*0.4})),
+      borderColor: '#5a9e6f',
+      borderWidth: 1.5,
+      borderDash: [5,4],
+      pointRadius: 0,
+      fill: false,
+    },
+    {
+      label: '독성 역치',
+      data: times.map(t => ({x:t, y:Css*1.8})),
+      borderColor: '#c05050',
+      borderWidth: 1.5,
+      borderDash: [5,4],
+      pointRadius: 0,
+      fill: false,
+    }
   ];
-  curves.forEach(cv=>{
-    ctx.beginPath(); ctx.strokeStyle=cv.color; ctx.lineWidth=2; ctx.setLineDash(cv.dash);
-    cv.t.forEach((v,i)=>{
-      const px=x0+i/steps*xw, py=yBase-v*yScale;
-      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-    });
-    ctx.stroke(); ctx.setLineDash([]);
+
+  const cfg = {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { type:'linear', title:{display:true,text:'시간 (h)',color:'#9a9280'}, ticks:{color:'#9a9280'}, grid:{color:'#1e1e2e'}},
+        y: { type: hepScale, title:{display:true,text:'농도 (mg/L)',color:'#9a9280'}, ticks:{color:'#9a9280'}, grid:{color:'#1e1e2e'},
+             min: hepScale==='logarithmic' ? 0.001 : 0 }
+      },
+      plugins: {
+        legend: { labels:{color:'#9a9280', font:{size:11}} },
+        tooltip: { mode:'index', intersect:false }
+      },
+      animation: { duration: 150 }
+    }
+  };
+
+  if (hepChart) { hepChart.destroy(); }
+  hepChart = new Chart(document.getElementById('hepChart'), cfg);
+
+  // EH vs QH curve
+  const qhRange = Array.from({length:100}, (_,i) => (i+1)*3);
+  const ehRange = qhRange.map(q => fClint/(q+fClint));
+  const currentEH = [{ x: QH, y: EH }];
+
+  if (ehChart) ehChart.destroy();
+  ehChart = new Chart(document.getElementById('ehChart'), {
+    type:'line',
+    data: {
+      datasets: [
+        {
+          label:'E_H vs Q_H (Well-Stirred)',
+          data: qhRange.map((q,i) => ({x:q,y:ehRange[i]})),
+          borderColor:'#c9a84c', borderWidth:2, pointRadius:0, fill:false, tension:0.4
+        },
+        {
+          label:'현재 Q_H',
+          data: currentEH,
+          borderColor:'#e07070', backgroundColor:'#e07070', pointRadius:8, showLine:false
+        }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{type:'linear',title:{display:true,text:'Q_H (L/h)',color:'#9a9280'},ticks:{color:'#9a9280'},grid:{color:'#1e1e2e'}},
+        y:{type:'linear',min:0,max:1,title:{display:true,text:'E_H',color:'#9a9280'},ticks:{color:'#9a9280',callback:v=>v.toFixed(1)},grid:{color:'#1e1e2e'}}
+      },
+      plugins:{legend:{labels:{color:'#9a9280',font:{size:10}}}},
+      animation:{duration:150}
+    }
   });
-
-  // X-axis
-  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
-  ctx.fillText('Time (days)', x0+xw/2, h-1);
-  [0,5,10,15,20].forEach(v=>ctx.fillText(v, x0+v/tmax*xw, yBase+12));
-  // Y-axis label
-  ctx.save(); ctx.translate(8,h*0.5); ctx.rotate(-Math.PI/2);
-  ctx.fillText('Concentration  (a.u.)', 0, 0); ctx.restore();
-  // Y-axis ticks
-  ctx.textAlign='right';
-  ctx.fillText('D₀/V', x0-3, h*0.1+3);
-  ctx.fillText('0',    x0-3, yBase+3);
 }
 
-G('sl-dmod').addEventListener('input', drawModel);
+// ─── Turnover Simulator ───
+let turnChart;
 
-// ─── 7. Trastuzumab ───
-function drawTrast() {
-  if (!G('cvTrast')) return;
-  const { ctx, w, h } = getSize('cvTrast');
-  ctx.clearRect(0, 0, w, h);
+function updateTurnSim() {
+  const kin   = parseFloat(document.getElementById('sl-kin').value);
+  const kout  = parseFloat(document.getElementById('sl-kout').value);
+  const pertT = parseFloat(document.getElementById('sl-pert-t').value);
+  const pertK = parseFloat(document.getElementById('sl-pert-kin').value);
 
-  // Parameters calibrated to Trastuzumab clinical data:
-  //  Saturated t½ ≈ 28 days  → k_el = ln2/(28×24h) ≈ 0.00103 h⁻¹
-  //  Initial   t½ ≈ 1.4 days → k_eff_max = ln2/(1.4×24h) ≈ 0.0206 h⁻¹
-  //  → k_int×R₀/K_SS ≈ 0.0196 h⁻¹
-  const KSS=10, R0=8, kint=0.0245, kel=0.00103;
-  const keffMax = kel + kint*R0/KSS;  // ≈ 0.0206 h⁻¹
-  const Lmax=60;
-  const thalf_init = (Math.log(2)/keffMax/24).toFixed(1);  // ≈ 1.4 days
-  const thalf_sat  = Math.round(Math.log(2)/kel/24);        // ≈ 28 days
+  document.getElementById('kin-val').textContent    = kin + ' units/h';
+  document.getElementById('kout-val').textContent   = kout.toFixed(2) + ' h⁻¹';
+  document.getElementById('pert-t-val').textContent = pertT + ' h';
+  document.getElementById('pert-kin-val').textContent = pertK.toFixed(1) + '×';
 
-  const x0=w*0.13, xw=w*0.80, yBase=h*0.84, yH=h*0.68;
-  const yScale = yH/keffMax;
-  const steps=120;
+  const A0 = kin / kout;
+  const t12 = Math.log(2)/kout;
+  const Tss = 4/kout;
 
-  gridLines(ctx, x0, yBase, xw, yH, 5, 4);
+  document.getElementById('turn-params').innerHTML = `
+    <div class="param-box"><span class="pname">A₀ (기저 수준)</span><span class="pval">${A0.toFixed(2)}</span></div>
+    <div class="param-box"><span class="pname">t₁/₂</span><span class="pval">${t12.toFixed(2)} h</span></div>
+    <div class="param-box"><span class="pname">T_ss (~4×t₁/₂)</span><span class="pval">${Tss.toFixed(1)} h</span></div>
+    <div class="param-box"><span class="pname">Turnover time (1/k_out)</span><span class="pval">${(1/kout).toFixed(2)} h</span></div>
+    <div class="param-box"><span class="pname">새 정상 상태 (k_in×배율)</span><span class="pval">${(kin*pertK/kout).toFixed(2)}</span></div>
+  `;
 
-  // k_eff curve (TMDD effective elimination rate)
-  ctx.beginPath(); ctx.strokeStyle=COLORS.acc; ctx.lineWidth=2.5;
-  for(let i=0;i<=steps;i++){
-    const L=i/steps*Lmax;
-    const keff=kel+kint*R0/(KSS+L);
-    const px=x0+i/steps*xw, py=yBase-keff*yScale;
-    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-  }
-  ctx.stroke();
+  const dt = 0.1;
+  const endT = Math.max(80, pertT + 50);
+  const times = [];
+  const baseConcs = [];  // no perturbation
+  const pertConcs = [];  // with kin multiplied
 
-  // k_el-only baseline
-  const kelY=yBase-kel*yScale;
-  ctx.beginPath(); ctx.strokeStyle=COLORS.acc2; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
-  ctx.moveTo(x0,kelY); ctx.lineTo(x0+xw,kelY); ctx.stroke(); ctx.setLineDash([]);
+  let Abase = A0;
+  let Apert = A0;
+  for (let t = 0; t <= endT; t += dt) {
+    times.push(parseFloat(t.toFixed(2)));
+    baseConcs.push(A0);  // baseline stays flat
+    pertConcs.push(Apert);
 
-  // t½ annotation lines & labels
-  const yInit=yBase-keffMax*yScale;
-  ctx.beginPath(); ctx.strokeStyle=COLORS.acc+'50'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
-  ctx.moveTo(x0,yInit); ctx.lineTo(x0+xw*0.08,yInit); ctx.stroke(); ctx.setLineDash([]);
-
-  ctx.fillStyle=COLORS.acc; ctx.font='600 9px IBM Plex Mono'; ctx.textAlign='left';
-  ctx.fillText('초기 t½ ≈ '+thalf_init+'일', x0+2, h*0.12);
-  ctx.fillStyle=COLORS.txd; ctx.font='8px IBM Plex Mono';
-  ctx.fillText('(k_int 경로 최대 — HER2 비포화)', x0+2, h*0.20);
-  ctx.fillStyle=COLORS.acc2; ctx.font='600 9px IBM Plex Mono';
-  ctx.fillText('포화 후 t½ ≈ '+thalf_sat+'일', x0+xw*0.55, kelY-5);
-  ctx.fillStyle=COLORS.txd; ctx.font='8px IBM Plex Mono';
-  ctx.fillText('(k_el만 남음 — FcRn 경로)', x0+xw*0.55, kelY+10);
-
-  // K_SS marker
-  const kssX=x0+(KSS/Lmax)*xw;
-  ctx.beginPath(); ctx.strokeStyle=COLORS.acc+'50'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-  ctx.moveTo(kssX,h*0.08); ctx.lineTo(kssX,yBase); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle=COLORS.acc+'80'; ctx.font='8px IBM Plex Mono'; ctx.textAlign='center';
-  ctx.fillText('K_SS', kssX, h*0.07);
-
-  // Y-axis label + ticks
-  ctx.save(); ctx.translate(8,h*0.5); ctx.rotate(-Math.PI/2);
-  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
-  ctx.fillText('유효 제거속도  k_eff  (h⁻¹)', 0, 0); ctx.restore();
-  ctx.fillStyle=COLORS.tx; ctx.textAlign='right'; ctx.font='8px IBM Plex Mono';
-  for(let i=0;i<=4;i++){
-    const v=(keffMax*i/4);
-    ctx.fillText(v<0.01?v.toFixed(4):v.toFixed(3), x0-3, yBase-yH*i/4+3);
+    const kinNow = (t >= pertT) ? kin * pertK : kin;
+    Apert += (kinNow - kout * Apert) * dt;
   }
 
-  // X-axis
-  ctx.fillStyle=COLORS.tx; ctx.font='9px IBM Plex Mono'; ctx.textAlign='center';
-  ctx.fillText('약물 농도 L  (낮음 ← 비포화 | 포화 → 높음)', x0+xw/2, h-1);
+  if (turnChart) turnChart.destroy();
+  turnChart = new Chart(document.getElementById('turnChart'), {
+    type:'line',
+    data:{
+      datasets:[
+        {
+          label:'기저 수준 (교란 없음)',
+          data: times.map((t,i)=>({x:t,y:baseConcs[i]})),
+          borderColor:'#5a9e6f', borderWidth:1.5, borderDash:[6,4],
+          pointRadius:0, fill:false
+        },
+        {
+          label:`k_in × ${pertK.toFixed(1)} 교란 (t=${pertT}h 시작)`,
+          data: times.map((t,i)=>({x:t,y:pertConcs[i]})),
+          borderColor:'#c9a84c', backgroundColor:'rgba(201,168,76,0.08)',
+          borderWidth:2.5, pointRadius:0, fill:true, tension:0.3
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{type:'linear',title:{display:true,text:'시간 (h)',color:'#9a9280'},ticks:{color:'#9a9280'},grid:{color:'#1e1e2e'}},
+        y:{type:'linear',title:{display:true,text:'A (임의 단위)',color:'#9a9280'},ticks:{color:'#9a9280'},grid:{color:'#1e1e2e'},min:0}
+      },
+      plugins:{
+        legend:{labels:{color:'#9a9280',font:{size:11}}},
+        annotation: {}
+      },
+      animation:{duration:150}
+    }
+  });
 }
 
-// ─── 8. BLA SVG ───
-function drawBLA() {
-  const layers=[
-    {n:'1', label:'데이터 지지',  sub:['k_on RSE>150%','K_SS RSE<20%'], color:'#c49a3c'},
-    {n:'2', label:'수렴 안정성', sub:['Bootstrap','실패 43%→2%'],  color:'#7fb3e8'},
-    {n:'3', label:'VPC 동등성',  sub:['91% vs 93%','피복률'], color:'#5fb87a'},
-    {n:'4', label:'문헌 근거',   sub:['결합속도>>','PK 타임스케일'], color:'#c49a3c'},
-    {n:'5', label:'COU 적합',   sub:['용량 추천에','QSS 충분'], color:'#7fb3e8'}
-  ];
-  const bw=108, gap=10;
-  G('svgBLA').innerHTML = layers.map((l,i)=>{
-    const x=i*(bw+gap)+10;
-    return `
-      <rect x="${x}" y="20" width="${bw}" height="120" rx="3" fill="#1c1c1f" stroke="${l.color}40"/>
-      <rect x="${x}" y="20" width="${bw}" height="4" rx="2" fill="${l.color}"/>
-      <circle cx="${x+16}" cy="46" r="10" fill="${l.color}20" stroke="${l.color}" stroke-width="1"/>
-      <text x="${x+16}" y="50" fill="${l.color}" font-size="11" font-family="IBM Plex Mono" text-anchor="middle" font-weight="600">${l.n}</text>
-      <text x="${x+bw/2}" y="70" fill="#edeae4" font-size="11" font-family="IBM Plex Mono" text-anchor="middle" font-weight="500">${l.label}</text>
-      <text x="${x+bw/2}" y="92" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">${l.sub[0]}</text>
-      <text x="${x+bw/2}" y="108" fill="#6b6760" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">${l.sub[1]}</text>`;
-  }).join('')+`
-    <text x="305" y="155" fill="#c49a3c" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">FDA는 단일 논거가 아닌 다층 구조를 원한다</text>`;
-}
+// Init
+window.addEventListener('load', () => {
+  updateHepSim();
+  updateTurnSim();
 
-// ─── ACCORDION ───
-function tog(id) { G(id).classList.toggle('open'); }
-
-// ─── SCROLL SPY ───
-const secs=document.querySelectorAll('.sec[id]');
-const navs=document.querySelectorAll('.si[href]');
-function updateNav(){
-  let cur='';
-  secs.forEach(s=>{if(s.getBoundingClientRect().top<=72) cur=s.id;});
-  navs.forEach(n=>{n.classList.remove('active');if(n.getAttribute('href')==='#'+cur) n.classList.add('active');});
-}
-navs.forEach(n=>n.addEventListener('click',e=>{
-  const h=n.getAttribute('href');
-  if(h.startsWith('#')){e.preventDefault();const t=document.querySelector(h);if(t) window.scrollTo({top:t.getBoundingClientRect().top+scrollY-56,behavior:'smooth'});}
-}));
-window.addEventListener('scroll',updateNav);
-
-// ─── REVEAL ───
-const rvEls=document.querySelectorAll('.rv');
-const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.05});
-rvEls.forEach(r=>ro.observe(r));
-
-// ─── INIT ───
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
-    drawAUC(); drawExt(); rtInit(); drawTMDD();
-    drawTMDDSvg(); drawModel(); drawBLA();
-    // Trastuzumab chart only draws when accordion opens
-    G('a-trast').addEventListener('click',()=>{ setTimeout(drawTrast,50); });
-    updateNav();
-  },150);
-});
-
-window.addEventListener('resize',()=>{
-  drawAUC(); drawExt(); rtInit(); drawTMDD(); drawModel();
-  if(G('a-trast').classList.contains('open')) drawTrast();
+  // MathJax config
+  if (window.MathJax) {
+    MathJax.typesetPromise();
+  }
 });
 </script>
+
+<div style="text-align:center;padding:3rem 0 1rem;color:var(--text-muted);font-family:var(--mono);font-size:0.72rem;border-top:1px solid var(--border);margin-top:3rem;">
+  PK/PD Mastery Protocol V2.1 · Gabrielsson &amp; Weiner 5th Ed. §2.5–2.6 · pp. 77–111<br>
+  가톨릭대학교 계량약리학 박사과정 · 2026
+</div>
+
 </body>
 </html>
