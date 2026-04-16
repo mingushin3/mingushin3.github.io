@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>단백결합 PK 시뮬레이터 (입자 시각화)</title>
+  <title>단백결합 PK 시뮬레이터 (다중 조건 반영)</title>
   <style>
     body { font-family: sans-serif; background-color: #f0f4f8; padding: 20px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 700px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #2c3e50; }
+    h2 { text-align: center; color: #2c3e50; font-size: 22px; margin-bottom: 20px; }
     .control-group { margin-bottom: 20px; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
-    .control-row { margin-bottom: 15px; }
+    .control-row { margin-bottom: 15px; transition: opacity 0.3s ease; }
     .control-row:last-child { margin-bottom: 0; }
     label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; color: #4a5568; }
+    select { width: 100%; padding: 8px; font-size: 16px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: white; cursor: pointer; }
     input[type=range] { width: 100%; cursor: pointer; }
     .results { display: flex; justify-content: space-around; margin-top: 15px; padding: 15px; background: #e2e8f0; border-radius: 8px; font-size: 18px; color: #2d3748; }
     .results div { text-align: center; }
@@ -26,17 +27,33 @@
 </head>
 <body>
   <div class="container">
-    <h2>혈중 약물 동태 시뮬레이터 (Free Drug Hypothesis)</h2>
+    <h2>혈중 약물 동태 시뮬레이터 (Eq 2:206-2:213)</h2>
     
     <div class="control-group">
+      <div class="control-row">
+        <label><span>투여 조건 및 약물 특성</span></label>
+        <select id="condition">
+          <option value="oral">Oral · 모든 drug</option>
+          <option value="iv-low">IV · Low-E drug</option>
+          <option value="iv-high">IV · High-E drug</option>
+        </select>
+      </div>
+
       <div class="control-row">
         <label id="r0-label"><span>투여 속도 (R0)</span> <span>100</span></label>
         <input type="range" id="r0" min="10" max="500" step="10" value="100">
       </div>
-      <div class="control-row">
+      
+      <div class="control-row" id="clint-row">
         <label id="clint-label"><span>고유청소율 (Clint)</span> <span>10</span></label>
         <input type="range" id="clint" min="1" max="50" step="1" value="10">
       </div>
+
+      <div class="control-row" id="qh-row" style="display: none;">
+        <label id="qh-label"><span style="color: #2b6cb0;">간혈류량 (Qh)</span> <span>90</span></label>
+        <input type="range" id="qh" min="10" max="200" step="5" value="90">
+      </div>
+
       <div class="control-row">
         <label id="fu-label"><span style="color: #d9534f;">유리분율 (fu)</span> <span>0.10</span></label>
         <input type="range" id="fu" min="0.01" max="1.0" step="0.01" value="0.1">
@@ -58,12 +75,18 @@
   </div>
 
   <script>
+    const conditionSelect = document.getElementById('condition');
     const r0Input = document.getElementById('r0');
     const clintInput = document.getElementById('clint');
+    const qhInput = document.getElementById('qh');
     const fuInput = document.getElementById('fu');
     
+    const clintRow = document.getElementById('clint-row');
+    const qhRow = document.getElementById('qh-row');
+
     const r0Label = document.querySelector('#r0-label span:last-child');
     const clintLabel = document.querySelector('#clint-label span:last-child');
+    const qhLabel = document.querySelector('#qh-label span:last-child');
     const fuLabel = document.querySelector('#fu-label span:last-child');
     
     const cssVal = document.getElementById('css-val');
@@ -72,19 +95,16 @@
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
 
-    // 시뮬레이션 입자 배열
     let proteins = [];
     let freeDrugs = [];
     let boundDrugs = [];
-
-    // 파라미터 한계 설정 (브라우저 과부하 방지용 시각적 스케일링)
     const MAX_VISUAL_PARTICLES = 800;
 
     class Protein {
       constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.vx = (Math.random() - 0.5) * 0.5; // 천천히 이동
+        this.vx = (Math.random() - 0.5) * 0.5;
         this.vy = (Math.random() - 0.5) * 0.5;
         this.radius = 18;
       }
@@ -97,7 +117,7 @@
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 182, 193, 0.4)'; // 단백질 색상 (연분홍)
+        ctx.fillStyle = 'rgba(255, 182, 193, 0.4)';
         ctx.fill();
         ctx.strokeStyle = '#ff99a8';
         ctx.lineWidth = 2;
@@ -109,118 +129,118 @@
       constructor(isFree, targetProtein = null) {
         this.isFree = isFree;
         this.radius = 3.5;
-        
         if (this.isFree) {
-          // 유리 약물: 혈관 내 자유롭게 배치
           this.x = Math.random() * canvas.width;
           this.y = Math.random() * canvas.height;
-          this.vx = (Math.random() - 0.5) * 2.5; // 빠르게 이동
+          this.vx = (Math.random() - 0.5) * 2.5;
           this.vy = (Math.random() - 0.5) * 2.5;
         } else {
-          // 결합 약물: 단백질 표면에 배치
           this.protein = targetProtein;
           this.angle = Math.random() * Math.PI * 2;
           this.updatePositionToProtein();
         }
       }
-
       updatePositionToProtein() {
         if(this.protein) {
           this.x = this.protein.x + Math.cos(this.angle) * (this.protein.radius + 1);
           this.y = this.protein.y + Math.sin(this.angle) * (this.protein.radius + 1);
         }
       }
-
       update() {
         if (this.isFree) {
           this.x += this.vx;
           this.y += this.vy;
-          // 벽 튕기기
           if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
           if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
         } else {
-          // 단백질과 함께 이동
-          this.angle += 0.02; // 단백질 주위를 살짝 회전
+          this.angle += 0.02;
           this.updatePositionToProtein();
         }
       }
-
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.isFree ? '#E94E77' : '#4A90E2'; // 유리형: 분홍, 결합형: 파랑
+        ctx.fillStyle = this.isFree ? '#E94E77' : '#4A90E2';
         ctx.fill();
       }
     }
 
-    // 단백질 초기화 (개수 고정)
     for (let i = 0; i < 15; i++) {
       proteins.push(new Protein(Math.random() * canvas.width, Math.random() * canvas.height));
     }
 
+    function toggleInputs() {
+      if (conditionSelect.value === 'iv-high') {
+        qhRow.style.display = 'flex';
+        clintRow.style.display = 'none';
+      } else {
+        qhRow.style.display = 'none';
+        clintRow.style.display = 'flex';
+      }
+      updateSimulationParams();
+    }
+
     function updateSimulationParams() {
+      const condition = conditionSelect.value;
       const r0 = parseFloat(r0Input.value);
       const clint = parseFloat(clintInput.value);
+      const qh = parseFloat(qhInput.value);
       const fu = parseFloat(fuInput.value);
 
       r0Label.innerText = r0;
       clintLabel.innerText = clint;
+      qhLabel.innerText = qh;
       fuLabel.innerText = fu.toFixed(2);
 
-      const css = r0 / (fu * clint);
-      const cuss = r0 / clint;
+      let css, cuss;
+
+      // 이미지 표의 조건별 수식 적용
+      if (condition === 'iv-high') {
+        css = r0 / qh;
+        cuss = fu * (r0 / qh);
+      } else {
+        // 'iv-low' 및 'oral'은 동일한 근사 수식 적용
+        css = r0 / (fu * clint);
+        cuss = r0 / clint;
+      }
 
       cssVal.innerText = css.toFixed(2);
       cussVal.innerText = cuss.toFixed(2);
 
-      // 시각적 입자 수 계산 (과부하 방지를 위한 스케일링)
       let scaleFactor = 1;
-      if (css > MAX_VISUAL_PARTICLES) {
-        scaleFactor = MAX_VISUAL_PARTICLES / css;
-      }
+      if (css > MAX_VISUAL_PARTICLES) scaleFactor = MAX_VISUAL_PARTICLES / css;
 
-      const targetFreeCount = Math.round(cuss * scaleFactor);
-      const targetBoundCount = Math.round((css - cuss) * scaleFactor);
+      // 시각적 방어코드: css나 cuss가 음수 또는 NaN이 되지 않도록 처리
+      const targetFreeCount = Math.max(0, Math.round((cuss || 0) * scaleFactor));
+      const targetBoundCount = Math.max(0, Math.round(((css || 0) - (cuss || 0)) * scaleFactor));
 
-      // 유리 약물 배열 조정
-      while (freeDrugs.length < targetFreeCount) {
-        freeDrugs.push(new Drug(true));
-      }
-      while (freeDrugs.length > targetFreeCount) {
-        freeDrugs.pop();
-      }
+      while (freeDrugs.length < targetFreeCount) freeDrugs.push(new Drug(true));
+      while (freeDrugs.length > targetFreeCount) freeDrugs.pop();
 
-      // 결합 약물 배열 조정
       while (boundDrugs.length < targetBoundCount) {
         const randomProtein = proteins[Math.floor(Math.random() * proteins.length)];
         boundDrugs.push(new Drug(false, randomProtein));
       }
-      while (boundDrugs.length > targetBoundCount) {
-        boundDrugs.pop();
-      }
+      while (boundDrugs.length > targetBoundCount) boundDrugs.pop();
     }
 
     function animate() {
-      // 꼬리 효과(Trails)를 위해 투명도 있는 배경색으로 덮기
       ctx.fillStyle = 'rgba(255, 235, 238, 0.4)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       proteins.forEach(p => { p.update(); p.draw(); });
       boundDrugs.forEach(d => { d.update(); d.draw(); });
       freeDrugs.forEach(d => { d.update(); d.draw(); });
-
       requestAnimationFrame(animate);
     }
 
-    // 이벤트 리스너
+    conditionSelect.addEventListener('change', toggleInputs);
     r0Input.addEventListener('input', updateSimulationParams);
     clintInput.addEventListener('input', updateSimulationParams);
+    qhInput.addEventListener('input', updateSimulationParams);
     fuInput.addEventListener('input', updateSimulationParams);
 
-    // 초기화 및 실행
-    updateSimulationParams();
+    toggleInputs();
     animate();
-
   </script>
 </body>
 </html>
