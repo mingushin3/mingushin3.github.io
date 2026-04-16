@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>간 약물 농도 구배 시뮬레이터 (4 Models)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 800px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+    h2 { text-align: center; color: #2c3e50; margin-top: 0; }
+    
+    .dashboard { display: flex; justify-content: space-around; background: #eef2f5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .stat-box { text-align: center; }
+    .stat-label { font-size: 14px; color: #7f8c8d; font-weight: bold; }
+    .stat-value { font-size: 24px; color: #2980b9; font-weight: bold; margin-top: 5px; }
+
+    .chart-container { position: relative; height: 350px; width: 100%; margin-bottom: 20px; }
+
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef; }
+    @media (max-width: 600px) { .controls { grid-template-columns: 1fr; } }
+    
+    .control-group { display: flex; flex-direction: column; }
+    label { font-weight: 600; margin-bottom: 8px; color: #495057; display: flex; justify-content: space-between; }
+    select, input[type="range"] { width: 100%; padding: 8px; font-size: 15px; border: 1px solid #ced4da; border-radius: 6px; }
+    input[type="range"] { padding: 0; cursor: pointer; }
+    
+    .dynamic-control { display: none; padding-top: 15px; border-top: 1px dashed #ced4da; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>간 약물 농도 구배 시각화 (Hepatic Clearance Models)</h2>
+
+    <div class="dashboard">
+      <div class="stat-box">
+        <div class="stat-label">기준 간 추출율 (ER_ws)</div>
+        <div class="stat-value" id="val-er">0.60</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">현재 모델 출구 농도 (C_out/C_in)</div>
+        <div class="stat-value" id="val-cout" style="color: #e74c3c;">0.400</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="pkChart"></canvas>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>클리어런스 모델</label>
+        <select id="model-select">
+          <option value="well-stirred">Well-Stirred (잘 저어진 모델)</option>
+          <option value="parallel-tube">Parallel Tube (평행관 모델)</option>
+          <option value="dispersion">Dispersion (분산/확산 모델)</option>
+          <option value="distributed">Distributed (분산 파라미터 모델)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label><span>기준 대사 용량 (ER 지표)</span> <span id="label-er">0.60</span></label>
+        <input type="range" id="er-slider" min="0.1" max="0.95" step="0.01" value="0.60">
+      </div>
+
+      <div class="control-group dynamic-control" id="dispersion-group" style="grid-column: 1 / -1;">
+        <label><span>분산수 (Dispersion Number, Dn)</span> <span id="label-dn">1.00</span></label>
+        <input type="range" id="dn-slider" min="0" max="100" step="1" value="50">
+        <small style="color:#7f8c8d; margin-top:5px;">0에 가까울수록 Parallel Tube, 무한대에 가까울수록 Well-Stirred에 수렴합니다.</small>
+      </div>
+
+      <div class="control-group dynamic-control" id="distributed-group" style="grid-column: 1 / -1;">
+        <label><span>변동 계수 (Variance, CV)</span> <span id="label-cv">0.50</span></label>
+        <input type="range" id="cv-slider" min="0.01" max="2.0" step="0.01" value="0.50">
+        <small style="color:#7f8c8d; margin-top:5px;">0에 가까울수록 혈관 이질성이 낮아 Parallel Tube에 수렴합니다.</small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 수식 계산 핵심 로직 ---
+    
+    // 1. Dispersion 방정식 해 (정확한 형태의 근사)
+    function calcDispersion(x, K, Dn) {
+      if (Dn < 0.005) return Math.exp(-K * x); // Dn이 0에 수렴하면 Parallel Tube
+      if (Dn > 50) return 1 / (1 + K);         // Dn이 무한대면 Well-Stirred
+      
+      const a = Math.sqrt(1 + 4 * K * Dn);
+      const term1 = (1 + a) * Math.exp(a * (1 - x) / (2 * Dn));
+      const term2 = (1 - a) * Math.exp(-a * (1 - x) / (2 * Dn));
+      const num = 2 * Math.exp(x / (2 * Dn)) * (term1 - term2);
+      
+      const denomTerm1 = Math.pow(1 + a, 2) * Math.exp(a / (2 * Dn));
+      const denomTerm2 = Math.pow(1 - a, 2) * Math.exp(-a / (2 * Dn));
+      const denom = denomTerm1 - denomTerm2;
+      
+      return num / denom;
+    }
+
+    // 2. Distributed 모델 (Gamma 분포 근사)
+    function calcDistributed(x, K, CV) {
+      if (CV < 0.02) return Math.exp(-K * x); // 이질성이 없으면 Parallel Tube
+      return Math.pow(1 + x * K * CV * CV, -1 / (CV * CV));
+    }
+
+    // --- UI 및 차트 로직 ---
+
+    const ctx = document.getElementById('pkChart').getContext('2d');
+    let chartInstance = null;
+
+    const elements = {
+      model: document.getElementById('model-select'),
+      er: document.getElementById('er-slider'),
+      dn: document.getElementById('dn-slider'),
+      cv: document.getElementById('cv-slider'),
+      labelEr: document.getElementById('label-er'),
+      labelDn: document.getElementById('label-dn'),
+      labelCv: document.getElementById('label-cv'),
+      valEr: document.getElementById('val-er'),
+      valCout: document.getElementById('val-cout'),
+      groupDisp: document.getElementById('dispersion-group'),
+      groupDist: document.getElementById('distributed-group')
+    };
+
+    function initChart() {
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { intersect: false, mode: 'index' },
+          scales: {
+            x: { 
+              title: { display: true, text: '간 통과 거리 (Fractional Distance, x)', font: {size: 14, weight: 'bold'} },
+              min: 0, max: 1
+            },
+            y: { 
+              title: { display: true, text: '상대적 약물 농도 (C/Cin)', font: {size: 14, weight: 'bold'} },
+              min: 0, max: 1.05
+            }
+          },
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                title: (items) => `거리: ${items[0].label}`,
+                label: (item) => `농도: ${item.raw.toFixed(4)}`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateSimulation() {
+      const model = elements.model.value;
+      const ER_ws = parseFloat(elements.er.value);
+      
+      // Dn 슬라이더(0~100)를 로그 스케일(0.01 ~ 100)로 변환
+      const dnRaw = parseFloat(elements.dn.value);
+      const Dn = Math.pow(10, (dnRaw / 25) - 2); 
+      
+      const CV = parseFloat(elements.cv.value);
+
+      // UI 라벨 업데이트
+      elements.labelEr.innerText = ER_ws.toFixed(2);
+      elements.valEr.innerText = ER_ws.toFixed(2);
+      elements.labelDn.innerText = Dn.toFixed(3);
+      elements.labelCv.innerText = CV.toFixed(2);
+
+      // 컨트롤 노출 관리
+      elements.groupDisp.style.display = model === 'dispersion' ? 'flex' : 'none';
+      elements.groupDist.style.display = model === 'distributed' ? 'flex' : 'none';
+
+      // 기준 효소 활성도 (K) 도출: Well-stirred 기준 추출율을 통해 K 역산
+      // ER = K / (1 + K)  =>  K = ER / (1 - ER)
+      const K = ER_ws / (1 - ER_ws);
+
+      const labels = [];
+      const data = [];
+      const steps = 100;
+
+      for (let i = 0; i <= steps; i++) {
+        const x = i / steps;
+        labels.push(x.toFixed(2));
+        let y = 1;
+
+        if (x === 0 && model === 'well-stirred') {
+           y = 1; // 입구는 항상 1 (직후에 섞임)
+        } else {
+          switch (model) {
+            case 'well-stirred':
+              y = 1 / (1 + K); // 상수 형태 (1 - ER)
+              break;
+            case 'parallel-tube':
+              y = Math.exp(-K * x); // 지수 감소
+              break;
+            case 'dispersion':
+              y = calcDispersion(x, K, Dn);
+              break;
+            case 'distributed':
+              y = calcDistributed(x, K, CV);
+              break;
+          }
+        }
+        data.push(y);
+      }
+
+      // 출구 농도 업데이트 (x=1)
+      elements.valCout.innerText = data[data.length - 1].toFixed(4);
+
+      // 색상 설정
+      const colorMap = {
+        'well-stirred': '#3498db',
+        'parallel-tube': '#e74c3c',
+        'dispersion': '#9b59b6',
+        'distributed': '#f39c12'
+      };
+      
+      const modelNameMap = {
+        'well-stirred': 'Well-Stirred',
+        'parallel-tube': 'Parallel Tube',
+        'dispersion': `Dispersion (Dn=${Dn.toFixed(2)})`,
+        'distributed': `Distributed (CV=${CV.toFixed(2)})`
+      };
+
+      chartInstance.data.labels = labels;
+      chartInstance.data.datasets = [{
+        label: modelNameMap[model],
+        data: data,
+        borderColor: colorMap[model],
+        backgroundColor: colorMap[model] + '33',
+        borderWidth: 3,
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        tension: 0.1 // 곡선 부드럽게
+      }];
+
+      // 애니메이션 없이 즉시 그리기 위해 모드 설정
+      chartInstance.update('none');
+    }
+
+    // 이벤트 리스너 등록
+    elements.model.addEventListener('change', updateSimulation);
+    elements.er.addEventListener('input', updateSimulation);
+    elements.dn.addEventListener('input', updateSimulation);
+    elements.cv.addEventListener('input', updateSimulation);
+
+    // 초기 실행
+    initChart();
+    // Dispersion을 기본 선택으로 하여 로드
+    elements.model.value = 'dispersion'; 
+    updateSimulation();
+
+  </script>
+</body>
+</html>
