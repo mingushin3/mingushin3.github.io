@@ -3,73 +3,202 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>통합 간 대사 모델 시뮬레이터 (동일 RN 기준)</title>
+  <title>간 클리어런스 모델 비교 시뮬레이션</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 850px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-    h2 { text-align: center; color: #2c3e50; margin-top: 0; margin-bottom: 5px; }
-    p.subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 20px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
     
-    .chart-container { position: relative; height: 400px; width: 100%; margin-bottom: 25px; }
-
-    .controls { display: grid; grid-template-columns: 1fr; gap: 20px; background: #f1f5f9; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    /* 대시보드 (상단 수치 표시) */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      background: #eef2f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      text-align: center;
+      background: #fff;
+      padding: 15px 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .stat-label {
+      font-size: 13px;
+      color: #7f8c8d;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .stat-value {
+      font-size: 22px;
+      color: #2980b9;
+      font-weight: bold;
+    }
     
-    .control-group { display: flex; flex-direction: column; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-    .control-group.master { border-left: 4px solid #e74c3c; }
-    .control-group.disp { border-left: 4px solid #9b59b6; }
-    .control-group.dist { border-left: 4px solid #f39c12; }
+    /* 차트 컨테이너 */
+    .chart-container {
+      position: relative;
+      height: 450px;
+      width: 100%;
+      margin-bottom: 25px;
+    }
 
-    label { font-weight: 600; margin-bottom: 8px; color: #4a5568; display: flex; justify-content: space-between; align-items: center; }
-    .val-display { font-size: 18px; color: #2c3e50; font-weight: bold; background: #e2e8f0; padding: 2px 10px; border-radius: 4px; }
-    input[type="range"] { width: 100%; cursor: pointer; margin-top: 5px; }
-    small { color: #718096; margin-top: 8px; font-size: 12px; line-height: 1.4; }
+    /* 컨트롤 (하단 슬라이더) */
+    .controls {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    .control-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .control-row:last-child {
+      margin-bottom: 0;
+    }
+    .control-label {
+      width: 200px;
+      font-weight: 600;
+      color: #495057;
+      font-size: 14px;
+    }
+    .slider-container {
+      flex-grow: 1;
+      padding: 0 15px;
+    }
+    input[type="range"] {
+      width: 100%;
+      cursor: pointer;
+    }
+    .control-val {
+      width: 50px;
+      text-align: right;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    /* 초기화 버튼 */
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard { grid-template-columns: repeat(2, 1fr); }
+      .control-row { flex-direction: column; align-items: flex-start; }
+      .control-label { width: 100%; margin-bottom: 5px; }
+      .slider-container { width: 100%; padding: 0; margin-bottom: 5px; }
+      .control-val { width: 100%; text-align: left; }
+    }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>통합 간 청소율 모델 비교 (Hepatic Clearance Models)</h2>
-    <p class="subtitle">동일한 효소 활성도(RN) 조건 하에서 4가지 공간적 모델의 농도 구배 차이</p>
+    <h2>간 클리어런스 모델 비교 시뮬레이션</h2>
+
+    <div class="dashboard">
+      <div class="stat-box">
+        <div class="stat-label">RN (활성도)</div>
+        <div class="stat-value" id="val-rn-dash">2.90</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">DN (분산수)</div>
+        <div class="stat-value" id="val-dn-dash">2.92</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">CV (변동계수)</div>
+        <div class="stat-value" id="val-cv-dash">1.24</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">예상 추출율 (WS)</div>
+        <div class="stat-value" id="val-er-dash">74.4%</div>
+      </div>
+    </div>
 
     <div class="chart-container">
       <canvas id="pkChart"></canvas>
     </div>
 
     <div class="controls">
-      <div class="control-group master">
-        <label>
-          <span>마스터 지표: 효소 활성도 번호 (RN = CLint / Q)</span> 
-          <span class="val-display" id="val-rn">1.50</span>
-        </label>
-        <input type="range" id="rn-slider" min="0.1" max="10.0" step="0.1" value="1.5">
-        <small>모든 모델에 공통 적용되는 기준값입니다. 값이 커질수록 간의 대사 능력이 혈류량에 비해 강력함을 의미합니다.</small>
+      <div class="control-row">
+        <div class="control-label">효소 활성도 지표 (RN)</div>
+        <div class="slider-container">
+          <input type="range" id="rn-slider" min="0.1" max="10.0" step="0.01" value="2.90">
+        </div>
+        <div class="control-val" id="val-rn-input">2.90</div>
       </div>
-
-      <div class="control-group disp">
-        <label>
-          <span>Dispersion 모델 파라미터: 분산수 (Dn)</span> 
-          <span class="val-display" id="val-dn">0.50</span>
-        </label>
-        <input type="range" id="dn-slider" min="0.01" max="5.0" step="0.01" value="0.5">
-        <small>0에 가까울수록 섞임이 없어 <b>Parallel Tube</b>와 일치하며, 커질수록 앞뒤로 강하게 섞여 <b>Well-Stirred</b>와 일치하게 됩니다.</small>
+      
+      <div class="control-row">
+        <div class="control-label">분산수 (Dn)</div>
+        <div class="slider-container">
+          <input type="range" id="dn-slider" min="0.01" max="5.0" step="0.01" value="2.92">
+        </div>
+        <div class="control-val" id="val-dn-input">2.92</div>
       </div>
-
-      <div class="control-group dist">
-        <label>
-          <span>Distributed 모델 파라미터: 변동 계수 (CV)</span> 
-          <span class="val-display" id="val-cv">0.50</span>
-        </label>
-        <input type="range" id="cv-slider" min="0.01" max="2.0" step="0.01" value="0.5">
-        <small>0에 가까울수록 모든 혈관의 상태가 동일하여 <b>Parallel Tube</b>와 일치하며, 커질수록 이질성이 높아져 <b>Well-Stirred</b>에 가까워집니다.</small>
+      
+      <div class="control-row">
+        <div class="control-label">변동 계수 (CV)</div>
+        <div class="slider-container">
+          <input type="range" id="cv-slider" min="0.01" max="2.0" step="0.01" value="1.24">
+        </div>
+        <div class="control-val" id="val-cv-input">1.24</div>
       </div>
+    </div>
+    
+    <div class="actions">
+      <button id="btn-reset">초기화</button>
     </div>
   </div>
 
   <script>
+    // --- 초기 설정값 ---
+    const defaultParams = { rn: 2.90, dn: 2.92, cv: 1.24 };
+
     // --- 핵심 수학 모델 함수 ---
     
-    // 1. Well-Stirred: 즉각 혼합
+    // 1. Well-Stirred: 즉각 혼합 (상수)
     function calcWS(Rn) {
       return 1 / (1 + Rn);
     }
@@ -81,10 +210,12 @@
 
     // 3. Dispersion: 축방향 확산 모델 (정확한 분석적 해)
     function calcDispersion(x, Rn, Dn) {
-      if (Dn < 0.005) return Math.exp(-Rn * x); // 부동소수점 오버플로우 방지 (PT 수렴)
+      if (Dn < 0.005) return Math.exp(-Rn * x); // PT 수렴
       if (Dn > 50) return 1 / (1 + Rn);         // WS 수렴
       
       const a = Math.sqrt(1 + 4 * Rn * Dn);
+      
+      // 거리가 1일 때의 특수 처리 (수학적 안정성)
       const term1 = (1 + a) * Math.exp(a * (1 - x) / (2 * Dn));
       const term2 = (1 - a) * Math.exp(-a * (1 - x) / (2 * Dn));
       const num = 2 * Math.exp(x / (2 * Dn)) * (term1 - term2);
@@ -98,7 +229,7 @@
 
     // 4. Distributed: 감마 분포를 이용한 파이프 이질성 모델
     function calcDistributed(x, Rn, CV) {
-      if (CV < 0.02) return Math.exp(-Rn * x); // 이질성 없음 (PT 수렴)
+      if (CV < 0.02) return Math.exp(-Rn * x); // PT 수렴
       return Math.pow(1 + x * Rn * CV * CV, -1 / (CV * CV));
     }
 
@@ -107,16 +238,18 @@
     const ctx = document.getElementById('pkChart').getContext('2d');
     let chartInstance = null;
 
-    const sliders = {
-      rn: document.getElementById('rn-slider'),
-      dn: document.getElementById('dn-slider'),
-      cv: document.getElementById('cv-slider')
-    };
-    
-    const displays = {
-      rn: document.getElementById('val-rn'),
-      dn: document.getElementById('val-dn'),
-      cv: document.getElementById('val-cv')
+    const domElements = {
+      rnSlider: document.getElementById('rn-slider'),
+      dnSlider: document.getElementById('dn-slider'),
+      cvSlider: document.getElementById('cv-slider'),
+      rnDash: document.getElementById('val-rn-dash'),
+      dnDash: document.getElementById('val-dn-dash'),
+      cvDash: document.getElementById('val-cv-dash'),
+      erDash: document.getElementById('val-er-dash'),
+      rnInput: document.getElementById('val-rn-input'),
+      dnInput: document.getElementById('val-dn-input'),
+      cvInput: document.getElementById('val-cv-input'),
+      resetBtn: document.getElementById('btn-reset')
     };
 
     function initChart() {
@@ -129,19 +262,34 @@
           interaction: { mode: 'index', intersect: false },
           scales: {
             x: { 
-              title: { display: true, text: '간 통과 거리 (Fractional Distance, x)', font: {size: 13, weight: 'bold'} },
-              min: 0, max: 1
+              title: { display: true, text: '간 통과 거리 (x) →', font: {size: 14, weight: 'bold'} },
+              min: 0, max: 1,
+              grid: { color: '#e9ecef' }
             },
             y: { 
-              title: { display: true, text: '상대적 약물 농도 (C/Cin)', font: {size: 13, weight: 'bold'} },
-              min: 0, max: 1.0
+              title: { display: true, text: '↑ 상대적 약물 농도 (C/Cin)', font: {size: 14, weight: 'bold'} },
+              min: 0, max: 1.0,
+              grid: { color: '#e9ecef' }
             }
           },
           plugins: {
-            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+            legend: { 
+              position: 'bottom', 
+              labels: { 
+                usePointStyle: true, 
+                boxWidth: 8,
+                padding: 20,
+                font: { size: 13 }
+              } 
+            },
             tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              titleColor: '#2c3e50',
+              bodyColor: '#2c3e50',
+              borderColor: '#e2e8f0',
+              borderWidth: 1,
               callbacks: {
-                title: (items) => `거리(x): ${items[0].label}`,
+                title: (items) => `통과 거리: ${items[0].label}`,
                 label: (item) => `${item.dataset.label}: ${item.raw.toFixed(4)}`
               }
             }
@@ -150,16 +298,27 @@
       });
     }
 
-    function updateChart() {
-      const Rn = parseFloat(sliders.rn.value);
-      const Dn = parseFloat(sliders.dn.value);
-      const CV = parseFloat(sliders.cv.value);
+    function updateSimulation() {
+      const Rn = parseFloat(domElements.rnSlider.value);
+      const Dn = parseFloat(domElements.dnSlider.value);
+      const CV = parseFloat(domElements.cvSlider.value);
 
-      // 값 디스플레이 업데이트
-      displays.rn.innerText = Rn.toFixed(2);
-      displays.dn.innerText = Dn.toFixed(2);
-      displays.cv.innerText = CV.toFixed(2);
+      // UI 텍스트 업데이트
+      const rnText = Rn.toFixed(2);
+      const dnText = Dn.toFixed(2);
+      const cvText = CV.toFixed(2);
+      const erPercent = ((Rn / (1 + Rn)) * 100).toFixed(1) + '%';
 
+      domElements.rnDash.innerText = rnText;
+      domElements.dnDash.innerText = dnText;
+      domElements.cvDash.innerText = cvText;
+      domElements.erDash.innerText = erPercent;
+
+      domElements.rnInput.innerText = rnText;
+      domElements.dnInput.innerText = dnText;
+      domElements.cvInput.innerText = cvText;
+
+      // 차트 데이터 생성
       const labels = [];
       const dataWS = [];
       const dataPT = [];
@@ -173,7 +332,7 @@
         labels.push(x.toFixed(2));
         
         // 데이터 계산
-        dataWS.push(calcWS(Rn)); // WS는 거리와 무관하게 즉시 섞인 농도 유지
+        dataWS.push(calcWS(Rn)); 
         dataPT.push(calcPT(x, Rn));
         dataDisp.push(calcDispersion(x, Rn, Dn));
         dataDist.push(calcDistributed(x, Rn, CV));
@@ -182,59 +341,63 @@
       chartInstance.data.labels = labels;
       chartInstance.data.datasets = [
         {
-          label: 'Well-Stirred',
+          label: '완전 혼합 모델 (Well-Stirred)',
           data: dataWS,
-          borderColor: '#3498db',
+          borderColor: '#3498db', // 파란색
           borderWidth: 3,
-          borderDash: [5, 5], // 점선으로 표현하여 차이 부각
+          borderDash: [5, 5],
           pointRadius: 0,
-          pointHoverRadius: 5,
+          pointHoverRadius: 6,
           tension: 0
         },
         {
-          label: 'Parallel Tube',
+          label: '병렬 튜브 모델 (Parallel Tube)',
           data: dataPT,
-          borderColor: '#e74c3c',
+          borderColor: '#e74c3c', // 빨간색
           borderWidth: 3,
           pointRadius: 0,
-          pointHoverRadius: 5,
+          pointHoverRadius: 6,
           tension: 0.1
         },
         {
-          label: `Dispersion (Dn=${Dn.toFixed(2)})`,
+          label: '분산 모델 (Dispersion)',
           data: dataDisp,
-          borderColor: '#9b59b6',
+          borderColor: '#9b59b6', // 보라색
           borderWidth: 3,
-          backgroundColor: 'rgba(155, 89, 182, 0.1)',
-          fill: true,
           pointRadius: 0,
-          pointHoverRadius: 5,
+          pointHoverRadius: 6,
           tension: 0.1
         },
         {
-          label: `Distributed (CV=${CV.toFixed(2)})`,
+          label: '분포 모델 (Distributed)',
           data: dataDist,
-          borderColor: '#f39c12',
+          borderColor: '#f1c40f', // 노란색
           borderWidth: 3,
-          backgroundColor: 'rgba(243, 156, 18, 0.1)',
-          fill: true,
           pointRadius: 0,
-          pointHoverRadius: 5,
+          pointHoverRadius: 6,
           tension: 0.1
         }
       ];
 
-      chartInstance.update('none'); // 부드러운 UI 조작을 위해 애니메이션 끄기
+      chartInstance.update('none'); // 부드러운 렌더링
+    }
+
+    function resetToDefault() {
+      domElements.rnSlider.value = defaultParams.rn;
+      domElements.dnSlider.value = defaultParams.dn;
+      domElements.cvSlider.value = defaultParams.cv;
+      updateSimulation();
     }
 
     // 이벤트 리스너 세팅
-    sliders.rn.addEventListener('input', updateChart);
-    sliders.dn.addEventListener('input', updateChart);
-    sliders.cv.addEventListener('input', updateChart);
+    domElements.rnSlider.addEventListener('input', updateSimulation);
+    domElements.dnSlider.addEventListener('input', updateSimulation);
+    domElements.cvSlider.addEventListener('input', updateSimulation);
+    domElements.resetBtn.addEventListener('click', resetToDefault);
 
     // 초기 실행
     initChart();
-    updateChart();
+    updateSimulation();
 
   </script>
 </body>
