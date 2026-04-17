@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>II-04 | General ADVAN + $DES ODE 작성법</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath:[['$','$']], displayMath:[['$$','$$']], processEscapes:true },
+  options:{ skipHtmlTags:['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+  --bg:#09090e;--surface:#0c0c12;--surface2:#111118;--text:#ede8df;--muted:#8a8070;
+  --accent:#c9a84c;--accent-dim:rgba(201,168,76,0.08);--danger:#c0392b;
+  --info:#4098e8;--phantom:rgba(220,60,60,0.55);--border:rgba(255,255,255,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;
+  font-weight:300;line-height:1.75;min-height:100vh}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.02em}
+code,pre,.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--surface);
+  border-right:1px solid var(--border);overflow-y:auto;z-index:100;
+  padding:24px 0;transition:transform .3s
+}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border)}
+.sidebar-title{
+  font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--accent);
+  padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px;
+  font-weight:700;letter-spacing:.05em
+}
+.sidebar-section{margin-bottom:4px}
+.sidebar-section>a{
+  display:block;padding:7px 20px;color:var(--muted);text-decoration:none;
+  font-size:.8rem;font-weight:400;transition:all .2s;border-left:3px solid transparent
+}
+.sidebar-section>a:hover,.sidebar-section>a.active{
+  color:var(--accent);border-left-color:var(--accent);background:var(--accent-dim)
+}
+.sidebar-sub{padding-left:28px}
+.sidebar-sub a{
+  display:block;padding:4px 10px;color:var(--muted);font-size:.73rem;
+  text-decoration:none;transition:color .2s
+}
+.sidebar-sub a:hover,.sidebar-sub a.active{color:var(--accent)}
+#menu-toggle{
+  display:none;position:fixed;top:12px;left:12px;z-index:200;background:var(--surface);
+  border:1px solid var(--border);color:var(--accent);padding:8px 12px;
+  border-radius:4px;cursor:pointer;font-size:1rem
+}
+
+/* ── MAIN ── */
+#main{margin-left:260px;max-width:1100px;padding:40px 48px 80px}
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0;padding:20px 16px 60px}
+  #menu-toggle{display:block}
+}
+
+/* ── SECTION ── */
+section{margin-bottom:72px;padding-top:16px}
+.section-label{
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;font-family:'IBM Plex Mono',monospace
+}
+.section-title{font-size:2rem;color:var(--text);margin-bottom:4px}
+.section-sub{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+.divider{border:none;border-top:1px solid var(--border);margin:48px 0}
+
+/* ── CONCEPT CARD ── */
+.concept-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  margin-bottom:32px;overflow:hidden
+}
+.card-header{
+  padding:20px 24px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px
+}
+.card-title{font-size:1.3rem;color:var(--text)}
+.apex-badge{
+  display:inline-flex;align-items:center;gap:4px;background:var(--accent);
+  color:#09090e;font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:12px;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;flex-shrink:0
+}
+.card-body{padding:24px}
+.card-body h4{font-size:.95rem;color:var(--accent);margin:20px 0 8px;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
+.card-body h4:first-child{margin-top:0}
+
+/* ── BIG IDEA BLOCK ── */
+.big-idea{
+  border-left:4px solid var(--accent);background:rgba(201,168,76,0.08);
+  border-radius:0 6px 6px 0;padding:18px 20px;margin-bottom:20px
+}
+.big-idea-label{
+  font-size:.68rem;letter-spacing:.14em;color:var(--accent);
+  font-family:'IBM Plex Mono',monospace;margin-bottom:10px;text-transform:uppercase
+}
+.big-idea p{font-size:.92rem;line-height:1.8;margin-bottom:8px;font-style:italic}
+.big-idea p:last-child{margin-bottom:0}
+.big-idea strong{color:var(--accent);font-style:normal}
+
+/* ── PLAUSIBLE FALLACY ── */
+.fallacy-block{
+  border-left:4px solid var(--danger);background:rgba(192,57,43,0.08);
+  border-radius:0 6px 6px 0;padding:16px 20px;margin:16px 0
+}
+.fallacy-label{
+  font-size:.68rem;letter-spacing:.12em;color:var(--danger);
+  font-family:'IBM Plex Mono',monospace;margin-bottom:8px;text-transform:uppercase
+}
+
+/* ── CODE ── */
+pre{
+  background:#06060a;border:1px solid var(--border);border-radius:6px;
+  padding:16px;overflow-x:auto;font-size:.78rem;line-height:1.65;margin:12px 0
+}
+pre code{color:#ede8df}
+.keyword{color:#c9a84c}.comment{color:#8a8070}.string{color:#4098e8}
+.micro-cite{font-size:.75rem;color:var(--muted);font-style:italic;margin-top:4px;display:block}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:var(--surface2);color:var(--accent);padding:10px 14px;text-align:left;
+  border-bottom:2px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:.78rem}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.critical-blow td{background:rgba(192,57,43,0.12)!important;font-weight:500}
+.memory-hook td{background:rgba(201,168,76,0.06)!important;color:var(--accent)}
+td.gold{color:var(--accent);font-weight:500}
+
+/* ── ISOMORPHISM ── */
+.isomorphism-prelude{
+  border-left:4px solid var(--accent);background:rgba(201,168,76,0.05);
+  border-radius:0 6px 6px 0;padding:20px 24px;margin-bottom:28px;font-style:italic
+}
+.isomorphism-prelude h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;
+  color:var(--accent);margin-bottom:12px;font-style:normal}
+.isomorphism-prelude p{font-size:.9rem;line-height:1.8;margin-bottom:8px}
+svg text{font-family:'IBM Plex Mono',monospace}
+.norm-wrap{position:relative;height:260px;overflow:hidden;border-radius:6px;
+  background:#06060a;border:1px solid var(--border);margin:16px 0}
+#normCanvas{width:100%;height:100%;display:block}
+.norm-controls{display:flex;gap:12px;align-items:center;margin-top:10px}
+.toggle-btn{
+  padding:7px 16px;border-radius:4px;border:1px solid var(--accent);background:transparent;
+  color:var(--accent);cursor:pointer;font-size:.8rem;font-family:'IBM Plex Mono',monospace;
+  transition:all .2s
+}
+.toggle-btn.active{background:var(--accent);color:#09090e}
+.transfer-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:600px){.transfer-cards{grid-template-columns:1fr}}
+.transfer-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.transfer-card summary{
+  padding:14px 16px;cursor:pointer;font-size:.88rem;color:var(--text);
+  list-style:none;display:flex;justify-content:space-between;align-items:center
+}
+.transfer-card summary::after{content:'▶';font-size:.7rem;color:var(--accent);transition:transform .2s}
+.transfer-card[open] summary::after{transform:rotate(90deg)}
+.transfer-card .detail-body{padding:0 16px 16px;font-size:.85rem;line-height:1.75}
+.transfer-card .detail-body p{margin-bottom:8px}
+.transfer-step{display:flex;gap:10px;margin-bottom:8px}
+.step-num{
+  width:22px;height:22px;border-radius:50%;background:var(--accent);color:#09090e;
+  font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px
+}
+
+/* ── SIMULATOR ── */
+.sim-container{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px}
+.sim-top{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px}
+@media(max-width:700px){.sim-top{grid-template-columns:1fr}}
+.slider-group{margin-bottom:14px}
+.slider-label{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
+.slider-name{color:var(--muted)}
+.slider-val{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:.8rem}
+input[type=range]{
+  width:100%;height:4px;background:var(--border);border-radius:2px;
+  appearance:none;-webkit-appearance:none;outline:none;cursor:pointer
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--accent);cursor:pointer
+}
+.canvas-wrap{position:relative;height:320px;overflow:hidden;flex-shrink:0;
+  background:#06060a;border-radius:6px;border:1px solid var(--border)}
+#simCanvas{width:100%!important;height:100%!important;display:block;cursor:crosshair}
+.cursor-label{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);
+  padding:4px 0;min-height:1.4em
+}
+.warn-banner{
+  display:none;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);
+  border-radius:4px;padding:8px 12px;font-size:.78rem;color:#e87070;margin-bottom:12px
+}
+.warn-banner.show{display:block}
+.derived-panel{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:10px;margin:16px 0
+}
+.derived-item{background:var(--surface2);border-radius:4px;padding:10px 12px;text-align:center}
+.derived-name{font-size:.68rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
+.derived-val{font-size:1rem;color:var(--text);font-family:'Cormorant Garamond',serif;font-weight:600}
+.derived-delta{font-size:.72rem;font-family:'IBM Plex Mono',monospace}
+.sim-controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ctrl-btn{
+  padding:6px 14px;border-radius:4px;border:1px solid var(--border);background:transparent;
+  color:var(--muted);cursor:pointer;font-size:.78rem;font-family:'IBM Plex Mono',monospace;
+  transition:all .2s
+}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ctrl-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.preset-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.preset-btn{
+  padding:5px 12px;border-radius:12px;border:1px solid var(--border);background:transparent;
+  color:var(--muted);cursor:pointer;font-size:.73rem;font-family:'IBM Plex Mono',monospace;
+  transition:all .2s
+}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mission-panel{margin-top:20px;padding:16px;background:var(--surface2);border-radius:6px;
+  border:1px solid var(--border)}
+.mission-title{font-size:.75rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase}
+.mission-item{margin-bottom:12px;font-size:.85rem;line-height:1.7}
+.ode-display{
+  background:#06060a;border:1px solid var(--border);border-radius:6px;
+  padding:14px 16px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+  line-height:1.8;margin:12px 0
+}
+.ode-eq{color:#ede8df}.ode-comment{color:var(--muted)}
+
+/* ── ACCORDION / SELF-TEST ── */
+.qa-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  margin-bottom:10px;overflow:hidden
+}
+.qa-q{
+  padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;font-size:.9rem
+}
+.qa-q:hover{background:rgba(255,255,255,0.02)}
+.qa-badge{
+  font-size:.65rem;font-family:'IBM Plex Mono',monospace;padding:2px 7px;
+  border-radius:10px;border:1px solid var(--border);color:var(--muted);flex-shrink:0;margin-left:8px
+}
+.qa-badge.star2{border-color:var(--accent);color:var(--accent)}
+.qa-badge.star1{border-color:var(--info);color:var(--info)}
+.qa-chevron{color:var(--muted);font-size:.8rem;transition:transform .2s;flex-shrink:0}
+.qa-item.open .qa-chevron{transform:rotate(180deg)}
+.qa-a{display:none;padding:0 18px 16px;font-size:.875rem;line-height:1.8;
+  border-top:1px solid var(--border)}
+.qa-item.open .qa-a{display:block}
+.qa-a pre{font-size:.73rem}
+.followup{margin-top:10px;font-size:.8rem;color:var(--muted);font-style:italic;
+  border-left:2px solid var(--border);padding-left:12px}
+.boss-q{border-color:var(--accent)!important}
+.boss-q .qa-q{color:var(--accent)}
+
+/* ── SCENARIO ── */
+.scenario-block{background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:20px;margin-bottom:20px}
+.scenario-tag{font-size:.68rem;letter-spacing:.12em;color:var(--accent);
+  font-family:'IBM Plex Mono',monospace;text-transform:uppercase;margin-bottom:8px}
+.scenario-block h3{font-size:1.1rem;margin-bottom:12px}
+.diag-sig{background:var(--surface);border-left:4px solid var(--danger);
+  border-radius:0 6px 6px 0;padding:14px 18px;margin:12px 0}
+.diag-title{font-size:.8rem;color:var(--danger);font-family:'IBM Plex Mono',monospace;
+  margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase}
+.diag-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:.82rem;margin-top:8px}
+@media(max-width:600px){.diag-grid{grid-template-columns:1fr}}
+.diag-label{color:var(--muted);font-size:.7rem;font-family:'IBM Plex Mono',monospace;margin-bottom:2px}
+
+/* ── META FRAME ── */
+.moat-block{
+  background:linear-gradient(135deg,rgba(201,168,76,0.05),rgba(64,152,232,0.05));
+  border:1px solid var(--border);border-radius:8px;padding:24px
+}
+.dep-item{
+  padding:12px 16px;border-left:3px solid var(--danger);
+  background:rgba(192,57,43,0.05);border-radius:0 4px 4px 0;margin-bottom:10px;
+  font-size:.875rem;line-height:1.75
+}
+.dep-item strong{color:var(--danger)}
+</style>
+</head>
+<body>
+<button id="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<nav id="sidebar">
+  <div class="sidebar-title">II-04 · General ADVAN</div>
+  <div class="sidebar-section"><a href="#section-1">§1 세션 헤더 & 로드맵</a></div>
+  <div class="sidebar-section"><a href="#section-2">§2 개념 해부 카드</a>
+    <div class="sidebar-sub">
+      <a href="#card-1">일반 ADVAN 분류 체계</a>
+      <a href="#card-2">$MODEL 구획 선언</a>
+      <a href="#card-3">$DES ODE 작성법 ⚡</a>
+      <a href="#card-4">선형 vs 비선형 구현 비교</a>
+      <a href="#card-5">복잡 흡수 모델 패턴</a>
+    </div>
+  </div>
+  <div class="sidebar-section"><a href="#section-3">§3 구조적 동형성 지도</a></div>
+  <div class="sidebar-section"><a href="#section-4">§4 인터랙티브 시뮬레이터</a></div>
+  <div class="sidebar-section"><a href="#section-5">§5 혼동쌍 해부</a>
+    <div class="sidebar-sub">
+      <a href="#pair-1">K12 인덱스 충돌</a>
+      <a href="#pair-2">T vs TIME</a>
+      <a href="#pair-3">DEFDOSE vs CMT</a>
+    </div>
+  </div>
+  <div class="sidebar-section"><a href="#section-6">§6 실용 시나리오</a></div>
+  <div class="sidebar-section"><a href="#section-7">§7 자기 테스트</a></div>
+  <div class="sidebar-section"><a href="#section-8">§8 메타프레임 & 빅픽처</a></div>
+</nav>
+
+<main id="main">
+
+<section id="section-1">
+  <div class="section-label">Session II-04 · Vol II — Owen + PIPET</div>
+  <h1 class="section-title">General ADVAN + $DES ODE 작성법</h1>
+  <p class="section-sub">PIPET Ch.5–6 (pp.55–67) · Owen & Fiedler-Kelly Ch.9 (pp.232–249)</p>
+
+  <div class="big-idea" style="margin-bottom:24px">
+    <div class="big-idea-label">🎯 Session Big Idea</div>
+    <p>특수 ADVAN의 경직된 틀에서 벗어나, <strong>$MODEL로 구획을 자유롭게 선언</strong>하고 <strong>$DES에 ODE를 직접 서술</strong>함으로써 — 선형이든 비선형이든, 흡수가 단순하든 복잡하든 — <em>임의의 약동학적 현실</em>을 NONMEM 코드로 정확하게 번역하는 능력이 이 세션의 핵심이다.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>소스</th><th>챕터/섹션</th><th>제목</th><th>페이지</th></tr>
+      <tr><td>PIPET 한국어 교재</td><td>Ch.5</td><td>일반 ADVAN을 이용한 제어구문의 코딩</td><td>pp.55–63</td></tr>
+      <tr><td>PIPET 한국어 교재</td><td>Ch.6</td><td>기타 ADVAN (9/10/11/12/13)</td><td>pp.65–67</td></tr>
+      <tr><td>Owen & Fiedler-Kelly</td><td>Ch.9</td><td>User-Written Models</td><td>pp.232–249</td></tr>
+    </table>
+  </div>
+
+  <h3 style="margin:24px 0 12px">개념 항법도</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>#</th><th>개념 클러스터</th><th>§2 카드</th></tr>
+      <tr><td class="mono">1</td><td>일반 ADVAN 분류 체계 — ADVAN 5/6/7/8/9/13 선택 논리</td><td>카드 1</td></tr>
+      <tr><td class="mono">2</td><td>$MODEL 구획 선언 — COMP, DEFDOSE, DEFOBS</td><td>카드 2</td></tr>
+      <tr><td class="mono">3</td><td>$DES ODE 작성법 ⚡ Apex — DADT(i), A(i), TOL</td><td>카드 3</td></tr>
+      <tr><td class="mono">4</td><td>선형 vs 비선형 구현 비교 — 동일 모델 이중 구현</td><td>카드 4</td></tr>
+      <tr><td class="mono">5</td><td>복잡 흡수 모델 패턴 — 병렬 흡수, Fz, MTIME/MPAST</td><td>카드 5</td></tr>
+    </table>
+  </div>
+
+  <h3 style="margin:24px 0 12px">지식 그래프 위치</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>선행 (전제)</th><th>현재 세션</th><th>후속 (열림)</th></tr>
+      <tr>
+        <td>II-02 데이터셋 (CMT, EVID)<br>II-03 ADVAN1–4 특수 ADVAN<br>θ·η·ε 구조 (II-01)<br>I-07 Michaelis-Menten 이론</td>
+        <td style="color:var(--accent);font-weight:500">General ADVAN<br>$MODEL / $DES<br>ODE 자유 서술</td>
+        <td>II-11 PK/PD 구현 (Emax·Imax)<br>II-12 지연효과 PD 구현<br>TMDD 모델링<br>PBPK / QSP</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-2">
+  <div class="section-label">§2</div>
+  <h2 class="section-title">개념 해부 카드</h2>
+
+  <div class="concept-card" id="card-1">
+    <div class="card-header">
+      <div class="card-title">일반 ADVAN 분류 체계 — 선택의 논리</div>
+    </div>
+    <div class="card-body">
+      <div class="big-idea">
+        <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+        <p><strong>왜 치명적으로 중요한가:</strong> 잘못된 ADVAN을 선택하면 추정이 수렴하지 않거나, 수렴하더라도 내부적으로 수치적으로 불안정한 해를 반환한다 — ADVAN6로 stiff 단일클론항체를 추정하다 며칠을 날리는 것은 이 체계를 모르는 모델러의 전형적 경험이다.</p>
+        <p><strong>체화해야 할 단 하나의 직관:</strong> ADVAN 선택은 "어떤 모델을 쓰느냐"가 아니라 "미분방정식 풀이기(solver)를 어느 것으로 쓰느냐"의 문제다. 같은 2구획 경구 모델을 ADVAN5로도, ADVAN6로도 쓸 수 있다. 차이는 <em>수학적 해법의 종류</em>이지 모델 구조 자체가 아니다.</p>
+        <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> 모델 선택(구획 수, 비선형성)과 ADVAN 선택(수치 풀이 전략)은 독립적인 두 개의 의사결정이다.</p>
+      </div>
+
+      <h4>A. 분류 체계 (PIPET 표5.1, 5.2)</h4>
+      <div class="table-wrap">
+        <table>
+          <tr><th>구분</th><th>ADVAN</th><th>풀이 방법</th><th>적용 상황</th><th>$DES 필요</th></tr>
+          <tr><td>선형</td><td class="mono">ADVAN5</td><td>행렬 지수 (complex eigenvalue)</td><td>PBPK 등 복잡 구조</td><td>❌</td></tr>
+          <tr><td>선형</td><td class="mono">ADVAN7</td><td>행렬 지수 (real eigenvalue)</td><td>대부분의 PK 시스템</td><td>❌</td></tr>
+          <tr><td>비선형</td><td class="mono">ADVAN6</td><td>Runge-Kutta method</td><td>nonstiff 비선형 모델 (범용)</td><td>✅</td></tr>
+          <tr><td>비선형</td><td class="mono">ADVAN8</td><td>Gear method</td><td>stiff 모델 (mAb, KA≫Ke)</td><td>✅</td></tr>
+          <tr><td>비선형</td><td class="mono">ADVAN9</td><td>ADVAN6 대안, equilibrium comp</td><td>ADVAN6 대안</td><td>✅</td></tr>
+          <tr><td>비선형</td><td class="mono">ADVAN13</td><td>LSODA (stiff/nonstiff 자동)</td><td>BAYESIAN·MCMC 시 유리</td><td>✅</td></tr>
+        </table>
+      </div>
+      <span class="micro-cite">[출처: PIPET Ch.5, 표5.1·5.2, pp.55–56; Owen Ch.9, §9.3, pp.236–238]</span>
+
+      <h4>C. Structural Necessity</h4>
+      <p>선형 ODE는 행렬 지수 $e^{\mathbf{K}t}$의 수치적 근사로 풀 수 있으므로 $PK의 K_mn 마이크로상수만으로 충분하다. 반면 비선형 ODE는 해석적 해가 존재하지 않으므로 수치 적분기(Runge-Kutta, Gear)가 요구되며, 이를 구동하기 위해 $DES 블록이 구조적으로 필수다.</p>
+
+      <h4>실용 선택 기준 — ADVAN6 vs ADVAN8 (Owen 제안)</h4>
+      <p>$ESTIMATION에 <code class="mono">MAXEVAL=1</code>을 설정한 후 ADVAN6와 ADVAN8을 각각 1회 반복 실행하여, 더 빠르게 성공하는 ADVAN을 선택한다.</p>
+
+      <h4>G. Zettelkasten Atom</h4>
+      <pre><code><span class="comment">---
+aliases: [General ADVAN, 일반 ADVAN, ADVAN5, ADVAN6, ADVAN7, ADVAN8]
+tags: [pharmacometrics/nonmem, nonmem/advan, nonmem/coding]
+up: "[[NONMEM Control File Architecture]]"
+related: ["[[$DES ODE 작성법]]", "[[특수 ADVAN vs 일반 ADVAN]]"]
+source: "PIPET Ch.5, pp.55-56; Owen Ch.9, §9.3, pp.236-238"
+---</span>
+일반 ADVAN은 $MODEL+$PK+(§DES)로 구성된 사용자 정의 모델 체계다.
+선형 전이만 포함하면 ADVAN5/7, 비선형 전이가 포함되면 ADVAN6/8/9/13을 선택한다.
+선택의 실질적 기준은 모델의 stiffness이며, 같은 모델을 다수의 ADVAN으로 구현 가능하므로
+ADVAN 선택과 모델 구조 선택을 반드시 분리하여 사고해야 한다.</code></pre>
+    </div>
+  </div>
+
+  <div class="concept-card" id="card-2">
+    <div class="card-header">
+      <div class="card-title">$MODEL 구획 선언 — COMP, DEFDOSE, DEFOBS</div>
+    </div>
+    <div class="card-body">
+      <div class="big-idea">
+        <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+        <p><strong>왜 치명적으로 중요한가:</strong> DEFDOSE와 DEFOBS를 잘못 설정하면 NONMEM이 투여 기록과 관찰값을 엉뚱한 구획에 배정하며, 이 오류는 경고 없이 추정을 진행하고 OFV가 수렴하는 척 보이기 때문에 — 잘못된 파라미터가 규제 제출 문서에 올라가는 사고로 이어질 수 있다.</p>
+        <p><strong>체화해야 할 단 하나의 직관:</strong> $MODEL의 COMP 선언은 NONMEM에게 "이 구획이 무엇을 받고, 무엇을 관찰하는 기본값인지" 알려주는 주소지 등록이다 — 데이터셋에 CMT 컬럼이 있으면 이 주소지는 덮어쓰이므로, <em>데이터셋의 CMT가 항상 최종 결정권</em>을 가진다.</p>
+        <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> $MODEL은 CMT 컬럼이 없을 때의 보험이고, CMT 컬럼이 있으면 그것이 진짜 주소다.</p>
+      </div>
+
+      <h4>B. Code Structure — $MODEL 완전 해부</h4>
+      <pre><code><span class="keyword">$MODEL</span>
+    <span class="keyword">COMP</span>(DEPOT,    DEFDOSE)    <span class="comment">; 1번 구획: 투여 기본 구획 (first-order 흡수)</span>
+    <span class="keyword">COMP</span>(CENTRAL,  DEFOBS)     <span class="comment">; 2번 구획: 관찰값 기본 구획 (혈중 농도 측정)</span>
+    <span class="keyword">COMP</span>(PERIPH)               <span class="comment">; 3번 구획: 말초 구획 (임의 명칭, 최대 999개)</span></code></pre>
+      <span class="micro-cite">[출처: PIPET Ch.5, pp.59–60; Owen Ch.9, §9.2, p.235]</span>
+
+      <h4>DEFDOSE / DEFOBS 우선순위 규칙</h4>
+      <div class="table-wrap">
+        <table>
+          <tr><th>상황</th><th>NONMEM 동작</th></tr>
+          <tr><td>CMT 컬럼 없음 + DEFDOSE 지정</td><td>DEFDOSE 구획에 투여</td></tr>
+          <tr><td>CMT 컬럼 없음 + DEFDOSE 없음 + 'DEPOT' 명칭</td><td>첫 번째 DEPOT 구획에 투여</td></tr>
+          <tr><td>CMT 컬럼 없음 + 위 조건 없음</td><td>1번 구획에 투여</td></tr>
+          <tr style="background:rgba(201,168,76,0.06)"><td style="color:var(--accent)"><strong>CMT 컬럼 있음</strong></td><td style="color:var(--accent)"><strong>CMT가 $MODEL 설정을 완전히 덮어씀 (최우선)</strong></td></tr>
+        </table>
+      </div>
+
+      <h4>C. Structural Necessity</h4>
+      <p>$MODEL이 일반 ADVAN에서 필수인 이유: 특수 ADVAN은 구획 구조가 코드에 하드코딩되어 NONMEM이 K10, K12, K21을 자동으로 인식한다. 일반 ADVAN은 구획 수 자체를 모르므로, $MODEL이 없으면 $PK의 K12 정의가 무엇을 가리키는지 NONMEM이 해석 불가능하다.</p>
+    </div>
+  </div>
+
+  <div class="concept-card" id="card-3">
+    <div class="card-header">
+      <div class="card-title">$DES ODE 작성법</div>
+      <span class="apex-badge">⚡ Apex Concept</span>
+    </div>
+    <div class="card-body">
+      <div class="big-idea">
+        <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+        <p><strong>왜 치명적으로 중요한가:</strong> $DES는 NONMEM의 심장이다 — 여기서 ODE의 부호 하나가 틀리면(유입이 유출로, 또는 반대로) 추정은 수렴하되 생물학적으로 불가능한 파라미터를 반환하며, 이 오류는 GOF 플롯만으로는 잡히지 않는다.</p>
+        <p><strong>체화해야 할 단 하나의 직관:</strong> $DES의 각 줄은 "이 구획에서 질량이 들어오는 것은 더하고(+), 나가는 것은 빼라(−)"는 <em>질량 보존 원칙의 직역</em>이다 — 시스템의 모든 구획에 대해 이 원칙만 충실히 따르면, 어떤 복잡한 ODE도 쓸 수 있다.</p>
+        <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> DADT(i) = (i로 들어오는 모든 항의 합) − (i에서 나가는 모든 항의 합)이 $DES의 유일한 문법이다.</p>
+      </div>
+
+      <h4>A. Formal Definition</h4>
+      <p>$DES 블록은 비선형 ADVAN(ADVAN6, 8, 9, 13) 사용 시 각 구획의 질량 변화율을 미분방정식으로 서술하는 제어구문이다. 구획 i의 변화율은 <code>DADT(i)</code>로 표현하며, 구획 i의 현재 질량은 <code>A(i)</code>로 참조한다. $DES 내부의 시간 변수는 연속형 <code>T</code>를 사용한다.</p>
+
+      <h4>B. 핵심 문법 — 2구획 경구 모델 완전 해부 (ADVAN6)</h4>
+      $$\frac{dA_1}{dt} = -k_a \cdot A(1) \quad \frac{dA_2}{dt} = k_a A(1) - (k_{23}+k_{20})A(2) + k_{32}A(3) \quad \frac{dA_3}{dt} = k_{23}A(2) - k_{32}A(3)$$
+      <pre><code><span class="keyword">$SUBROUTINE</span> ADVAN6 TOL=4   <span class="comment">; TOL = SIG+1 또는 SIG+2, 일반적으로 TOL=4</span>
+
+<span class="keyword">$MODEL</span>
+    COMP(DEPOT,   DEFDOSE)   <span class="comment">; 구획1: 흡수 구획</span>
+    COMP(CENTRAL, DEFOBS)    <span class="comment">; 구획2: 중심 구획 (혈중)</span>
+    COMP(PERIPH)             <span class="comment">; 구획3: 말초 구획</span>
+
+<span class="keyword">$PK</span>
+    CL  = THETA(1)*EXP(ETA(1))
+    V2  = THETA(2)*EXP(ETA(2))
+    V3  = THETA(3)*EXP(ETA(3))
+    Q   = THETA(4)*EXP(ETA(4))
+    KA  = THETA(5)*EXP(ETA(5))
+    K20 = CL/V2       <span class="comment">; 소실 마이크로상수 (1/hr)</span>
+    K23 = Q/V2        <span class="comment">; 구획2→3 마이크로상수</span>
+    K32 = Q/V3        <span class="comment">; 구획3→2 마이크로상수</span>
+    S2  = V2          <span class="comment">; 스케일 파라미터</span>
+
+<span class="keyword">$DES</span>               <span class="comment">; ← ADVAN5/7에는 없는 블록. 비선형 ADVAN 필수.</span>
+    <span class="comment">; 구획1 (Depot): KA로 유출, 유입 없음</span>
+    DADT(1) = -A(1)*KA
+    <span class="comment">; 구획2 (Central): Depot에서 유입(+), 소실+말초로 유출(-), 말초에서 환류(+)</span>
+    DADT(2) =  A(1)*KA - A(2)*(K23+K20) + A(3)*K32
+    <span class="comment">; 구획3 (Peripheral): 중심에서 유입(+), 중심으로 환류(-)</span>
+    DADT(3) =  A(2)*K23 - A(3)*K32
+
+<span class="keyword">$ERROR</span>
+    IPRED = F   <span class="comment">; F = A(DEFOBS구획)/S(DEFOBS구획) = A(2)/S2</span>
+    W     = SQRT(THETA(6)**2 + THETA(7)**2 * IPRED**2)
+    IRES  = DV - IPRED
+    IWRES = IRES / W
+    Y     = IPRED + W*EPS(1)</code></pre>
+      <span class="micro-cite">[출처: PIPET Ch.5, 그림5.5, p.61; 코드5.2, pp.62–63]</span>
+
+      <h4>TOL 설정 규칙</h4>
+      $$\text{TOL} = \text{SIGDIGIT (in \$ESTIMATION)} + 1 \text{ or } 2$$
+      <p>TOL은 각 구획 내부값 계산의 유효 자릿수(NRD)다. SIGDIGIT=3이면 TOL=4 또는 TOL=5.</p>
+      <span class="micro-cite">[출처: PIPET Ch.5, p.59; Owen Ch.9, §9.3, p.236]</span>
+
+      <h4>시간 변수 T vs TIME</h4>
+      <div class="table-wrap">
+        <table>
+          <tr><th>변수</th><th>위치</th><th>특성</th><th>용도</th></tr>
+          <tr><td class="mono">TIME</td><td>데이터셋</td><td>이산형(discrete)</td><td>관찰 시점</td></tr>
+          <tr><td class="mono">T</td><td>$DES 내부</td><td>연속형(continuous)</td><td>수치 적분 내부 시간, 시간 의존 파라미터</td></tr>
+        </table>
+      </div>
+
+      <h4>Parent-Metabolite 비선형 모델 $DES (Owen Ch.9 실제 코드)</h4>
+      <pre><code><span class="keyword">$DES</span>
+    <span class="comment">; 구획1 (Depot): 1차 흡수로 유출</span>
+    DADT(1) = -KA*A(1)
+    <span class="comment">; 구획2 (모약 Central): 흡수 유입 - 신장 소실 - MM 대사 소실</span>
+    DADT(2) =  KA*A(1) - K20*A(2) - (VMAX*A(2))/(KM + A(2))
+    <span class="comment">; 구획3 (대사체 Central): MM 대사로부터 유입(분자량 비 MPR 적용) - 소실</span>
+    DADT(3) = -K30*A(3) + ((VMAX*A(2))/(KM + A(2)))*MPR</code></pre>
+      <span class="micro-cite">[출처: Owen Ch.9, §9.4.6, pp.247–249]</span>
+
+      <div class="fallacy-block">
+        <div class="fallacy-label">⚠ C-2. Plausible Fallacy — Apex Concept 전용</div>
+        <p><strong>오류의 구체적 형태:</strong> 2구획 경구 모델에서 문헌의 $k_{12}$(central→peripheral)를 그대로 NONMEM <code>K12</code>로 코딩하는 오류. NONMEM에서 K12는 "구획1(Depot)→구획2(Central)" 이동을 의미하므로, 문헌 $k_{12}$는 실제로 <code>K23</code>으로 코딩해야 한다.</p>
+        <pre><code><span class="comment">; ❌ 잘못된 코드 — K12 = 문헌 개념으로 central→peripheral을 의미하려 했으나</span>
+<span class="comment">;    NONMEM은 K12 = 구획1(Depot)→구획2(Central)로 해석!</span>
+<span class="keyword">$DES</span>
+    DADT(1) = -KA*A(1)
+    DADT(2) =  KA*A(1) - K12*A(2) - K20*A(2) + K21*A(3)  <span class="comment">; K12 의미 충돌!</span>
+    DADT(3) =  K12*A(2) - K21*A(3)
+
+<span class="comment">; ✅ 올바른 코드 — NONMEM 구획 번호에 맞게 K23/K32 사용</span>
+<span class="keyword">$DES</span>
+    DADT(1) = -KA*A(1)
+    DADT(2) =  KA*A(1) - K23*A(2) - K20*A(2) + K32*A(3)  <span class="comment">; K23 = 구획2→구획3</span>
+    DADT(3) =  K23*A(2) - K32*A(3)                       <span class="comment">; K32 = 구획3→구획2</span></code></pre>
+        <p><strong>나비효과:</strong> 오류 코드에서 NONMEM은 K12를 사실상 두 번째 KA로 추정하며, 말초 구획이 모델에서 소멸한다. 피팅은 수렴하나 IIV(eta_CL)가 비정상적으로 팽창하고, CWRES vs TIME에서 초기 시점(+), 말기 시점(-)의 이중 부호 편향이 나타난다.</p>
+        <p><strong>GOF 시그니처 이름: "Half-Life Split Sign" (이중 부호 분리 패턴)</strong> — 분포상(α phase)을 무시하고 단일 지수로 적합했을 때의 전형적 징후.</p>
+      </div>
+
+      <h4>$DES 검증 체크리스트</h4>
+      <p>모든 구획의 DADT(i)를 합산하면 순 유출(소실)만 남아야 한다:</p>
+      $$\sum_i \text{DADT}(i) = -k_{20} \cdot A(2)$$
+      <p>이 관계가 성립하지 않으면 어딘가에 부호 오류 또는 파라미터 누락이 있다.</p>
+    </div>
+  </div>
+
+  <div class="concept-card" id="card-4">
+    <div class="card-header">
+      <div class="card-title">선형 vs 비선형 구현 비교 — 동일 모델 이중 구현</div>
+    </div>
+    <div class="card-body">
+      <div class="big-idea">
+        <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+        <p><strong>왜 치명적으로 중요한가:</strong> 동일한 2구획 경구 모델을 ADVAN5와 ADVAN6 두 가지로 구현하여 결과를 비교하는 것은 코딩 오류를 잡는 가장 강력한 검증 수단이다 — 두 구현이 다른 파라미터를 반환한다면 어딘가에 코딩 오류가 있다는 증거다.</p>
+        <p><strong>체화해야 할 단 하나의 직관:</strong> ADVAN5는 "정답을 먼저 알고 대입하는 방식(행렬 지수)", ADVAN6는 "한 걸음씩 수치 적분하는 방식"이다. 1차 이동만 있다면 ADVAN5가 더 빠르고 안정적이다.</p>
+        <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> 비선형성이 없다면 ADVAN5/7을 써라 — 같은 모델을 더 빠르고 안정적으로 추정한다.</p>
+      </div>
+      <h4>B. 동일 2구획 경구 모델: ADVAN5 vs ADVAN6 (PIPET 코드5.1 & 5.2)</h4>
+      <pre><code><span class="comment">; ════ ADVAN5 구현 — $DES 없음, K_mn 마이크로상수로 정의 ════</span>
+<span class="keyword">$SUBROUTINE</span> ADVAN5           <span class="comment">; TOL 불필요</span>
+<span class="keyword">$MODEL</span>
+    COMP(DEPOT, DEFDOSE)
+    COMP(CENTRAL, DEFOBS)
+    COMP(PERIPH)
+<span class="keyword">$PK</span>
+    CL=THETA(1)*EXP(ETA(1)); V2=THETA(2)*EXP(ETA(2)); V3=THETA(3)*EXP(ETA(3))
+    Q=THETA(4)*EXP(ETA(4));  KA=THETA(5)*EXP(ETA(5)); S2=V2
+    K12 = KA       <span class="comment">; Depot(1)→Central(2) — NONMEM 기준 K12</span>
+    K20 = CL/V2    <span class="comment">; Central(2)→체외</span>
+    K23 = Q/V2     <span class="comment">; Central(2)→Periph(3)</span>
+    K32 = Q/V3     <span class="comment">; Periph(3)→Central(2)</span>
+<span class="keyword">$ERROR</span>
+    Y = F*(1+EPS(1))
+
+<span class="comment">; ════ ADVAN6 구현 — $DES 필수, ODE 직접 서술 ════</span>
+<span class="keyword">$SUBROUTINE</span> ADVAN6 TOL=4    <span class="comment">; ← TOL 반드시 추가</span>
+<span class="keyword">$MODEL</span>
+    COMP(DEPOT, DEFDOSE); COMP(CENTRAL, DEFOBS); COMP(PERIPH)
+<span class="keyword">$PK</span>
+    CL=THETA(1)*EXP(ETA(1)); V2=THETA(2)*EXP(ETA(2)); V3=THETA(3)*EXP(ETA(3))
+    Q=THETA(4)*EXP(ETA(4));  KA=THETA(5)*EXP(ETA(5)); S2=V2
+    K20=CL/V2; K23=Q/V2; K32=Q/V3
+<span class="keyword">$DES</span>                         <span class="comment">; ← ADVAN5에는 없는 블록</span>
+    DADT(1) = -A(1)*KA
+    DADT(2) =  A(1)*KA - A(2)*(K23+K20) + A(3)*K32
+    DADT(3) =  A(2)*K23 - A(3)*K32
+<span class="keyword">$ERROR</span>
+    Y = F*(1+EPS(1))</code></pre>
+      <span class="micro-cite">[출처: PIPET Ch.5, 코드5.1 & 코드5.2, pp.60–63]</span>
+    </div>
+  </div>
+
+  <div class="concept-card" id="card-5">
+    <div class="card-header">
+      <div class="card-title">복잡 흡수 모델 패턴 — 병렬 흡수와 분수 파라미터</div>
+    </div>
+    <div class="card-body">
+      <div class="big-idea">
+        <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+        <p><strong>왜 치명적으로 중요한가:</strong> 약물의 실제 흡수는 단순 1차가 아닌 경우가 압도적으로 많다 — 경구 서방형, 피하 흡수, 폐 흡수에서 병렬·순차 흡수가 나타나며, 이를 단순 ADVAN2로 적합하면 Tmax와 흡수 AUC를 체계적으로 오추정한다.</p>
+        <p><strong>체화해야 할 단 하나의 직관:</strong> 두 depot에 전체 용량을 각각 넣되 $F_1 + F_2 = 1$로 제약하면 — 분수(fraction)가 파라미터가 된다. 이것이 "추정된 분수 흡수" 패턴의 핵심이다.</p>
+        <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> 두 depot에 동량을 넣고 생체이용률 파라미터로 분배 비율을 추정하는 것이 병렬 흡수 모델의 표준 데이터셋 설계다.</p>
+      </div>
+      <h4>B. 병렬 1차+0차 흡수 모델 — Alpha interferon (Chatelut 1999 기반, Owen §9.4.3)</h4>
+      <p>데이터셋 구조: CMT=1(1차 흡수 depot), CMT=2(0차 흡수, central으로 직접)에 각각 전체 용량 입력.</p>
+      <pre><code><span class="keyword">$PROBLEM</span> Parallel first-order and zero-order absorption
+<span class="keyword">$INPUT</span>  ID TIME AMT DOSE DV EVID RATE MDV CMT
+<span class="keyword">$DATA</span>   study01.csv
+<span class="keyword">$SUBROUTINE</span> ADVAN2
+
+<span class="keyword">$PK</span>
+    F1    = THETA(1)          <span class="comment">; Depot 분율 (1차 흡수 비율, 0&lt;F1&lt;1)</span>
+    F2    = 1 - F1            <span class="comment">; Central 분율 (0차 흡수 비율) ← F1+F2=1 필수 제약</span>
+    ALAG2 = THETA(2)          <span class="comment">; 0차 흡수 지연 시간 (hr)</span>
+    D2    = THETA(3)          <span class="comment">; 0차 흡수 지속 시간 (hr), RATE=-2 데이터셋과 연동</span>
+    KA    = THETA(4)          <span class="comment">; 1차 흡수 속도상수 (1/hr)</span>
+    V2    = THETA(5)*EXP(ETA(1))
+    K     = THETA(6)*EXP(ETA(2))
+    S2    = V2/1000           <span class="comment">; DOSE=mg, DV=ng/mL 단위 변환</span></code></pre>
+      <span class="micro-cite">[출처: Owen Ch.9, §9.4.3, pp.243–244]</span>
+
+      <h4>MTIME/MPAST — 순차적 흡수 속도 변화</h4>
+      <pre><code><span class="keyword">$PK</span>
+    KAFAST   = THETA(1)       <span class="comment">; 상부 GI 흡수 속도 (빠름)</span>
+    KASLOW   = THETA(2)       <span class="comment">; 하부 GI 흡수 속도 (느림)</span>
+    MTIME(1) = THETA(3)       <span class="comment">; 흡수 속도 전환 시점 (hr) — 추정 파라미터</span>
+    <span class="comment">; MPAST(1): TIME≤MTIME(1)이면 0, TIME>MTIME(1)이면 1</span>
+    KA = KAFAST*(1-MPAST(1)) + KASLOW*MPAST(1)</code></pre>
+      <span class="micro-cite">[출처: Owen Ch.9, §9.4.2, pp.242–243]</span>
+
+      <h4>C. Structural Necessity — F₁+F₂=1 제약의 수학적 필연</h4>
+      <p>두 dosing record에 각각 전체 용량을 입력하면 시스템에 실제 투여량의 2배가 주입된다. $F_1 = \theta_1$, $F_2 = 1 - F_1$의 보완 관계만이 질량 보존을 보장하는 유일한 메커니즘이다.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-3">
+  <div class="section-label">§3</div>
+  <h2 class="section-title">구조적 동형성 지도</h2>
+
+  <div class="isomorphism-prelude">
+    <h3>통찰의 서막 — 연립 ODE 시스템의 보편성</h3>
+    <p><strong>공통 원리:</strong> $\frac{d\mathbf{A}}{dt} = \mathbf{K}\mathbf{A}$ 형태의 연립 선형 ODE는 <em>질량·에너지·개체 수가 네트워크 간을 이동할 때 나타나는 보편적 수학 구조</em>다. 이 구조는 약동학, 화학 반응, 역학적 감염 모델, 전기 회로, 생태계 등 거의 모든 동적 시스템에 공통으로 등장한다.</p>
+    <p><strong>왜 이 형태인가:</strong> 임의의 구획 i에서 유출 속도가 현재 양 A(i)에 비례하는 1차 과정이라면, 각 구획의 순간 변화율은 "비례 상수 × 현재 양의 선형 조합"으로 표현될 수밖에 없다. 이 비례 관계가 K 행렬을 통해 연립되면 $\mathbf{K}\mathbf{A}$ 구조가 나타난다.</p>
+    <p><strong>예측 전이:</strong> RC 사다리 회로의 시상수를 이해하면, 다구획 PK 모델에서 α·β 반감기의 물리적 의미와 초기 분포상이 왜 나타나는지를 먼저 예측할 수 있다.</p>
+  </div>
+
+  <h3 style="margin:0 0 16px;color:var(--accent)">Layer 1 — Hub-and-Spoke 동형성 다이어그램</h3>
+  <div style="background:#06060a;border:1px solid var(--border);border-radius:8px;padding:8px">
+  <svg viewBox="0 0 800 560" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="rgba(201,168,76,0.6)"/>
+      </marker>
+    </defs>
+    <line x1="400" y1="280" x2="208" y2="165" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="400" y1="280" x2="592" y2="165" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="400" y1="280" x2="160" y2="350" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="400" y1="280" x2="640" y2="350" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="400" y1="280" x2="400" y2="470" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <circle cx="400" cy="280" r="62" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="400" y="272" text-anchor="middle" fill="#c9a84c" font-size="11" font-weight="500">dA/dt = K·A</text>
+    <text x="400" y="288" text-anchor="middle" fill="#c9a84c" font-size="10">연립 선형 ODE</text>
+    <text x="400" y="302" text-anchor="middle" fill="rgba(201,168,76,0.6)" font-size="9">질량 보존 + 1차 전이</text>
+    <rect x="115" y="95" width="185" height="100" rx="8" fill="rgba(201,168,76,0.10)" stroke="#c9a84c" stroke-width="1.5"/>
+    <text x="207" y="120" text-anchor="middle" fill="#ede8df" font-size="11" font-weight="500">약동학 (PK)</text>
+    <text x="207" y="140" text-anchor="middle" fill="rgba(201,168,76,0.9)" font-size="9.5">DADT(i) = ΣK_mn·A(n)</text>
+    <text x="207" y="158" text-anchor="middle" fill="#8a8070" font-size="9">구획 간 약물 이동이</text>
+    <text x="207" y="174" text-anchor="middle" fill="#8a8070" font-size="9">농도 비례 1차 과정</text>
+    <rect x="500" y="95" width="185" height="100" rx="8" fill="rgba(64,152,232,0.10)" stroke="#4098e8" stroke-width="1.5"/>
+    <text x="592" y="120" text-anchor="middle" fill="#ede8df" font-size="11" font-weight="500">화학 반응 (Kinetics)</text>
+    <text x="592" y="140" text-anchor="middle" fill="#4098e8" font-size="9.5">dC_A/dt = -k·C_A</text>
+    <text x="592" y="158" text-anchor="middle" fill="#8a8070" font-size="9">반응물 농도 비례</text>
+    <text x="592" y="174" text-anchor="middle" fill="#8a8070" font-size="9">1차 반응 속도</text>
+    <rect x="65" y="295" width="185" height="100" rx="8" fill="rgba(220,60,60,0.10)" stroke="rgba(220,60,60,0.7)" stroke-width="1.5"/>
+    <text x="157" y="320" text-anchor="middle" fill="#ede8df" font-size="11" font-weight="500">역학 모델 (SIR)</text>
+    <text x="157" y="340" text-anchor="middle" fill="rgba(220,100,100,0.9)" font-size="9.5">dI/dt = β·S·I - γ·I</text>
+    <text x="157" y="358" text-anchor="middle" fill="#8a8070" font-size="9">S→I→R 구획 전이</text>
+    <text x="157" y="374" text-anchor="middle" fill="#8a8070" font-size="9">PK 구획 전이와 동형</text>
+    <rect x="555" y="295" width="185" height="100" rx="8" fill="rgba(64,200,100,0.10)" stroke="rgba(64,200,100,0.7)" stroke-width="1.5"/>
+    <text x="647" y="320" text-anchor="middle" fill="#ede8df" font-size="11" font-weight="500">RC 사다리 회로</text>
+    <text x="647" y="340" text-anchor="middle" fill="rgba(64,200,100,0.9)" font-size="9.5">dV_i/dt = (V_{i-1}-V_i)/RC</text>
+    <text x="647" y="358" text-anchor="middle" fill="#8a8070" font-size="9">커패시터 전압 = 구획 양</text>
+    <text x="647" y="374" text-anchor="middle" fill="#8a8070" font-size="9">시상수 RC ↔ 반감기 V/CL</text>
+    <rect x="310" y="435" width="185" height="85" rx="8" fill="rgba(200,100,220,0.10)" stroke="rgba(200,100,220,0.7)" stroke-width="1.5"/>
+    <text x="402" y="460" text-anchor="middle" fill="#ede8df" font-size="11" font-weight="500">생태학 (Population)</text>
+    <text x="402" y="480" text-anchor="middle" fill="rgba(200,100,220,0.9)" font-size="9.5">dN/dt = (b-d)·N</text>
+    <text x="402" y="498" text-anchor="middle" fill="#8a8070" font-size="9">출생·사망 → 유입·유출과 동형</text>
+  </svg>
+  </div>
+
+  <h3 style="margin:24px 0 12px;color:var(--accent)">Layer 2 — Structural Alignment Matrix</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>도메인</th><th>상태 변수</th><th>전이 파라미터</th><th>ODE 형태</th><th>NONMEM 대응</th></tr>
+      <tr><td>PK (약동학)</td><td>A(i) [mg]</td><td>K_mn [1/hr]</td><td>DADT(i) = ΣK·A</td><td>$DES DADT(i)</td></tr>
+      <tr><td>화학 반응</td><td>C_A [mol/L]</td><td>k_rate [1/s]</td><td>dC/dt = -k·C</td><td>동일 ODE 구조</td></tr>
+      <tr><td>SIR 역학</td><td>I [명]</td><td>β, γ [1/day]</td><td>dI/dt = βSI - γI</td><td>비선형 → $DES 필수</td></tr>
+      <tr><td>RC 회로</td><td>V_i [V]</td><td>1/RC [1/s]</td><td>dV/dt = (V_{in}-V)/RC</td><td>시상수 RC ↔ V/CL</td></tr>
+      <tr><td>인구 동태</td><td>N [개체]</td><td>(b-d) [1/yr]</td><td>dN/dt = (b-d)N</td><td>선형 → ADVAN5 가능</td></tr>
+    </table>
+  </div>
+
+  <h3 style="margin:24px 0 12px;color:var(--accent)">Layer 3 — Normalization / Convergence Overlay</h3>
+  <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">각 도메인의 실제 스케일 곡선 → "정규화" 토글 → 모든 곡선이 단일 $e^{-k \cdot t}$로 붕괴하는 순간을 시각화한다.</p>
+  <div class="norm-wrap"><canvas id="normCanvas"></canvas></div>
+  <div class="norm-controls">
+    <button class="toggle-btn" id="normToggle" onclick="toggleNorm()">정규화 켜기</button>
+    <span style="font-size:.78rem;color:var(--muted)">동일 소실 속도상수(k=0.3/hr)를 가진 5개 도메인</span>
+  </div>
+
+  <h3 style="margin:24px 0 12px;color:var(--accent)">Layer 4 — Prediction Transfer Cards</h3>
+  <div class="transfer-cards">
+    <details class="transfer-card">
+      <summary>🔌 RC 회로 → PK: 시상수로 반감기 예측</summary>
+      <div class="detail-body">
+        <div class="transfer-step"><span class="step-num">1</span><p>RC 직렬 회로에서 커패시터가 방전할 때 전압은 $V(t) = V_0 e^{-t/RC}$로 감소한다. 시상수 $\tau = RC$는 전압이 $V_0/e ≈ 36.8\%$로 감소하는 시간이다.</p></div>
+        <div class="transfer-step"><span class="step-num">2</span><p>공통 수학 구조: $dV/dt = -V/RC$ ↔ $dA/dt = -(CL/V)A$. 여기서 $RC \leftrightarrow V/CL$이다.</p></div>
+        <div class="transfer-step"><span class="step-num">3</span><p>따라서 1구획 PK에서 반감기 $t_{1/2} = 0.693 \cdot V/CL$은 RC 회로에서 $t_{1/2} = 0.693 \cdot RC$와 수학적으로 동일하다. 2구획 말초 구획을 추가하면 RC 사다리의 단계 추가와 동형이며, 새로운 시상수(β 반감기)가 나타난다.</p></div>
+      </div>
+    </details>
+    <details class="transfer-card">
+      <summary>🦠 SIR 모델 → PK: 비선형성의 필연</summary>
+      <div class="detail-body">
+        <div class="transfer-step"><span class="step-num">1</span><p>SIR 역학 모델에서 감염자 I의 변화율은 $dI/dt = \beta SI - \gamma I$로, S(감수성자)와 I(감염자)의 곱 항이 포함된 비선형 ODE다.</p></div>
+        <div class="transfer-step"><span class="step-num">2</span><p>공통 구조: 두 구획의 양(S, I)이 곱으로 결합된 비선형 전이 → NONMEM에서 ADVAN5/7(선형 ADVAN)으로 표현 불가 → $DES 비선형 ADVAN 필수.</p></div>
+        <div class="transfer-step"><span class="step-num">3</span><p>PK에서 Michaelis-Menten 소실($V_{max} \cdot C/(K_m+C)$)이나 TMDD의 수용체-약물 결합($k_{on} \cdot R \cdot C$)도 동일한 비선형 전이 구조 → ADVAN6 $DES 필수임을 SIR 예로부터 직접 예측할 수 있다.</p></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-4">
+  <div class="section-label">§4</div>
+  <h2 class="section-title">인터랙티브 시뮬레이터</h2>
+  <p class="section-sub">2구획 경구 PK 모델 — Runge-Kutta 4차 수치 적분 ($DES 구현 재현)</p>
+
+  <div class="sim-container">
+    <div id="warnBanner" class="warn-banner"></div>
+
+    <div class="ode-display" id="odeDisplay">
+      <span class="ode-comment">; $DES — 현재 파라미터로 계산되는 ODE 시스템</span><br>
+      <span class="ode-eq">DADT(1) = <span id="ode1">-A(1)×KA</span></span><br>
+      <span class="ode-eq">DADT(2) = <span id="ode2">A(1)×KA - A(2)×(K23+K20) + A(3)×K32</span></span><br>
+      <span class="ode-eq">DADT(3) = <span id="ode3">A(2)×K23 - A(3)×K32</span></span>
+    </div>
+
+    <div class="sim-top">
+      <div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">KA — 흡수 속도상수 (1/hr)</span><span class="slider-val" id="v-ka">0.50</span></div>
+          <input type="range" id="sl-ka" min="0.1" max="5" step="0.05" value="0.5" oninput="onSlider('ka',this.value)">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">CL — 청소율 (L/hr)</span><span class="slider-val" id="v-cl">5.0</span></div>
+          <input type="range" id="sl-cl" min="0.5" max="20" step="0.5" value="5" oninput="onSlider('cl',this.value)">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">V2 — 중심 구획 부피 (L)</span><span class="slider-val" id="v-v2">20</span></div>
+          <input type="range" id="sl-v2" min="5" max="100" step="1" value="20" oninput="onSlider('v2',this.value)">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Q — 구획간 청소율 (L/hr)</span><span class="slider-val" id="v-q">3.0</span></div>
+          <input type="range" id="sl-q" min="0" max="20" step="0.5" value="3" oninput="onSlider('q',this.value)">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">V3 — 말초 구획 부피 (L)</span><span class="slider-val" id="v-v3">50</span></div>
+          <input type="range" id="sl-v3" min="5" max="200" step="5" value="50" oninput="onSlider('v3',this.value)">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Dose — 투여량 (mg)</span><span class="slider-val" id="v-dose">300</span></div>
+          <input type="range" id="sl-dose" min="50" max="600" step="50" value="300" oninput="onSlider('dose',this.value)">
+        </div>
+      </div>
+
+      <div>
+        <div class="derived-panel">
+          <div class="derived-item"><div class="derived-name">Cmax (mg/L)</div><div class="derived-val" id="d-cmax">—</div><div class="derived-delta" id="dd-cmax"></div></div>
+          <div class="derived-item"><div class="derived-name">Tmax (hr)</div><div class="derived-val" id="d-tmax">—</div><div class="derived-delta" id="dd-tmax"></div></div>
+          <div class="derived-item"><div class="derived-name">AUC₀₋₂₄</div><div class="derived-val" id="d-auc">—</div><div class="derived-delta" id="dd-auc"></div></div>
+          <div class="derived-item"><div class="derived-name">t½β (hr)</div><div class="derived-val" id="d-t12">—</div><div class="derived-delta" id="dd-t12"></div></div>
+          <div class="derived-item"><div class="derived-name">Vss (L)</div><div class="derived-val" id="d-vss">—</div><div class="derived-delta" id="dd-vss"></div></div>
+          <div class="derived-item"><div class="derived-name">K20 (1/hr)</div><div class="derived-val" id="d-k20">—</div><div class="derived-delta" id="dd-k20"></div></div>
+        </div>
+        <div style="margin-top:8px">
+          <div class="derived-name" style="font-size:.7rem;margin-bottom:4px">NONMEM $PK 연산값</div>
+          <div class="ode-display" id="pkDisplay" style="font-size:.72rem;padding:10px 12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-wrap"><canvas id="simCanvas"></canvas></div>
+    <div class="cursor-label" id="cursorLabel">그래프 위에 마우스를 올리면 농도값이 표시됩니다</div>
+
+    <div class="sim-controls">
+      <button class="ctrl-btn active" id="btn-auc" onclick="toggleAUC()">AUC 면적</button>
+      <button class="ctrl-btn" id="btn-log" onclick="toggleLog()">Log 스케일</button>
+      <button class="ctrl-btn" id="btn-phantom" onclick="togglePhantom()">1구획 Phantom</button>
+      <button class="ctrl-btn" id="btn-ref" onclick="saveRef()">기준선 저장</button>
+      <button class="ctrl-btn" onclick="clearRef()">기준선 제거</button>
+    </div>
+
+    <div style="margin-top:8px">
+      <div class="derived-name" style="font-size:.7rem;margin-bottom:6px">임상 프리셋</div>
+      <div class="preset-row">
+        <button class="preset-btn" onclick="loadPreset('default')" title="PIPET 예시 기반 2구획 경구 기본">2구획 경구 기본</button>
+        <button class="preset-btn" onclick="loadPreset('rapid')" title="고속 흡수 — KA=3.0/hr">빠른 흡수 (KA↑)</button>
+        <button class="preset-btn" onclick="loadPreset('deep')" title="깊은 말초 분포 — V3=150L">깊은 분포 (V3↑)</button>
+        <button class="preset-btn" onclick="loadPreset('highcl')" title="고청소율 약물 — 짧은 반감기">고청소율 (CL↑)</button>
+      </div>
+    </div>
+
+    <div class="mission-panel">
+      <div class="mission-title">🎯 임상 미션</div>
+      <div class="mission-item">
+        <strong style="color:var(--accent)">미션 1 — 치료역 최적화:</strong> Cmax &lt; 5 mg/L 유지하면서 AUC₀₋₂₄ ≥ 15 mg·h/L 확보하라. KA를 낮추면 Cmax는 어떻게 변하는가? Q와 V3가 AUC에 영향을 주는가?
+      </div>
+      <div class="mission-item">
+        <strong style="color:var(--accent)">미션 2 — Vss와 말초 분포:</strong> 기준선을 저장한 후 V3를 150L로 증가시켜라. t½β와 AUC 변화를 Delta Indicator로 확인하라. 힌트: $V_{ss} = V_2 + V_3$, $t_{1/2\beta} \approx 0.693 \times V_{ss}/CL$.
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-5">
+  <div class="section-label">§5</div>
+  <h2 class="section-title">혼동쌍 해부</h2>
+
+  <div id="pair-1" style="margin-bottom:36px">
+    <h3 style="color:var(--accent);margin-bottom:16px">혼동쌍 1: NONMEM K12 vs 문헌 표준 $k_{12}$ (구획 번호 인덱싱 충돌)</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>비교 차원</th><th>NONMEM K12</th><th>문헌 표준 $k_{12}$</th></tr>
+        <tr><td>표면적 유사성</td><td colspan="2">동일한 기호 K12를 사용함 — 따라서 혼동이 생긴다</td></tr>
+        <tr><td>수식/코드 형태</td><td class="mono">K12 = KA (Depot→Central)</td><td>$k_{12}$: Central→Peripheral 전이</td></tr>
+        <tr><td>지시 대상</td><td>NONMEM 구획 번호 1 → 구획 번호 2 이동</td><td>문헌의 중심→말초 이동 (흡수 구획 없는 체계)</td></tr>
+        <tr><td>변화 방향</td><td>흡수 경로가 있으면 K12=KA</td><td>2구획 소실 파라미터 (CL_q/V1에 해당)</td></tr>
+        <tr><td>임상/모델링 결과</td><td colspan="2">K12를 문헌 개념으로 코딩 시 NONMEM이 KA=K12로 해석, 분포상(α phase) 소멸, IIV 팽창</td></tr>
+        <tr class="memory-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2">NONMEM의 K_mn은 "구획 <strong>m</strong>에서 구획 <strong>n</strong>으로". Depot이 구획1이면 Depot→Central이 K12이고, 문헌의 Central→Peripheral은 <strong>K23</strong>이 된다. <em>구획 번호가 바뀌면 K 인덱스도 바뀐다.</em></td></tr>
+        <tr class="critical-blow"><td><strong>⚡ 치명적 타격</strong></td><td colspan="2">$DES에서 문헌 K12를 Central→Peripheral로 코딩하면 NONMEM이 이를 Depot→Central(두 번째 KA)로 처리해 말초 구획이 소멸 — NDA 심사에서 CWRES 이중 부호 분리가 발각되면 Major Deficiency로 처리된다.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="pair-2" style="margin-bottom:36px">
+    <h3 style="color:var(--accent);margin-bottom:16px">혼동쌍 2: $DES의 T vs 데이터셋의 TIME</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>비교 차원</th><th>T (in $DES)</th><th>TIME (in Dataset)</th></tr>
+        <tr><td>표면적 유사성</td><td colspan="2">둘 다 "시간"을 나타내는 변수명</td></tr>
+        <tr><td>수식/코드 형태</td><td>연속형 변수, 수치 적분기 내부 사용</td><td>이산형 변수, 관찰 레코드의 실제 샘플링 시점</td></tr>
+        <tr><td>지시 대상</td><td>Runge-Kutta step 내부의 연속 시간</td><td>데이터셋 각 행의 시간 열</td></tr>
+        <tr><td>변화 방향</td><td>적분기 step size에 따라 세밀하게 변함</td><td>관찰 간격에 따라 점프함</td></tr>
+        <tr><td>임상/모델링 결과</td><td colspan="2">$DES에서 TIME을 사용 시 수치 적분 중간 step에서 TIME이 고정 → 시간 의존 파라미터가 계단함수로 처리 → 비선형 시간 의존 PK에서 추정 편향</td></tr>
+        <tr class="memory-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>T</strong>는 적분기의 내부 시계(analog), <strong>TIME</strong>은 데이터의 스냅샷(digital). $DES 내에서 시간 의존 파라미터를 다룰 때는 반드시 아날로그 시계 T를 써라.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="pair-3" style="margin-bottom:36px">
+    <h3 style="color:var(--accent);margin-bottom:16px">혼동쌍 3: $MODEL DEFDOSE/DEFOBS vs 데이터셋 CMT 컬럼</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>비교 차원</th><th>$MODEL DEFDOSE/DEFOBS</th><th>데이터셋 CMT 컬럼</th></tr>
+        <tr><td>표면적 유사성</td><td colspan="2">둘 다 투여 구획·관찰 구획을 지정함</td></tr>
+        <tr><td>지시 대상</td><td>$MODEL 선언 시의 기본값(fallback)</td><td>각 레코드별 개별 구획 지정</td></tr>
+        <tr><td>우선순위</td><td>낮음 — CMT가 있으면 무시됨</td><td>높음 — 항상 DEFDOSE/DEFOBS를 덮어씀</td></tr>
+        <tr><td>임상/모델링 결과</td><td colspan="2">CMT 없이 병렬 흡수 모델 구현 시도 → 두 번째 depot에 투여 안 됨 → 모든 용량이 1번 구획으로 집중 → 흡수 분율 추정 불가</td></tr>
+        <tr class="memory-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2">DEFDOSE/DEFOBS는 "우편번호 기본값" — 데이터셋 CMT는 "직접 주소". 복잡 흡수 모델에서 반드시 직접 주소(CMT)를 써야 두 번째 depot에 편지가 간다.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-6">
+  <div class="section-label">§6</div>
+  <h2 class="section-title">실용 시나리오 & 진단 병리학</h2>
+
+  <div class="scenario-block">
+    <div class="scenario-tag">Scenario 1 · 신약개발 컨텍스트</div>
+    <h3>Alpha Interferon 병렬 흡수 모델 — Phase 1 모델 개발</h3>
+    <p>Chatelut et al. (1999)이 기술한 alpha interferon의 피하 투여 PK 모델링 사례. 동일 피하 주사 용량(300만 IU)이 1차 흡수와 0차 흡수의 두 경로를 통해 동시에 흡수됨이 의심됨. 두 경로의 흡수 분율 및 0차 흡수 지속 시간을 추정하는 것이 목표.</p>
+    <p><strong>연구 설계 질문:</strong> 단일 피하 주사에서 1차와 0차 흡수 분율을 동시 추정하려면 데이터셋을 어떻게 설계해야 하는가?</p>
+
+    <pre><code><span class="comment">; ── 완전한 NONMEM 제어 파일 — Alpha IFN 병렬 흡수 모델 ──</span>
+<span class="keyword">$PROBLEM</span>  Alpha IFN parallel absorption (Chatelut 1999 adapted)
+<span class="keyword">$INPUT</span>    ID TIME AMT DOSE DV EVID RATE MDV CMT
+<span class="keyword">$DATA</span>     ifn_pk.csv IGNORE=#
+<span class="keyword">$SUBROUTINE</span> ADVAN2
+
+<span class="keyword">$PK</span>
+    <span class="comment">; 흡수 분율: 1차 + 0차 경로로 분배</span>
+    F1    = THETA(1)            <span class="comment">; 1차 흡수 분율 (Depot CMT=1)</span>
+    F2    = 1 - F1              <span class="comment">; 0차 흡수 분율 (Central CMT=2) ← 보완 관계 필수</span>
+    ALAG2 = THETA(2)            <span class="comment">; 0차 흡수 시작 지연 (hr)</span>
+    D2    = THETA(3)            <span class="comment">; 0차 흡수 지속 시간 (hr)</span>
+    KA    = THETA(4)*EXP(ETA(1))<span class="comment">; 1차 흡수 속도상수 (1/hr)</span>
+    TVV   = THETA(5)
+    V     = TVV*EXP(ETA(2))    <span class="comment">; 분포 부피 (L)</span>
+    TVK   = THETA(6)
+    K     = TVK*EXP(ETA(3))    <span class="comment">; 소실 속도상수 (1/hr)</span>
+    S2    = V/1000              <span class="comment">; 단위 변환: IU/L → IU/mL</span>
+
+<span class="keyword">$ERROR</span>
+    IPRED = F
+    W     = SQRT(THETA(7)**2 + THETA(8)**2 * IPRED**2)
+    IRES  = DV - IPRED
+    IWRES = IRES / W
+    Y     = IPRED + W * EPS(1)
+
+<span class="keyword">$THETA</span>
+    (0, 0.6, 1)    <span class="comment">; THETA(1) F1: 1차 흡수 분율</span>
+    (0, 2.0)       <span class="comment">; THETA(2) ALAG2: 지연 시간 (hr)</span>
+    (0, 6.0)       <span class="comment">; THETA(3) D2: 0차 흡수 지속 (hr)</span>
+    (0, 0.35)      <span class="comment">; THETA(4) KA: 1차 속도상수 (1/hr)</span>
+    (0, 30)        <span class="comment">; THETA(5) V: 부피 (L)</span>
+    (0, 0.08)      <span class="comment">; THETA(6) K: 소실 (1/hr)</span>
+    0.1 0.1        <span class="comment">; THETA(7-8) 잔차 오차 (가산, 비례)</span>
+
+<span class="keyword">$OMEGA</span> 0.09 0.09 0.09
+<span class="keyword">$SIGMA</span> 1 FIX
+
+<span class="keyword">$ESTIMATION</span> METHOD=1 INTERACTION MAXEVAL=9999 SIGDIGIT=3 PRINT=5
+<span class="keyword">$COVARIANCE</span> PRINT=E
+<span class="keyword">$TABLE</span> ID TIME DV IPRED CWRES NPDE ETA1 ETA2 ETA3 NOPRINT ONEHEADER
+       FILE=ifn_sdtab</code></pre>
+
+    <p><strong>규제 언어 (CSR 표현):</strong> "A one-compartment model with simultaneous first-order and zero-order absorption was selected. The fraction absorbed via first-order process (F₁) was estimated to be [X], indicating that approximately [X×100]% of the subcutaneous dose undergoes first-order absorption kinetics, while the remainder is absorbed via a zero-order process with a duration of [D2] hours beginning [ALAG2] hours post-dose."</p>
+  </div>
+
+  <div class="scenario-block">
+    <div class="scenario-tag">Scenario 2 · Parent-Metabolite TDM 컨텍스트</div>
+    <h3>비선형 대사체 동시 추정 — ADVAN6 $DES 임상 적용</h3>
+    <p>경구 투여 후 모약(parent)과 대사체(metabolite) 농도를 동시에 TDM하는 약물에서, 포화 대사(Michaelis-Menten)를 ADVAN6 $DES로 구현한 모델 기반 용량 조절 프로토콜.</p>
+    <pre><code><span class="comment">; ── Parent-Metabolite 비선형 모델 (Owen Ch.9, §9.4.6 기반) ──</span>
+<span class="keyword">$SUBROUTINE</span> ADVAN6 TOL=4
+<span class="keyword">$MODEL</span>
+    COMP(DEPOT,    DEFDOS)     <span class="comment">; 구획1: 흡수 구획</span>
+    COMP(CENTPRNT, DEFOBS)     <span class="comment">; 구획2: 모약 중심 구획</span>
+    COMP(CENTMETB)             <span class="comment">; 구획3: 대사체 중심 구획</span>
+<span class="keyword">$PK</span>
+    K20  = THETA(1)*EXP(ETA(1)); V2=THETA(2)*EXP(ETA(2)); KA=THETA(3)
+    VMAX = THETA(4);             KM=THETA(5)
+    K30  = THETA(6);             V3=THETA(7); MPR=THETA(8)
+    S2=V2/1000; S3=V3/1000
+<span class="keyword">$DES</span>
+    DADT(1) = -KA*A(1)
+    DADT(2) =  KA*A(1) - K20*A(2) - (VMAX*A(2))/(KM+A(2))
+    DADT(3) = -K30*A(3) + ((VMAX*A(2))/(KM+A(2)))*MPR
+<span class="keyword">$ERROR</span>
+    IF(CMT.EQ.2) TYPE=0          <span class="comment">; 모약 관찰</span>
+    IF(CMT.EQ.3) TYPE=1          <span class="comment">; 대사체 관찰</span>
+    Y = F*EPS(1)*(1-TYPE) + F*EPS(2)*TYPE</code></pre>
+  </div>
+
+  <h3 style="margin:32px 0 16px;color:var(--danger)">진단 병리학 — GOF 시그니처</h3>
+
+  <div class="diag-sig">
+    <div class="diag-title">🔴 시그니처 1: "Half-Life Split Sign" — K 인덱스 혼동 시그니처</div>
+    <div class="diag-grid">
+      <div><div class="diag-label">GOF 플롯 패턴</div><p>CWRES vs TIME: 초기 시점(t &lt; 2t½) 체계적 양(+) 편향, 말기 시점(t &gt; 2t½) 체계적 음(−) 편향. CWRES vs IPRED: 고농도 구간 양편향, 저농도 구간 음편향.</p></div>
+      <div><div class="diag-label">기계론적 원인</div><p>$DES에서 K12(문헌: central→peripheral)를 NONMEM K12(Depot→Central)로 코딩 → 말초 구획 소멸 → 2구획 분포상(α phase)이 모델에 없으므로 1구획으로 적합 → 초기 고농도를 과소추정, 말기 저농도를 과대추정.</p></div>
+      <div><div class="diag-label">해결 방향</div><p>$DES의 K 인덱스를 NONMEM 구획 번호 기준으로 전면 재검토. ADVAN5 이중 구현으로 교차 검증 수행. η-shrinkage 과도 증가 확인.</p></div>
+    </div>
+  </div>
+
+  <div class="diag-sig">
+    <div class="diag-title">🔴 시그니처 2: "TOL Instability Spiral" — TOL 과소 설정 수렴 실패</div>
+    <div class="diag-grid">
+      <div><div class="diag-label">GOF 플롯 패턴</div><p>NONMEM 출력: "MINIMIZATION TERMINATED" 또는 OFV가 반복마다 진동. 추정 완료 시에도 SE가 비정상적으로 크거나 $COVARIANCE step 실패.</p></div>
+      <div><div class="diag-label">기계론적 원인</div><p>비선형 ADVAN(ADVAN6)에서 TOL이 SIGDIGIT와 같거나 작게 설정 → 수치 적분의 내부 계산 정밀도 부족 → 목적함수(OFV) gradient 계산 불안정 → 최적화 실패.</p></div>
+      <div><div class="diag-label">해결 방향</div><p>TOL을 SIGDIGIT+2로 증가. stiff 모델 의심 시 ADVAN8(Gear)으로 전환. MAXEVAL=1로 ADVAN6/8 속도 비교 후 선택. ε-shrinkage로 데이터 정보량 점검.</p></div>
+    </div>
+  </div>
+
+  <div class="diag-sig">
+    <div class="diag-title">🔴 시그니처 3: "Depot Doubling Bias" — 병렬 흡수 F₁ 제약 누락</div>
+    <div class="diag-grid">
+      <div><div class="diag-label">GOF 플롯 패턴</div><p>DV vs IPRED: 모든 농도 구간에서 체계적 하방 편향(IPRED가 DV보다 2배 높음). 추정된 CL과 V가 문헌 대비 약 50% 수준.</p></div>
+      <div><div class="diag-label">기계론적 원인</div><p>병렬 흡수 모델에서 두 dosing record에 전체 용량을 넣되 F₁+F₂=1 제약 없이 구현 → 총 투입량이 실제 용량의 2배 → CL과 V가 2배로 추정되어야 OFV가 최소화 → 파라미터 전면 2배 편향.</p></div>
+      <div><div class="diag-label">해결 방향</div><p>$PK에 반드시 F2=1-F1 (또는 동등한 보완 관계) 추가. 단일 데이터 재검증 시 F₁ 초기값 0.3~0.7 범위 설정. η-shrinkage와 NPDE 분포로 추가 진단.</p></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-7">
+  <div class="section-label">§7</div>
+  <h2 class="section-title">자기 테스트 — Active Recall Module</h2>
+  <p class="section-sub">40% 회상 / 60% 적용 비율 · 8개 질문 · 보스 딜레마 포함</p>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q1. $SUBROUTINE ADVAN6 TOL=4에서 TOL=4가 의미하는 것은? $ESTIMATION의 SIGDIGIT=3와 어떤 관계인가?</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge star2">★★</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <p>TOL은 각 구획 내부값(질량, 농도, 효과) 계산에 필요한 <strong>유효 자릿수(NRD, Number of Required Digits)</strong>를 의미한다. TOL=4는 수치 적분에서 4자리 유효숫자를 유지하라는 지시다.</p>
+      <p>일반 규칙: <strong>TOL = SIGDIGIT + 1 또는 2</strong>. SIGDIGIT=3이면 TOL=4 또는 TOL=5로 설정한다. TOL이 너무 낮으면 수치 부정확으로 OFV gradient가 불안정해지고, 너무 높으면 실행 시간이 과도하게 증가한다.</p>
+      <p>TOL은 최종 파라미터 추정값의 유효 자릿수가 아니라, 적분 계산 내부 정밀도임에 주의.</p>
+      <p class="followup">🔍 다음 깊이 질문: TOL을 SIGDIGIT보다 낮게 설정하면 NONMEM은 어떤 출력 메시지를 내는가?</p>
+    </div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q2. 2구획 경구 모델의 중심 구획(구획2) ODE를 $DES에 작성하라. KA, K23, K32, K20을 사용할 것.</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge">○</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <pre><code>DADT(2) = A(1)*KA - A(2)*(K23 + K20) + A(3)*K32</code></pre>
+      <ul style="margin-top:8px;padding-left:20px;font-size:.875rem">
+        <li><code>A(1)*KA</code>: Depot(구획1)에서 유입 (+)</li>
+        <li><code>-A(2)*(K23+K20)</code>: 말초로 분포 + 체외 소실 (−)</li>
+        <li><code>+A(3)*K32</code>: 말초에서 환류 (+)</li>
+      </ul>
+      <p style="margin-top:10px">검증: 모든 구획의 DADT를 합산하면 $-K_{20} \cdot A(2)$만 남아야 한다 — 소실 경로 하나만이 시스템에서 질량을 제거한다.</p>
+      <p class="followup">🔍 다음 깊이 질문: 소실 경로가 신장(K20r)과 담즙(K20b) 두 개라면 DADT(2)를 어떻게 수정하는가?</p>
+    </div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q3. [적용] 동일한 2구획 경구 모델을 ADVAN5와 ADVAN6로 각각 구현했더니 추정된 CL이 2.1 vs 2.4 L/hr로 달랐다. 가장 먼저 의심해야 하는 원인은?</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge star2">★★</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <p>ADVAN6의 $DES에서 ODE 부호 오류 또는 K 인덱스 혼동을 가장 먼저 의심한다. 두 구현이 동일한 모델을 표현한다면 파라미터가 동일해야 한다. 진단 순서:</p>
+      <ol style="padding-left:20px;font-size:.875rem;line-height:1.9">
+        <li>ADVAN6 $DES의 DADT(i) 각 항을 ADVAN5의 K_mn 정의와 1:1 대조</li>
+        <li>구획 번호 충돌 확인 — 문헌의 K12를 NONMEM K12로 혼용했는지 점검</li>
+        <li>부호 확인 — 모든 구획의 DADT 합산 시 $-K_{20} \cdot A(2)$만 남는지 검증</li>
+        <li>마이크로상수 정의 확인 — K23 = Q/V2, K32 = Q/V3가 ADVAN5 K23, K32와 일치하는지</li>
+      </ol>
+      <p class="followup">🔍 다음 깊이 질문: ADVAN5 추정 결과를 "기준값"으로 ADVAN6를 검증하는 것이 왜 합리적인가?</p>
+    </div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q4. [적용] 병렬 흡수 모델에서 두 dosing record에 각각 전체 용량(300mg)을 입력하는 이유와 F₁+F₂=1 제약이 없을 때의 오류를 설명하라.</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge star1">★</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <p><strong>이유:</strong> 두 경로의 흡수 분율(F₁, F₂)을 추정하기 위해 전체 용량을 각 depot에 넣고, 생체이용률 파라미터(F₁, F₂)로 실제 흡수량을 조절한다.</p>
+      <p><strong>F₁+F₂=1 제약 없을 때:</strong> NONMEM은 두 dosing record에서 각각 300mg씩 총 600mg이 투여된 것으로 처리 → CL과 V가 2배로 추정되어야 OFV가 최소화됨 → 전체 파라미터 2배 편향 → "Depot Doubling Bias" 발생.</p>
+      <p><strong>주의:</strong> 이 설계에서 추정되는 F₁은 절대 생체이용률(F)이 아니라, 흡수된 약물 중 1차 경로를 통하는 <em>분율</em>임을 명확히 보고서에 기술해야 한다.</p>
+      <p class="followup">🔍 다음 깊이 질문: 절대 생체이용률 F를 동시에 추정하려면 어떤 추가 설계가 필요한가?</p>
+    </div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q5. [적용] ADVAN6로 stiff 단일클론항체(mAb) 모델 추정 중 72시간이 넘어도 수렴하지 않는다. 단계적 해결 방안을 제시하라.</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge star2">★★</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <ol style="padding-left:20px;font-size:.875rem;line-height:1.9">
+        <li><strong>ADVAN8 전환 테스트:</strong> $ESTIMATION MAXEVAL=1로 ADVAN6와 ADVAN8을 각각 1회 반복 실행 → 더 빠르게 성공하는 ADVAN을 선택 (Owen 제안)</li>
+        <li><strong>ADVAN13 시도:</strong> LSODA 기법으로 stiff/nonstiff 자동 감지. BAYESIAN/MCMC 추정 방식과 조합 시 특히 유리</li>
+        <li><strong>TOL 조정:</strong> TOL을 3으로 낮춰 속도를 높이되 정밀도 희생을 감수 (최종 모델에서는 원래 TOL 복구)</li>
+        <li><strong>파라미터 고정:</strong> 일부 구조 파라미터를 문헌값으로 고정(FIX)하여 stiffness 완화 후 단계적 추정</li>
+      </ol>
+      <p class="followup">🔍 다음 깊이 질문: Gear method가 Runge-Kutta보다 stiff ODE에서 안정적인 수학적 이유는?</p>
+    </div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q6. ADVAN5와 ADVAN7의 차이를 고유값(eigenvalue) 관점에서 설명하고 대표 사용 사례를 각각 제시하라.</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge">○</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <p><strong>ADVAN5:</strong> 속도상수 행렬의 고유값이 복소수(complex number)인 경우 사용. PBPK 모델처럼 구획 간 이동이 복잡하게 얽혀 있을 때 고유값이 복소수가 될 수 있다. 실행 시간이 느리다.</p>
+      <p><strong>ADVAN7:</strong> 고유값이 실수(real number)임이 알려진 경우 사용. 대부분의 일반 PK 시스템(1–3구획 선형 모델). ADVAN5보다 빠르게 실행된다.</p>
+      <p>실무 선택: 확신이 없으면 ADVAN5 먼저 시도 후 ADVAN7로 전환하여 속도 개선 확인.</p>
+      <p class="followup">🔍 다음 깊이 질문: PBPK 모델에서 고유값이 복소수가 되는 물리적 직관은?</p>
+    </div>
+  </div>
+
+  <div class="qa-item" onclick="toggleQA(this)">
+    <div class="qa-q"><span>Q7. [적용] Parent-Metabolite 모델의 $ERROR에서 TYPE=0/1을 이용해 모약·대사체에 독립적 잔차 구조를 적용하는 코드를 작성하고 원리를 설명하라.</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge star1">★</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <pre><code><span class="keyword">$ERROR</span>
+    IF(CMT.EQ.2) TYPE=0   <span class="comment">; 모약 관찰 (CMT=2)</span>
+    IF(CMT.EQ.3) TYPE=1   <span class="comment">; 대사체 관찰 (CMT=3)</span>
+    Y = F*EPS(1)*(1-TYPE) + F*EPS(2)*TYPE</code></pre>
+      <ul style="margin-top:8px;padding-left:20px;font-size:.875rem">
+        <li>CMT=2(모약): TYPE=0 → Y = F×EPS(1)×1 + F×EPS(2)×0 = F×EPS(1)</li>
+        <li>CMT=3(대사체): TYPE=1 → Y = F×EPS(1)×0 + F×EPS(2)×1 = F×EPS(2)</li>
+        <li>EPS(1)과 EPS(2)는 $SIGMA에서 독립 분산을 가져 모약과 대사체의 측정 오차 크기를 별도 추정</li>
+      </ul>
+      <p class="followup">🔍 다음 깊이 질문: 모약과 대사체에 서로 다른 가산+비례 혼합 오차 구조를 각각 적용하려면?</p>
+    </div>
+  </div>
+
+  <div class="qa-item boss-q" onclick="toggleQA(this)">
+    <div class="qa-q"><span>⚔ 보스 딜레마 Q8 — Phase 2 복잡 흡수 모델 vs 단순 lag time 모델: 용량 결정 회의에서 어느 쪽을 택하는가?</span><div style="display:flex;align-items:center;gap:8px"><span class="qa-badge star2">★★</span><span class="qa-chevron">▼</span></div></div>
+    <div class="qa-a">
+      <p><strong>상황:</strong> Phase 2 항암제(n=28). 단순 1차 흡수로 적합 시 Tmax 예측이 일관되게 늦다. 두 선택지:</p>
+      <ul style="padding-left:20px;margin:10px 0;font-size:.875rem;line-height:1.9">
+        <li><strong>선택 A:</strong> ADVAN6 병렬 흡수 모델 (F₁ 추정 포함) — 데이터 적합도 개선, 파라미터 +2개, 소규모 n=28에서 수렴 불안정 위험</li>
+        <li><strong>선택 B:</strong> ALAG1 추가 단순 1차 흡수 (ADVAN2 유지) — 수렴 안정, 기계론적 타당성 떨어짐, NDA에서 misspecification 지적 위험</li>
+      </ul>
+      <hr style="border:1px solid var(--border);margin:12px 0">
+      <p><strong>수석 모델러의 Trade-off 논리:</strong></p>
+      <p><strong>권장: 선택 A를 단계적으로 시도하되, B를 출발점으로 삼기.</strong></p>
+      <p>Phase 2 PopPK의 핵심 목적이 Phase 3 용량 예측이라면, Tmax misspecification은 Cmax 예측 오차로 이어지고 — 항암제에서 Cmax 과소추정은 독성 예측 실패를 의미한다.</p>
+      <p><strong>실행 전략:</strong></p>
+      <ol style="padding-left:20px;font-size:.875rem;line-height:1.9">
+        <li>ALAG1 추가 ADVAN2(선택 B+)로 기저 모델 확정 → OFV 기준값 확보</li>
+        <li>ADVAN6 병렬 흡수(선택 A) 시도 → F₁ 초기값 0.3–0.5, D2 초기값 4–8hr</li>
+        <li>$COV step 성공 + F₁의 RSE &lt; 30% 기준으로 선택 A 채택 결정</li>
+        <li>수렴 실패 시: F₁=0.5 고정하고 D2만 추정하는 단순화 버전으로 후퇴</li>
+      </ol>
+      <p><strong>규제 문서 방어 (선택 A 채택):</strong> "A parallel first-order and zero-order absorption model was selected based on a statistically significant improvement in OFV (ΔOFV = −X, p &lt; 0.05) and visual improvement in CWRES versus time profiles. The fraction absorbed via first-order process (F₁ = X, RSE = X%) was estimated with acceptable precision, supported by visual predictive check demonstrating appropriate coverage of observed Tmax distribution."</p>
+      <p><strong>규제 문서 방어 (선택 B 유지):</strong> "Although a parallel absorption model was explored, the limited dataset (n=28) precluded reliable estimation of additional absorption parameters (RSE &gt; 50%, $COVARIANCE step failure). A first-order absorption model with lag time was retained as the base model, with acknowledgment that Cmax predictions carry uncertainty to be reassessed in the Phase 3 dataset."</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="section-8">
+  <div class="section-label">§8</div>
+  <h2 class="section-title">메타프레임 & 빅픽처</h2>
+
+  <h3 style="margin-bottom:16px">A. 28세션 아키텍처에서의 위치</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>이전에 온 것</th><th style="color:var(--accent)">현재: II-04</th><th>바로 다음에 오는 것</th></tr>
+      <tr>
+        <td>II-03 ADVAN1–4 특수 ADVAN 코딩<br>II-02 데이터셋 변수·CMT·투여<br>II-01 θ·η·ε 계층 구조<br>I-07 Michaelis-Menten PK 이론</td>
+        <td style="color:var(--accent)"><strong>General ADVAN + $DES</strong><br>임의 ODE 표현 능력 확보<br>$MODEL / $DES / TOL</td>
+        <td>II-11 PK/PD 구현 (Emax·Imax $DES)<br>II-12 지연효과 PD 구현<br>TMDD 모델링 (수용체 ODE)<br>PBPK / QSP (다구획 시스템)</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3 style="margin:32px 0 16px">B. Dependencies — 대충 넘겼을 때 발생하는 실패 모드</h3>
+  <div class="dep-item">
+    <strong>실패 모드 1: K 인덱스 혼동 → 침묵의 모델 붕괴.</strong> $DES에서 구획 번호와 K 인덱스의 관계를 체득하지 못한 모델러는 문헌의 K12(central→peripheral)를 NONMEM K12(depot→central)로 혼용한다. NONMEM은 경고 없이 수렴하고 말초 구획이 소멸한 채로 파라미터를 반환한다. 이 오류는 CWRES 이중 부호 분리 패턴으로만 사후 발견된다 — 규제 제출 후 발각되면 전체 모델 재개발이 요구된다.
+  </div>
+  <div class="dep-item">
+    <strong>실패 모드 2: 복잡 흡수 모델 데이터셋 설계 오류 → 파라미터 2배 편향.</strong> 병렬 흡수에서 F₁+F₂=1 제약의 필연성을 이해하지 못하면, 두 depot에 제약 없이 전체 용량을 입력하여 CL과 V가 실제값의 50%로 추정된다. 항암제에서 이 오류는 독성 임계치 계산 실패로 이어진다.
+  </div>
+
+  <h3 style="margin:32px 0 16px">C. Professional Moat</h3>
+  <div class="moat-block">
+    <p>NONMEM을 실행하고 파라미터를 추출하는 것은 이미 자동화 가능하다. $DES 코드 구조와 ODE 수치 적분의 수학을 진정으로 내면화한 모델러만이 다음을 할 수 있다:</p>
+    <p style="margin-top:16px"><strong>수렴 실패 앞에서:</strong> NONMEM의 "MINIMIZATION TERMINATED" 메시지를 보고 TOL 문제인지, ODE 부호 오류인지, 파라미터 식별성 문제인지를 에러 메시지 한 줄에서 구분하는 진단 논리를 즉시 실행할 수 있다.</p>
+    <p style="margin-top:12px"><strong>CWRES 편향 앞에서:</strong> Tmax 체계적 과소추정 패턴을 보고 "단순 1차 흡수의 구조적 misspecification"으로 진단하고 병렬 흡수 모델 전환의 필요성을 데이터 없이 판단할 수 있다 — 이것은 $DES 구조와 흡수 ODE의 형태가 실제 약물 동태에 어떻게 대응하는지를 체득한 사람만의 능력이다.</p>
+    <p style="margin-top:12px"><strong>신규 생물학적 현상 앞에서:</strong> 기존 특수 ADVAN이 없는 새로운 기전(수용체 매개 내재화 + 리간드 재순환 + 표적 재생성)을 처음 마주쳤을 때, 생물학적 프로세스를 ODE로 번역하고 $DES 블록으로 즉시 구현할 수 있다. 이 능력은 특수 ADVAN 사용법 암기로는 절대 도달할 수 없으며, ODE와 $DES 구문이 1:1로 대응한다는 구조적 이해에서만 나온다.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ── 전역 상수 (최상단, 절대 재할당 금지) ──
+const X_MAX      = 24;    // hr
+const DT         = 0.05;  // hr (RK4 step)
+const HARD_Y_MAX = 20;    // mg/L
+const LOG_Y_MIN  = 0.001;
+const LOG_Y_MAX  = 100;
+
+// ── 중앙 상태 ──
+const state = {
+  params: { ka:0.5, cl:5, v2:20, q:3, v3:50, dose:300 },
+  logScale: false,
+  showAUC: true,
+  showPhantom: false,
+  referenceCurve: null,
+  _currentCurve: null,
+  _prevDerived: null,
+  warnings: {}
+};
+
+let chartObj = null;
+let phantomCache = null;
+
+// ── RK4 2구획 경구 PK 수치 적분 ──
+function computeCurve(p) {
+  const { ka, cl, v2, q, v3, dose } = p;
+  const k20 = cl / v2, k23 = q / v2, k32 = q / v3;
+  const nSteps = Math.ceil(X_MAX / DT);
+  const ts = [], cs = [], c3s = [];
+  let a1 = dose, a2 = 0, a3 = 0;
+
+  function deriv(a1_, a2_, a3_) {
+    return [
+      -ka * a1_,
+      ka * a1_ - (k23 + k20) * a2_ + k32 * a3_,
+      k23 * a2_ - k32 * a3_
+    ];
+  }
+
+  for (let i = 0; i <= nSteps; i++) {
+    ts.push(i * DT);
+    cs.push(a2 / v2);
+    c3s.push(a3 / v3);
+    if (i === nSteps) break;
+    const [d1, d2, d3] = deriv(a1, a2, a3);
+    const [k1a, k1b, k1c] = [DT*d1, DT*d2, DT*d3];
+    const [d2a, d2b, d2c] = deriv(a1+k1a/2, a2+k1b/2, a3+k1c/2);
+    const [k2a, k2b, k2c] = [DT*d2a, DT*d2b, DT*d2c];
+    const [d3a, d3b, d3c] = deriv(a1+k2a/2, a2+k2b/2, a3+k2c/2);
+    const [k3a, k3b, k3c] = [DT*d3a, DT*d3b, DT*d3c];
+    const [d4a, d4b, d4c] = deriv(a1+k3a, a2+k3b, a3+k3c);
+    const [k4a, k4b, k4c] = [DT*d4a, DT*d4b, DT*d4c];
+    a1 += (k1a+2*k2a+2*k3a+k4a)/6;
+    a2 += (k1b+2*k2b+2*k3b+k4b)/6;
+    a3 += (k1c+2*k2c+2*k3c+k4c)/6;
+  }
+  return { ts, cs, c3s };
+}
+
+// 1구획 phantom (for comparison)
+function computePhantom(p) {
+  const { ka, cl, v2, dose } = p;
+  const k = cl / v2;
+  const ts = [], cs = [];
+  const nSteps = Math.ceil(X_MAX / DT);
+  let a1 = dose, a2 = 0;
+  for (let i = 0; i <= nSteps; i++) {
+    ts.push(i * DT);
+    cs.push(a2 / v2);
+    if (i === nSteps) break;
+    const d1 = -ka * a1;
+    const d2 = ka * a1 - k * a2;
+    a1 += DT * d1; a2 += DT * d2;
+  }
+  return { ts, cs };
+}
+
+function getPhantom(p) {
+  const key = JSON.stringify(p);
+  if (!phantomCache || phantomCache.key !== key) {
+    phantomCache = { key, data: computePhantom(p) };
+  }
+  return phantomCache.data;
+}
+
+function calcDerived(p) {
+  const curve = state._currentCurve;
+  if (!curve) return {};
+  const { cs, ts } = curve;
+  let cmax = 0, tmax = 0;
+  cs.forEach((c, i) => { if (c > cmax) { cmax = c; tmax = ts[i]; } });
+  let auc = 0;
+  for (let i = 1; i < cs.length; i++) auc += (cs[i] + cs[i-1]) * DT / 2;
+  const vss = p.v2 + p.v3;
+  const t12b = 0.693 * vss / p.cl;
+  const k20 = p.cl / p.v2, k23 = p.q / p.v2, k32 = p.q / p.v3;
+  return { cmax, tmax, auc, t12b, vss, k20 };
+}
+
+function buildDatasets(curve) {
+  // [Scientific Logic]: 2구획 경구 PK 모델, Runge-Kutta 4차 수치 적분
+  // dA1/dt = -KA·A1 (Depot)
+  // dA2/dt = KA·A1 - (K23+K20)·A2 + K32·A3 (Central)
+  // dA3/dt = K23·A2 - K32·A3 (Peripheral)
+  // C = A2/V2 (Central concentration, mg/L)
+  const pts = curve.ts.map((t, i) => ({ x: t, y: curve.cs[i] }));
+  const datasets = [];
+
+  if (state.showAUC) {
+    datasets.push({
+      label: 'AUC 면적',
+      data: pts,
+      fill: true,
+      backgroundColor: 'rgba(201,168,76,0.08)',
+      borderColor: 'transparent',
+      pointRadius: 0, tension: 0.3
+    });
+  }
+
+  datasets.push({
+    label: '중심 구획 농도 C(t)',
+    data: pts,
+    borderColor: '#c9a84c',
+    backgroundColor: 'transparent',
+    borderWidth: 2.5,
+    pointRadius: 0,
+    tension: 0.3,
+    fill: false
+  });
+
+  if (state.referenceCurve) {
+    datasets.push({
+      label: '기준선',
+      data: state.referenceCurve.ts.map((t, i) => ({ x: t, y: state.referenceCurve.cs[i] })),
+      borderColor: 'rgba(138,128,112,0.6)',
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderDash: [6, 4],
+      pointRadius: 0, tension: 0.3, fill: false
+    });
+  }
+
+  if (state.showPhantom) {
+    const ph = getPhantom(state.params);
+    datasets.push({
+      label: '1구획 Phantom',
+      data: ph.ts.map((t, i) => ({ x: t, y: ph.cs[i] })),
+      borderColor: 'rgba(220,60,60,0.55)',
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0, tension: 0.3, fill: false
+    });
+  }
+  return datasets;
+}
+
+const MARKER_PLUGIN = {
+  id: 'pkMarkers',
+  afterDraw(chart) {
+    const { ctx, scales: { x, y } } = chart;
+    if (!state._currentCurve) return;
+    const d = calcDerived(state.params);
+    if (!d.tmax) return;
+    [{ v: d.tmax, c: 'rgba(201,168,76,0.5)', l: 'Tmax' }].forEach(({ v, c, l }) => {
+      if (v > X_MAX) return;
+      const xPx = x.getPixelForValue(v);
+      ctx.save();
+      ctx.strokeStyle = c; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(xPx, chart.chartArea.top); ctx.lineTo(xPx, chart.chartArea.bottom);
+      ctx.stroke(); ctx.fillStyle = c; ctx.font = '9px IBM Plex Mono';
+      ctx.fillText(l, xPx + 3, chart.chartArea.top + 14); ctx.restore();
+    });
+    const thcLines = [
+      { v: 0.5, c: 'rgba(64,152,232,0.4)', l: 'MEC' },
+      { v: 5.0, c: 'rgba(192,57,43,0.4)', l: 'MTC' }
+    ];
+    thLines.forEach(({ v, c, l }) => {
+      if (v > HARD_Y_MAX) return;
+      const yPx = y.getPixelForValue(v);
+      ctx.save();
+      ctx.strokeStyle = c; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(chart.chartArea.left, yPx); ctx.lineTo(chart.chartArea.right, yPx);
+      ctx.stroke(); ctx.fillStyle = c; ctx.font = '9px IBM Plex Mono';
+      ctx.fillText(l, chart.chartArea.right - 30, yPx - 3); ctx.restore();
+    });
+  }
+};
+
+function initChart() {
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  Chart.register(MARKER_PLUGIN);
+  chartObj = new Chart(ctx, {
+    type: 'line',
+    data: { datasets: buildDatasets(state._currentCurve || { ts: [], cs: [] }) },
+    options: {
+      animation: { duration: 200 },
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: 'linear', min: 0, max: X_MAX,
+          title: { display: true, text: '시간 (hr)', color: '#8a8070', font: { size: 10, family: 'IBM Plex Mono' } },
+          ticks: { color: '#8a8070', font: { size: 9, family: 'IBM Plex Mono' } },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        y: {
+          type: 'linear', min: 0, max: HARD_Y_MAX,
+          title: { display: true, text: 'C (mg/L)', color: '#8a8070', font: { size: 10, family: 'IBM Plex Mono' } },
+          ticks: { color: '#8a8070', font: { size: 9, family: 'IBM Plex Mono' } },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        }
+      },
+      plugins: {
+        legend: { display: true, labels: { color: '#8a8070', font: { size: 9, family: 'IBM Plex Mono' }, boxWidth: 12, padding: 8 } },
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
+
+function updateChart() {
+  const curve = computeCurve(state.params);
+  state._currentCurve = curve;
+
+  if (!chartObj) {
+    initChart(); // 차트가 없으면 최초 생성
+  } else {
+    // 차트가 이미 있으면 데이터만 업데이트
+    chartObj.data.datasets = buildDatasets(curve);
+    const yScale = chartObj.options.scales.y;
+    yScale.type = state.logScale ? 'logarithmic' : 'linear';
+    yScale.min = state.logScale ? LOG_Y_MIN : 0;
+    yScale.max = state.logScale ? LOG_Y_MAX : HARD_Y_MAX;
+    chartObj.update('none');
+  }
+
+  // 차트 생성 여부와 무관하게 UI 패널은 항상 최신값으로 업데이트
+  const derived = calcDerived(state.params);
+  updateDerivedPanel(derived);
+  updateDeltas(derived);
+  updateODE();
+  updatePKPanel();
+  checkWarnings(state.params);
+}
+
+function updateDerived(id, val, unit, prev) {
+  const el = document.getElementById('d-' + id);
+  const del = document.getElementById('dd-' + id);
+  if (!el) return;
+  if (val == null) { el.textContent = '—'; return; }
+  el.textContent = typeof val === 'number' ? val.toFixed(val < 10 ? 2 : 1) : val;
+  if (del && prev != null) {
+    const pct = ((val - prev) / Math.abs(prev)) * 100;
+    if (Math.abs(pct) < 1) { del.textContent = ''; return; }
+    del.textContent = (pct > 0 ? '↑ ' : '↓ ') + Math.abs(pct).toFixed(1) + '%';
+    del.style.color = pct > 0 ? '#e87040' : '#4098e8';
+  }
+}
+
+function updateDerivedPanel(derived) {
+  const prev = state._prevDerived || {};
+  updateDerived('cmax', derived.cmax, '', prev.cmax);
+  updateDerived('tmax', derived.tmax, '', prev.tmax);
+  updateDerived('auc', derived.auc, '', prev.auc);
+  updateDerived('t12', derived.t12b, '', prev.t12b);
+  updateDerived('vss', derived.vss, '', prev.vss);
+  updateDerived('k20', derived.k20, '', prev.k20);
+  state._prevDerived = { ...derived };
+}
+
+function updateDeltas(derived) {}
+
+function updateODE() {
+  const { ka, cl, v2, q, v3 } = state.params;
+  const k20 = (cl/v2).toFixed(3), k23 = (q/v2).toFixed(3), k32 = (q/v3).toFixed(3);
+  document.getElementById('ode1').textContent = `-A(1)×${ka}`;
+  document.getElementById('ode2').textContent = `A(1)×${ka} - A(2)×(${k23}+${k20}) + A(3)×${k32}`;
+  document.getElementById('ode3').textContent = `A(2)×${k23} - A(3)×${k32}`;
+}
+
+function updatePKPanel() {
+  const { ka, cl, v2, q, v3 } = state.params;
+  const k20 = (cl/v2).toFixed(4), k23 = (q/v2).toFixed(4), k32 = (q/v3).toFixed(4);
+  document.getElementById('pkDisplay').innerHTML =
+    `<span style="color:#8a8070">K20=${k20} K23=${k23} K32=${k32}</span><br>` +
+    `<span style="color:#c9a84c">S2=${v2} (단위 스케일)</span>`;
+}
+
+function checkWarnings(p) {
+  const warns = [];
+  if (p.q === 0) warns.push('Q=0: 구획 간 이동 없음 — 1구획 소실 모델과 동일');
+  if (p.ka < 0.2) warns.push('KA 매우 낮음 — Tmax가 관찰 범위 후반부로 이동');
+  if (p.cl / p.v2 > p.ka) warns.push('K20 > KA: flip-flop PK — 소실이 흡수보다 빠름');
+  const banner = document.getElementById('warnBanner');
+  if (warns.length) { banner.textContent = warns.join(' | '); banner.classList.add('show'); }
+  else banner.classList.remove('show');
+}
+
+// ── 슬라이더 이벤트 ──
+function onSlider(key, val) {
+  state.params[key] = parseFloat(val);
+  document.getElementById('v-' + key).textContent = parseFloat(val).toFixed(key === 'dose' ? 0 : 2);
+  updateChart();
+}
+
+function toggleLog() {
+  state.logScale = !state.logScale;
+  document.getElementById('btn-log').classList.toggle('active', state.logScale);
+  if (!chartObj) return;
+  const yScale = chartObj.options.scales.y;
+  yScale.type = state.logScale ? 'logarithmic' : 'linear';
+  yScale.min = state.logScale ? LOG_Y_MIN : 0;
+  yScale.max = state.logScale ? LOG_Y_MAX : HARD_Y_MAX;
+  chartObj.update('none');
+}
+
+function toggleAUC() {
+  state.showAUC = !state.showAUC;
+  document.getElementById('btn-auc').classList.toggle('active', state.showAUC);
+  if (chartObj && state._currentCurve) {
+    chartObj.data.datasets = buildDatasets(state._currentCurve);
+    chartObj.update('none');
+  }
+}
+
+function togglePhantom() {
+  state.showPhantom = !state.showPhantom;
+  document.getElementById('btn-phantom').classList.toggle('active', state.showPhantom);
+  if (chartObj && state._currentCurve) {
+    chartObj.data.datasets = buildDatasets(state._currentCurve);
+    chartObj.update('none');
+  }
+}
+
+function saveRef() {
+  if (!state._currentCurve) return;
+  state.referenceCurve = { ts: [...state._currentCurve.ts], cs: [...state._currentCurve.cs] };
+  document.getElementById('btn-ref').classList.add('active');
+  if (chartObj) { chartObj.data.datasets = buildDatasets(state._currentCurve); chartObj.update('none'); }
+}
+
+function clearRef() {
+  state.referenceCurve = null;
+  document.getElementById('btn-ref').classList.remove('active');
+  if (chartObj && state._currentCurve) {
+    chartObj.data.datasets = buildDatasets(state._currentCurve); chartObj.update('none');
+  }
+}
+
+const PRESETS = {
+  default:  { ka:0.50, cl:5,  v2:20,  q:3,  v3:50,  dose:300 },
+  rapid:    { ka:3.00, cl:5,  v2:20,  q:3,  v3:50,  dose:300 },
+  deep:     { ka:0.50, cl:5,  v2:20,  q:2,  v3:150, dose:300 },
+  highcl:   { ka:0.50, cl:18, v2:20,  q:3,  v3:50,  dose:300 }
+};
+
+function loadPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  state.params = { ...p };
+  const sliders = { ka:'sl-ka', cl:'sl-cl', v2:'sl-v2', q:'sl-q', v3:'sl-v3', dose:'sl-dose' };
+  const vals = { ka:'v-ka', cl:'v-cl', v2:'v-v2', q:'v-q', v3:'v-v3', dose:'v-dose' };
+  Object.entries(p).forEach(([k, v]) => {
+    const sl = document.getElementById(sliders[k]);
+    const vl = document.getElementById(vals[k]);
+    if (sl) sl.value = v;
+    if (vl) vl.textContent = k === 'dose' ? v.toFixed(0) : v.toFixed(2);
+  });
+  updateChart();
+}
+
+// ── 커서 리스너: 초기화 단계 1회만 등록 ──
+document.addEventListener('DOMContentLoaded', () => {
+  const simCanvas = document.getElementById('simCanvas');
+  simCanvas.addEventListener('mousemove', e => {
+    if (!state._currentCurve) return;
+    const rect = simCanvas.getBoundingClientRect();
+    const t = Math.max(0, Math.min(X_MAX, (e.clientX - rect.left) / rect.width * X_MAX));
+    const idx = Math.min(Math.floor(t / DT), state._currentCurve.ts.length - 2);
+    const C = state._currentCurve.cs[Math.max(0, idx)] || 0;
+    document.getElementById('cursorLabel').textContent =
+      `t = ${t.toFixed(2)} hr | C = ${C.toFixed(4)} mg/L`;
+  });
+  simCanvas.addEventListener('mouseleave', () => {
+    document.getElementById('cursorLabel').textContent = '그래프 위에 마우스를 올리면 농도값이 표시됩니다';
+  });
+
+  // Initial chart (단일 호출로 변경)
+  updateChart();
+
+  // Intersection Observer for sidebar
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      const link = document.querySelector(`#sidebar a[href="#${id}"]`);
+      if (link) link.classList.toggle('active', entry.isIntersecting);
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  document.querySelectorAll('section[id], [id^="card-"], [id^="pair-"]').forEach(el => observer.observe(el));
+
+  // normCanvas init
+  initNormCanvas();
+  drawNorm();
+});
+
+// ── normCanvas ──
+let normW = 0, normH = 0;
+let normNormalized = false;
+const normCanvas = document.getElementById('normCanvas');
+const normCtx = normCanvas.getContext('2d');
+
+function initNormCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = normCanvas.getBoundingClientRect();
+  normW = Math.floor(rect.width * dpr);
+  normH = Math.floor(rect.height * dpr);
+  normCanvas.width = normW;
+  normCanvas.height = normH;
+  normCtx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+const NORM_DOMAINS = [
+  { label: 'PK 약동학', k: 0.3, C0: 8, color: '#c9a84c' },
+  { label: '화학 반응',  k: 0.3, C0: 100, color: '#4098e8' },
+  { label: 'RC 회로',   k: 0.3, C0: 5, color: 'rgba(64,200,100,0.9)' },
+  { label: 'SIR 역학',  k: 0.3, C0: 50, color: 'rgba(200,100,220,0.9)' },
+  { label: '인구 동태', k: 0.3, C0: 1000, color: 'rgba(220,60,60,0.7)' }
+];
+
+function drawNorm() {
+  if (!normW || !normH) return;
+  normCtx.clearRect(0, 0, normW, normH);
+  const W = normW, H = normH;
+  const margin = { l: 50, r: 20, t: 20, b: 30 };
+  const plotW = W - margin.l - margin.r, plotH = H - margin.t - margin.b;
+  const nPts = 200;
+  const tMax = 10;
+
+  // Grid
+  normCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+  normCtx.lineWidth = 1;
+  for (let g = 0; g <= 4; g++) {
+    const y = margin.t + plotH * g / 4;
+    normCtx.beginPath(); normCtx.moveTo(margin.l, y); normCtx.lineTo(margin.l + plotW, y);
+    normCtx.stroke();
+    const x = margin.l + plotW * g / 4;
+    normCtx.beginPath(); normCtx.moveTo(x, margin.t); normCtx.lineTo(x, margin.t + plotH);
+    normCtx.stroke();
+  }
+
+  // Axes
+  normCtx.strokeStyle = 'rgba(255,255,255,0.2)'; normCtx.lineWidth = 1;
+  normCtx.beginPath(); normCtx.moveTo(margin.l, margin.t); normCtx.lineTo(margin.l, margin.t + plotH); normCtx.stroke();
+  normCtx.beginPath(); normCtx.moveTo(margin.l, margin.t + plotH); normCtx.lineTo(margin.l + plotW, margin.t + plotH); normCtx.stroke();
+
+  // Axis labels
+  normCtx.fillStyle = '#8a8070'; normCtx.font = `${Math.floor(9 * (W/800))}px IBM Plex Mono`;
+  normCtx.textAlign = 'center';
+  normCtx.fillText('0', margin.l, margin.t + plotH + 16);
+  normCtx.fillText(tMax + ' hr', margin.l + plotW, margin.t + plotH + 16);
+  normCtx.fillText(normNormalized ? '정규화 농도 C/C₀' : '원래 스케일', margin.l + plotW / 2, margin.t - 4);
+
+  // Curves
+  NORM_DOMAINS.forEach(d => {
+    normCtx.beginPath();
+    normCtx.strokeStyle = d.color; normCtx.lineWidth = 1.8; normCtx.setLineDash([]);
+    for (let i = 0; i <= nPts; i++) {
+      const t = i / nPts * tMax;
+      const rawVal = d.C0 * Math.exp(-d.k * t);
+      const val = normNormalized ? rawVal / d.C0 : rawVal;
+      const maxVal = normNormalized ? 1.0 : (d.C0 * 1.05);
+      const xPx = margin.l + (t / tMax) * plotW;
+      const yPx = margin.t + plotH - (val / maxVal) * plotH * 0.9;
+      if (i === 0) normCtx.moveTo(xPx, yPx); else normCtx.lineTo(xPx, yPx);
+    }
+    normCtx.stroke();
+
+    // Label
+    normCtx.fillStyle = d.color;
+    normCtx.font = `${Math.floor(8 * (W/800))}px IBM Plex Mono`;
+    normCtx.textAlign = 'left';
+    const labelVal = normNormalized ? 1.0 : d.C0;
+    const maxVal = normNormalized ? 1.0 : (d.C0 * 1.05);
+    const yLabel = margin.t + plotH - (labelVal / maxVal) * plotH * 0.9 + 3;
+    normCtx.fillText(d.label, margin.l + 4, yLabel - 5);
+  });
+}
+
+function toggleNorm() {
+  normNormalized = !normNormalized;
+  const btn = document.getElementById('normToggle');
+  btn.textContent = normNormalized ? '정규화 끄기' : '정규화 켜기';
+  btn.classList.toggle('active', normNormalized);
+  drawNorm();
+}
+
+window.addEventListener('resize', () => {
+  initNormCanvas();
+  drawNorm();
+});
+
+// ── QA Accordion ──
+function toggleQA(el) {
+  el.classList.toggle('open');
+}
+
+</script>
+</body>
+</html>
