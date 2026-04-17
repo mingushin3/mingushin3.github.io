@@ -34,8 +34,19 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .nav-item{display:block;padding:.32rem 1.2rem;color:var(--muted);text-decoration:none;font-size:.8rem;border-left:3px solid transparent;transition:all .2s;line-height:1.4}
 .nav-item:hover{color:var(--text);background:var(--accent-dim)}
 .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-dim)}
-.nav-sub{font-size:.74rem;padding:.22rem 1.2rem .22rem 1.8rem;color:#6a6050}
-.nav-sub:hover{color:var(--muted)}
+.nav-sub {
+  display: block;
+  text-decoration: none;
+  font-size: .74rem;
+  padding: .22rem 1.2rem .22rem 1.8rem;
+  color: #6a6050;
+  border-left: 3px solid transparent; /* 상위 항목과 여백 통일성 유지 */
+  transition: all .2s;
+}
+.nav-sub:hover {
+  color: var(--muted);
+  background: rgba(201, 168, 76, 0.03); /* 부드러운 호버 효과 추가 */
+}
 #mobile-toggle{display:none;position:fixed;bottom:1.2rem;right:1.2rem;z-index:200;background:var(--accent);color:#09090e;border:none;border-radius:50%;width:48px;height:48px;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(201,168,76,.4)}
 
 /* ── MAIN CONTENT ── */
