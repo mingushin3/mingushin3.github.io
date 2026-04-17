@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>II-03 | Specific ADVAN · $PRED 코딩 | PK/PD Mastery Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --bg:#09090e; --surface:#0c0c12; --surface2:#10101a;
+  --text:#ede8df; --muted:#8a8070; --accent:#c9a84c;
+  --accent-dim:rgba(201,168,76,0.08); --danger:#c0392b;
+  --info:#4098e8; --phantom:rgba(220,60,60,0.55);
+  --border:rgba(201,168,76,0.18); --code-bg:#0a0a10;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.75;min-height:100vh}
+
+/* ── SIDEBAR ── */
+#sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:1.2rem 0}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sidebar-title{font-family:'Cormorant Garamond',serif;color:var(--accent);font-size:0.85rem;letter-spacing:.12em;text-transform:uppercase;padding:.4rem 1.2rem 1rem;border-bottom:1px solid var(--border);margin-bottom:.6rem}
+.nav-item{display:block;padding:.32rem 1.2rem;color:var(--muted);text-decoration:none;font-size:.8rem;border-left:3px solid transparent;transition:all .2s;line-height:1.4}
+.nav-item:hover{color:var(--text);background:var(--accent-dim)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-dim)}
+.nav-sub{font-size:.74rem;padding:.22rem 1.2rem .22rem 1.8rem;color:#6a6050}
+.nav-sub:hover{color:var(--muted)}
+#mobile-toggle{display:none;position:fixed;bottom:1.2rem;right:1.2rem;z-index:200;background:var(--accent);color:#09090e;border:none;border-radius:50%;width:48px;height:48px;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(201,168,76,.4)}
+
+/* ── MAIN CONTENT ── */
+#main{margin-left:260px;max-width:1100px;padding:2.5rem 2.8rem}
+@media(max-width:900px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:translateX(0)}#main{margin-left:0;padding:1.4rem 1.1rem}#mobile-toggle{display:flex;align-items:center;justify-content:center}}
+
+/* ── TYPOGRAPHY ── */
+h1.page-title{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--accent);line-height:1.15;margin-bottom:.5rem}
+h2.sec-head{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:.45rem;margin:2.8rem 0 1.4rem;scroll-margin-top:80px}
+h3.card-title{font-size:1.12rem;font-weight:700;color:var(--accent);margin-bottom:.85rem}
+h4.sub{font-size:.95rem;font-weight:700;color:var(--text);margin:1.2rem 0 .5rem;letter-spacing:.04em}
+p{margin-bottom:.9rem}
+ul,ol{margin:.5rem 0 .9rem 1.4rem}
+li{margin-bottom:.3rem;font-size:.93rem}
+
+/* ── SECTION WRAPPER ── */
+.section{padding:1rem 0 2rem}
+
+/* ── BIG IDEA BLOCK ── */
+.big-idea{border-left:4px solid var(--accent);background:rgba(201,168,76,0.08);padding:1.1rem 1.4rem;margin-bottom:1.5rem;border-radius:0 6px 6px 0}
+.big-idea-label{font-family:'Cormorant Garamond',serif;font-size:.8rem;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:.5rem}
+.big-idea p{font-style:italic;color:#d8d0c4;margin-bottom:.5rem;font-size:.93rem}
+
+/* ── CONCEPT CARD ── */
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.6rem 1.8rem;margin-bottom:2rem;scroll-margin-top:80px}
+.apex-badge{display:inline-block;background:var(--accent);color:#09090e;font-size:.72rem;font-weight:700;letter-spacing:.1em;padding:.18rem .55rem;border-radius:3px;margin-right:.6rem;text-transform:uppercase;vertical-align:middle}
+.fallacy-block{border-left:4px solid var(--danger);background:rgba(192,57,43,0.08);padding:1rem 1.3rem;margin:1rem 0;border-radius:0 6px 6px 0}
+.fallacy-block .fallacy-label{font-size:.78rem;color:var(--danger);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;font-weight:700}
+
+/* ── CODE BLOCKS ── */
+pre{background:var(--code-bg);border:1px solid rgba(201,168,76,0.12);border-radius:6px;padding:1.1rem 1.3rem;overflow-x:auto;margin:1rem 0;font-family:'IBM Plex Mono',monospace;font-size:.78rem;line-height:1.55;color:#c8c0b0}
+code{font-family:'IBM Plex Mono',monospace;font-size:.82em;color:#c9a84c;background:rgba(201,168,76,0.1);padding:.1em .35em;border-radius:3px}
+pre code{background:none;padding:0;color:inherit}
+
+/* ── MICRO-CITATION ── */
+.mcite{font-size:.78em;color:var(--muted);font-style:italic;margin-left:.4em}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;margin:1rem 0 1.5rem}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:rgba(201,168,76,0.12);color:var(--accent);font-weight:700;padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem .85rem;border-bottom:1px solid rgba(255,255,255,0.05)}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.crit-blow{background:rgba(192,57,43,0.12) !important}
+.crit-blow td{font-weight:700}
+.mem-hook{background:rgba(201,168,76,0.06) !important}
+.mem-hook td{color:var(--accent)}
+
+/* ── ACCORDION (Q&A) ── */
+.qa-block{margin-bottom:1rem;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.qa-q{padding:.85rem 1.1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.9rem;font-weight:500;background:var(--surface2);user-select:none}
+.qa-q:hover{background:rgba(201,168,76,0.06)}
+.qa-q .sr-tag{font-size:.7rem;padding:.15rem .4rem;border-radius:3px;background:rgba(201,168,76,0.2);color:var(--accent);margin-right:.6rem}
+.qa-q .chevron{font-size:.8rem;color:var(--muted);transition:transform .25s}
+.qa-q.open .chevron{transform:rotate(90deg)}
+.qa-a{display:none;padding:.9rem 1.1rem;font-size:.88rem;background:var(--surface);border-top:1px solid var(--border);line-height:1.7}
+.qa-a.show{display:block}
+.qa-next{font-size:.8rem;color:var(--muted);font-style:italic;margin-top:.6rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:.5rem}
+.boss-dilemma{border:2px solid var(--accent);border-radius:8px;overflow:hidden;margin-top:1.5rem}
+.boss-q{padding:1.1rem 1.3rem;background:rgba(201,168,76,0.1);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.boss-q .chevron{font-size:.9rem;color:var(--accent);transition:transform .25s}
+.boss-q.open .chevron{transform:rotate(90deg)}
+.boss-a{display:none;padding:1.1rem 1.3rem;font-size:.88rem;line-height:1.7}
+.boss-a.show{display:block}
+
+/* ── SIMULATOR ── */
+.sim-container{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin:1.5rem 0}
+.sim-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);margin-bottom:1.2rem}
+.sim-grid{display:grid;grid-template-columns:260px 1fr;gap:1.4rem}
+@media(max-width:700px){.sim-grid{grid-template-columns:1fr}}
+.slider-panel{display:flex;flex-direction:column;gap:.9rem}
+.slider-group label{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
+.slider-group label span.val{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:.82rem}
+input[type=range]{width:100%;accent-color:var(--accent);height:4px;cursor:pointer}
+.btn-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.btn{padding:.4rem .85rem;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text);font-size:.78rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.btn.active{background:rgba(201,168,76,0.2);border-color:var(--accent);color:var(--accent)}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.danger:hover{background:rgba(192,57,43,0.12)}
+.canvas-wrap{position:relative;height:280px;overflow:hidden;flex-shrink:0}
+#simCanvas{width:100%!important;height:100%!important;display:block;cursor:crosshair}
+.cursor-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);height:1.2rem;margin-top:.3rem}
+.derived-panel{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.8rem}
+.derived-item{background:var(--code-bg);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:.45rem .7rem}
+.derived-item .dk{font-size:.7rem;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.derived-item .dv{font-size:.88rem;font-family:'IBM Plex Mono',monospace;color:var(--text)}
+.delta{font-size:.7rem;margin-left:.3rem}
+.delta.up{color:#e87040}.delta.dn{color:#4098e8}
+.warn-banner{background:rgba(192,57,43,0.15);border:1px solid var(--danger);border-radius:4px;padding:.5rem .8rem;font-size:.78rem;color:#e07060;margin-top:.6rem;display:none}
+.warn-banner.show{display:block}
+.preset-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem}
+.mission-panel{background:rgba(201,168,76,0.05);border:1px solid var(--border);border-radius:8px;padding:1.1rem 1.3rem;margin-top:1.2rem}
+.mission-item{margin-bottom:.8rem;font-size:.88rem}
+.mission-item strong{color:var(--accent)}
+.code-display{background:var(--code-bg);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:1rem;margin-top:1rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.6;color:#a8a098;overflow-x:auto;white-space:pre}
+.code-display .kw{color:#c9a84c}
+.code-display .cm{color:#5a6060;font-style:italic}
+.code-display .val{color:#4098e8}
+
+/* ── SVG / ISOMORPHISM ── */
+.iso-preamble{border-left:4px solid var(--accent);background:rgba(201,168,76,0.05);padding:1.1rem 1.4rem;margin-bottom:1.4rem;border-radius:0 6px 6px 0;font-style:italic;font-size:.93rem;line-height:1.75}
+.norm-wrap{position:relative;background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1rem;margin:1rem 0}
+canvas#normCanvas{display:block;width:100%;height:220px}
+.toggle-btn{padding:.4rem 1rem;border:1px solid var(--accent);border-radius:4px;background:transparent;color:var(--accent);font-size:.8rem;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;margin-bottom:.6rem}
+.toggle-btn:hover,.toggle-btn.on{background:rgba(201,168,76,0.2)}
+.transfer-card{border:1px solid var(--border);border-radius:6px;margin-bottom:.8rem;overflow:hidden}
+.transfer-q{padding:.8rem 1.1rem;background:var(--surface2);cursor:pointer;font-size:.88rem;display:flex;justify-content:space-between;align-items:center}
+.transfer-q:hover{background:rgba(201,168,76,0.06)}
+.transfer-a{display:none;padding:.9rem 1.1rem;font-size:.85rem;line-height:1.7;border-top:1px solid var(--border)}
+.transfer-a.show{display:block}
+.transfer-step{margin:.4rem 0;padding-left:1rem;border-left:2px solid rgba(201,168,76,0.25)}
+
+/* ── POSITIONING ── */
+.tag{display:inline-block;font-size:.72rem;padding:.12rem .4rem;border-radius:3px;margin-right:.3rem;vertical-align:middle}
+.tag.vol2{background:rgba(64,152,232,0.15);color:var(--info)}
+.tag.core{background:rgba(201,168,76,0.15);color:var(--accent)}
+.pos-block{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1rem 0}
+@media(max-width:600px){.pos-block{grid-template-columns:1fr}}
+.pos-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.9rem 1rem;font-size:.83rem}
+.pos-item .pi-label{font-size:.72rem;color:var(--muted);margin-bottom:.4rem;letter-spacing:.06em;text-transform:uppercase}
+
+/* ── GRID LAYERS ── */
+.layer-section{margin:1.5rem 0}
+.layer-label{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.8rem}
+
+/* ── SCENARIO BLOCKS ── */
+.scenario{background:var(--surface);border-left:4px solid var(--info);border-radius:0 8px 8px 0;padding:1.2rem 1.5rem;margin:1.2rem 0}
+.scenario h4{color:var(--info);margin-bottom:.7rem}
+.diag-sig{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:1rem 1.2rem;margin:.8rem 0;font-size:.85rem}
+.diag-sig .sig-name{font-weight:700;color:var(--accent);margin-bottom:.4rem}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-title">II-03 · ADVAN / $PRED</div>
+  <a class="nav-item" href="#section-1">§1 세션 헤더 &amp; 로드맵</a>
+  <a class="nav-item" href="#section-2">§2 개념 해부 카드</a>
+  <a class="nav-sub" href="#card-1">① NONMEM 시스템 &amp; 레코드</a>
+  <a class="nav-sub" href="#card-2">② 특수 ADVAN + TRANS ⚡</a>
+  <a class="nav-sub" href="#card-3">③ $PRED 코딩</a>
+  <a class="nav-sub" href="#card-4">④ $ERROR &amp; 초기값 전략</a>
+  <a class="nav-item" href="#section-3">§3 구조적 동형성 지도</a>
+  <a class="nav-item" href="#section-4">§4 인터랙티브 시뮬레이터</a>
+  <a class="nav-item" href="#section-5">§5 혼동 쌍 해부</a>
+  <a class="nav-sub" href="#pair-1">특수 vs 일반 ADVAN</a>
+  <a class="nav-sub" href="#pair-2">ETA 지수 vs 비례 모델</a>
+  <a class="nav-sub" href="#pair-3">$SIGMA vs $THETA 잔차 ⚠️</a>
+  <a class="nav-item" href="#section-6">§6 실용 시나리오</a>
+  <a class="nav-item" href="#section-7">§7 자기 테스트</a>
+  <a class="nav-item" href="#section-8">§8 메타프레임</a>
+</nav>
+
+<button id="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- ═══════════════════ §1 ═══════════════════ -->
+<section class="section" id="section-1">
+<h1 class="page-title">II-03 — Specific ADVAN · $PRED 코딩</h1>
+<p style="color:var(--muted);font-size:.85rem;margin-bottom:1.5rem">
+  <span class="tag vol2">Vol II</span>
+  PIPET 한국어 Ch.3–4 (pp.27–53) + Ch.7 (pp.69–71) &nbsp;|&nbsp;
+  Owen Ch.3 (pp.28–64)
+</p>
+
+<div class="concept-card" style="border-color:rgba(201,168,76,0.35)">
+<h3 class="card-title">Big Idea</h3>
+<p>NONMEM 제어구문은 세 가지 선택지 — 특수 ADVAN, 일반 ADVAN, $PRED — 사이의 의식적 선택이며, 이 선택이 모델의 구조적 유연성·실행 속도·코딩 부담 사이의 모든 Trade-off를 결정한다.</p>
+
+<h4 class="sub">개념 항법도</h4>
+<p>이 세션에서 다루는 핵심 개념: <strong>① NONMEM 시스템 3요소</strong> · <strong>② 제어구문 레코드 구조</strong> · <strong>③ 특수 ADVAN + TRANS 조합</strong> · <strong>④ $PK 블록 코딩</strong> · <strong>⑤ $ERROR 잔차변이 구조</strong> · <strong>⑥ 일반 ADVAN (ADVAN5/6)</strong> · <strong>⑦ $PRED 코딩</strong> · <strong>⑧ $ESTIMATION / $COVARIANCE 옵션</strong></p>
+
+<h4 class="sub">지식 그래프 위치</h4>
+<div class="pos-block">
+  <div class="pos-item"><div class="pi-label">선행 지식</div>II-01: θ·η·ε 3층 구조<br>II-02: 데이터셋 변수 (ID/TIME/AMT/DV)</div>
+  <div class="pos-item"><div class="pi-label">바로 다음</div>II-04: General ADVAN + $DES<br>II-05: 초기추정값 전략</div>
+  <div class="pos-item"><div class="pi-label">의존 고급 도메인</div>II-08 공변량 분석<br>II-09b $COV 심화<br>II-11 PK/PD 구현</div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════ §2 ═══════════════════ -->
+<section class="section" id="section-2">
+<h2 class="sec-head">§2 — 개념 해부 카드</h2>
+
+<!-- CARD 1 -->
+<div class="concept-card" id="card-1">
+<h3 class="card-title">① NONMEM 시스템 3요소와 제어구문 레코드 구조</h3>
+
+<div class="big-idea">
+  <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+  <p>NONMEM을 "실행하는" 사람과 "제어하는" 사람의 차이는 바로 이 레코드 구조를 뼈대처럼 암기하고 있는가에 달려있다. 오류 메시지가 뜰 때 어느 레코드에서 문제가 생겼는지를 즉각 추적하지 못하면, 디버깅에 몇 시간을 낭비하게 된다.</p>
+  <p>제어구문은 NONMEM에게 보내는 "작업 지시서"다 — "무엇을 분석할 것인지($PROB/$DATA/$INPUT)", "어떤 모델로 할 것인지($SUBROUTINE/$PK/$ERROR 또는 $PRED)", "어디서 시작할 것인지($THETA/$OMEGA/$SIGMA)", "어떻게 실행할 것인지($EST)", "무엇을 출력할 것인지($COV/$TABLE)"의 다섯 질문에 순서대로 답한다.</p>
+  <p>제어구문의 각 레코드는 독립적으로 존재하지 않고, 위에서 아래로 흐르는 인과적 순서를 갖는다 — 이 순서를 먼저 장착하고 각 레코드의 세부 옵션을 익히면 암기가 아닌 이해로 체화된다.</p>
+</div>
+
+<h4 class="sub">A. Formal Definition</h4>
+<p>NONMEM 시스템은 세 구성요소로 이루어진다. <strong>NM-TRAN</strong>은 사용자가 작성한 제어구문을 파싱하여 문법·형식 오류를 검사하고 NONMEM이 읽을 수 있는 형태로 변환하는 번역기다. <strong>PREDPP</strong>는 집단약동학 모델링을 위해 미리 구축된 FORTRAN 서브루틴 라이브러리로, 다양한 PK 모델 구조(ADVAN)와 파라미터화(TRANS)를 제공한다. <strong>NONMEM</strong> 엔진 자체는 비선형 혼합효과 모델의 파라미터 추정을 수행하는 최적화 알고리즘의 핵심이다.</p>
+
+<h4 class="sub">B. Code Structure</h4>
+<pre><span style="color:#c9a84c">$PROB</span>  1-compartment oral model        <span style="color:#5a6060">; 프로젝트 식별자</span>
+<span style="color:#c9a84c">$INPUT</span> ID TIME AMT DV MDV WT AGE SEX CLCR
+<span style="color:#c9a84c">$DATA</span>  test.csv <span style="color:#4098e8">IGNORE=@</span>              <span style="color:#5a6060">; @ = 비숫자 행 제외</span>
+<span style="color:#c9a84c">$SUBR</span>  ADVAN2 TRANS2
+<span style="color:#c9a84c">$PK</span>
+  TVCL = THETA(1)
+  CL   = TVCL * EXP(ETA(1))
+  TVV  = THETA(2)
+  V    = TVV  * EXP(ETA(2))
+  TVKA = THETA(3)
+  KA   = TVKA
+  S2   = V/1000                        <span style="color:#5a6060">; dose(mg)/V(L) → Cp(ng/mL)</span>
+<span style="color:#c9a84c">$ERROR</span>
+  IPRED = F
+  W     = SQRT(THETA(4)**2 + THETA(5)**2*IPRED**2)
+  IRES  = DV - IPRED
+  IWRES = IRES / W
+  Y     = IPRED + W*EPS(1)
+<span style="color:#c9a84c">$THETA</span>  (0,3.9) (0,52.1) (0,0.987) 1 0.2
+<span style="color:#c9a84c">$OMEGA</span>  0.09  0.16
+<span style="color:#c9a84c">$SIGMA</span>  1 FIX
+<span style="color:#c9a84c">$EST</span>    METHOD=1 INTER MAXEVAL=9999 PRINT=5
+<span style="color:#c9a84c">$COV</span>    PRINT=E
+<span style="color:#c9a84c">$TABLE</span>  ID TIME DV IPRED IRES CWRES ONEHEADER NOPRINT FILE=sdtab001</pre>
+<span class="mcite">[출처: Owen, Ch.3, p.31 / PIPET, Ch.3, pp.29–30]</span>
+
+<h4 class="sub">C. Structural Necessity</h4>
+<p>이 레코드 순서가 불가피한 이유: NM-TRAN은 위에서 아래로 순차 파싱한다. $DATA/$INPUT이 $PK보다 앞에 위치해야 하는 것은, $PK 내부에서 참조하는 공변량 변수(WT, CLCR 등)가 먼저 선언되어 있어야 NM-TRAN이 undefined variable 오류 없이 컴파일할 수 있기 때문이다.</p>
+
+<h4 class="sub">D. Assumptions &amp; Boundary Conditions</h4>
+<ul>
+  <li>데이터 파일은 순수 ASCII 텍스트 — 워드프로세서 형식 불가</li>
+  <li>한 레코드 최대 160자 (NONMEM 7+). $INPUT 변수 최대 50개</li>
+  <li><code>IGNORE=#</code>와 조건식 <code>IGNORE=(…)</code>은 동시 사용 가능; <code>ACCEPT</code>와 조건식 <code>IGNORE</code>는 동시 사용 불가</li>
+  <li>$TABLE 파일 번호(sdtab<strong>001</strong>, patab<strong>001</strong>)가 일치해야 Xpose4에서 자동 로딩</li>
+</ul>
+
+<h4 class="sub">F. Five Cognitive Layers</h4>
+<div class="tbl-wrap"><table>
+<tr><th>레이어</th><th>내용</th></tr>
+<tr><td><strong>L1 형식적 수학</strong></td><td>제어구문은 $y_{ij} = f(\theta,\eta_i,t_{ij}) + g(\theta,\eta_i,t_{ij})\cdot\varepsilon_{ij}$ 를 레코드로 분해한 것. $f$=$PK, $g$=$ERROR, $\theta$=$THETA, $\eta$=$OMEGA, $\varepsilon$=$SIGMA</td></tr>
+<tr><td><strong>L2 기하학적 직관</strong></td><td>THETA 하한(0)이 음수 CL 추정을 원천 봉쇄하고, MAXEVAL이 탐색 반경을 제한한다</td></tr>
+<tr><td><strong>L3 구조적 동일성</strong></td><td>Python 클래스 정의: $PK = __init__, $ERROR = 손실함수, $ESTIMATION = model.fit()</td></tr>
+<tr><td><strong>L4 생리학적 의미</strong></td><td>$INPUT의 공변량(WT, CLCR)은 IIV의 "측정 가능한 원인" — $PK에서 TVCL 식에 연결되어 미측정 ETA 크기를 줄인다</td></tr>
+<tr><td><strong>L5 실무 투영</strong></td><td>sdtab/patab/catab/cotab 관용은 Xpose4 자동 인식용 — 규칙 위반 시 R의 xpose.data() 로딩 실패</td></tr>
+</table></div>
+
+<h4 class="sub">G. Zettelkasten Atom</h4>
+<pre style="font-size:.74rem">---
+aliases: [NM-TRAN 제어구문, NONMEM control stream]
+tags: [pharmacometrics/nonmem, nonmem/coding/controlstream]
+up: "[[II-01 θ·η·ε 3층 구조]]"
+source: "PIPET Ch.3 pp.27-46 / Owen Ch.3 pp.28-64"
+---
+NONMEM 제어구문은 $PROB → $DATA/$INPUT → 모델블록 → $THETA/$OMEGA/$SIGMA
+→ $ESTIMATION → $COVARIANCE/$TABLE 의 불변 순서를 따른다.
+$TABLE 파일 번호는 Xpose4 연동을 위해 반드시 일치시켜야 한다.</pre>
+</div>
+
+<!-- CARD 2 — APEX -->
+<div class="concept-card" id="card-2">
+<h3 class="card-title"><span class="apex-badge">⚡ Apex Concept</span>특수 ADVAN + TRANS 조합 — 모델 구조와 파라미터화 선택</h3>
+
+<div class="big-idea">
+  <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+  <p>임상 1상 시험의 경구 투여 2구획 데이터에 ADVAN3 대신 ADVAN4를 적용하거나, TRANS4 대신 TRANS1을 선택하면 파라미터 추정값의 생물학적 해석이 완전히 달라진다. IND 제출용 모델에서 이 선택의 근거를 방어하지 못하면 FDA Deficiency Letter의 직접적 원인이 된다.</p>
+  <p>ADVAN은 "구획 구조와 투여 경로"를 선택하는 것이고, TRANS는 "그 구조를 어떤 언어(파라미터)로 표현할 것인가"를 선택하는 것이다 — 같은 생리학적 모델이 TRANS1에서는 속도상수($k_{10}$, $k_{12}$, $k_{21}$)로, TRANS4에서는 CL·V로 말해진다.</p>
+  <p>ADVAN = 구획 설계도, TRANS = 그 설계도를 읽는 언어 — 언어마다 추정값의 해석과 초기값 설정 전략이 달라진다.</p>
+</div>
+
+<h4 class="sub">A. ADVAN 선택 체계</h4>
+<div class="tbl-wrap"><table>
+<tr><th>구획 수</th><th>IV 투여</th><th>경구 (혈관 외) 투여</th></tr>
+<tr><td>1구획</td><td>ADVAN1</td><td>ADVAN2</td></tr>
+<tr><td>2구획</td><td>ADVAN3</td><td>ADVAN4</td></tr>
+<tr><td>3구획</td><td>ADVAN11</td><td>ADVAN12</td></tr>
+<tr><td>1구획 MM 비선형</td><td>ADVAN10</td><td>—</td></tr>
+</table></div>
+<span class="mcite">[출처: PIPET, Ch.4, p.47]</span>
+
+<h4 class="sub">B. ADVAN4 TRANS4 — 2구획 경구 모델 완전 코드</h4>
+<pre><span style="color:#c9a84c">$SUBROUTINES</span> ADVAN4 TRANS4
+<span style="color:#c9a84c">$PK</span>
+  TVCL = THETA(1)             <span style="color:#5a6060">; 집단 CL (L/h)</span>
+  TVV2 = THETA(2)             <span style="color:#5a6060">; 집단 중심구획 V (L)</span>
+  TVV3 = THETA(3)             <span style="color:#5a6060">; 집단 말초구획 V (L)</span>
+  TVQ  = THETA(4)             <span style="color:#5a6060">; 집단 구획간 CL (L/h)</span>
+  TVKA = THETA(5)             <span style="color:#5a6060">; 집단 흡수속도상수 (1/h)</span>
+  CL   = TVCL * EXP(ETA(1))  <span style="color:#5a6060">; 개인별 CL: 로그정규 IIV</span>
+  V2   = TVV2 * EXP(ETA(2))
+  V3   = TVV3 * EXP(ETA(3))
+  Q    = TVQ  * EXP(ETA(4))
+  KA   = TVKA * EXP(ETA(5))
+  ALAG1= THETA(6)*EXP(ETA(6))<span style="color:#5a6060">; 흡수지연 (선택적)</span>
+  S2   = V2/1000              <span style="color:#5a6060">; dose(mg) → Cp(ng/mL) 단위 통일</span>
+  <span style="color:#5a6060">; KE, K23, K32 → TRANS4가 내부 자동 계산: k10=CL/V2, k23=Q/V2, k32=Q/V3</span></pre>
+<span class="mcite">[출처: PIPET, Ch.4, pp.49–50] [출처: Owen, Ch.3, pp.36–39]</span>
+
+<p>척도 파라미터 단위 통일 공식:</p>
+$$S_n = V \times \text{usv}, \quad \text{usv} = \frac{1}{1000} \text{ (dose:mg, V:L, Cp:ng/mL일 때)}$$
+<span class="mcite">[출처: Owen, Ch.3, p.41, Eq.3.6]</span>
+
+<h4 class="sub">ADVAN6 — 비선형 일반 ADVAN (모약물-대사체 동시 분석)</h4>
+<pre><span style="color:#c9a84c">$SUBROUTINES</span> ADVAN6 <span style="color:#4098e8">TOL=4</span>   <span style="color:#5a6060">; TOL 없으면 실행 자체 불가!</span>
+<span style="color:#c9a84c">$MODEL</span>
+  COMP(DEPOT,   DEFDOSE)
+  COMP(CENTRAL, DEFOBS)
+  COMP(PERIPH)
+<span style="color:#c9a84c">$DES</span>
+  DADT(1) = -KA*A(1)
+  DADT(2) = KA*A(1) - KE*A(2) - K12*A(2) + K21*A(3)
+  DADT(3) = K12*A(2) - K21*A(3)</pre>
+
+<div class="fallacy-block">
+  <div class="fallacy-label">C-2 Plausible Fallacy — TRANS 이중 선언 함정</div>
+  <p><strong>오류 형태:</strong> ADVAN4 TRANS4 사용 중 $PK 블록에 <code>KE = CL/V2</code>, <code>K23 = Q/V2</code>를 추가로 기술. "투명하게 모든 파라미터를 선언해야 안전하다"는 믿음에서 비롯.</p>
+  <p><strong>나비효과:</strong> TRANS4는 이미 내부에서 이 변환을 수행하므로 이중 정의 충돌이 발생한다. 예측값 F가 잘못 계산되어 GOF 플롯에서 CWRES가 체계적 음의 편향("하강 파형 패턴")을 나타낸다.</p>
+  <p><strong>진단 시그니처: "TRANS 이중 선언 편향 파형"</strong> — DV vs IPRED에서 대각선 위쪽에 점 집중 (모델이 농도를 과소추정).</p>
+</div>
+
+<h4 class="sub">D. Assumptions &amp; Boundary Conditions</h4>
+<ul>
+  <li>특수 ADVAN은 1차 속도상수만 지원 → 비선형 분포에는 부적합</li>
+  <li>ADVAN5/7은 선형 전용 → 비선형 소실에는 ADVAN6/8/9/13 사용</li>
+  <li>ADVAN6에서 TOL 미지정 시 실행 중단 (에러: "TOL not specified")</li>
+</ul>
+
+<h4 class="sub">F. Five Cognitive Layers</h4>
+<div class="tbl-wrap"><table>
+<tr><th>레이어</th><th>내용</th></tr>
+<tr><td><strong>L1 형식적 수학</strong></td><td>ADVAN4 TRANS4 내부 변환: $k_{10}=CL/V_2$, $k_{23}=Q/V_2$, $k_{32}=Q/V_3$. 2구획 ODE: $\frac{dA_2}{dt}=k_aA_1-(k_{10}+k_{23})A_2+k_{32}A_3$</td></tr>
+<tr><td><strong>L2 기하학적 직관</strong></td><td>Log-농도 vs 시간: 직선 하나 → 1구획, 꺾이는 두 직선 → 2구획. α상 기울기가 가파를수록 말초 분포 빠름</td></tr>
+<tr><td><strong>L3 구조적 동일성</strong></td><td>ADVAN = 전기회로 토폴로지, TRANS = R·C 값 vs 임피던스 값 파라미터화 선택</td></tr>
+<tr><td><strong>L4 생리학적 의미</strong></td><td>V2 = 혈액+혈관풍부조직, V3 = 근육·지방 조직, Q = 혈액-말초 물질교환 속도(장기 관류량 근사)</td></tr>
+<tr><td><strong>L5 실무 투영</strong></td><td>S2 = V2/1000 (dose:mg, Cp:ng/mL) — 단위 불일치는 CWRES 전체 체계적 편향의 주범. NDA 파라미터 단위 명시 필수</td></tr>
+</table></div>
+
+<h4 class="sub">G. Zettelkasten Atom</h4>
+<pre style="font-size:.74rem">---
+aliases: [특수 ADVAN, TRANS 서브루틴, 척도 파라미터]
+tags: [pharmacometrics/nonmem, nonmem/coding/advan]
+source: "PIPET Ch.3-4 pp.32-53 / Owen Ch.3 pp.35-44"
+---
+ADVAN은 구획 수·투여 경로를 선택하고, TRANS는 파라미터 언어를 결정한다.
+TRANS4 선택 시 $PK에 KE=CL/V2 중복 기술 → 이중 정의 충돌 발생.
+S2=V2/1000은 dose(mg)/Cp(ng/mL) 단위 불일치 해소를 위한 필수 코드.</pre>
+</div>
+
+<!-- CARD 3 -->
+<div class="concept-card" id="card-3">
+<h3 class="card-title">③ $PRED — ADVAN을 쓰지 않는 코딩</h3>
+
+<div class="big-idea">
+  <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+  <p>PK/PD 모델링에서 Emax, Sigmoid-Emax, QTc-농도 관계 등 ADVAN 체계로 표현할 수 없는 모델이 빈번하다. 이때 $PRED를 모르면 NONMEM 사용 범위가 PK로만 제한되고, PK/PD 통합 모델링에서 주도권을 잃는다.</p>
+  <p>$PRED는 NONMEM에게 "PK 패키지를 내려놓고, 내가 직접 수식을 쓸게"라고 선언하는 것이다 — 그 대가로 AMT, CMT 같은 PREDPP 약속어가 사라지고, 데이터셋에서 용량을 매 행마다 공변량처럼 반복 입력해야 한다.</p>
+  <p>$PRED는 자유도가 높지만 책임이 무겁다 — 미분방정식 풀이가 없으므로 해석해를 직접 넣어야 한다.</p>
+</div>
+
+<h4 class="sub">B. Derivation / Code Structure</h4>
+<p><strong>Sigmoidal-Emax PD 모델 — $PRED 완전 코드 (PIPET 코드 7.1):</strong></p>
+<pre><span style="color:#c9a84c">$PROB</span>  Sigmoidal PD Model
+<span style="color:#c9a84c">$DATA</span>  ../sigmoidal_effect.csv IGNORE=@
+<span style="color:#c9a84c">$INPUT</span> ID CP RESP=DV      <span style="color:#5a6060">; CP=혈중농도, RESP=약효(DV로 재명명)</span>
+<span style="color:#c9a84c">$PRED</span>
+  E0   = THETA(1)          <span style="color:#5a6060">; 기저효과</span>
+  EMAX = THETA(2)          <span style="color:#5a6060">; 최대효과</span>
+  C50  = THETA(3)*EXP(ETA(1)) <span style="color:#5a6060">; EC50 (IIV 있음)</span>
+  GAM  = THETA(4)          <span style="color:#5a6060">; Hill 계수 (IIV 추정 어려움)</span>
+  IPRD = E0 + (EMAX-E0)*CP**GAM / (CP**GAM + C50**GAM)
+  Y    = IPRD + EPS(1)     <span style="color:#5a6060">; $ERROR 없이 여기서 Y 직접 정의</span></pre>
+<span class="mcite">[출처: PIPET, Ch.7, p.71 코드 7.1]</span>
+
+<p><strong>ADVAN2 vs $PRED 데이터셋 구조 차이 (PIPET 그림 7.2):</strong></p>
+<div class="tbl-wrap"><table>
+<tr><th>ADVAN2 방식</th><th>$PRED 방식</th></tr>
+<tr><td>AMT=150000을 투여 행에만 한 번 기재<br>(PREDPP가 이후 시간 내내 "기억")</td><td>AMT(용량)을 모든 관찰 행에 공변량처럼 반복 기재<br>(PREDPP 적분 엔진 없으므로)</td></tr>
+</table></div>
+<span class="mcite">[출처: PIPET, Ch.7, p.70 그림 7.2]</span>
+
+<h4 class="sub">C. Structural Necessity</h4>
+<p>$PRED가 이 구조를 가져야 하는 이유: PREDPP를 호출하지 않으면 NONMEM의 내부 시간 적분 엔진이 동작하지 않는다. 따라서 모든 시점에서의 예측값을 해석해로 직접 계산하고, 최종적으로 <code>Y</code>를 정의하여 목적함수 계산기에 전달해야 한다. $ERROR 블록의 역할(잔차 정의)을 $PRED 내부에서 동시에 수행한다.</p>
+
+<h4 class="sub">D. Assumptions &amp; Boundary Conditions</h4>
+<ul>
+  <li>미분방정식 형태의 모델에는 사용 불가 — 해석해 필요</li>
+  <li>용량은 데이터셋 모든 관찰 행에 상수로 존재해야 함</li>
+  <li>$PRED와 $SUBROUTINE은 같은 제어구문에 공존 불가</li>
+</ul>
+
+<h4 class="sub">F. Five Cognitive Layers</h4>
+<div class="tbl-wrap"><table>
+<tr><th>레이어</th><th>내용</th></tr>
+<tr><td><strong>L1 형식적 수학</strong></td><td>1구획 경구 해석해: $C(t)=\frac{D\cdot k_a}{V(k_a-k_{10})}\left(e^{-k_{10}t}-e^{-k_a t}\right)$. $PRED의 IPRED 라인이 이 수식의 직접 FORTRAN 번역</td></tr>
+<tr><td><strong>L2 기하학적 직관</strong></td><td>$PRED 모델은 파라미터 탐색 경계가 없다 — THETA 하한 미설정 시 음수 EC50도 탐색 대상이 됨</td></tr>
+<tr><td><strong>L3 구조적 동일성</strong></td><td>$PRED = GLM 커스텀 링크 함수: Y = g(θ,x) + ε 형태를 사용자가 직접 정의</td></tr>
+<tr><td><strong>L4 생리학적 의미</strong></td><td>Hill 계수(GAM)는 수용체 협동성: GAM>1 양성, GAM=1 Langmuir 등온흡착, GAM&lt;1 음성 협동</td></tr>
+<tr><td><strong>L5 실무 투영</strong></td><td>ICH E14 후속 지침에서 QTc-노출 관계 분석을 $PRED 기반 Hill 모델로 구현하는 것이 규제 표준화 추세</td></tr>
+</table></div>
+</div>
+
+<!-- CARD 4 -->
+<div class="concept-card" id="card-4">
+<h3 class="card-title">④ $ERROR 잔차변이 구조와 $THETA/$OMEGA/$SIGMA 초기값 전략</h3>
+
+<div class="big-idea">
+  <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+  <p>잔차변이 구조를 잘못 선택하면 — 고농도에서 비례오차가 지배적임에도 가법오차를 적용하면 — CWRES가 농도에 비례하여 증가하는 깔때기 패턴이 나타나고, $OMEGA 추정값이 과대추정되어 모든 하위 분석(시뮬레이션, VPC)이 오염된다.</p>
+  <p>$ERROR는 "측정 오차의 성격"을 모델링하는 것이다 — 절대 오차가 농도와 무관하면 가법(additive), 비례하면 비례(CCV), 둘 다라면 혼합(combined) 모델.</p>
+  <p>저농도(검출 한계 근처)에서는 가법 오차, 고농도에서는 비례 오차가 지배적인 경우가 많다 — 이것이 혼합 잔차 모델을 권장하는 생물학적 이유다.</p>
+</div>
+
+<h4 class="sub">B. Code Structure — 주요 잔차 구조</h4>
+<pre><span style="color:#5a6060">; 1. 가법 잔차 — 저농도/절대 측정오차 일정</span>
+Y = F + EPS(1)                            <span style="color:#5a6060">; Var(Y) = σ²</span>
+
+<span style="color:#5a6060">; 2. 비례(CCV) 잔차 — 고농도/상대오차 일정</span>
+Y = F*(1 + EPS(1))                        <span style="color:#5a6060">; Var(Y) = F²·σ²</span>
+
+<span style="color:#5a6060">; 3. W함수 혼합 잔차 (권장 패턴 — SIGMA 1 FIX)</span>
+W     = SQRT(THETA(3)**2 + THETA(4)**2*IPRED**2)
+IRES  = DV - IPRED
+IWRES = IRES/W
+Y     = IPRED + W*EPS(1)
+<span style="color:#5a6060">; THETA(3) = 가법 SD (단위: 농도), THETA(4) = 비례 CV (무단위)</span>
+<span style="color:#5a6060">; $SIGMA 1 FIX — W가 이미 잔차 크기 조절, SIGMA=1은 정규화</span></pre>
+<span class="mcite">[출처: PIPET, Ch.3, pp.36–37] [출처: Owen, Ch.3, pp.45–47]</span>
+
+<p>$OMEGA 초기값 결정 공식:</p>
+$$\omega^2 = \left(\frac{\%CV}{100}\right)^2 \quad \Rightarrow \quad \omega^2_{CL} = (0.30)^2 = 0.09$$
+<span class="mcite">[출처: Owen, Ch.3, p.53]</span>
+
+<h4 class="sub">C. Structural Necessity</h4>
+<p>EXP(ETA) 형태의 IIV 모델이 선호되는 이유: ETA가 아무리 큰 음수여도 $CL_i = TVCL \cdot e^{\eta_i} > 0$이 항상 보장된다. 반면 비례 모델 $CL_i = TVCL \cdot (1+\eta_i)$에서 $\eta_i < -1$이면 음수 CL이 발생 — 약동학 파라미터는 물리적으로 양수만 허용되므로 지수 모델이 구조적 필수다.</p>
+
+<h4 class="sub">D. Assumptions &amp; Boundary Conditions</h4>
+<ul>
+  <li>$OMEGA/$SIGMA 초기값은 분산(variance) 입력 — 표준편차(SD) 아님</li>
+  <li>$OMEGA/$SIGMA에 0 사용 시 반드시 FIX 필요 (추정 0은 경계값 오류)</li>
+  <li>$OMEGA BLOCK에서 FIXED 하나라도 있으면 블록 전체 FIXED 처리</li>
+</ul>
+</div>
+</section>
+
+<!-- ═══════════════════ §3 ═══════════════════ -->
+<section class="section" id="section-3">
+<h2 class="sec-head">§3 — 구조적 동형성 지도</h2>
+
+<div class="iso-preamble">
+  <strong>공통 원리:</strong> NM-TRAN 제어구문의 레이어드 아키텍처($DATA→$PK→$ERROR→$THETA)는 소프트웨어 공학의 관심사 분리(Separation of Concerns) 원칙의 완벽한 사례이며, 동시에 통계학의 계층적 모델(hierarchical model) 구조와 1:1로 대응한다.<br><br>
+  <strong>왜 이 형태인가:</strong> 고정효과($\theta$)·개인간변이($\eta$)·잔차($\varepsilon$)의 3층 구조는 서로 다른 변산성 원천을 분리하여 독립적으로 추정하기 위한 수학적 필연이다. 이를 단일 레코드로 뭉치면 파라미터 식별성(identifiability)이 소멸한다.<br><br>
+  <strong>예측 전이:</strong> 베이지안 계층 모델(Stan/PyMC)을 이해하는 통계학자는 NONMEM의 $THETA/$OMEGA/$SIGMA 구조를 prior-likelihood-hyperprior의 언어로 즉각 번역할 수 있다.
+</div>
+
+<div class="layer-section">
+<div class="layer-label">Layer 1 — Hub-and-Spoke SVG</div>
+<svg viewBox="0 0 800 600" width="100%" style="background:rgba(9,9,14,0.5);border:1px solid var(--border);border-radius:8px;display:block">
+  <defs>
+    <marker id="arrowG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="rgba(201,168,76,0.5)"/>
+    </marker>
+  </defs>
+  <!-- Hub -->
+  <circle cx="400" cy="300" r="62" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="2"/>
+  <text x="400" y="293" text-anchor="middle" fill="#c9a84c" font-family="Cormorant Garamond,serif" font-size="14" font-weight="700">NM-TRAN</text>
+  <text x="400" y="311" text-anchor="middle" fill="#c9a84c" font-family="Cormorant Garamond,serif" font-size="14" font-weight="700">제어구문</text>
+  <!-- Lines -->
+  <line x1="400" y1="238" x2="400" y2="118" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+  <line x1="462" y1="261" x2="572" y2="193" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+  <line x1="462" y1="340" x2="572" y2="408" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+  <line x1="338" y1="340" x2="228" y2="408" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+  <line x1="338" y1="261" x2="228" y2="193" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+  <!-- Line labels -->
+  <text x="425" y="180" text-anchor="middle" fill="rgba(201,168,76,0.7)" font-size="10" font-family="IBM Plex Mono,monospace">μ = THETA</text>
+  <text x="555" y="225" text-anchor="middle" fill="rgba(201,168,76,0.7)" font-size="10" font-family="IBM Plex Mono,monospace">ω² = OMEGA</text>
+  <text x="555" y="385" text-anchor="middle" fill="rgba(201,168,76,0.7)" font-size="10" font-family="IBM Plex Mono,monospace">σ² = SIGMA</text>
+  <text x="245" y="385" text-anchor="middle" fill="rgba(201,168,76,0.7)" font-size="10" font-family="IBM Plex Mono,monospace">f(·) = $PK</text>
+  <text x="245" y="225" text-anchor="middle" fill="rgba(201,168,76,0.7)" font-size="10" font-family="IBM Plex Mono,monospace">g(·) = $ERROR</text>
+  <!-- Node 1: 통계학 -->
+  <rect x="310" y="42" width="180" height="75" rx="8" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.2"/>
+  <text x="400" y="68" text-anchor="middle" fill="#ede8df" font-size="12" font-weight="700" font-family="Noto Sans KR,sans-serif">통계학적 의미</text>
+  <text x="400" y="86" text-anchor="middle" fill="#a8a098" font-size="10" font-family="IBM Plex Mono,monospace">μ, ω², σ²</text>
+  <text x="400" y="104" text-anchor="middle" fill="#7a7060" font-size="9">계층적 베이지안 모델과 동형</text>
+  <!-- Node 2: 수학 -->
+  <rect x="590" y="148" width="175" height="75" rx="8" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.2"/>
+  <text x="678" y="174" text-anchor="middle" fill="#ede8df" font-size="12" font-weight="700" font-family="Noto Sans KR,sans-serif">수학적 구조</text>
+  <text x="678" y="192" text-anchor="middle" fill="#a8a098" font-size="10" font-family="IBM Plex Mono,monospace">ODE + MLE</text>
+  <text x="678" y="210" text-anchor="middle" fill="#7a7060" font-size="9">$DES ↔ dA/dt 1:1 변환</text>
+  <!-- Node 3: 규제 -->
+  <rect x="590" y="378" width="175" height="75" rx="8" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.2"/>
+  <text x="678" y="404" text-anchor="middle" fill="#ede8df" font-size="12" font-weight="700" font-family="Noto Sans KR,sans-serif">규제 의미</text>
+  <text x="678" y="422" text-anchor="middle" fill="#a8a098" font-size="10" font-family="IBM Plex Mono,monospace">NDA/IND 제출</text>
+  <text x="678" y="440" text-anchor="middle" fill="#7a7060" font-size="9">$COV → RSE% 의무 보고</text>
+  <!-- Node 4: 생리학 -->
+  <rect x="35" y="378" width="175" height="75" rx="8" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.2"/>
+  <text x="122" y="404" text-anchor="middle" fill="#ede8df" font-size="12" font-weight="700" font-family="Noto Sans KR,sans-serif">생리학적 투영</text>
+  <text x="122" y="422" text-anchor="middle" fill="#a8a098" font-size="10" font-family="IBM Plex Mono,monospace">CL, V, KA</text>
+  <text x="122" y="440" text-anchor="middle" fill="#7a7060" font-size="9">장기·과정·병태생리 반영</text>
+  <!-- Node 5: 소프트웨어 -->
+  <rect x="35" y="148" width="175" height="75" rx="8" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.2"/>
+  <text x="122" y="174" text-anchor="middle" fill="#ede8df" font-size="12" font-weight="700" font-family="Noto Sans KR,sans-serif">소프트웨어 공학</text>
+  <text x="122" y="192" text-anchor="middle" fill="#a8a098" font-size="10" font-family="IBM Plex Mono,monospace">관심사 분리</text>
+  <text x="122" y="210" text-anchor="middle" fill="#7a7060" font-size="9">데이터·모델·추정·출력 분리</text>
+</svg>
+</div>
+
+<div class="layer-section">
+<div class="layer-label">Layer 2 — Structural Alignment Matrix</div>
+<div class="tbl-wrap"><table>
+<tr><th>비교 항목</th><th>수학 개념</th><th>NONMEM 코드</th><th>통계적 의미</th><th>생리적 실체</th></tr>
+<tr><td><strong>고정효과</strong></td><td>$\mu$, $\theta$</td><td><code>THETA(n)</code></td><td>MLE 점추정값, 집단 대표값</td><td>정상 성인 CL·Vd</td></tr>
+<tr><td><strong>개체간 분산</strong></td><td>$\omega^2$</td><td><code>OMEGA(n,n)</code></td><td>BSV 대각 원소</td><td>개인 CYP3A4 발현량 차이</td></tr>
+<tr><td><strong>잔차 분산</strong></td><td>$\sigma^2$</td><td><code>SIGMA(n,n)</code></td><td>측정+모델 오차 복합</td><td>분석기기 오차 + 모델 불완전성</td></tr>
+<tr><td><strong>IIV 모델</strong></td><td>$CL_i = \mu \cdot e^{\eta_i}$</td><td><code>CL=TVCL*EXP(ETA(1))</code></td><td>로그정규분포</td><td>CL 항상 양수 보장</td></tr>
+<tr><td><strong>모델 구조</strong></td><td>ODE $\frac{dA}{dt}=f(A,\theta)$</td><td><code>$DES: DADT(n)=...</code></td><td>상태공간 표현</td><td>구획 간 약물 이동 속도</td></tr>
+<tr><td><strong>초기값</strong></td><td>$\theta_0$, $\omega_0^2$</td><td><code>$THETA (0, val)</code></td><td>최적화 시작점</td><td>EDA 또는 NCA에서 사전 추정</td></tr>
+</table></div>
+</div>
+
+<div class="layer-section">
+<div class="layer-label">Layer 3 — Parameter Space ↔ Clinical Space 토글</div>
+<button class="toggle-btn" id="normToggle" onclick="toggleNorm()">📐 수학 공간 → 임상 공간 전환</button>
+<div class="norm-wrap">
+<canvas id="normCanvas"></canvas>
+<p style="font-size:.78rem;color:var(--muted);margin-top:.5rem" id="normLabel">수학 공간: 각 파라미터의 분산-공분산 행렬 원소 (OMEGA 대각)</p>
+</div>
+</div>
+
+<div class="layer-section">
+<div class="layer-label">Layer 4 — 예측 전이 카드</div>
+<div class="transfer-card">
+  <div class="transfer-q" onclick="toggleTransfer(this)">
+    <span>🔄 전이 질문 1: 통계학자의 Stan 지식으로 NONMEM $OMEGA BLOCK을 즉각 해석할 수 있는가?</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="transfer-a">
+    <div class="transfer-step"><strong>① 출발 도메인 (베이지안 통계학):</strong> Stan의 hierarchical model에서 개인별 파라미터 $\theta_i \sim \mathcal{N}(\mu, \Sigma)$로 정의할 때, $\Sigma$는 공분산 행렬로 개인간 상관을 표현한다.</div>
+    <div class="transfer-step"><strong>② 공통 수학 구조:</strong> NONMEM의 $\eta_i \sim \mathcal{N}(0, \Omega)$에서 $\Omega$ 행렬이 정확히 Stan의 $\Sigma$에 해당한다. $\Omega$의 대각 원소 = 각 파라미터의 IIV 분산, 비대각 원소 = 두 파라미터 간 공분산.</div>
+    <div class="transfer-step"><strong>③ 대응 현상 도출:</strong> Stan에서 CL과 V 사이의 양의 상관($\rho > 0$)을 표현하는 사람은 NONMEM에서 <code>$OMEGA BLOCK(2) 0.09 / 0.03 0.16</code>이 CL-V 공분산 0.03을 추정한다는 것을 즉각 이해한다.</div>
+  </div>
+</div>
+<div class="transfer-card">
+  <div class="transfer-q" onclick="toggleTransfer(this)">
+    <span>🔄 전이 질문 2: 소프트웨어 엔지니어의 "관심사 분리" 지식으로 $PRED와 ADVAN의 Trade-off를 예측할 수 있는가?</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="transfer-a">
+    <div class="transfer-step"><strong>① 출발 도메인 (소프트웨어 공학):</strong> 프레임워크(Rails, Django)는 관용 패턴(ADVAN)을 제공하여 빠른 개발을 가능케 하지만, 특수 요구사항에는 커스텀 코드($PRED)가 필요하다. 프레임워크를 사용하면 "설정보다 관습(convention over configuration)"이 적용된다.</div>
+    <div class="transfer-step"><strong>② 공통 수학 구조:</strong> 특수 ADVAN은 "프레임워크 모드" — 사전 정의된 ODE를 빠르게 호출. $PRED는 "커스텀 모드" — 사용자가 모든 로직을 직접 구현. 두 경우 모두 최종 출력(Y, 목적함수)은 동일한 NONMEM 추정 엔진에 의해 처리된다.</div>
+    <div class="transfer-step"><strong>③ 대응 현상 도출:</strong> 소프트웨어 엔지니어는 "$PRED로 다회 투여를 구현하면 superposition을 수동으로 코딩해야 한다"는 것을 — "프레임워크 기능을 커스텀 모드에서 직접 구현해야 한다"는 원칙으로부터 즉각 예측한다.</div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════ §4 ═══════════════════ -->
+<section class="section" id="section-4">
+<h2 class="sec-head">§4 — 인터랙티브 시뮬레이터</h2>
+<p>ADVAN2 TRANS2 기반 1구획 경구 PK 모델 시뮬레이터. 파라미터 슬라이더 조작 시 농도-시간 곡선과 NONMEM 제어구문 코드가 실시간 업데이트된다.</p>
+
+<div class="sim-container">
+<div class="sim-title">ADVAN2 TRANS2 — 1구획 경구 PK 시뮬레이터</div>
+
+<div class="preset-row">
+  <button class="btn" onclick="applyPreset('owen')" title="Owen Ch.3 예시값: CL=3.9, V=52.1, KA=0.987">Owen 기본값</button>
+  <button class="btn" onclick="applyPreset('hv')" title="건강한 성인 일반 항생제 (문헌 기반 일반화 값)">정상 성인</button>
+  <button class="btn" onclick="applyPreset('renal')" title="CrCl=30 mL/min 신부전 시뮬레이션 (신장 청소율 70% 감소)">신부전</button>
+  <button class="btn" onclick="applyPreset('hepatic')" title="Child-Pugh B 간경변 (간 청소율 40% 감소)">간경변</button>
+  <button class="btn" onclick="applyPreset('flip')" title="Flip-flop 경보: KA ≈ CL/V">Flip-flop</button>
+</div>
+
+<div class="sim-grid">
+  <div class="slider-panel">
+    <div class="slider-group">
+      <label>CL <em style="color:var(--muted)">(L/h)</em><span class="val" id="lbl-cl">3.90</span></label>
+      <input type="range" id="sl-cl" min="0.3" max="30" step="0.1" value="3.9" oninput="onSlider('cl',this)">
+    </div>
+    <div class="slider-group">
+      <label>V <em style="color:var(--muted)">(L)</em><span class="val" id="lbl-vd">52.1</span></label>
+      <input type="range" id="sl-vd" min="5" max="300" step="1" value="52.1" oninput="onSlider('vd',this)">
+    </div>
+    <div class="slider-group">
+      <label>KA <em style="color:var(--muted)">(h⁻¹)</em><span class="val" id="lbl-ka">0.987</span></label>
+      <input type="range" id="sl-ka" min="0.05" max="5" step="0.01" value="0.987" oninput="onSlider('ka',this)">
+    </div>
+    <div class="slider-group">
+      <label>Dose <em style="color:var(--muted)">(mg)</em><span class="val" id="lbl-dose">100</span></label>
+      <input type="range" id="sl-dose" min="10" max="1000" step="10" value="100" oninput="onSlider('dose',this)">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="btnLog" onclick="toggleLog()">Log Y축</button>
+      <button class="btn" id="btnAUC" onclick="toggleAUC()" style="background:rgba(201,168,76,0.1)">AUC 표시</button>
+      <button class="btn" id="btnPhantom" onclick="togglePhantom()">2구획 Phantom</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="saveLine()">기준선 저장</button>
+      <button class="btn danger" onclick="clearRef()">기준선 해제</button>
+    </div>
+
+    <div class="derived-panel">
+      <div class="derived-item"><div class="dk">t½ (h)</div><div class="dv" id="dv-thalf">—</div></div>
+      <div class="derived-item"><div class="dk">Tmax (h)</div><div class="dv" id="dv-tmax">—</div></div>
+      <div class="derived-item"><div class="dk">Cmax (mg/L)</div><div class="dv" id="dv-cmax">—</div></div>
+      <div class="derived-item"><div class="dk">AUC (mg·h/L)</div><div class="dv" id="dv-auc">—</div></div>
+    </div>
+    <div class="warn-banner" id="warnBanner"></div>
+  </div>
+
+  <div>
+    <div class="canvas-wrap"><canvas id="simCanvas"></canvas></div>
+    <div class="cursor-label" id="cursorLabel">그래프 위에 마우스를 올리면 시간·농도를 읽습니다</div>
+  </div>
+</div>
+
+<!-- Live NONMEM code -->
+<h4 class="sub" style="margin-top:1.2rem">실시간 NONMEM 제어구문 (ADVAN2 TRANS2)</h4>
+<div class="code-display" id="liveCode"></div>
+
+<div class="mission-panel">
+  <div class="mission-item"><strong>🎯 미션 1: S2 단위 통일 탐구</strong><br>
+  기본값(CL=3.9, V=52.1)에서 기준선을 저장한 뒤, S2 오류를 시뮬레이션: V를 10배 증가(V=521)시키고 코드에서 S2=V2/1000이 어떻게 변하는지 관찰하라. 농도가 어떻게 달라지는가?<br>
+  <em style="color:var(--muted)">힌트: 단위 불일치 시 예측 농도는 몇 배 달라지는가?</em></div>
+  <div class="mission-item"><strong>🎯 미션 2: Flip-flop 경보 탐지</strong><br>
+  "Flip-flop" 프리셋 적용 후 경고 배너를 확인하라. KA ≈ CL/V (= k)일 때 흡수상과 소실상이 구별되지 않는다. 이 상태에서 KA를 10배 높이면 곡선이 어떻게 변하는가?<br>
+  <em style="color:var(--muted)">힌트: 이 상황에서 KA와 k를 교환해도 동일한 곡선이 나온다 — 이것이 flip-flop의 본질이다.</em></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════ §5 ═══════════════════ -->
+<section class="section" id="section-5">
+<h2 class="sec-head">§5 — 혼동 쌍 해부</h2>
+
+<!-- PAIR 1 -->
+<div id="pair-1" style="scroll-margin-top:80px">
+<h3 class="card-title" style="margin:1.5rem 0 .8rem">혼동 쌍 1: 특수 ADVAN vs 일반 ADVAN (ADVAN5/6)</h3>
+<div class="tbl-wrap"><table>
+<tr><th>비교 차원</th><th>특수 ADVAN (ADVAN1–4, 10–12)</th><th>일반 ADVAN (ADVAN5/6/7/8/9/13)</th></tr>
+<tr><td><strong>표면적 유사성</strong></td><td colspan="2"><em>둘 다 $SUBROUTINE에서 선택하고 $PK를 사용</em></td></tr>
+<tr><td><strong>수식/코드 형태</strong></td><td><code>$SUBR ADVAN4 TRANS4</code><br>→ $MODEL, $DES 불필요</td><td><code>$SUBR ADVAN6 TOL=4</code><br>→ $MODEL + $DES 필수</td></tr>
+<tr><td><strong>구조적 지시체</strong></td><td>미리 구현된 표준 PK 구획 모델</td><td>사용자가 $MODEL로 구획 정의 + $DES로 ODE 직접 기술</td></tr>
+<tr><td><strong>변화 방향</strong></td><td>모델 구조 변경 시 ADVAN 번호를 바꿔야 함</td><td>$DES 내 ODE 수정만으로 유연하게 변경</td></tr>
+<tr><td><strong>임상/모델링 결과</strong></td><td colspan="2">모약물-대사체 동시 분석, MM 비선형 소실, 장간순환 모델에 특수 ADVAN을 고집하면 모델 구현 자체가 불가능</td></tr>
+<tr class="mem-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2">특수 ADVAN은 "기성복" — 빠르고 편하지만 치수(구조)가 고정되어 있다. 일반 ADVAN은 "맞춤복" — 느리고 손이 많이 가지만 어떤 체형(모델)도 소화한다. 비선형 소실이 보이는 순간 기성복 진열대를 벗어나야 한다.</td></tr>
+</table></div>
+</div>
+
+<!-- PAIR 2 -->
+<div id="pair-2" style="scroll-margin-top:80px">
+<h3 class="card-title" style="margin:1.5rem 0 .8rem">혼동 쌍 2: ETA 지수 모델 vs 비례 모델</h3>
+<div class="tbl-wrap"><table>
+<tr><th>비교 차원</th><th>지수(exponential) IIV 모델</th><th>비례(proportional/CCV) IIV 모델</th></tr>
+<tr><td><strong>표면적 유사성</strong></td><td colspan="2"><em>둘 다 개인간변이를 표현하며, FO 근사 하에서 수학적으로 동치</em></td></tr>
+<tr><td><strong>수식/코드 형태</strong></td><td><code>CL = TVCL * EXP(ETA(1))</code><br>$CL_i = TVCL \cdot e^{\eta_i}$</td><td><code>CL = TVCL * (1 + ETA(1))</code><br>$CL_i = TVCL \cdot (1+\eta_i)$</td></tr>
+<tr><td><strong>구조적 지시체</strong></td><td>개인 파라미터가 <strong>로그정규분포</strong> → 항상 양수 보장</td><td>개인 파라미터가 <strong>정규분포</strong> → ETA&lt;-1일 때 음수 가능</td></tr>
+<tr><td><strong>변화 방향</strong></td><td>ETA가 극단적 음수여도 CL_i > 0 항상 유지</td><td>ETA &lt; -1이면 CL_i &lt; 0 발생 → 추정 오류 또는 비현실적 결과</td></tr>
+<tr><td><strong>임상/모델링 결과</strong></td><td colspan="2">비례 모델 사용 시 음수 파라미터 발생 가능, $COV step 실패로 이어질 수 있음</td></tr>
+<tr class="mem-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2">"지수는 울타리, 비례는 열린 벌판" — 지수 모델은 ETA가 아무리 작아도 파라미터가 0 아래로 내려가지 못하도록 울타리를 친다. 비례 모델은 ETA가 -1.1이 되는 순간 울타리 밖(음수 CL)으로 나가버린다.</td></tr>
+</table></div>
+</div>
+
+<!-- PAIR 3 — CRITICAL BLOW -->
+<div id="pair-3" style="scroll-margin-top:80px">
+<h3 class="card-title" style="margin:1.5rem 0 .8rem">혼동 쌍 3: $SIGMA 직접 추정 vs $THETA로 잔차 추정 (⚠️ Critical Blow)</h3>
+<div class="tbl-wrap"><table>
+<tr><th>비교 차원</th><th>$SIGMA 직접 추정</th><th>$THETA로 추정 + $SIGMA 1 FIX</th></tr>
+<tr><td><strong>표면적 유사성</strong></td><td colspan="2"><em>둘 다 잔차변이의 크기를 NONMEM으로 추정</em></td></tr>
+<tr><td><strong>수식/코드 형태</strong></td><td><code>Y=F*(1+EPS(1))</code><br><code>$SIGMA 0.04</code> → $\sigma^2=0.04$ 추정</td><td><code>W=SQRT(THETA(3)**2 + THETA(4)**2*IPRED**2)</code><br><code>$SIGMA 1 FIX</code> → THETA(4)=비례 CV 추정</td></tr>
+<tr><td><strong>구조적 지시체</strong></td><td>$\sigma^2$ = <strong>분산</strong>값이 추정됨 (단위: 농도²)</td><td>THETA(3), THETA(4) = <strong>표준편차/CV 값</strong>이 추정됨</td></tr>
+<tr><td><strong>변화 방향</strong></td><td>잔차 구조 변경 시 $SIGMA 행렬 구조를 바꿔야 함</td><td>W 식만 수정하면 어떤 잔차 구조든 유연하게 표현 가능</td></tr>
+<tr class="crit-blow"><td><strong>💥 치명적 타격</strong></td><td colspan="2">$SIGMA 0.04에서 %CV = $\sqrt{0.04} \times 100 = 20\%$임을 모르고 "잔차변이 4%"로 NDA 임상약리 섹션에 보고하면, 실제 20%CV를 4%CV로 5배 과소 보고하는 오류가 발생하며, 이는 심사관의 Complete Response Letter(CRL) 발행 사유에 해당한다.</td></tr>
+<tr class="mem-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2">"$SIGMA는 분산의 창고, %CV를 보려면 제곱근을 꺼내야 한다. $THETA로 추정할 때는 이미 SD/CV 값이 나오므로 그대로 보고한다."</td></tr>
+</table></div>
+</div>
+</section>
+
+<!-- ═══════════════════ §6 ═══════════════════ -->
+<section class="section" id="section-6">
+<h2 class="sec-head">§6 — 실용 시나리오</h2>
+
+<div class="scenario">
+<h4>Scenario 1: IND 제출을 위한 Phase 1 경구 항암제 PopPK 모델 구축</h4>
+<p><strong>상황:</strong> 신규 BTK 억제제 후보물질 XPK-401의 Phase 1 희소 샘플링 데이터(n=24명, 1인당 3–4 관찰값). 단회·다회 투여 경구 데이터 혼재. Dose=200, 400, 800 mg 3군. EDA에서 1구획으로 충분해 보이나, 고용량군 일부 대상자의 log-Cp 그래프가 굴곡을 보임.</p>
+<p><strong>ADVAN 선택 결정:</strong> 1구획 ADVAN2 TRANS2로 시작 → GOF에서 체계적 오류 없으면 채택. 굴곡이 2구획을 지지하면 ADVAN4 TRANS4로 이동. 데이터 부족으로 Q, V3의 RSE > 100% 예상 시 → 1구획 유지 + sensitivity analysis 병기.</p>
+<p><strong>규제 언어 (IND Module 2.6.4):</strong> "The base structural model was a one-compartment model with first-order absorption and elimination (ADVAN2 TRANS2, NONMEM v7.5). The proportional residual error model was adopted based on the lowest OFV (ΔOFV vs additive: 12.4, p&lt;0.001). Initial estimates for CL and V were derived from NCA (CL/F=3.9 L/h, Vz/F=52.1 L) consistent with the reference dataset (Owen 2014)."</p>
+
+<h4 class="sub" style="margin-top:1.2rem">완전 제어구문 코드</h4>
+<pre><span style="color:#c9a84c">$PROB</span>  XPK401 Phase 1 PopPK — Base Model
+<span style="color:#c9a84c">$INPUT</span> ID TIME AMT DV EVID MDV WT AGE CLCR DOSE
+<span style="color:#c9a84c">$DATA</span>  xpk401_p1.csv IGNORE=#
+<span style="color:#c9a84c">$SUBR</span>  ADVAN2 TRANS2
+<span style="color:#c9a84c">$PK</span>
+  TVCL = THETA(1)
+  TVV  = THETA(2)
+  TVKA = THETA(3)
+  CL   = TVCL * EXP(ETA(1))
+  V    = TVV  * EXP(ETA(2))
+  KA   = TVKA
+  S2   = V/1000    <span style="color:#5a6060">; dose(mg), V(L), DV(ng/mL)</span>
+<span style="color:#c9a84c">$ERROR</span>
+  IPRED = F
+  W     = SQRT(THETA(4)**2 + THETA(5)**2*IPRED**2)
+  IRES  = DV - IPRED
+  IWRES = IRES/W
+  Y     = IPRED + W*EPS(1)
+<span style="color:#c9a84c">$THETA</span>
+  (0, 3.9)   <span style="color:#5a6060">; CL (L/h), NCA-based init</span>
+  (0, 52.1)  <span style="color:#5a6060">; V  (L),   NCA-based init</span>
+  (0, 0.987) <span style="color:#5a6060">; KA (h⁻¹)</span>
+  0.001 FIX  <span style="color:#5a6060">; additive SD (near zero = CCV model)</span>
+  (0, 0.2)   <span style="color:#5a6060">; proportional CV</span>
+<span style="color:#c9a84c">$OMEGA</span>
+  0.09   <span style="color:#5a6060">; IIV CL (~30%CV)</span>
+  0.16   <span style="color:#5a6060">; IIV V  (~40%CV)</span>
+<span style="color:#c9a84c">$SIGMA</span>  1 FIX
+<span style="color:#c9a84c">$EST</span>    NOABORT MAXEVAL=9999 METHOD=1 INTER PRINT=5
+<span style="color:#c9a84c">$COV</span>    PRINT=E UNCONDITIONAL
+<span style="color:#c9a84c">$TABLE</span>  ID TIME AMT DV IPRED IRES CWRES ONEHEADER NOPRINT FILE=sdtab001
+<span style="color:#c9a84c">$TABLE</span>  ID ETA1 ETA2 CL V KA ONEHEADER NOPRINT FILE=patab001
+<span style="color:#c9a84c">$TABLE</span>  ID WT AGE CLCR ONEHEADER NOPRINT FILE=cotab001</pre>
+</div>
+
+<div class="scenario" style="border-left-color:var(--accent)">
+<h4>Scenario 2: $COV Step 실패 — 디버깅 의사결정 트리</h4>
+<p><strong>상황:</strong> NONMEM 실행 결과: <code>MINIMIZATION SUCCESSFUL / COVARIANCE STEP ABORTED</code> + 경고 <code>PARAMETER ESTIMATE IS NEAR ITS BOUNDARY</code></p>
+
+<p><strong>단계별 진단:</strong></p>
+<ol>
+  <li><strong>PRINT=5 출력에서 gradient 확인</strong> — gradient가 0.000인 파라미터가 있으면 해당 파라미터가 모델에 기여하지 않음 (데이터 부족 또는 불필요한 파라미터)</li>
+  <li><strong>최종 추정값과 초기값 비교</strong> — 100배 이상 차이나면 "NEAR BOUNDARY" 경고 발생. 해결: NCA 또는 EDA로 초기값 재설정</li>
+  <li><strong>$COV UNCONDITIONAL 추가</strong> — 추정 단계 성공 여부 무관하게 $COV step 강제 실행. RSE가 너무 높으면(>50%) 파라미터 삭제 또는 모델 단순화</li>
+  <li><strong>$EST NOTBT NOOBT NOSBT 추가</strong> — 경계 검사 비활성화. 임시방편이므로 근본 원인 해결 병행 필수</li>
+  <li><strong>$OMEGA 행렬 단순화</strong> — BLOCK → 대각, IIV 항목 순차 제거하며 수렴 확인</li>
+</ol>
+</div>
+
+<h3 class="card-title" style="margin:1.8rem 0 1rem">Diagnostic Pathology — 진단 병리학</h3>
+
+<div class="diag-sig">
+  <div class="sig-name">① TRANS 이중 선언 편향 파형 (Double-declaration Bias Pattern)</div>
+  <p><strong>GOF 플롯 패턴:</strong> DV vs IPRED에서 대각선 위쪽에 점 집중 (IPRED가 DV보다 일관되게 낮음). CWRES vs TIME에서 체계적 음의 편향 (-2 이하 다수). DV vs PRED는 정상적으로 보일 수 있음.</p>
+  <p><strong>기계론적 원인:</strong> ADVAN4 TRANS4 사용 중 $PK에 KE=CL/V2 등을 중복 기술 → NONMEM 내부 파라미터 값이 이중으로 할당되어 예측 농도가 실제보다 낮게 계산됨.</p>
+  <p><strong>해결 방향:</strong> $PK에서 KE, K12, K21 등 TRANS가 자동 계산하는 속도상수 라인을 모두 제거. $SUBROUTINE 가이드 참조하여 해당 TRANS가 어떤 파라미터를 자동 처리하는지 확인.</p>
+  <p><strong>η-shrinkage:</strong> 이 오류 발생 시 η-shrinkage가 비정상적으로 높게 나타나는 경우가 많음 (>40%) — 모델이 잘못된 예측을 보상하기 위해 ETA가 극단값으로 수축.</p>
+</div>
+
+<div class="diag-sig">
+  <div class="sig-name">② S2 단위 불일치 전역 편향 (Scale Mismatch Global Bias)</div>
+  <p><strong>GOF 플롯 패턴:</strong> DV vs IPRED에서 모든 점이 대각선에서 1000배 이상 이격. OFV가 매우 크게 나타남. 추정 파라미터가 초기값에서 수렴하지 않거나 극단값으로 발산.</p>
+  <p><strong>기계론적 원인:</strong> 투여 용량 단위(mg)와 관찰 농도 단위(ng/mL) 불일치. 예를 들어 S2=V2 대신 S2=V2/1000이 필요한데 빠뜨린 경우. NONMEM의 예측 농도가 실제 DV보다 1000배 낮게 계산됨.</p>
+  <p><strong>해결 방향:</strong> $PK에서 S2(또는 Sn) 값을 검토. 투여 단위(AMT)와 관찰 단위(DV)를 확인하고 Sn = V × usv 공식으로 올바른 척도 파라미터를 계산. Owen Ch.3의 unit balancing 절차 참조.</p>
+  <p><strong>ε-shrinkage:</strong> S2 오류 시 ε-shrinkage 역시 극단값 — 잔차가 모두 동일한 방향으로 치우쳐 EPS의 개인 기여가 소멸.</p>
+</div>
+</section>
+
+<!-- ═══════════════════ §7 ═══════════════════ -->
+<section class="section" id="section-7">
+<h2 class="sec-head">§7 — 자기 테스트: 능동 회상 모듈</h2>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">○</span> Q1. NONMEM 시스템의 세 구성요소(NM-TRAN, PREDPP, NONMEM)의 역할을 각각 한 문장으로 설명하라.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    <strong>NM-TRAN:</strong> 사용자 제어구문을 파싱·문법검사하여 NONMEM이 읽을 수 있는 형태로 변환하는 번역기.<br>
+    <strong>PREDPP:</strong> 집단약동학 모델링을 위한 표준 PK 구획 모델 서브루틴(ADVAN) 라이브러리.<br>
+    <strong>NONMEM:</strong> 비선형 혼합효과 모델의 목적함수 최소화를 통한 파라미터 추정 엔진.<br>
+    <div class="qa-next">다음 깊이 질문: NM-TRAN이 $PK 블록을 FORTRAN 서브루틴으로 변환할 때, TVCL 같은 사용자 변수와 NONMEM 예약어(F, Y, ETA 등)를 어떻게 구분하는가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">★</span> Q2. ADVAN4 TRANS4 선택 시 $PK에 반드시 정의해야 하는 필수 파라미터 5가지와 각각의 생리학적 의미를 기술하라.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    <strong>CL</strong>(청소율, L/h): 단위시간당 약물이 완전히 제거되는 가상 혈액 부피<br>
+    <strong>V2</strong>(중심구획 분포용적, L): 혈액 및 혈관풍부조직의 겉보기 분포 공간<br>
+    <strong>Q</strong>(구획간 청소율, L/h): 중심-말초 간 약물 교환 속도<br>
+    <strong>V3</strong>(말초구획 분포용적, L): 근육·지방 등 말초조직의 겉보기 분포 공간<br>
+    <strong>KA</strong>(흡수속도상수, h⁻¹): 흡수 부위에서 중심구획으로의 1차 흡수속도<br>
+    <div class="qa-next">다음 깊이 질문: ADVAN4 TRANS4에서 Ke를 $TABLE에 출력하려면 $PK에 어떤 코드를 추가해야 하는가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">★★</span> Q3. 투여 용량 단위=mg, V2=L, 관찰 농도=ng/mL일 때 S2를 어떻게 정의해야 하는가? 수식 근거 포함.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    <code>S2 = V2/1000</code><br><br>
+    <strong>근거:</strong> $C = \text{Amount}/V$에서 Amount(mg), V(L) → C = mg/L. DV는 ng/mL = μg/L이므로 1 mg/L = 1000 ng/mL. 분모를 1000배 키워 단위 일치: $S2 = V2 \times (1/1000) = V2/1000$<br>
+    <div class="qa-next">다음 깊이 질문: dose가 μg 단위로 AMT에 기재되고 농도가 ng/mL이라면 S2는 어떻게 달라지는가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">★</span> Q4. 다음 $ERROR 코드에서 THETA(4)의 통계적 의미와 단위를 설명하라:<br><code>W = SQRT(THETA(3)**2 + THETA(4)**2 * IPRED**2); $SIGMA 1 FIX</code></span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    <strong>THETA(3)</strong>: 가법 잔차의 표준편차(SD), 단위=농도 단위와 동일 (예: mg/L)<br>
+    <strong>THETA(4)</strong>: 비례 잔차의 변동계수(CV), 무단위(소수). THETA(4)=0.2이면 비례 잔차 CV=20%<br>
+    $SIGMA를 1로 고정하여 EPS(1)의 분산=1로 표준화했으므로, W 전체가 잔차의 표준편차를 나타냄.<br>
+    <div class="qa-next">다음 깊이 질문: THETA(3)이 0에 매우 가깝게 수렴한다면 데이터와 모델에 대해 어떤 결론을 내릴 수 있는가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">★</span> Q5. $PRED 모델에서 ADVAN 기반 모델과의 가장 큰 데이터셋 차이점을 PREDPP 메커니즘 관점에서 설명하라.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    ADVAN 모델에서 AMT는 투여 시점에 한 번만 기재해도 PREDPP가 이후 모든 시점에서 구획 내 약물량을 적분한다. $PRED에서는 PREDPP 적분 엔진이 동작하지 않으므로, 수식 내 용량 변수가 모든 관찰 행에 공변량처럼 반복 기재되어야 한다.<br>
+    <div class="qa-next">다음 깊이 질문: 다회투여 데이터에서 $PRED를 사용하여 각 투여 후 중첩(superposition)을 구현하려면 어떤 코딩이 필요한가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">○</span> Q6. $OMEGA 0.09의 의미를 %CV로 변환하고 임상적으로 해석하라.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    $\omega^2 = 0.09 \Rightarrow \omega = 0.3 \Rightarrow \%CV = 30\%$<br>
+    임상 해석: 집단 전체에서 해당 PK 파라미터의 개인별 값이 집단 대표값을 중심으로 약 ±30%의 변동을 갖는다. 동일 용량 투여 시 환자 간 AUC 변동이 약 30% 수준임을 시사.<br>
+    <div class="qa-next">다음 깊이 질문: η-shrinkage > 30%인 경우 이 $OMEGA 추정값의 신뢰성에 어떤 우려가 발생하는가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">★</span> Q7. ADVAN6 선택 시 $SUBROUTINE에 TOL=n이 필수인 이유를 ODE 수치 적분 관점에서 설명하라.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    ADVAN6는 비선형 ODE를 수치적으로 적분(Runge-Kutta 등)하여 A(n)을 계산한다. TOL은 각 적분 스텝의 허용 오차를 $10^{-\text{TOL}}$로 설정한다. 지정하지 않으면 NONMEM이 기본값을 찾지 못해 실행이 중단된다. TOL이 너무 크면 적분 정확도 저하 → 농도 곡선이 계단형 → OFV에 수치 노이즈 → 수렴 불안정. TOL=4~6이 권장된다.<br>
+    <div class="qa-next">다음 깊이 질문: TOL 값을 높일수록 실행 시간과 정확도가 어떻게 변하며, 규제 제출에서 TOL 선택 근거를 어떻게 문서화하는가?</div>
+  </div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q" onclick="toggleQA(this)">
+    <span><span class="sr-tag">★</span> Q8. NONMEM에서 PARAMETER ESTIMATE IS NEAR ITS BOUNDARY 경고가 나타났다. 원인·영향·해결 전략을 설명하라.</span>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="qa-a">
+    <strong>원인:</strong> 최종 추정값이 초기값 대비 100배 이상 차이날 때 자동 발생.<br>
+    <strong>영향:</strong> $COV step이 자동 실패(COVARIANCE STEP ABORTED) → SE/RSE 계산 불가.<br>
+    <strong>해결 전략:</strong> ① EDA/NCA로 초기값 재추정 및 교체 ② $THETA 하한·상한을 실제 데이터 범위에 맞게 조정 ③ $ESTIMATION에 NOTBT NOOBT NOSBT 추가(경계 검사 억제 — 임시방편) ④ 파라미터 식별성 자체를 검토 (데이터 정보량 부족 가능성)<br>
+    <div class="qa-next">다음 깊이 질문: SE/RSE를 계산할 수 없는 경우, NDA 규제 제출에서 파라미터 불확실성을 어떻게 정량화할 수 있는가?</div>
+  </div>
+</div>
+
+<!-- BOSS DILEMMA -->
+<div class="boss-dilemma">
+  <div class="boss-q" onclick="toggleBoss(this)">
+    <div>
+      <strong style="color:var(--accent)">★★ 보스 딜레마 — Q9</strong><br>
+      <em style="font-size:.88rem">Phase 1 IND 제출 마감. 신규 항암제 PopPK. EDA = 2구획 지지. 그러나 희소 데이터(1인당 2–3관찰)에서 ADVAN4 적합 시 Q·V3 RSE > 100%, $COV step 실패 예상.<br>
+      Option A: ADVAN4 TRANS4 (2구획) — 임상적으로 타당하지만 RSE 불안정<br>
+      Option B: ADVAN2 TRANS2 (1구획) — GOF 약간 나쁘지만 $COV step 안정<br>
+      당신은 어느 쪽을 IND 제출 최종 모델로 선택하는가?</em>
+    </div>
+    <span class="chevron">▶</span>
+  </div>
+  <div class="boss-a">
+    <strong>수석 모델러의 판단: Option B를 선택하되, Option A 결과를 투명하게 보고한다.</strong><br><br>
+    <strong>논리:</strong> Phase 1 IND 제출의 1차 목적은 안전성 확인과 용량 범위 파악이다. Q와 V3의 RSE > 100%는 파라미터 불확실성 정량화 불가를 의미한다. 규제 관점에서 "$COV step 실패 = SE 없음 = 불확실성 미보고"는 용량 결정 근거 취약으로 해석된다.<br><br>
+    <strong>규제 문서 방어 언어:</strong> "A 2-compartment model was explored based on EDA findings; however, the precision of peripheral compartment parameters (RSE >100%, $COV step failure) was insufficient for reliable dose recommendations given the sparse Phase 1 sampling design. A 1-compartment model was therefore selected as the base model. The adequacy of this choice will be re-evaluated with dense PK data from Phase 2."<br><br>
+    <strong>핵심 단서:</strong> Option A 분석 결과를 sensitivity analysis로 보고서에 포함 필수. ΔOFV와 GOF를 나란히 제시하면 심사관이 판단 과정을 추적할 수 있어 오히려 신뢰도를 높인다.
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════ §8 ═══════════════════ -->
+<section class="section" id="section-8">
+<h2 class="sec-head">§8 — 메타프레임 &amp; 빅 픽처</h2>
+
+<h4 class="sub">A. Positioning</h4>
+<p>II-03은 Vol II의 "NONMEM 제어구문 기초 3부작"의 완성판이다. II-01(θ·η·ε 통계적 의미)과 II-02(데이터셋 변수)를 제어구문의 구체적 코드로 연결하는 가교다.</p>
+<div class="pos-block">
+  <div class="pos-item"><div class="pi-label">이전에 온 것</div>II-01: THETA/OMEGA/SIGMA 통계적 의미<br>II-02: ID/TIME/AMT/DV/MDV/CMT 변수 구조</div>
+  <div class="pos-item"><div class="pi-label">바로 다음</div>II-04: General ADVAN + $DES ODE 심화<br>II-05: 초기추정값 전략 심화<br>II-06: OFV·LRT·FO/FOCE 이론</div>
+  <div class="pos-item"><div class="pi-label">의존 고급 도메인</div>II-08 공변량 (TVCL 확장 코딩)<br>II-09b $COV·RSE·condition number<br>II-11 PK/PD NONMEM 구현<br>PopPK VPC·Bootstrap 전체</div>
+</div>
+
+<h4 class="sub">B. Dependencies — 실패 모드</h4>
+<p><strong>실패 1 — S2 오류로 공변량 분석 왜곡:</strong> S2=V2/1000을 S2=V2로 잘못 기술하면 모든 예측 농도가 1000배 과소 계산된다. 이 상태에서 공변량 분석(II-08)을 진행하면 TVCL이 실제보다 1000배 큰 값으로 추정되고, WT-CL 관계의 기울기가 완전히 왜곡된다. Phase 2/3 용량 결정이 이 값에 근거한다면 치명적 용량 과다로 이어질 수 있다.</p>
+<p><strong>실패 2 — TRANS 선택 오류로 파라미터 해석 불능:</strong> ADVAN4에서 TRANS1을 선택하고 보고서에 "CL = K × V2"라고 기술하면, TRANS1의 K는 $k_{10} = CL_{total}/V_2$이 아니라 단순 $k_{10}$만을 의미하므로, CL_renal과 CL_hepatic 분리가 불가능해진다. NDA의 파라미터 해석 섹션 전체가 오염된다.</p>
+
+<h4 class="sub">C. Professional Moat</h4>
+<p>NONMEM을 실행하고 파라미터를 추출하는 것은 이미 자동화 가능하다. 이 세션의 제어구문 구조와 ADVAN/TRANS/$PRED의 코딩 원리를 진정으로 내면화한 모델러만이 다음을 할 수 있다:</p>
+<ul>
+  <li><strong>수렴은 됐는데 예측 농도가 DV보다 1000배 작은 상황</strong> 앞에서 — "S2 단위 불일치"를 30초 안에 코드 한 줄로 진단·수정한다. 알고리즘은 DV-IPRED 이격을 감지하지만 원인을 코드 구조와 데이터 단위의 맥락에서 연결하지 못한다.</li>
+  <li><strong>$COV step이 "PARAMETER NEAR BOUNDARY"와 함께 실패한 상황</strong> 앞에서 — 파라미터 식별성 문제인지, 초기값 불량인지, 데이터 희소성인지를 gradient 출력을 읽으며 구별하고, 세 가지 해결 경로 중 가장 올바른 것을 선택한다.</li>
+  <li><strong>IND 마감 전날 $PRED로 작성한 QTc-노출 모델에서 음수 Y가 발생했을 때</strong> — FLAG=0/1 조건 코딩과 CALLFL=0 옵션의 차이를 알고 어떤 상황에서 어느 것을 쓸지 즉각 판단한다.</li>
+</ul>
+</section>
+
+</div><!-- /main -->
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+// ── CONSTANTS (절대 재할당 금지) ──
+const X_MAX_H = 24;    // hours
+const HARD_Y_MAX = 3.0; // mg/L
+const LOG_Y_MIN  = 0.001;
+const LOG_Y_MAX  = 50;
+const DT_H       = 0.05; // integration step
+
+// ── PRESETS ──
+const PRESETS = {
+  owen:    { cl:3.9,  vd:52.1, ka:0.987, dose:100 },
+  hv:      { cl:5.0,  vd:60,   ka:1.2,   dose:200 },
+  renal:   { cl:1.2,  vd:52.1, ka:0.987, dose:100 },
+  hepatic: { cl:2.4,  vd:70,   ka:0.7,   dose:100 },
+  flip:    { cl:3.9,  vd:52.1, ka:0.076, dose:100 }
+};
+
+// ── STATE ──
+const state = {
+  params: { cl:3.9, vd:52.1, ka:0.987, dose:100 },
+  logScale: false,
+  showAUC: true,
+  showPhantom: false,
+  referenceCurve: null,
+  _currentCurve: null,
+  _prevDerived: null
+};
+
+// ── PK COMPUTATION ──
+function compute1cmt(p) {
+  const k = p.cl / p.vd;
+  const ts = [], cs = [];
+  for (let t = 0; t <= X_MAX_H; t += DT_H) {
+    ts.push(t);
+    let c;
+    if (Math.abs(p.ka - k) < 1e-6) {
+      c = (p.dose / p.vd) * p.ka * t * Math.exp(-k * t);
+    } else {
+      c = (p.dose * p.ka / (p.vd * (p.ka - k))) * (Math.exp(-k * t) - Math.exp(-p.ka * t));
+    }
+    cs.push(Math.max(0, c));
+  }
+  return { ts, cs };
+}
+
+function computePhantom(p) {
+  // 2-compartment (simplified: adds alpha phase)
+  const k = p.cl / p.vd;
+  const alpha = p.ka * 1.8; const beta = k * 0.4;
+  const A = p.dose / p.vd * 0.7; const B = p.dose / p.vd * 0.3;
+  const ts = [], cs = [];
+  for (let t = 0; t <= X_MAX_H; t += DT_H) {
+    ts.push(t);
+    let c;
+    if (t < 1.5) {
+      c = A * (1 - Math.exp(-alpha * t)) * Math.exp(-beta * t * 0.3);
+    } else {
+      c = (A * Math.exp(-alpha * (t - 1.5)) + B * Math.exp(-beta * t));
+    }
+    cs.push(Math.max(0, c));
+  }
+  return { ts, cs };
+}
+
+function calcDerived(p) {
+  const k = p.cl / p.vd;
+  const thalf = Math.LN2 / k;
+  const tmax  = k > p.ka ? 0 : Math.log(p.ka / k) / (p.ka - k);
+  const cmax  = compute1cmt(p).cs.reduce((a, b) => Math.max(a, b), 0);
+  const auc   = p.dose / p.cl;
+  return { thalf, tmax, cmax, auc };
+}
+
+// ── CHART ──
+let chartObj = null;
+
+function buildDatasets(curve) {
+  // [Scientific Logic]: 1구획 경구 PK 모델 (ADVAN2 TRANS2 상당)
+  // C(t) = (Dose*KA)/(V*(KA-k)) * (exp(-k*t) - exp(-KA*t))
+  // 가정: 순간 혼합, 1차 흡수·소실, 생체이용률=1
+  const pts = curve.ts.map((t, i) => ({ x: t, y: curve.cs[i] }));
+  const ds = [];
+  if (state.showAUC) {
+    ds.push({
+      label:'AUC',
+      data: pts,
+      borderColor:'transparent',
+      backgroundColor:'rgba(201,168,76,0.12)',
+      fill:true,
+      pointRadius:0,
+      tension:0.4
+    });
+  }
+  ds.push({
+    label:'C(t)',
+    data: pts,
+    borderColor:'#c9a84c',
+    backgroundColor:'transparent',
+    borderWidth:2.2,
+    pointRadius:0,
+    tension:0.4
+  });
+  if (state.referenceCurve) {
+    ds.push({
+      label:'기준선',
+      data: state.referenceCurve.ts.map((t,i) => ({ x:t, y:state.referenceCurve.cs[i] })),
+      borderColor:'rgba(138,128,112,0.6)',
+      borderDash:[6,4],
+      borderWidth:1.5,
+      pointRadius:0,
+      tension:0.4,
+      fill:false
+    });
+  }
+  if (state.showPhantom) {
+    const ph = computePhantom(state.params);
+    ds.push({
+      label:'2구획 Phantom',
+      data: ph.ts.map((t,i) => ({ x:t, y:ph.cs[i] })),
+      borderColor:'rgba(220,60,60,0.55)',
+      borderDash:[6,4],
+      borderWidth:2,
+      pointRadius:0,
+      tension:0.4,
+      fill:false
+    });
+  }
+  return ds;
+}
+
+function initChart() {
+  const ctx = document.getElementById('simCanvas').getContext('2d');
+  chartObj = new Chart(ctx, {
+    type:'line',
+    data:{ datasets: buildDatasets(state._currentCurve || compute1cmt(state.params)) },
+    options:{
+      animation:{ duration:200 },
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      scales:{
+        x:{ type:'linear', min:0, max:X_MAX_H,
+          title:{ display:true, text:'Time (h)', color:'#8a8070', font:{ family:'IBM Plex Mono', size:11 } },
+          ticks:{ color:'#6a6050', font:{ family:'IBM Plex Mono', size:10 } },
+          grid:{ color:'rgba(255,255,255,0.04)' } },
+        y:{ type:'linear', min:0, max:HARD_Y_MAX,
+          title:{ display:true, text:'Concentration (mg/L)', color:'#8a8070', font:{ family:'IBM Plex Mono', size:11 } },
+          ticks:{ color:'#6a6050', font:{ family:'IBM Plex Mono', size:10 } },
+          grid:{ color:'rgba(255,255,255,0.04)' } }
+      },
+      plugins:{
+        legend:{ labels:{ color:'#8a8070', font:{ family:'Noto Sans KR', size:11 } } },
+        tooltip:{ backgroundColor:'rgba(12,12,18,0.92)', titleColor:'#c9a84c', bodyColor:'#ede8df',
+                  bodyFont:{ family:'IBM Plex Mono', size:11 },
+                  callbacks:{ label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)} mg/L` } }
+      }
+    },
+    plugins:[{
+      id:'refLines',
+      afterDraw(chart) {
+        const { ctx, scales:{ x, y }, chartArea } = chart;
+        const p = state.params;
+        const k = p.cl / p.vd;
+        const thalf = Math.LN2 / k;
+        [thalf, thalf*2, thalf*3].forEach((tv, i) => {
+          if (tv > X_MAX_H) return;
+          const xp = x.getPixelForValue(tv);
+          ctx.save();
+          ctx.strokeStyle = `rgba(201,168,76,${0.45 - i*0.12})`;
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4,4]);
+          ctx.beginPath();
+          ctx.moveTo(xp, chartArea.top);
+          ctx.lineTo(xp, chartArea.bottom);
+          ctx.stroke();
+          ctx.fillStyle = `rgba(201,168,76,${0.5 - i*0.12})`;
+          ctx.font = '9px IBM Plex Mono';
+          ctx.fillText(`t½×${i+1}`, xp + 3, chartArea.top + 14 + i*12);
+          ctx.restore();
+        });
+        // MIC line
+        const micV = 0.5;
+        if (micV < HARD_Y_MAX) {
+          const yp = y.getPixelForValue(micV);
+          ctx.save();
+          ctx.strokeStyle = 'rgba(64,152,232,0.45)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4,4]);
+          ctx.beginPath();
+          ctx.moveTo(chartArea.left, yp);
+          ctx.lineTo(chartArea.right, yp);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(64,152,232,0.55)';
+          ctx.font = '9px IBM Plex Mono';
+          ctx.fillText('MIC', chartArea.right - 28, yp - 3);
+          ctx.restore();
+        }
+      }
+    }]
+  });
+}
+
+function updateChart() {
+  const curve = compute1cmt(state.params);
+  state._currentCurve = curve;
+
+  if (!chartObj) { initChart(); updateAll(); return; }
+
+  chartObj.data.datasets = buildDatasets(curve);
+  const ys = chartObj.options.scales.y;
+  ys.type = state.logScale ? 'logarithmic' : 'linear';
+  ys.min  = state.logScale ? LOG_Y_MIN : 0;
+  ys.max  = state.logScale ? LOG_Y_MAX : HARD_Y_MAX;
+  chartObj.update('none');
+  updateAll();
+}
+
+function updateAll() {
+  const d = calcDerived(state.params);
+  const fmt = (v, dec) => isNaN(v) || !isFinite(v) ? '—' : v.toFixed(dec);
+  const upd = (id, cur, prev, dec) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = fmt(cur, dec);
+    let deltaHTML = '';
+    if (prev !== null && Math.abs(prev) > 1e-12) {
+      const pct = (cur - prev) / Math.abs(prev) * 100;
+      if (Math.abs(pct) > 1) {
+        deltaHTML = `<span class="delta ${pct>0?'up':'dn'}">${pct>0?'↑':'↓'}${Math.abs(pct).toFixed(0)}%</span>`;
+      }
+    }
+    el.innerHTML = val + deltaHTML;
+  };
+  const prev = state._prevDerived;
+  upd('dv-thalf', d.thalf, prev?.thalf ?? null, 2);
+  upd('dv-tmax',  d.tmax,  prev?.tmax  ?? null, 2);
+  upd('dv-cmax',  d.cmax,  prev?.cmax  ?? null, 3);
+  upd('dv-auc',   d.auc,   prev?.auc   ?? null, 2);
+  state._prevDerived = d;
+  checkWarnings(state.params);
+  updateCode(state.params);
+}
+
+function checkWarnings(p) {
+  const k = p.cl / p.vd;
+  const warns = [];
+  if (Math.abs(p.ka - k) / k < 0.15) warns.push('⚠ KA ≈ CL/V: Flip-flop 경보 — 흡수상과 소실상이 구별 불가');
+  if (p.cl > 25) warns.push('⚠ CL > 25 L/h: 비현실적 초고속 소거 — 단위 또는 데이터셋 확인');
+  if (p.vd < 8)  warns.push('⚠ V < 8 L: 혈장 부피보다 작은 분포용적 — 비현실적');
+  const banner = document.getElementById('warnBanner');
+  if (warns.length) { banner.textContent = warns.join(' | '); banner.classList.add('show'); }
+  else banner.classList.remove('show');
+  document.getElementById('sl-ka').style.background = Math.abs(p.ka - k)/k < 0.15 ? 'rgba(192,57,43,0.35)' : '';
+}
+
+function updateCode(p) {
+  const k = p.cl / p.vd;
+  const s2 = p.vd.toFixed(1);
+  const el = document.getElementById('liveCode');
+  if (!el) return;
+  el.innerHTML =
+`<span class="kw">$SUBROUTINES</span> ADVAN2 TRANS2
+<span class="kw">$PK</span>
+  TVCL = THETA(1)             <span class="cm">; CL = ${p.cl.toFixed(2)} L/h (집단 대표값)</span>
+  TVV  = THETA(2)             <span class="cm">; V  = ${p.vd.toFixed(1)} L</span>
+  TVKA = THETA(3)             <span class="cm">; KA = ${p.ka.toFixed(3)} h⁻¹  |  k = CL/V = ${k.toFixed(4)} h⁻¹</span>
+  CL   = TVCL * EXP(ETA(1))
+  V    = TVV  * EXP(ETA(2))
+  KA   = TVKA
+  S2   = V/1000               <span class="cm">; dose(mg)/V(L) → Cp(ng/mL) 단위 통일</span>
+<span class="kw">$ERROR</span>
+  IPRED = F
+  W     = SQRT(THETA(4)**2 + THETA(5)**2*IPRED**2)
+  IRES  = DV - IPRED
+  IWRES = IRES/W
+  Y     = IPRED + W*EPS(1)
+<span class="kw">$THETA</span>
+  (0, <span class="val">${p.cl.toFixed(2)}</span>)   <span class="cm">; CL (L/h)</span>
+  (0, <span class="val">${p.vd.toFixed(1)}</span>)  <span class="cm">; V  (L)</span>
+  (0, <span class="val">${p.ka.toFixed(3)}</span>)  <span class="cm">; KA (h⁻¹)</span>
+  0.001 FIX
+  (0, 0.2)
+<span class="kw">$OMEGA</span>  0.09  0.16
+<span class="kw">$SIGMA</span>  1 FIX
+<span class="kw">$EST</span>    METHOD=1 INTER MAXEVAL=9999 PRINT=5
+<span class="kw">$COV</span>    PRINT=E UNCONDITIONAL`;
+}
+
+// ── SLIDER HANDLER ──
+function onSlider(key, el) {
+  const v = parseFloat(el.value);
+  state.params[key === 'vd' ? 'vd' : key] = v;
+  document.getElementById('lbl-' + key).textContent = v.toFixed(key === 'ka' ? 3 : key === 'cl' ? 2 : 1);
+  updateChart();
+}
+
+// ── TOGGLES ──
+function toggleLog() {
+  state.logScale = !state.logScale;
+  document.getElementById('btnLog').classList.toggle('active', state.logScale);
+  updateChart();
+}
+function toggleAUC() {
+  state.showAUC = !state.showAUC;
+  document.getElementById('btnAUC').classList.toggle('active', state.showAUC);
+  updateChart();
+}
+function togglePhantom() {
+  state.showPhantom = !state.showPhantom;
+  document.getElementById('btnPhantom').classList.toggle('active', state.showPhantom);
+  updateChart();
+}
+function saveLine() {
+  state.referenceCurve = JSON.parse(JSON.stringify(state._currentCurve));
+  updateChart();
+}
+function clearRef() {
+  state.referenceCurve = null;
+  updateChart();
+}
+
+// ── PRESETS ──
+function applyPreset(key) {
+  const p = PRESETS[key];
+  state.params = { ...p };
+  ['cl','vd','ka','dose'].forEach(k => {
+    const sl = document.getElementById('sl-' + k);
+    const lb = document.getElementById('lbl-' + k);
+    if (!sl || !lb) return;
+    const v = p[k];
+    sl.value = v;
+    lb.textContent = v.toFixed(k === 'ka' ? 3 : k === 'cl' ? 2 : 1);
+  });
+  updateChart();
+}
+
+// ── CURSOR (registered once) ──
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('simCanvas');
+  canvas.addEventListener('mousemove', e => {
+    if (!state._currentCurve) return;
+    const rect = canvas.getBoundingClientRect();
+    const t = Math.max(0, Math.min(X_MAX_H, (e.clientX - rect.left) / rect.width * X_MAX_H));
+    const idx = Math.min(Math.floor(t / DT_H), state._currentCurve.ts.length - 2);
+    const c = state._currentCurve.cs[Math.max(0, idx)] || 0;
+    document.getElementById('cursorLabel').textContent = `t = ${t.toFixed(2)} h  |  C = ${c.toFixed(4)} mg/L`;
+  });
+  updateChart();
+  initNormCanvas();
+  drawNorm();
+});
+
+// ── NORM CANVAS ──
+let normW = 0, normH = 0;
+let normNormalized = false;
+const normCanvas = document.getElementById('normCanvas');
+const normCtx = normCanvas ? normCanvas.getContext('2d') : null;
+
+function initNormCanvas() {
+  if (!normCanvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = normCanvas.getBoundingClientRect();
+  normW = Math.floor(rect.width * dpr);
+  normH = Math.floor(rect.height * dpr);
+  normCanvas.width  = normW;
+  normCanvas.height = normH;
+  if (normCtx) normCtx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function drawNorm() {
+  if (!normCtx || !normW || !normH) return;
+  normCtx.clearRect(0, 0, normW, normH);
+  const dpr = window.devicePixelRatio || 1;
+  const W = normW / dpr, H = normH / dpr;
+  const scale = dpr;
+  normCtx.save();
+  normCtx.scale(scale, scale);
+
+  const params = [
+    { name:'CL', omega:0.09, color:'#c9a84c', cv:'30' },
+    { name:'V',  omega:0.16, color:'#4098e8', cv:'40' },
+    { name:'KA', omega:0.04, color:'#2ecc71', cv:'20' }
+  ];
+
+  const padL = 48, padR = 20, padT = 20, padB = 35;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+
+  if (!normNormalized) {
+    // Math space: bar chart of omega values
+    const maxOm = 0.20;
+    normCtx.fillStyle = 'rgba(255,255,255,0.04)';
+    normCtx.fillRect(padL, padT, innerW, innerH);
+    params.forEach((p, i) => {
+      const bw = (innerW / params.length) * 0.5;
+      const bx = padL + (i + 0.25) * (innerW / params.length);
+      const bh = (p.omega / maxOm) * innerH;
+      const by = padT + innerH - bh;
+      normCtx.fillStyle = p.color + '55';
+      normCtx.strokeStyle = p.color;
+      normCtx.lineWidth = 1.5;
+      normCtx.fillRect(bx, by, bw, bh);
+      normCtx.strokeRect(bx, by, bw, bh);
+      normCtx.fillStyle = p.color;
+      normCtx.font = `bold 11px IBM Plex Mono`;
+      normCtx.textAlign = 'center';
+      normCtx.fillText(`ω²=${p.omega}`, bx + bw/2, by - 6);
+      normCtx.fillStyle = '#8a8070';
+      normCtx.font = '10px Noto Sans KR';
+      normCtx.fillText(p.name, bx + bw/2, padT + innerH + 14);
+    });
+    normCtx.fillStyle = '#6a6050';
+    normCtx.font = '10px IBM Plex Mono';
+    normCtx.textAlign = 'right';
+    [0, 0.05, 0.10, 0.15, 0.20].forEach(v => {
+      const y = padT + innerH - (v / maxOm) * innerH;
+      normCtx.fillText(v.toFixed(2), padL - 4, y + 4);
+      normCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+      normCtx.lineWidth = 0.5;
+      normCtx.setLineDash([3,3]);
+      normCtx.beginPath();
+      normCtx.moveTo(padL, y);
+      normCtx.lineTo(padL + innerW, y);
+      normCtx.stroke();
+      normCtx.setLineDash([]);
+    });
+    normCtx.fillStyle = '#6a6050';
+    normCtx.font = '10px IBM Plex Mono';
+    normCtx.textAlign = 'left';
+    normCtx.fillText('ω² (분산)', padL, padT - 7);
+  } else {
+    // Clinical space: %CV bars
+    const maxCV = 50;
+    normCtx.fillStyle = 'rgba(255,255,255,0.04)';
+    normCtx.fillRect(padL, padT, innerW, innerH);
+    params.forEach((p, i) => {
+      const cvVal = Math.sqrt(p.omega) * 100;
+      const bw = (innerW / params.length) * 0.5;
+      const bx = padL + (i + 0.25) * (innerW / params.length);
+      const bh = (cvVal / maxCV) * innerH;
+      const by = padT + innerH - bh;
+      normCtx.fillStyle = p.color + '55';
+      normCtx.strokeStyle = p.color;
+      normCtx.lineWidth = 1.5;
+      normCtx.fillRect(bx, by, bw, bh);
+      normCtx.strokeRect(bx, by, bw, bh);
+      normCtx.fillStyle = p.color;
+      normCtx.font = `bold 11px IBM Plex Mono`;
+      normCtx.textAlign = 'center';
+      normCtx.fillText(`${p.cv}%CV`, bx + bw/2, by - 6);
+      normCtx.fillStyle = '#8a8070';
+      normCtx.font = '10px Noto Sans KR';
+      normCtx.fillText(p.name, bx + bw/2, padT + innerH + 14);
+    });
+    normCtx.fillStyle = '#6a6050';
+    normCtx.font = '10px IBM Plex Mono';
+    normCtx.textAlign = 'right';
+    [0, 10, 20, 30, 40, 50].forEach(v => {
+      const y = padT + innerH - (v / maxCV) * innerH;
+      normCtx.fillText(v + '%', padL - 4, y + 4);
+    });
+    normCtx.fillStyle = '#6a6050';
+    normCtx.font = '10px IBM Plex Mono';
+    normCtx.textAlign = 'left';
+    normCtx.fillText('%CV (임상 공간)', padL, padT - 7);
+    // tolerance band 30%
+    const y30 = padT + innerH - (30 / maxCV) * innerH;
+    normCtx.strokeStyle = 'rgba(192,57,43,0.4)';
+    normCtx.lineWidth = 1;
+    normCtx.setLineDash([5,4]);
+    normCtx.beginPath();
+    normCtx.moveTo(padL, y30);
+    normCtx.lineTo(padL + innerW, y30);
+    normCtx.stroke();
+    normCtx.setLineDash([]);
+    normCtx.fillStyle = 'rgba(192,57,43,0.6)';
+    normCtx.font = '9px IBM Plex Mono';
+    normCtx.textAlign = 'right';
+    normCtx.fillText('30%CV 기준', padL + innerW - 2, y30 - 3);
+  }
+  normCtx.restore();
+}
+
+function toggleNorm() {
+  normNormalized = !normNormalized;
+  document.getElementById('normLabel').textContent = normNormalized
+    ? '임상 공간: %CV = √ω² × 100 — IIV를 임상 언어로 변환'
+    : '수학 공간: 각 파라미터의 IIV 분산 (ω²) — OMEGA 대각 원소';
+  document.getElementById('normToggle').textContent = normNormalized
+    ? '📐 임상 공간 → 수학 공간 전환'
+    : '📐 수학 공간 → 임상 공간 전환';
+  drawNorm();
+}
+
+window.addEventListener('resize', () => {
+  initNormCanvas();
+  drawNorm();
+});
+
+// ── ACCORDION HELPERS ──
+function toggleQA(btn) {
+  btn.classList.toggle('open');
+  const a = btn.nextElementSibling;
+  a.classList.toggle('show');
+}
+function toggleBoss(btn) {
+  btn.classList.toggle('open');
+  btn.nextElementSibling.classList.toggle('show');
+}
+function toggleTransfer(btn) {
+  btn.classList.toggle('open');
+  const chev = btn.querySelector('.chevron');
+  if (chev) chev.style.transform = btn.classList.contains('open') ? 'rotate(90deg)' : '';
+  btn.nextElementSibling.classList.toggle('show');
+}
+
+// ── INTERSECTION OBSERVER ──
+const sections = document.querySelectorAll('section[id]');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const active = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold:0.2, rootMargin:'-60px 0px -40% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
