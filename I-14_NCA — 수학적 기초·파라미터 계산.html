@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I-14 | NCA — 수학적 기초·파라미터 계산 | PK/PD Mastery V5.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#09090e; --surface:#0c0c12; --text:#ede8df; --muted:#8a8070;
+  --accent:#c9a84c; --accent-dim:rgba(201,168,76,0.08); --danger:#c0392b;
+  --info:#4098e8; --phantom:rgba(220,60,60,0.55); --border:rgba(255,255,255,0.08);
+  --sidebar-w:240px;
+}
+html { scroll-behavior:smooth; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif; font-size:15px; line-height:1.78; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position:fixed; top:0; left:0; width:var(--sidebar-w); height:100vh;
+  background:var(--surface); border-right:1px solid var(--border);
+  overflow-y:auto; padding:20px 0; z-index:100;
+}
+#sidebar .sb-logo {
+  font-family:'Cormorant Garamond',serif; color:var(--accent); font-size:12px;
+  letter-spacing:.12em; text-transform:uppercase; padding:0 16px 14px;
+  border-bottom:1px solid var(--border); margin-bottom:8px; display:block;
+}
+#sidebar a {
+  display:block; color:var(--muted); text-decoration:none; font-size:12px;
+  padding:5px 16px; border-left:2px solid transparent; transition:all .2s;
+}
+#sidebar a:hover { color:var(--text); }
+#sidebar a.active { color:var(--accent); border-left:2px solid var(--accent); }
+#sidebar a.sub { padding-left:30px; font-size:11px; }
+#sidebar a.sub.active { color:var(--accent); }
+#sidebar .sb-section { color:rgba(138,128,112,.45); font-size:10px; font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.1em; padding:10px 16px 3px; text-transform:uppercase; }
+
+/* ── MAIN ── */
+#main { margin-left:var(--sidebar-w); max-width:1100px; padding:48px 52px 100px; }
+@media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;padding:24px 16px;} }
+
+/* ── TYPOGRAPHY ── */
+.sec-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px; }
+.sec-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:600; color:var(--accent); margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+h3 { font-size:16px; color:var(--text); margin:22px 0 10px; font-weight:500; }
+h4 { font-size:13px; color:var(--accent); margin:16px 0 8px; font-family:'IBM Plex Mono',monospace; }
+p { margin-bottom:12px; }
+ul,ol { padding-left:20px; margin-bottom:12px; }
+li { margin-bottom:4px; }
+strong { color:var(--text); font-weight:600; }
+em { color:var(--muted); }
+hr { border:none; border-top:1px solid var(--border); margin:40px 0; }
+
+/* ── CARDS ── */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:28px; margin-bottom:28px; }
+.card-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; color:var(--text); margin-bottom:16px; }
+
+/* ── BIG IDEA ── */
+.big-idea {
+  border-left:4px solid var(--accent); background:rgba(201,168,76,0.08);
+  border-radius:0 6px 6px 0; padding:18px 22px; margin-bottom:20px;
+  font-style:italic; line-height:1.8;
+}
+.big-idea b { color:var(--accent); font-style:normal; }
+.big-idea-title { font-family:'Cormorant Garamond',serif; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:10px; font-style:normal; letter-spacing:.04em; }
+
+/* ── APEX BADGE ── */
+.apex-badge { display:inline-block; background:var(--accent); color:#09090e; font-size:11px; font-weight:700; padding:2px 8px; border-radius:3px; margin-bottom:10px; font-family:'IBM Plex Mono',monospace; }
+
+/* ── FALLACY ── */
+.fallacy { border-left:4px solid var(--danger); background:rgba(192,57,43,0.08); border-radius:0 6px 6px 0; padding:16px 18px; margin:16px 0; }
+.fallacy-title { color:var(--danger); font-weight:700; margin-bottom:8px; font-family:'IBM Plex Mono',monospace; font-size:13px; }
+
+/* ── MICRO-CITATION ── */
+.cite { font-size:.78em; color:var(--muted); font-style:italic; margin-left:4px; }
+
+/* ── CODE ── */
+pre { background:#060608; border:1px solid var(--border); border-radius:6px; padding:16px; overflow-x:auto; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#b8c8d8; margin:12px 0; }
+code { font-family:'IBM Plex Mono',monospace; font-size:.88em; color:#9ab; }
+
+/* ── TABLES ── */
+table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+th { background:rgba(201,168,76,0.12); color:var(--accent); padding:10px 12px; text-align:left; font-weight:500; border-bottom:1px solid var(--border); }
+td { padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+tr.critical td { background:rgba(192,57,43,0.12); }
+tr.critical td strong { color:#e08070; }
+tr.mem-hook td { background:rgba(201,168,76,0.06); color:var(--accent); }
+
+/* ── ACCORDION ── */
+.accordion { border:1px solid var(--border); border-radius:6px; margin-bottom:10px; overflow:hidden; }
+.acc-btn {
+  width:100%; background:var(--surface); color:var(--text); padding:14px 18px;
+  text-align:left; cursor:pointer; font-family:'Noto Sans KR',sans-serif;
+  font-size:14px; border:none; display:flex; justify-content:space-between; align-items:center;
+  transition:background .2s;
+}
+.acc-btn:hover { background:rgba(255,255,255,0.03); }
+.acc-btn .chev { color:var(--accent); transition:transform .3s; font-size:16px; }
+.acc-btn.open .chev { transform:rotate(180deg); }
+.acc-body { display:none; padding:16px 18px; background:rgba(0,0,0,.2); border-top:1px solid var(--border); }
+.acc-body.open { display:block; }
+.sr-tag { display:inline-block; font-size:10px; font-family:'IBM Plex Mono'; color:var(--accent); border:1px solid var(--accent); border-radius:2px; padding:1px 5px; margin-left:6px; }
+.ans-reveal { background:rgba(201,168,76,.07); border-radius:4px; padding:14px 16px; margin-top:8px; font-size:14px; }
+
+/* ── SIMULATOR ── */
+.sim-layout { display:flex; gap:20px; flex-wrap:wrap; }
+.sim-controls { flex:0 0 230px; }
+.sim-right { flex:1; min-width:300px; }
+.canvas-wrap { position:relative; height:320px; overflow:hidden; flex-shrink:0; background:rgba(0,0,0,.35); border-radius:6px; border:1px solid var(--border); }
+#simCanvas { width:100%!important; height:100%!important; display:block; cursor:crosshair; }
+.slider-grp { margin-bottom:14px; }
+.slider-grp label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:4px; }
+.slider-grp .vl { color:var(--accent); font-family:'IBM Plex Mono'; font-size:12px; }
+input[type=range] { width:100%; accent-color:var(--accent); cursor:pointer; }
+.preset-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.pbt {
+  background:var(--surface); border:1px solid var(--border); color:var(--muted);
+  padding:5px 9px; border-radius:4px; cursor:pointer; font-size:11px;
+  font-family:'IBM Plex Mono'; transition:all .2s;
+}
+.pbt:hover,.pbt.on { border-color:var(--accent); color:var(--accent); background:rgba(201,168,76,.08); }
+.tog-btn {
+  background:var(--surface); border:1px solid var(--border); color:var(--muted);
+  padding:5px 9px; border-radius:4px; cursor:pointer; font-size:11px; margin:3px 3px 3px 0;
+  transition:all .2s;
+}
+.tog-btn.on { background:rgba(201,168,76,.15); border-color:var(--accent); color:var(--accent); }
+.derived-panel { background:rgba(0,0,0,.3); border-radius:6px; padding:14px; margin-top:10px; }
+.d-row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.dk { color:var(--muted); font-family:'IBM Plex Mono'; font-size:12px; }
+.dv { color:var(--accent); font-family:'IBM Plex Mono'; font-size:12px; }
+.dv.delta-up { color:#e87040; }
+.dv.delta-dn { color:var(--info); }
+.warn-ban { background:rgba(192,57,43,.15); border:1px solid var(--danger); border-radius:4px; padding:8px 12px; font-size:12px; color:#e07060; margin-top:8px; display:none; }
+.warn-ban.show { display:block; }
+.cursor-lbl { font-family:'IBM Plex Mono'; font-size:11px; color:var(--muted); padding:4px 0; min-height:18px; }
+.mission-panel { background:rgba(64,152,232,.06); border:1px solid rgba(64,152,232,.2); border-radius:6px; padding:18px; margin-top:16px; }
+.mission-panel h4 { color:var(--info); margin-top:0; }
+
+/* ── NORM CANVAS ── */
+.norm-wrap { position:relative; }
+#normCanvas { width:100%; height:220px; display:block; background:rgba(0,0,0,.3); border-radius:6px; border:1px solid var(--border); }
+
+/* ── ISOMORPHISM PROLOGUE ── */
+.iso-prologue {
+  border-left:4px solid var(--accent); background:rgba(201,168,76,0.05);
+  border-radius:0 6px 6px 0; padding:20px 24px; margin-bottom:28px;
+  font-style:italic; line-height:1.85;
+}
+.iso-prologue b { color:var(--accent); font-style:normal; }
+
+/* ── ZETTEL ── */
+.zettel { background:#080810; border:1px solid rgba(64,152,232,.2); border-radius:6px; padding:14px; margin-top:14px; font-size:13px; }
+.zettel-hdr { color:var(--info); font-family:'IBM Plex Mono'; font-size:11px; margin-bottom:6px; }
+
+/* ── MISC ── */
+.layer-label { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:6px; margin:24px 0 14px; }
+.transfer-card { background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.15); border-radius:6px; margin-bottom:12px; overflow:hidden; }
+.scenario-hdr { background:rgba(64,152,232,.08); border-left:3px solid var(--info); padding:14px 16px; border-radius:0 6px 0 0; }
+.scenario-hdr h4 { color:var(--info); margin:0; }
+.diag-sig { background:rgba(192,57,43,.06); border:1px solid rgba(192,57,43,.2); border-radius:6px; padding:16px; margin:12px 0; }
+.diag-sig-title { color:var(--danger); font-family:'IBM Plex Mono'; font-size:13px; font-weight:700; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<nav id="sidebar">
+  <span class="sb-logo">PK/PD Mastery · I-14</span>
+  <div class="sb-section">Navigation</div>
+  <a href="#sec1">§1 세션 헤더</a>
+  <a href="#sec2">§2 개념 해부 카드</a>
+  <a href="#c-nca-vs" class="sub">NCA vs 회귀분석</a>
+  <a href="#c-lambdaz" class="sub">⚡ λz — 말단 기울기</a>
+  <a href="#c-params" class="sub">핵심 파라미터</a>
+  <a href="#c-trapz" class="sub">사다리꼴 규칙</a>
+  <a href="#sec3">§3 구조적 동형성 지도</a>
+  <a href="#sec4">§4 인터랙티브 시뮬레이터</a>
+  <a href="#sec5">§5 혼동 쌍 해부</a>
+  <a href="#p-vss-vz" class="sub">Vss vs Vz</a>
+  <a href="#p-mrt-t12" class="sub">MRT vs t½</a>
+  <a href="#p-clast" class="sub">관측 vs 예측 Clast</a>
+  <a href="#sec6">§6 실용 시나리오</a>
+  <a href="#sec7">§7 자기 테스트</a>
+  <a href="#sec8">§8 메타프레임</a>
+</nav>
+
+<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<main id="main">
+
+<!-- ══════════════════════════════════════════════════════════════
+     §1  SESSION HEADER & ROADMAP
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec1">
+<div class="sec-label">Session I-14 · Vol I</div>
+<h1 class="sec-title">NCA — 수학적 기초·파라미터 계산</h1>
+
+<div class="card">
+<div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px;">
+  <div style="flex:1;min-width:200px;">
+    <div class="sec-label">소스 A</div>
+    <div style="font-size:13px;color:var(--text);">Gabrielsson &amp; Weiner 5e</div>
+    <div style="font-size:12px;color:var(--muted);">§2.8.1–2.8.7, pp.141–157 + PK41, pp.661–664</div>
+  </div>
+  <div style="flex:1;min-width:200px;">
+    <div class="sec-label">소스 B</div>
+    <div style="font-size:13px;color:var(--text);">Rowland &amp; Tozer 5e</div>
+    <div style="font-size:12px;color:var(--muted);">Appendix A, pp.759–762 + Ch.2 §NCA, pp.17–24</div>
+  </div>
+</div>
+
+<h4>Big Idea</h4>
+<p>NCA는 구획 모델 없이 $AUC$(0차 모멘트)와 $AUMC$(1차 모멘트)라는 단 두 개의 적분값으로 청소율·분포 부피·평균 체내 잔류 시간을 계산하는 '모델-독립 적분 기계'이며, 이 단순함이 규제 제출의 표준이 된 이유이자 — Turbojoint® PK41 사례처럼 — 비선형 PK를 처음 탐지해내는 가장 빠른 진단 도구이기도 하다.</p>
+
+<h4>개념 항법도</h4>
+<table>
+<tr><th>#</th><th>개념</th><th>§2 ID</th></tr>
+<tr><td>1</td><td>NCA vs 회귀분석 — 두 접근의 구조적 차이</td><td><code>c-nca-vs</code></td></tr>
+<tr><td>2</td><td><strong>⚡ Apex</strong> λz — 말단 기울기 추정과 외삽 오차 전파</td><td><code>c-lambdaz</code></td></tr>
+<tr><td>3</td><td>NCA 핵심 파라미터 — CL, MRT, Vss, Vz</td><td><code>c-params</code></td></tr>
+<tr><td>4</td><td>AUC/AUMC 면적 계산: 선형 vs 로그-선형 사다리꼴</td><td><code>c-trapz</code></td></tr>
+</table>
+
+<h4>지식 그래프 위치</h4>
+<p><strong>선행 지식</strong>: I-01 (CL·V·t½ 1구획 기하학), I-03 (경구 AUC), 단순 지수 소실 수식</p>
+<p><strong>열어주는 후속 지식</strong>: I-07 (MM 비선형 PK), II-08 (공변량 탐색), 생물학적 동등성 시험 설계, 규제 제출용 PK 보고서</p>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §2  CONCEPT ANATOMY CARDS
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec2">
+<div class="sec-label">§2</div>
+<h2 class="sec-title">개념 해부 카드</h2>
+
+<!-- ────────────── Card 1: NCA vs 회귀분석 ────────────── -->
+<div class="card" id="c-nca-vs">
+<div class="card-title">개념 1 — NCA vs 회귀분석: 두 언어의 구조적 차이</div>
+
+<div class="big-idea">
+  <div class="big-idea-title">개념 Big Idea: 거장의 시각</div>
+  <b>왜 치명적으로 중요한가</b>: NDA/IND 제출 시 1차 PK 파라미터 산출에 NCA를 사용할지 모델 기반 회귀를 사용할지를 혼동하면, 규제 심사관이 요청하는 CL과 Vss 계산 근거 자체가 무너져 Deficiency Letter를 받는다.<br><br>
+  <b>체화해야 할 단 하나의 직관</b>: NCA는 '데이터가 말하는 면적의 언어'이고, 회귀분석은 '모델이 주장하는 함수의 언어'이다. NCA는 $C_i$들의 합에서 CL을 추론하고, 회귀는 $K_a$·$K$·$V$ 같은 파라미터로 CL을 역산한다 — 같은 데이터에서 같은 답을 내지만 경로가 전혀 다르다.<br><br>
+  <b>이 직관을 머릿속에 박고 아래를 읽어라</b>: 사다리꼴 합산이 왜 CL이 되는지가 자연스럽게 보이기 시작할 것이다.
+</div>
+
+<h4>A. 정형적 정의</h4>
+<p>NCA(비구획 분석)는 특정 구획 모델을 가정하지 않고 농도-시간 프로파일의 면적 적분값으로부터 PK 파라미터를 직접 계산하는 방법이다. 단, 소실은 샘플링 구획에서만 일어나며 선형(1차) 소실임을 가정한다. 회귀분석은 함수 파라미터($K_a$, $K$, $V$)를 추정하여 데이터에 모델 곡선을 적합시킨다 (Figure 2.113, Gabrielsson p.141).</p>
+
+<h4>B. 수식 도출</h4>
+<p>두 접근의 핵심 수식 비교 (Gabrielsson Fig. 2.113):</p>
+<p>NCA 방식: $$Cl_{NCA} = \frac{Dose}{\displaystyle\sum_{i=1}^{n} A_i}$$ <span class="cite">[출처: Gabrielsson 5e, §2.8.1, p.141]</span></p>
+<p>회귀 방식: $$Cl_{regression} = \frac{Dose}{\displaystyle\int \frac{K_a F D}{V(K_a - K)}\left[e^{-Kt} - e^{-K_a t}\right] dt}$$</p>
+<p>왼쪽은 면적의 합, 오른쪽은 함수의 적분. 모수 추정 없이 면적만으로 CL을 얻는다는 것이 NCA의 핵심이다.</p>
+
+<h4>C. 구조적 필연성</h4>
+<p>$CL = Dose/AUC_0^\infty$가 불가피한 이유: 선형 PK에서 이 관계는 질량 보존 법칙의 직접 결과다. 체내에 들어온 모든 약물이 결국 CL에 의해 소실되므로 $AUC_0^\infty \cdot CL = Dose$는 항등식이다. 어떤 구획 구조도 이 관계를 변경하지 않는다.</p>
+
+<h4>D. 가정과 경계 조건</h4>
+<ul>
+  <li><strong>소실은 샘플링 구획(혈장)에서만 발생</strong> → 말초 구획에서 소실이 있으면 CL 과소추정</li>
+  <li><strong>선형(1차) 소실 가정</strong> → Turbojoint® PK41처럼 비선형 PK에서 NCA-CL이 용량 의존적으로 변함 (이것 자체가 진단 시그니처)</li>
+  <li><strong>외삽 구간 20-25% 이내</strong> 권고 (Gabrielsson p.148)</li>
+</ul>
+
+<h4>E. 한계</h4>
+<p>비선형 PK에서 NCA-CL은 특정 농도 조건에서의 겉보기 청소율일 뿐이며, 용량 의존적으로 변한다. Turbojoint® 310 µg/kg에서 CL = 1.6 L·h⁻¹·kg⁻¹, 780 µg/kg에서 CL = 0.9 L·h⁻¹·kg⁻¹로 감소했다는 사실이 이를 증명한다.</p>
+
+<h4>F. 인지 5레이어</h4>
+<table>
+<tr><th>레이어</th><th>내용</th></tr>
+<tr><td>L1 수식</td><td>$CL = D_{iv}/AUC_0^\infty$, 단위: L/h; 면적에서 직접 도출</td></tr>
+<tr><td>L2 기하학</td><td>AUC = C-t 곡선 아래 면적 = 농도의 '시간 가중 누적'</td></tr>
+<tr><td>L3 동형성</td><td>수문학의 유역 유량(강수량/유출 면적)과 구조적 동형</td></tr>
+<tr><td>L4 생리학</td><td>CL은 간·신장 생리학, Vss는 조직 결합·분포 반영</td></tr>
+<tr><td>L5 실무</td><td>Phoenix WinNonlin, R PKNCA 패키지에서 자동 계산; NDA 제출 표준</td></tr>
+</table>
+
+<div class="zettel">
+<div class="zettel-hdr">Zettelkasten Atom</div>
+<pre style="margin:0;background:transparent;border:none;font-size:12px;">---
+aliases: [NCA, 비구획 분석, 모델-독립 PK]
+tags: [pharmacometrics/pk, nca, regulatory]
+up: "[[PK 파라미터 계산 MOC]]"
+related: ["[[AUC 면적 계산]]", "[[청소율 CL]]", "[[MRT]]"]
+source: "Gabrielsson 5e, §2.8.1, p.141; R&T 5e, App.A, p.759"
+---</pre>
+<p style="margin-top:8px;font-size:13px;">NCA는 구획 모델 가정 없이 $CL = Dose/AUC_0^\infty$로 청소율을 계산하며, 소실이 샘플링 구획에서만 선형으로 일어난다는 최소 가정만 요구한다. 회귀분석과 상보적으로 사용되며, NCA는 탐색·진단 도구, 회귀는 기전 해석 도구로 이해할 수 있다. Turbojoint® PK41에서처럼 용량 의존적 CL 변화를 NCA로 먼저 탐지하고, MM 비선형 모델로 회귀하는 순서가 모범 워크플로다.</p>
+</div>
+</div>
+
+<!-- ────────────── Card 2: λz (APEX) ────────────── -->
+<div class="card" id="c-lambdaz">
+<span class="apex-badge">⚡ Apex Concept</span>
+<div class="card-title">개념 2 — λz: 말단 기울기 추정과 외삽 오차의 전파</div>
+
+<div class="big-idea">
+  <div class="big-idea-title">개념 Big Idea: 거장의 시각</div>
+  <b>왜 치명적으로 중요한가</b>: λz를 잘못 추정하면 외삽 AUC, CL, MRT, Vss가 모두 틀어지는 '연쇄 오류 폭발'이 일어난다 — 하나의 기울기 오류가 NCA 보고서 전체를 오염시킨다.<br><br>
+  <b>체화해야 할 단 하나의 직관</b>: λz는 '말단 소실 속도의 순수한 측정값'이다 — 흡수 구간이 아닌 진정한 terminal phase에서, 최소 3-4개 관측값이 로그-선형으로 늘어선 구간만을 선택해야 한다. '가장 많은 점을 포함할수록 좋다'는 직관은 치명적 오류다.<br><br>
+  <b>이 직관을 머릿속에 박고 아래를 읽어라</b>: λz 선택이 왜 알고리즘이 아닌 판단의 문제인지가 보일 것이다.
+</div>
+
+<h4>A. 정형적 정의</h4>
+<p>λz는 반대수(semi-log) 농도-시간 곡선의 말단 하강 기울기의 절댓값으로, 단위는 time⁻¹이다. 로그-선형 회귀로 추정하며, 말단 반감기 $t_{1/2z}$와 $AUC_{t_{last}}^\infty$ 외삽 계산에 직접 사용된다.</p>
+
+<h4>B. 수식 도출</h4>
+<p>농도가 지수 소실하면 (Gabrielsson Eq. 2:314):</p>
+<p>$$C_{i+1} = C_i \cdot e^{-\lambda_z \cdot \Delta t}$$</p>
+<p>양변에 자연로그를 취하면:</p>
+<p>$$\lambda_z = K = \frac{\ln(C_i / C_{i+1})}{\Delta t} \quad \text{[Eq. 2:315]}$$ <span class="cite">[출처: Gabrielsson 5e, §2.8.3, p.144]</span></p>
+<p>외삽 AUC:</p>
+<p>$$AUC_{t_{last}}^\infty = \frac{C_{last}}{\lambda_z} \quad \text{[Eq. 2:311]}$$ <span class="cite">[출처: Gabrielsson 5e, §2.8.2, p.143]</span></p>
+<p>외삽 비율 품질 기준:</p>
+<p>$$\% \; extrapolated = \frac{AUC_{t_{last}}^\infty}{AUC_0^\infty} \times 100 \quad \text{[Eq. 2:324]}$$</p>
+<p>Gabrielsson 권고: 이 비율이 <strong>20-25%를 초과하면</strong> 샘플링 설계 재검토 필요 (p.148).</p>
+
+<p><strong>실제 수치 앵커링 — Turbojoint® PK41</strong>: 310 µg/kg 투여군의 말단 데이터(t=6h: 15 µg/L, t=8h: 5 µg/L, t=10h: 0.47 µg/L)로부터 λz를 추정하고 외삽하여 NCA CL = 1.6 L·h⁻¹·kg⁻¹ 획득. 780 µg/kg 군에서는 CL = 0.9 L·h⁻¹·kg⁻¹로 감소 (Gabrielsson pp.661-664).</p>
+
+<h4>C. 구조적 필연성</h4>
+<p>이 형태가 불가피한 이유: $\lambda_z$는 로그 농도 대 시간 직선의 기울기이며, 이 직선성은 1차(선형) 소실이라는 단일 가정에서 수학적으로 불가피하게 도출된다. 로그 공간에서 지수 함수는 직선이 된다.</p>
+
+<div class="fallacy">
+  <div class="fallacy-title">C-2. Plausible Fallacy — "더 많은 점을 포함할수록 λz가 정확해진다"</div>
+  <p><strong>오류의 구체적 형태</strong>: 분포상(α phase)이 끝나지 않은 초기 관측값들을 말단 회귀에 포함시킬 때 발생. 2구획 약물에서 α-상 데이터를 λz 추정에 포함하면 기울기가 완만해져 λz가 과소추정된다.</p>
+  <p><strong>나비효과</strong>: λz 과소추정 → $AUC_{t_{last}}^\infty = C_{last}/\lambda_z$ 과대추정 → $AUC_0^\infty$ 과대추정 → $CL = Dose/AUC$ 과소추정 → $MRT = AUMC/AUC$ 과대추정 → $V_{ss} = MRT \cdot CL$ 방향 불명확(두 오류가 상쇄 또는 증폭). 단 하나의 기울기 오류가 모든 NCA 파라미터를 오염시키는 '연쇄 오염 시그니처'다.</p>
+  <p><strong>GOF 시그니처</strong>: 반대수 플롯에서 선택된 점들이 직선에 맞지 않고 곡선 형태를 보임 — <strong>"말단 곡률 편향(Terminal Curvature Bias)"</strong></p>
+</div>
+
+<h4>D. 가정과 경계 조건</h4>
+<ul>
+  <li><strong>최소 3-4개 관측값</strong> 필요 (Gabrielsson p.146, Figure 2.119)</li>
+  <li>이상적으로 2-3 반감기 이상 경과 후 데이터 포함</li>
+  <li>마지막 관측 농도($C_{obs}$)가 회귀선에서 벗어난 경우 예측값($\hat{C}_{last}$) 사용 권고 (Gabrielsson p.147, Figure 2.120)</li>
+  <li>LOQ 미만 값은 결측(missing)으로 처리, 0 또는 LOQ로 대체 금지 (Gabrielsson p.153)</li>
+</ul>
+
+<h4>E. 한계</h4>
+<p>2구획 이상 약물에서 λz는 '진정한 소실 속도'가 아닌 '말단 하강 속도'이며, $V_z = CL/\lambda_z$는 진정한 분포 부피가 아닌 '말단 위상 분포 부피'다.</p>
+
+<h4>F. 인지 5레이어</h4>
+<table>
+<tr><th>레이어</th><th>내용</th></tr>
+<tr><td>L1 수식</td><td>$\lambda_z = \ln(2)/t_{1/2}$, 단위: h⁻¹; 로그-선형 회귀의 기울기 절댓값</td></tr>
+<tr><td>L2 기하학</td><td>반대수 플롯에서 말단 직선 구간의 음의 기울기 — 시각적으로 확인 필수</td></tr>
+<tr><td>L3 동형성</td><td>방사성 동위원소 붕괴 상수와 수학적으로 동일 구조</td></tr>
+<tr><td>L4 생리학</td><td>λz ≈ $K_{el}$(1구획) = CL/V; 간·신장 기능 저하 시 λz 감소, t½ 연장</td></tr>
+<tr><td>L5 실무</td><td>WinNonlin λz interval 지정 필수; R PKNCA <code>pk.calc.half.life()</code> 자동 선택 알고리즘은 R² 기반 — 임상 판단 필요</td></tr>
+</table>
+
+<div class="zettel">
+<div class="zettel-hdr">Zettelkasten Atom</div>
+<pre style="margin:0;background:transparent;border:none;font-size:12px;">---
+aliases: [lambda z, 말단 소실 속도 상수, terminal slope]
+tags: [pharmacometrics/pk, nca, lambda_z, apex]
+up: "[[NCA 파라미터 계산]]"
+related: ["[[AUC 외삽]]", "[[t½ 반감기]]", "[[Vz vs Vss 혼동쌍]]"]
+source: "Gabrielsson 5e, §2.8.3-2.8.4, pp.144-147"
+---</pre>
+<p style="margin-top:8px;font-size:13px;">λz는 반대수 농도-시간 곡선의 말단 직선 구간을 로그-선형 회귀하여 얻는 말단 소실 속도 상수다. 최소 3-4개 관측값이 필요하며 분포상 데이터를 포함해서는 안 된다. λz의 오류는 $AUC_{t_{last}}^\infty$, CL, MRT, Vss 전체로 전파되는 연쇄 오염을 일으키므로, NCA 워크플로에서 λz 선택 구간 결정이 단일 최고 위험 단계다.</p>
+</div>
+</div>
+
+<!-- ────────────── Card 3: 핵심 파라미터 ────────────── -->
+<div class="card" id="c-params">
+<div class="card-title">개념 3 — NCA 핵심 파라미터: CL, MRT, Vss, Vz의 모멘트 도출</div>
+
+<div class="big-idea">
+  <div class="big-idea-title">개념 Big Idea: 거장의 시각</div>
+  <b>왜 치명적으로 중요한가</b>: Vss와 Vz를 혼동하여 NDA 보고서에 Vz를 '분포 부피'로 보고하면 조직 분포 특성을 오해한 용량 설계로 이어질 수 있으며 심사관 질의를 받는다.<br><br>
+  <b>체화해야 할 단 하나의 직관</b>: MRT는 약물 분자 한 개가 체내에 머무는 '평균 시간'이고, Vss는 그 평균 시간 동안 분포한 '평균 공간'이다 — 두 파라미터 모두 약물 분자의 '시공간 거동'을 기술한다.<br><br>
+  <b>이 직관을 머릿속에 박고 아래를 읽어라</b>: MRT·CL·Vss의 삼각 관계가 하나의 필연적 구조로 보일 것이다.
+</div>
+
+<h4>B. 수식 도출 — 모멘트 기반 파라미터 완전 세트</h4>
+
+<p><strong>청소율 (Clearance)</strong>: <span class="cite">[출처: Gabrielsson 5e, §2.8.5, p.149]</span></p>
+<p>$$Cl = \frac{D_{iv}}{AUC_0^\infty}$$</p>
+<p>경구 청소율: $Cl_o = Cl/F = D_{po}/AUC_0^\infty$</p>
+<p>생체이용률: $$F = \frac{AUC_{0,po}^\infty}{AUC_{0,iv}^\infty} \cdot \frac{D_{iv}}{D_{po}} \quad \text{[Eq. 2:327]}$$</p>
+
+<p><strong>평균 체내 잔류 시간 (MRT)</strong>:</p>
+<p>$$MRT_{IV\;bolus} = \frac{AUMC_0^\infty}{AUC_0^\infty}$$</p>
+<p>지속 정주 보정: $\displaystyle MRT = \frac{AUMC_0^\infty}{AUC_0^\infty} - \frac{T_{inf}}{2}$ <span class="cite">[Eq. 2:328]</span></p>
+<p>1차 흡수 보정: $\displaystyle MRT = \frac{AUMC_0^\infty}{AUC_0^\infty} - \frac{1}{K_a}$ <span class="cite">[Eq. 2:329]</span></p>
+
+<p><strong>정상 상태 분포 부피 (Vss)</strong>: <span class="cite">[출처: Gabrielsson 5e, §2.8.5, p.151; Eq. 2:337]</span></p>
+<p>$$V_{ss} = MRT \cdot Cl = \frac{AUMC_0^\infty}{AUC_0^\infty} \cdot \frac{D_{iv}}{AUC_0^\infty} = \frac{D_{iv} \cdot AUMC_0^\infty}{\left[AUC_0^\infty\right]^2}$$</p>
+
+<p><strong>말단 위상 분포 부피 (Vz)</strong>: $$V_z = \frac{Cl}{\lambda_z} = \frac{D_{iv}}{AUC_0^\infty \cdot \lambda_z} \quad \text{[Eq. 2:338]}$$</p>
+<p><strong>말단 반감기</strong>: $\displaystyle t_{1/2z} = \frac{\ln 2}{\lambda_z}$ <span class="cite">[Eq. 2:340]</span>   &nbsp;&nbsp; <strong>효과적 반감기</strong>: $t_{eff} = \ln(2) \cdot MRT$</p>
+
+<p><strong>AUMC 선형 사다리꼴</strong> (Eq. 2:312): $$AUMC_0^{t_{last}} = \sum_{i=1}^{n} \frac{t_i \cdot C_i + t_{i+1} \cdot C_{i+1}}{2} \cdot \Delta t$$</p>
+
+<p><strong>AUMC 외삽</strong> (Eq. 2:313): $$AUMC_{t_{last}}^\infty = \frac{t_{last} \cdot C_{last}}{\lambda_z} + \frac{C_{last}}{\lambda_z^2}$$</p>
+
+<p><strong>실제 수치 앵커링 — Turbojoint® PK41</strong> (Gabrielsson pp.661-664): 체중 70 kg, 5h 정주:</p>
+<table>
+<tr><th>용량 (µg/kg)</th><th>CL (L/h/kg)</th><th>V (L/kg)</th><th>MRT (h)</th></tr>
+<tr><td>310</td><td>1.6</td><td>2.3</td><td>1.4</td></tr>
+<tr><td>780</td><td>0.9</td><td>1.8</td><td>1.9</td></tr>
+</table>
+<p>용량 증가 → CL 감소 → MM 비선형 소실 진단의 NCA 직접 증거</p>
+
+<h4>C. 구조적 필연성</h4>
+<p>$V_{ss} = MRT \cdot Cl$이 불가피한 이유: 약물이 체내를 'CL 속도'로 통과하며 'MRT 시간' 동안 머물 때 차지하는 공간이 Vss다. 이것은 $\text{공간} = \text{속도} \times \text{시간}$의 운동학적 필연이다. 반면 $V_z = Cl/\lambda_z$는 말단 위상에서 분포와 소실이 평형 상태라는 추가 가정이 필요하여, 다구획 약물에서는 $V_{ss} \neq V_z$다.</p>
+
+<div class="zettel">
+<div class="zettel-hdr">Zettelkasten Atom</div>
+<p style="font-size:13px;margin:6px 0 0;">$V_{ss} = MRT \cdot CL = D_{iv} \cdot AUMC_0^\infty / [AUC_0^\infty]^2$. AUMC는 AUC보다 외삽 오차에 훨씬 민감하므로 Vss 정확도는 AUC보다 낮다. Vz = CL/λz는 말단 위상 기반으로 Vss와 다르며, 다구획 약물에서 Vz ≥ Vss가 전형적이다.</p>
+</div>
+</div>
+
+<!-- ────────────── Card 4: 사다리꼴 규칙 ────────────── -->
+<div class="card" id="c-trapz">
+<div class="card-title">개념 4 — AUC/AUMC 면적 계산: 선형 vs 로그-선형 사다리꼴 규칙</div>
+
+<div class="big-idea">
+  <div class="big-idea-title">개념 Big Idea: 거장의 시각</div>
+  <b>왜 치명적으로 중요한가</b>: 생물학적 동등성 시험에서 두 제제의 AUC 비교가 핵심인데, 사다리꼴 규칙 선택이 달라지면 AUC 추정값이 체계적으로 편향되어 동등성 판정 결과가 뒤바뀔 수 있다.<br><br>
+  <b>체화해야 할 단 하나의 직관</b>: 선형 사다리꼴은 '곡선을 직선으로 근사'하고, 로그-선형 사다리꼴은 '곡선을 지수 감소로 근사'한다 — 어느 것이 더 정확한가는 구간에서 농도 프로파일의 실제 모양에 달려 있다.<br><br>
+  <b>이 직관을 머릿속에 박고 아래를 읽어라</b>: 어떤 구간에 어떤 방법을 써야 하는지가 규칙이 아닌 원리로 이해될 것이다.
+</div>
+
+<h4>B. 수식 도출</h4>
+<p><strong>선형 사다리꼴 규칙</strong> (R&amp;T App.A p.759; Gabrielsson Eq. 2:310):</p>
+<p>$$AUC_0^{t_{last}} = \sum_{i=1}^{n} \frac{C_i + C_{i+1}}{2} \cdot \Delta t$$ <span class="cite">[출처: Gabrielsson 5e, §2.8.2, p.143; R&T 5e, App.A, p.759]</span></p>
+
+<p><strong>로그-선형 사다리꼴 규칙</strong> (Gabrielsson Eq. 2:316):</p>
+<p>$$AUC_i^{i+1} = \frac{C_i - C_{i+1}}{\ln(C_i/C_{i+1})} \cdot \Delta t$$ <span class="cite">[출처: Gabrielsson 5e, §2.8.3, p.145]</span></p>
+
+<h4>선택 가이드</h4>
+<table>
+<tr><th>상황</th><th>권고 방법</th></tr>
+<tr><td>상승 구간 (Cmin → Cmax)</td><td>선형</td></tr>
+<tr><td>하강 1차 소실 구간</td><td>로그-선형</td></tr>
+<tr><td>Ci = 0 또는 Ci+1 = Ci</td><td>선형 (로그-선형 불가)</td></tr>
+<tr><td>0차 소실 (선형 감소)</td><td>선형 (큰 △t도 무방)</td></tr>
+<tr><td>교차 비교 생물학적 동등성</td><td>혼합법(Lin-Log) 표준</td></tr>
+</table>
+
+<p><strong>실제 수치 앵커링 — Zileuton</strong> (R&amp;T App.A, Table A-2): 600 mg 경구 투여, AUC 0-24h 계산 (lin-trap): 상승 구간 t=0→3h에 선형, 하강 구간 t=3→24h에 로그-선형 적용 시 약 13.7 mg·h/L.</p>
+<p><strong>Gabrielsson 실용 조언</strong> (p.146): "두 방법의 차이는 합리적인 샘플링 설계 하에서 임상적으로 거의 무시 가능하다. 교차 연구의 평균 AUC에서 개인별 오차는 상쇄된다."</p>
+
+<div class="zettel">
+<div class="zettel-hdr">Zettelkasten Atom</div>
+<p style="font-size:13px;margin:6px 0 0;">AUC는 선형(직선 근사)과 로그-선형(지수 감소 근사) 사다리꼴 규칙으로 계산된다. 상승 구간은 선형, 하강 구간은 로그-선형이 이론적으로 더 정확하나, 충분한 샘플링 밀도 하에서 두 방법의 차이는 임상적으로 무시 가능하다. 생물학적 동등성 시험에서는 Lin-Log 방식이 표준이다.</p>
+</div>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §3  STRUCTURAL ISOMORPHISM MAP
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec3">
+<div class="sec-label">§3</div>
+<h2 class="sec-title">구조적 동형성 지도</h2>
+
+<!-- Layer 0: Prologue -->
+<div class="iso-prologue">
+  <b>공통 원리</b>: NCA의 핵심 수식 $CL = Dose/AUC$, $MRT = AUMC/AUC$, $V_{ss} = MRT \cdot CL$은 모두 <em>모멘트 비율(moment ratio)</em>의 형태를 취한다. 이 수학적 구조는 '크기를 가중 평균 위치로 표현하는 원리'이며, 자연계의 모든 확률적·유동적 시스템에서 보편적으로 나타난다.<br><br>
+  <b>왜 이 형태인가</b>: 계가 선형이고 ergodic(시간 평균 = 앙상블 평균)이면, 임의 파라미터는 반드시 입력-출력 적분의 비로 표현된다. 이것은 선형 시스템 이론의 수학적 필연이며 PK가 선형임을 가정하는 순간 모멘트 방법이 유효해지는 이유다.<br><br>
+  <b>예측 전이 선언</b>: 이 동형성을 이해하면, 통계학의 분산 계산법이나 물리학의 질량 중심 개념을 알고 있는 연구자는 NCA 수식을 처음 봐도 직관적으로 그 의미를 이해할 수 있다.
+</div>
+
+<!-- Layer 1: SVG Hub-and-Spoke -->
+<div class="layer-label">[Layer 1] Hub-and-Spoke 동형성 다이어그램</div>
+<div style="background:rgba(0,0,0,.3);border-radius:8px;padding:16px;">
+<svg viewBox="0 0 800 560" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'Noto Sans KR',sans-serif;">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="rgba(201,168,76,0.6)"/>
+    </marker>
+  </defs>
+  <!-- Lines -->
+  <line x1="400" y1="280" x2="195" y2="130" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="280" x2="605" y2="130" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="280" x2="620" y2="380" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="280" x2="180" y2="380" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="280" x2="400" y2="490" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <!-- Hub -->
+  <ellipse cx="400" cy="280" rx="72" ry="52" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="2"/>
+  <text x="400" y="272" text-anchor="middle" fill="#c9a84c" font-size="12" font-weight="600">모멘트 비율</text>
+  <text x="400" y="290" text-anchor="middle" fill="#ede8df" font-size="10">∫t·C dt / ∫C dt</text>
+  <!-- Node 1: Pharmacokinetics -->
+  <rect x="110" y="75" width="170" height="90" rx="6" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.5"/>
+  <text x="195" y="98" text-anchor="middle" fill="#c9a84c" font-size="12" font-weight="600">약동학 (PK)</text>
+  <text x="195" y="116" text-anchor="middle" fill="#ede8df" font-size="10">MRT = AUMC/AUC</text>
+  <text x="195" y="130" text-anchor="middle" fill="#ede8df" font-size="10">Vss = MRT · CL</text>
+  <text x="195" y="148" text-anchor="middle" fill="#8a8070" font-size="9">약물 분자의 평균 체류 시간</text>
+  <!-- Node 2: Statistics -->
+  <rect x="520" y="75" width="160" height="90" rx="6" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.5"/>
+  <text x="600" y="98" text-anchor="middle" fill="#c9a84c" font-size="12" font-weight="600">통계학</text>
+  <text x="600" y="116" text-anchor="middle" fill="#ede8df" font-size="10">E[X] = ∫x·f(x)dx</text>
+  <text x="600" y="130" text-anchor="middle" fill="#ede8df" font-size="10">Var = E[X²] – E[X]²</text>
+  <text x="600" y="148" text-anchor="middle" fill="#8a8070" font-size="9">확률 변수의 가중 평균</text>
+  <!-- Node 3: Physics -->
+  <rect x="535" y="335" width="165" height="90" rx="6" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.5"/>
+  <text x="617" y="358" text-anchor="middle" fill="#c9a84c" font-size="12" font-weight="600">물리학</text>
+  <text x="617" y="376" text-anchor="middle" fill="#ede8df" font-size="10">x_cm = ∫x·dm / ∫dm</text>
+  <text x="617" y="390" text-anchor="middle" fill="#ede8df" font-size="10">I = ∫r²·dm</text>
+  <text x="617" y="408" text-anchor="middle" fill="#8a8070" font-size="9">질량 분포의 평균 위치</text>
+  <!-- Node 4: Survival -->
+  <rect x="95" y="335" width="170" height="90" rx="6" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.5"/>
+  <text x="180" y="358" text-anchor="middle" fill="#c9a84c" font-size="12" font-weight="600">생존 분석</text>
+  <text x="180" y="376" text-anchor="middle" fill="#ede8df" font-size="10">E[T] = ∫S(t)dt</text>
+  <text x="180" y="390" text-anchor="middle" fill="#ede8df" font-size="10">MRT ≡ 평균 생존 시간</text>
+  <text x="180" y="408" text-anchor="middle" fill="#8a8070" font-size="9">생존 곡선 아래 면적</text>
+  <!-- Node 5: Economics -->
+  <rect x="305" y="450" width="190" height="85" rx="6" fill="rgba(201,168,76,0.1)" stroke="#c9a84c" stroke-width="1.5"/>
+  <text x="400" y="473" text-anchor="middle" fill="#c9a84c" font-size="12" font-weight="600">금융 (Duration)</text>
+  <text x="400" y="491" text-anchor="middle" fill="#ede8df" font-size="10">D = Σ t·PV(Ct) / P</text>
+  <text x="400" y="505" text-anchor="middle" fill="#ede8df" font-size="10">채권 Duration = 현금흐름 MRT</text>
+  <text x="400" y="521" text-anchor="middle" fill="#8a8070" font-size="9">현금흐름의 가중 평균 시간</text>
+</svg>
+</div>
+
+<!-- Layer 2: Alignment Matrix -->
+<div class="layer-label">[Layer 2] 구조 정렬 매트릭스</div>
+<table>
+<tr>
+  <th>도메인</th><th>입력(source)</th><th>누적 가중치 (0차)</th><th>가중 평균 시간 (1차)</th><th>핵심 파라미터</th>
+</tr>
+<tr>
+  <td><strong>약동학 (NCA)</strong></td>
+  <td>$D_{iv}$ (용량, µg)</td>
+  <td>$AUC_0^\infty = \int_0^\infty C\,dt$</td>
+  <td>$AUMC_0^\infty = \int_0^\infty t \cdot C\,dt$</td>
+  <td>$CL = D/AUC$, $MRT = AUMC/AUC$, $V_{ss} = MRT\cdot CL$</td>
+</tr>
+<tr>
+  <td>통계학</td>
+  <td>확률 분포 $f(x)$</td>
+  <td>$\int f(x)\,dx = 1$</td>
+  <td>$\int x\cdot f(x)\,dx$</td>
+  <td>$E[X]$ (평균), $\sigma^2$ (분산)</td>
+</tr>
+<tr>
+  <td>물리학 (질량)</td>
+  <td>밀도 분포 $\rho(x)$</td>
+  <td>$M = \int \rho(x)\,dx$</td>
+  <td>$\int x\cdot\rho(x)\,dx$</td>
+  <td>$x_{cm} = \int x\rho\,dx / M$</td>
+</tr>
+<tr>
+  <td>생존 분석</td>
+  <td>생존 함수 $S(t)$</td>
+  <td>$\int S(t)\,dt$ (기댓값)</td>
+  <td>$\int t\cdot h(t)\cdot S(t)\,dt$</td>
+  <td>$E[T] = \int_0^\infty S(t)\,dt$</td>
+</tr>
+<tr>
+  <td>채권 Duration</td>
+  <td>가격 $P$</td>
+  <td>$P = \sum PV(C_t)$</td>
+  <td>$\sum t \cdot PV(C_t)$</td>
+  <td>$D = \sum t\cdot PV(C_t) / P$</td>
+</tr>
+</table>
+
+<!-- Layer 3: Normalization Overlay -->
+<div class="layer-label">[Layer 3] 정규화 수렴 오버레이</div>
+<p style="color:var(--muted);font-size:13px;margin-bottom:10px;">각 도메인의 실제 스케일 곡선 → "정규화 토글" → 모든 곡선이 하나로 붕괴하는 순간.</p>
+<div class="norm-wrap">
+  <canvas id="normCanvas"></canvas>
+</div>
+<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+  <button class="tog-btn on" id="normBtn">정규화 OFF → ON 토글</button>
+  <span style="font-size:12px;color:var(--muted);align-self:center;">t/MRT 축으로 정규화하면 모든 지수 감소 곡선이 수렴</span>
+</div>
+
+<!-- Layer 4: Prediction Transfer Cards -->
+<div class="layer-label">[Layer 4] 예측 전이 카드</div>
+
+<div class="transfer-card">
+<div class="accordion">
+  <button class="acc-btn" onclick="toggleAcc(this)">
+    🔀 전이 질문 1: 채권 Duration이 길어지면 금리 민감도가 커진다. PK에서 MRT가 긴 약물은 어떤 임상적 특성을 가지는가?
+    <span class="chev">▾</span>
+  </button>
+  <div class="acc-body">
+    <p><strong>① 출발 도메인</strong>: 채권 Duration은 현금흐름의 가중 평균 만기 = $D = \sum t \cdot PV(C_t)/P$. Duration이 클수록 금리 변화 1%에 채권 가격이 더 크게 흔들린다.</p>
+    <p><strong>② 공통 수학 구조</strong>: 두 경우 모두 "1차 모멘트 / 0차 모멘트" 구조. Duration = AUMC_cashflow / AUC_cashflow. 민감도는 1차 모멘트(가중 시간)에 비례한다.</p>
+    <p><strong>③ 대응 현상</strong>: PK에서 MRT가 긴 약물(예: 간 대사가 느린 약물)은 '농도 변화에 대한 반응이 느리고 오래 지속된다' — 복용 중단 후에도 약효가 오래 남고, 용량 조절 후 새로운 항정 상태 도달이 느리다. Duration 논리 그대로 적용된다.</p>
+  </div>
+</div>
+</div>
+
+<div class="transfer-card">
+<div class="accordion">
+  <button class="acc-btn" onclick="toggleAcc(this)">
+    🔀 전이 질문 2: 통계학에서 분산($\sigma^2$)이 크면 불확실성이 크다. AUC 외삽 비율(%extrap)이 크면 NCA 파라미터의 불확실성이 커지는 이유를 구조적으로 설명하라.
+    <span class="chev">▾</span>
+  </button>
+  <div class="acc-body">
+    <p><strong>① 출발 도메인</strong>: 통계 분산은 $\sigma^2 = E[X^2] - E[X]^2$. 분포의 꼬리 부분(극단값)이 길수록 2차 모멘트가 커져 분산이 증가한다.</p>
+    <p><strong>② 공통 수학 구조</strong>: AUC 외삽 = $C_{last}/\lambda_z$ = 곡선의 '꼬리 면적'. %extrap이 크다 = 꼬리에 의존하는 비율이 크다. 통계 분산에서 꼬리(극단값)가 분산을 지배하는 것과 동일한 구조다.</p>
+    <p><strong>③ 대응 현상</strong>: λz 추정 오류가 꼬리 면적(= $C_{last}/\lambda_z$)에 증폭 반영된다. %extrap = 30%이면, CL 추정에서 30%가 λz 단일 숫자 하나에 달려있다는 의미다. 통계 분산이 꼬리에 지배되듯, NCA 정확도가 λz에 지배된다.</p>
+  </div>
+</div>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §4  INTERACTIVE SIMULATOR
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec4">
+<div class="sec-label">§4 · V5.1 Interactive Simulator</div>
+<h2 class="sec-title">NCA 인터랙티브 시뮬레이터</h2>
+<p style="color:var(--muted);font-size:13px;margin-bottom:18px;">
+  <strong style="color:var(--text);">데이터 소스</strong>: Gabrielsson &amp; Weiner 5e, PK41 — Turbojoint® (가상 약물), 1명 피험자, 5h 정주, 3 용량 그룹, 체중 70 kg<br>
+  <span style="color:var(--accent);">λz 구간 선택</span>을 바꿔 오차 전파를 실시간으로 확인하라. 외삽 비율 &gt;25% 시 경고 배너 활성화.
+</p>
+
+<div class="sim-layout">
+  <!-- Controls -->
+  <div class="sim-controls">
+    <h4 style="margin-top:0;">용량 그룹 선택</h4>
+    <div class="preset-row" id="doseRow">
+      <button class="pbt on" onclick="selectDose('310',this)">310 µg/kg</button>
+      <button class="pbt" onclick="selectDose('520',this)">520 µg/kg</button>
+      <button class="pbt" onclick="selectDose('780',this)">780 µg/kg</button>
+    </div>
+
+    <div class="slider-grp">
+      <label>λz 말단 데이터 포인트 수 <span class="vl" id="lzPtsLabel">3</span>개</label>
+      <input type="range" id="sl-lzpts" min="2" max="5" step="1" value="3"
+             oninput="state.lzPoints=+this.value;document.getElementById('lzPtsLabel').textContent=this.value;updateChart();">
+      <div style="font-size:11px;color:var(--muted);">최솟값 2 (선형 근사만), 권고 3-4</div>
+    </div>
+
+    <h4>적분 방법</h4>
+    <div style="margin-bottom:12px;">
+      <button class="tog-btn on" id="btn-linear" onclick="setMethod('linear')">선형</button>
+      <button class="tog-btn" id="btn-loglin" onclick="setMethod('loglin')">로그-선형</button>
+      <button class="tog-btn" id="btn-mixed" onclick="setMethod('mixed')">혼합</button>
+    </div>
+
+    <h4>표시 옵션</h4>
+    <button class="tog-btn on" id="btn-auc" onclick="toggleOpt('showAUC','btn-auc')">AUC 면적 표시</button>
+    <button class="tog-btn on" id="btn-lzline" onclick="toggleOpt('showLzLine','btn-lzline')">λz 회귀선</button>
+    <button class="tog-btn" id="btn-logscale" onclick="toggleOpt('logScale','btn-logscale')">Log 스케일</button>
+    <button class="tog-btn" id="btn-ref" onclick="saveRef()">기준선 저장</button>
+
+    <div id="warnBanner" class="warn-ban"></div>
+  </div>
+
+  <!-- Chart area -->
+  <div class="sim-right">
+    <div class="canvas-wrap"><canvas id="simCanvas"></canvas></div>
+    <div class="cursor-lbl" id="cursorLabel">그래프 위에 마우스를 올리세요</div>
+
+    <div class="derived-panel">
+      <div class="d-row"><span class="dk">λz</span><span class="dv" id="dv-lz">—</span></div>
+      <div class="d-row"><span class="dk">t½z</span><span class="dv" id="dv-t12">—</span></div>
+      <div class="d-row"><span class="dk">R² (λz fit)</span><span class="dv" id="dv-r2">—</span></div>
+      <div class="d-row"><span class="dk">AUC_last</span><span class="dv" id="dv-auclast">—</span></div>
+      <div class="d-row"><span class="dk">AUC_inf</span><span class="dv" id="dv-aucinf">—</span></div>
+      <div class="d-row"><span class="dk">% 외삽</span><span class="dv" id="dv-pctex">—</span></div>
+      <div class="d-row"><span class="dk">CL (L/h/kg)</span><span class="dv" id="dv-cl">—</span></div>
+      <div class="d-row"><span class="dk">Δ CL vs 기준선</span><span class="dv" id="dv-dcl">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mission Panel -->
+<div class="mission-panel">
+  <h4>🎯 임상 미션</h4>
+  <p><strong>미션 1</strong>: 310 µg/kg 그룹에서 λz 포인트 수를 2→5로 변경하며 CL 값 변화를 관찰하라. "말단 곡률 편향(Terminal Curvature Bias)"이 실제로 발생하는가?</p>
+  <p style="margin-bottom:0;"><strong>미션 2</strong>: 기준선 저장(310 µg/kg) → 780 µg/kg으로 전환 → Δ CL을 확인하라. MM 비선형 PK 진단 근거로 사용할 수 있는가?</p>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §5  CONFUSION PAIR DISSECTION
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec5">
+<div class="sec-label">§5</div>
+<h2 class="sec-title">혼동 쌍 해부</h2>
+
+<!-- Pair 1: Vss vs Vz -->
+<div class="card" id="p-vss-vz">
+<h3>혼동 쌍 1 — Vss vs Vz (Vdβ)</h3>
+<table>
+<tr><th>비교 차원</th><th>Vss</th><th>Vz (= Vdβ)</th></tr>
+<tr><td>표면적 유사성</td><td colspan="2">둘 다 '분포 부피', 단위 L 또는 L/kg — 표면상 동일</td></tr>
+<tr><td>수식</td><td>$V_{ss} = MRT \cdot Cl = \dfrac{D \cdot AUMC_0^\infty}{[AUC_0^\infty]^2}$</td><td>$V_z = \dfrac{Cl}{\lambda_z} = \dfrac{D}{AUC_0^\infty \cdot \lambda_z}$</td></tr>
+<tr><td>생물학적 지시체</td><td>정상 상태에서 모든 구획에 분포된 총 부피 — 조직/혈장 결합의 진정한 평형</td><td>말단 β 위상에서 분포와 소실이 겉보기 평형인 상태의 부피 — λz에 의존</td></tr>
+<tr><td>다구획 약물에서</td><td>V₁ + V₂에 가깝게 추정됨</td><td>Vz ≥ Vss (항상); β가 느릴수록 Vz &gt;&gt; Vss</td></tr>
+<tr><td>λz 변화 시</td><td>λz 변해도 Vss 불변</td><td>Vz = CL/λz이므로 λz가 변하면 즉시 변함</td></tr>
+<tr><td>임상/규제 결과</td><td>단백 결합 변화·DDA 예측에 유효</td><td>Vz를 Vss 대신 NDA에 보고하면 조직 분포 과대추정 오류</td></tr>
+<tr class="mem-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>"Vss는 조직의 포부(aspiration), Vz는 β의 그림자(shadow)"</strong> — 분포 평형에서의 진짜 공간이 Vss고, 말단 기울기가 느릴수록 그 그림자(Vz)가 길게 늘어난다.</td></tr>
+<tr class="critical"><td><strong>⚡ 치명적 타격</strong></td><td colspan="2"><strong>Vz를 Vss로 보고하고 신부전 환자의 용량을 설계할 경우, 진정한 분포 부피를 과대추정하여 부하 용량(loading dose)을 과다 처방 — 독성 사고 시나리오 직결. NDA Deficiency Letter 사유.</strong></td></tr>
+</table>
+</div>
+
+<!-- Pair 2: MRT vs t½ -->
+<div class="card" id="p-mrt-t12">
+<h3>혼동 쌍 2 — MRT vs t½z</h3>
+<table>
+<tr><th>비교 차원</th><th>MRT</th><th>t½z</th></tr>
+<tr><td>표면적 유사성</td><td colspan="2">둘 다 약물이 '체내에 머무는 시간'을 기술하는 것처럼 보임</td></tr>
+<tr><td>수식</td><td>$MRT = \dfrac{AUMC_0^\infty}{AUC_0^\infty}$</td><td>$t_{1/2z} = \dfrac{\ln 2}{\lambda_z}$</td></tr>
+<tr><td>생물학적 지시체</td><td>약물 분자 한 개의 평균 체내 잔류 시간 — 모든 구획 분포 포함</td><td>말단 위상에서 농도가 절반으로 감소하는 시간 — λz만의 함수</td></tr>
+<tr><td>1구획 IV bolus에서</td><td>$MRT = 1/k$</td><td>$t_{1/2} = \ln 2 / k$</td></tr>
+<tr><td>비율</td><td>$MRT = t_{1/2} / \ln 2 = 1.4427 \times t_{1/2}$ (1구획)</td><td>항상 MRT보다 짧음</td></tr>
+<tr><td>다중 투여 설계</td><td>$t_{eff} = \ln(2) \cdot MRT$가 축적 예측에 더 적합</td><td>t½z만으로 축적 계산 시 다구획 약물에서 오차 발생</td></tr>
+<tr class="mem-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>"MRT는 t½보다 항상 44% 더 길다 — ×1/ln2. 이 비율은 지수함수에서 나오는 수학적 필연이지, 생리학적 차이가 아니다."</strong> (Gabrielsson p.151: effective half-life = ln(2)·MRT)</td></tr>
+</table>
+</div>
+
+<!-- Pair 3: Clast observed vs predicted -->
+<div class="card" id="p-clast">
+<h3>혼동 쌍 3 — AUC 외삽: 관측 Clast vs 예측 Ĉlast</h3>
+<table>
+<tr><th>비교 차원</th><th>관측값 Clast 사용</th><th>회귀 예측값 Ĉlast 사용</th></tr>
+<tr><td>수식</td><td>$AUC_{t_{last}}^\infty = C_{last,obs}/\lambda_z$</td><td>$AUC_{t_{last}}^\infty = \hat{C}_{last}/\lambda_z$</td></tr>
+<tr><td>권고</td><td>Clast가 회귀선에 잘 맞을 때만 사용</td><td><strong>Gabrielsson 일반 권고</strong> (p.147)</td></tr>
+<tr><td>임상 결과</td><td>Clast가 선 위에 있으면 AUC 과대추정; 선 아래면 과소추정 (Figure 2.120)</td><td>회귀선 기반으로 안정적 외삽</td></tr>
+<tr class="mem-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>"마지막 점 하나가 노이즈면 외삽 면적 전체가 흔들린다 — 예측값을 쓰는 것이 더 정직한 통계다."</strong></td></tr>
+</table>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §6  PRAGMATIC APPLICATION SCENARIOS
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec6">
+<div class="sec-label">§6</div>
+<h2 class="sec-title">실용 시나리오 &amp; 진단 병리</h2>
+
+<!-- Scenario 1 -->
+<div class="card">
+<div class="scenario-hdr"><h4>Scenario 1 — Phase 1 FIH: NCA 기반 비선형 PK 진단 보고서 작성</h4></div>
+<div style="padding:18px;">
+<p><strong>배경</strong>: Turbojoint® (가상 소분자 항염증제), 1상 SAD 연구. 체중 70 kg 건강 자원자 1명에게 310, 520, 780 µg/kg을 5h 정주. 목표: CL, V, MRT NCA 추정 + 비선형 PK 여부 탐지.</p>
+
+<p><strong>NCA 결과 요약</strong>:</p>
+<table>
+<tr><th>용량 (µg/kg)</th><th>총량 (µg)</th><th>CL (L/h/kg)</th><th>V (L/kg)</th><th>MRT (h)</th><th>PK 패턴</th></tr>
+<tr><td>310</td><td>21,700</td><td>1.6</td><td>2.3</td><td>1.4</td><td>—</td></tr>
+<tr><td>520</td><td>36,400</td><td>1.2</td><td>2.1</td><td>1.7</td><td>CL↓</td></tr>
+<tr><td>780</td><td>54,600</td><td>0.9</td><td>1.8</td><td>1.9</td><td>CL↓↓</td></tr>
+</table>
+
+<p><strong>결론</strong>: 용량 증가에 따른 CL 단조 감소 → MM 비선형 소실 강력 시사. $Cl = V_{max}/(K_m + C)$로 초기 추정값 도출:</p>
+<p>$$1.6 = \frac{V_{max}}{K_m + 44}, \quad 0.9 = \frac{V_{max}}{K_m + 180}$$</p>
+<p>연립 방정식 풀면: $K_m \approx 83 \; \mu g \cdot L^{-1}$, $V_{max} \approx 184 \; \mu g \cdot h^{-1} \cdot kg^{-1}$</p>
+
+<p><strong>규제 언어 (IND/CSR)</strong>: "Non-compartmental analysis revealed dose-dependent apparent clearance values (1.6, 1.2, and 0.9 L/h/kg at 310, 520, and 780 µg/kg respectively), suggesting Michaelis-Menten elimination kinetics. These NCA-derived estimates were used as initial parameter estimates for subsequent nonlinear compartmental modeling using a capacity-limited one-compartment model."</p>
+
+<h4>R PKNCA 코드 — Turbojoint® NCA</h4>
+<pre>library(PKNCA)
+library(dplyr)
+
+# PK41 데이터 (Gabrielsson 5e, p.661)
+pk41 &lt;- data.frame(
+  ID   = 1,
+  Time = c(0, 2, 5, 6, 8, 10),
+  Conc = c(0, 32, 44, 15, 5, 0.47),  # 310 µg/kg group
+  Dose = 21700  # µg, 70 kg × 310 µg/kg, infusion t=0-5h
+)
+
+# PKNCA 데이터셋 구성
+conc_obj &lt;- PKNCAconc(pk41, Conc ~ Time | ID)
+dose_obj &lt;- PKNCAdose(
+  data.frame(ID=1, Time=0, Dose=21700, route="intravascular", duration=5),
+  Dose ~ Time | ID,
+  route = "intravascular",
+  duration.dose = 5
+)
+data_obj &lt;- PKNCAdata(conc_obj, dose_obj)
+
+# NCA 실행
+results &lt;- pk.nca(data_obj)
+summary(results)
+# 출력: AUClast, AUCinf, Clast, lambda.z, half.life, cl.obs, vz.obs
+
+# lambda.z 구간 수동 지정 (권고: 말단 3포인트 t=6,8,10)
+intervals_manual &lt;- data.frame(
+  start = 0, end = Inf,
+  auclast = TRUE, aucinf.obs = TRUE,
+  lambda.z = TRUE, half.life = TRUE, cl.obs = TRUE
+)
+# lambda.z.time.first / last 파라미터로 구간 제한 가능</pre>
+</div>
+</div>
+
+<!-- Diagnostic Pathology -->
+<div class="card">
+<h3>진단 병리학 — NCA 파라미터 오류 시그니처</h3>
+
+<div class="diag-sig">
+  <div class="diag-sig-title">시그니처 1: 말단 곡률 편향 (Terminal Curvature Bias)</div>
+  <table>
+  <tr><th>항목</th><th>내용</th></tr>
+  <tr><td>GOF 패턴</td><td>반대수 플롯에서 λz 회귀 구간의 잔차가 U자형(아래로 볼록) — 초기 점들이 회귀선 위, 말단 점들이 회귀선 아래 위치</td></tr>
+  <tr><td>기계론적 원인</td><td>2구획 약물의 분포상(α phase)이 완전히 소진되기 전 점들을 λz 회귀에 포함. α와 β 기울기의 중간 기울기로 λz가 추정됨</td></tr>
+  <tr><td>결과</td><td>λz 과소추정 → AUC_inf 과대추정 → CL 과소추정 → Vz 과대추정</td></tr>
+  <tr><td>해결 방향</td><td>반대수 플롯을 먼저 시각적으로 검토. α상이 의심되면 λz 구간을 더 말단(늦은 시점)으로 제한. R²와 잔차 패턴 동시 확인</td></tr>
+  </table>
+</div>
+
+<div class="diag-sig">
+  <div class="diag-sig-title">시그니처 2: AUMC 외삽 폭발 (AUMC Extrapolation Inflation)</div>
+  <table>
+  <tr><th>항목</th><th>내용</th></tr>
+  <tr><td>GOF 패턴</td><td>AUC %extrapolated &lt; 20% 이지만 AUMC %extrapolated &gt; 50%. Vss가 Vz보다 크게 나오거나(이론상 불가), MRT가 비정상적으로 크게 추정됨</td></tr>
+  <tr><td>기계론적 원인</td><td>AUMC 외삽 = $t_{last} \cdot C_{last}/\lambda_z + C_{last}/\lambda_z^2$. 분모에 $\lambda_z^2$가 있어 λz 과소추정 시 AUMC 외삽이 기하급수적으로 팽창함</td></tr>
+  <tr><td>결과</td><td>Vss = MRT·CL에서 MRT 과대추정 → Vss 과대추정. 특히 다구획 약물에서 MRT를 사용한 Vss 추정이 왜 위험한지 보여주는 전형적 패턴</td></tr>
+  <tr><td>해결 방향</td><td>샘플링 기간을 최소 3-4 반감기까지 연장. 외삽 비율이 높으면 Vss 대신 2구획 모델의 V₁+V₂를 사용하거나 모델 기반 추정으로 전환</td></tr>
+  </table>
+</div>
+
+<div class="diag-sig">
+  <div class="diag-sig-title">시그니처 3: 비선형 PK 탐지 패턴 (Dose-Dependent NCA Parameters)</div>
+  <table>
+  <tr><th>항목</th><th>내용</th></tr>
+  <tr><td>GOF 패턴</td><td>용량 증가에 따라 NCA-CL 단조 감소 + MRT 증가 (Turbojoint® PK41 패턴)</td></tr>
+  <tr><td>기계론적 원인</td><td>MM 포화 소실: $CL = V_{max}/(K_m + C)$. 고농도에서 $K_m + C \approx C$이므로 CL ≈ $V_{max}/C$ → 농도 의존적 감소</td></tr>
+  <tr><td>결과</td><td>NCA 파라미터가 용량 의존적으로 변 → 1차 PK 가정 위반. 단일 CL 값으로 모든 용량 설명 불가</td></tr>
+  <tr><td>해결 방향</td><td>MM 비선형 1구획 모델로 전환. NCA CL 값들을 Lineweaver-Burk 플롯(1/CL vs 1/C) 또는 Eadie-Hofstee 플롯으로 $V_{max}$, $K_m$ 초기 추정</td></tr>
+  </table>
+</div>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §7  SELF-TEST: ACTIVE RECALL MODULE
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec7">
+<div class="sec-label">§7</div>
+<h2 class="sec-title">자기 테스트: 능동 회상 모듈</h2>
+
+<!-- Q1 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q1 <span class="sr-tag">○</span> 선형 사다리꼴 규칙으로 $AUC_0^{t_{last}}$를 계산할 때 사용하는 수식을 쓰고, 하강 구간에서 이 방법이 과대추정을 유발하는 이유를 설명하라.
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p>$$AUC_0^{t_{last}} = \sum_{i=1}^{n} \frac{C_i + C_{i+1}}{2} \cdot \Delta t$$</p>
+<p>하강 구간에서 1차 소실은 지수 감소이므로 두 점 사이의 곡선이 직선 아래로 오목하게 꺾인다. 선형 근사는 이 오목한 부분을 메워 실제보다 넓게 잡으므로 과대추정이 발생한다. 샘플링 간격 Δt가 t½ 대비 클수록 이 오차가 커진다.</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: 로그-선형 사다리꼴 규칙이 $C_i = 0$ 또는 $C_{i+1} = C_i$인 경우 실패하는 수학적 이유는?</p>
+</div>
+</div>
+</div>
+
+<!-- Q2 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q2 <span class="sr-tag">★★</span> $V_{ss}$를 $AUC_0^\infty$, $AUMC_0^\infty$, IV 볼루스 용량 $D$만으로 표현하는 수식을 쓰고, $V_{ss} = MRT \cdot CL$과 동치임을 보여라.
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p>$$V_{ss} = \frac{D_{iv} \cdot AUMC_0^\infty}{\left[AUC_0^\infty\right]^2}$$</p>
+<p>증명: $MRT = AUMC_0^\infty/AUC_0^\infty$, $CL = D_{iv}/AUC_0^\infty$이므로:</p>
+<p>$$MRT \cdot CL = \frac{AUMC_0^\infty}{AUC_0^\infty} \cdot \frac{D_{iv}}{AUC_0^\infty} = \frac{D_{iv} \cdot AUMC_0^\infty}{\left[AUC_0^\infty\right]^2} = V_{ss} \quad \blacksquare$$</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: 동일 약물에서 Vss와 Vz 중 어느 것이 더 크며, 그 이유는?</p>
+</div>
+</div>
+</div>
+
+<!-- Q3 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q3 <span class="sr-tag">★★</span> Turbojoint® PK41에서 310 µg/kg NCA-CL=1.6, 780 µg/kg NCA-CL=0.9 L/h/kg이었다. 이 결과가 어떤 PK 모델을 제안하며, CL이 용량 의존적으로 변하는 이유를 수식으로 설명하라.
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p>용량 증가에 따른 NCA-CL 감소는 <strong>Michaelis-Menten 비선형(용량 포화) 소실</strong>을 시사한다.</p>
+<p>MM 모델에서: $$CL = \frac{V_{max}}{K_m + C}$$</p>
+<p>고농도($C$가 $K_m$과 비슷하거나 큼)일수록 $K_m + C$가 커져 CL이 감소한다. 310 µg/kg 최고 농도(44 µg/L)보다 780 µg/kg 최고 농도(180 µg/L)가 훨씬 높으므로 780 µg/kg 군에서 CL이 더 낮게 측정된다.</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: Gabrielsson은 이 NCA 결과를 어떻게 $V_{max}$, $K_m$ 초기 추정값으로 변환했는가?</p>
+</div>
+</div>
+</div>
+
+<!-- Q4 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q4 <span class="sr-tag">○</span> λz 추정 시 "최소 3-4개 관측값이 필요하다"는 권고의 수학적·통계적 근거는?
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p>직선을 추정하는 데 이론적으로 2개 점이면 충분하지만, 2개 점은 잔차가 0이므로 회귀 적합도(R², SE)를 계산할 수 없다. 최소 3개 점이 있어야 잔차를 가지며, 4개 이상이면 말단 직선 구간의 선형성을 통계적으로 검정하고 이상치를 탐지할 수 있다 (Gabrielsson p.146).</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: 반대수 플롯에서 말단 구간이 완벽히 직선처럼 보여도 2구획 약물의 α상이 포함되어 있을 수 있다 — 이를 어떻게 구분하는가?</p>
+</div>
+</div>
+</div>
+
+<!-- Q5 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q5 <span class="sr-tag">★</span> 지속 정주 투여 약물의 MRT를 $AUMC/AUC$만으로 계산하면 어떤 오류가 발생하는가? 올바른 보정 수식을 제시하라.
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p>지속 정주 시 약물 분자는 주입 라인에서 평균 $T_{inf}/2$ 시간을 보내고 혈장에 도달한다. 이 '입력 평균 시간(MIT = $T_{inf}/2$)'이 측정된 AUMC/AUC에 포함되어 있으므로 빼지 않으면 MRT가 과대추정된다.</p>
+<p>올바른 보정 (Gabrielsson Eq. 2:328): $$MRT = \frac{AUMC_0^\infty}{AUC_0^\infty} - \frac{T_{inf}}{2}$$</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: 경구 투여 시 $MAT = 1/K_a$를 MRT에서 빼는 원리는?</p>
+</div>
+</div>
+</div>
+
+<!-- Q6 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q6 <span class="sr-tag">★</span> $AUC_{t_{last}}^\infty / AUC_{total}$이 30%인 NCA 보고서를 제출받았다. 어떤 조치를 취해야 하며 그 이유는?
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p>Gabrielsson p.148 권고 기준(20-25% 이내)을 초과하므로, 외삽 의존도가 과도하다. CL, Vss, MRT 모두 λz 추정 오차에 크게 의존한다.</p>
+<p>조치: (1) λz 추정 구간 재검토; (2) 샘플링 설계 재검토 권고; (3) 보고 시 "외삽 비율 30%, 예비 추정값" 명시; (4) 1구획 모델 기반 CL을 sensitivity analysis로 병행 보고; (5) Phase 2에서 샘플링 개선 약속 포함.</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: MM 비선형 PK 약물에서 λz가 용량 의존적으로 변할 때 AUC 외삽 비율은 어떻게 달라지는가?</p>
+</div>
+</div>
+</div>
+
+<!-- Q7 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)">
+  Q7 <span class="sr-tag">○</span> Zileuton 데이터(t=12h: 0.180 mg/L, t=14h: 0.101 mg/L)에 대해 (a) 선형 사다리꼴과 (b) 로그-선형 사다리꼴 AUC를 계산하고 차이를 비교하라.
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal">
+<p><strong>(a) 선형 사다리꼴</strong>: $AUC = (0.180 + 0.101)/2 \times 2 = 0.281 \; \text{mg·h/L}$</p>
+<p><strong>(b) 로그-선형 사다리꼴</strong>: $AUC = \dfrac{(0.180 - 0.101)}{\ln(0.180/0.101)} \times 2 = \dfrac{0.079}{0.579} \times 2 \approx 0.273 \; \text{mg·h/L}$</p>
+<p>차이: 선형이 로그-선형보다 약 3% 과대추정. 농도비(≈1.78배)가 작아 차이가 작다. 2배 이상 차이 날 때 로그-선형이 유의미하게 더 정확해진다.</p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: 어떤 상황에서 선형 사다리꼴이 로그-선형보다 오히려 더 정확한가?</p>
+</div>
+</div>
+</div>
+
+<!-- Q8 보스 딜레마 -->
+<div class="accordion">
+<button class="acc-btn" onclick="toggleAcc(this)" style="background:rgba(201,168,76,0.05);border-left:3px solid var(--accent);">
+  Q8 <span class="sr-tag">★★</span> ⚔ 보스 딜레마 — Phase 1 FIH: AUC 외삽 35%, 규제 제출 2주 후, 추가 샘플링 불가. NCA 그대로 보고하는가, 1구획 NONMEM으로 대체하는가?
+  <span class="chev">▾</span>
+</button>
+<div class="acc-body">
+<div class="ans-reveal" style="border-left:3px solid var(--accent);">
+<p><strong>딜레마 구조</strong>:</p>
+<ul>
+  <li>NCA 사용 시: 외삽 35%는 권고 초과 → 심사관 Deficiency Letter 위험</li>
+  <li>NONMEM 1구획 대체 시: 소규모 데이터에서 수렴 실패·식별성 문제 가능 + 모델 선택 의존성 비판</li>
+</ul>
+<p><strong>수석 모델러의 Trade-off 논리</strong>: 두 방법을 <strong>병행 보고</strong>한다. NCA를 primary로 제시하되 외삽 비율 명시, 1구획 모델 CL을 sensitivity analysis로 제시하여 일치도를 보인다. 불일치(20% 이상 차이)가 크면 데이터 제한 사항을 명시하고 Phase 2에서 샘플링 강화를 약속한다.</p>
+<p><strong>규제 방어 언어</strong>: <em>"NCA-derived PK parameters were estimated with a terminal AUC extrapolation of 35%. A sensitivity analysis using a one-compartment model yielded consistent CL estimates (within X%). These results are considered preliminary and will be refined with improved sampling design in the Phase 2 study."</em></p>
+<p style="color:var(--info);font-size:13px;">▶ 다음 깊이 질문: 이 약물이 MM 비선형 PK를 보인다는 추가 증거가 있다면, 1구획 모델 대신 어떤 모델이 더 적합한가?</p>
+</div>
+</div>
+</div>
+</section>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §8  META-FRAME & BIG PICTURE
+══════════════════════════════════════════════════════════════════ -->
+<section id="sec8">
+<div class="sec-label">§8</div>
+<h2 class="sec-title">메타프레임 &amp; 빅 픽처</h2>
+
+<div class="card">
+<h3>A. 28세션 지식 아키텍처에서의 위치</h3>
+<p><strong>이전에 온 것</strong>: I-01(CL·V·t½ 1구획 기하학)에서 $AUC = C_0/k$를 처음 만났고, I-03(F·KA·Tmax)에서 경구 투여 AUC를 다루었다. 모든 이론 세션(I-01~I-13)에서 등장한 PK 파라미터들이 실제 데이터에서 어떻게 측정되는지를 NCA가 통합한다.</p>
+<p><strong>I-14의 위치</strong>: Vol I 이론 세션의 '정산(reconciliation)' 지점이다. 이론과 데이터가 만나는 교차점.</p>
+<p><strong>바로 다음</strong>: I-15(TDM·모델 기반 용량관리) — NCA-CL을 Bayesian 개인화 용량 계산의 사전 정보로 사용.</p>
+<p><strong>결정적으로 의존하는 고급 도메인</strong>:</p>
+<ul>
+  <li><strong>PopPK</strong> (II-07~II-08): NCA 파라미터가 공변량 탐색의 출발점 — 개인별 NCA-CL이 나이/신기능과 상관되는지 EDA</li>
+  <li><strong>생물학적 동등성</strong>: AUC와 Cmax의 NCA 추정이 BE 판정의 유일한 근거</li>
+  <li><strong>TMDD/MM PK</strong> (I-08, I-07): 용량 의존적 NCA-CL 탐지 → 비선형 모델로 전환</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>B. 대충 넘겼을 때의 구체적 실패 모드</h3>
+<p><strong>실패 모드 1</strong>: λz 추정 원칙 없이 소프트웨어 자동 계산에 의존하면, 2구획 약물의 α상 데이터가 λz 추정에 포함되어도 인지하지 못한다. 이 오류는 Vss 과소추정 → 로딩 용량 계산 오류 → 임상 실패로 연결된다.</p>
+<p><strong>실패 모드 2</strong>: MRT와 t½z를 혼용하면, 다구획 약물의 다중 투여 설계에서 축적 인자를 잘못 사용하여 항정 상태 도달 예측을 오류 내게 된다.</p>
+</div>
+
+<div class="card">
+<h3>C. Professional Moat</h3>
+<p>NCA를 실행하고 CL, Vss, t½를 보고서에 기입하는 것은 WinNonlin이 0.1초 만에 한다. AI도 사다리꼴 합산을 즉시 수행한다.</p>
+<p>이 세션의 원리를 구조적으로 내면화한 연구자만이 다음을 할 수 있다:</p>
+<p><strong>용량-의존적 NCA 파라미터 변화의 기전 해석</strong>: Turbojoint® PK41에서처럼 NCA-CL이 세 용량 수준에서 단조 감소할 때, 이것이 MM 포화 소실인지, 시간 의존적 자가 유도(autoinduction)인지, 아니면 샘플링 오류인지를 NCA 데이터 패턴만으로 가설을 세우고, 이를 검정할 MM ODE 모델의 초기 추정값 — $V_{max} \approx 184$ µg·h⁻¹·kg⁻¹, $K_m \approx 83$ µg·L⁻¹ — 을 두 연립 방정식(Eq. 41:3, 41:4)으로 손 계산하여 회귀분석에 즉시 넘길 수 있다. 이 계산은 알고리즘이 아니라, NCA와 모델 구조가 어떻게 연결되는지를 이해하는 사람만이 수행할 수 있는 판단이다.</p>
+</div>
+
+<div style="text-align:center;padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:'IBM Plex Mono',monospace;">
+  I-14 NCA · Mastery Document V5.1 Apex Edition<br>
+  Sources: Gabrielsson &amp; Weiner 5e §2.8 + R&amp;T 5e App.A · PK41 Turbojoint® data
+</div>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════════ -->
+<script>
+// ── ACCORDION ──
+function toggleAcc(btn) {
+  btn.classList.toggle('open');
+  const body = btn.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ── SIDEBAR INTERSECTION OBSERVER ──
+const sbLinks = document.querySelectorAll('#sidebar a');
+const sections = document.querySelectorAll('section[id], .card[id]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      sbLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`#sidebar a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+
+// ════════════════════════════════════════════════════════════════
+//  §4 NCA SIMULATOR — V5.1 Architecture
+//  [Scientific Logic]: NCA on Turbojoint® PK41 (Gabrielsson 5e, p.661)
+//  Data: IV infusion 5h, 3 doses (310/520/780 µg/kg), BW=70kg
+//  Concentrations in µg/L, Times in h
+// ════════════════════════════════════════════════════════════════
+
+// ── GLOBAL CONSTANTS (절대 재할당 금지) ──
+const X_MAX = 11;       // h, observation window
+const HARD_Y_MAX = 250; // µg/L
+const LOG_Y_MIN = 0.05;
+const LOG_Y_MAX = 500;
+const BW = 70;          // kg
+
+// ── PK41 DATA ──
+const PK41 = {
+  '310': { dose_kg: 310, data: [{t:0,c:0},{t:2,c:32},{t:5,c:44},{t:6,c:15},{t:8,c:5},{t:10,c:0.47}] },
+  '520': { dose_kg: 520, data: [{t:0,c:0},{t:2,c:57},{t:5,c:85},{t:6,c:40},{t:8,c:5},{t:9,c:7},{t:10,c:3}] },
+  '780': { dose_kg: 780, data: [{t:0,c:0},{t:2,c:100},{t:5,c:180},{t:6,c:100},{t:9,c:7},{t:10,c:3}] }
+};
+
+// ── STATE ──
+const state = {
+  doseKey: '310',
+  lzPoints: 3,
+  method: 'linear',
+  showAUC: true,
+  showLzLine: true,
+  logScale: false,
+  referenceCL: null,
+  _currentData: null,
+  _currentNCA: null,
+  _prevNCA: null
+};
+
+// ── CHART INSTANCE ──
+let chartObj = null;
+
+// ── NCA COMPUTATION ──
+function computeLinearTrap(pts) {
+  let auc = 0, aumc = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const dt = pts[i+1].t - pts[i].t;
+    auc  += (pts[i].c + pts[i+1].c) / 2 * dt;
+    aumc += (pts[i].t * pts[i].c + pts[i+1].t * pts[i+1].c) / 2 * dt;
+  }
+  return { auc, aumc };
+}
+
+function computeLogLinTrap(pts) {
+  let auc = 0, aumc = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const ci = pts[i].c, ci1 = pts[i+1].c, ti = pts[i].t, ti1 = pts[i+1].t;
+    const dt = ti1 - ti;
+    if (ci <= 0 || ci1 <= 0 || ci === ci1) {
+      auc  += (ci + ci1) / 2 * dt;
+      aumc += (ti * ci + ti1 * ci1) / 2 * dt;
+    } else {
+      const logRatio = Math.log(ci / ci1);
+      const aucSeg = (ci - ci1) / logRatio * dt;
+      auc  += aucSeg;
+      aumc += (ti * ci - ti1 * ci1) / logRatio * dt - (ci - ci1) / (logRatio * logRatio) * dt * dt;
+    }
+  }
+  return { auc, aumc };
+}
+
+function trapMethod(pts, method, peakIdx) {
+  if (method === 'linear') return computeLinearTrap(pts);
+  if (method === 'loglin') return computeLogLinTrap(pts);
+  // mixed: linear for ascending, loglin for descending
+  const ascending = pts.slice(0, peakIdx + 1);
+  const descending = pts.slice(peakIdx);
+  const a1 = computeLinearTrap(ascending);
+  const a2 = computeLogLinTrap(descending);
+  return { auc: a1.auc + a2.auc, aumc: a1.aumc + a2.aumc };
+}
+
+function linReg(xs, ys) {
+  const n = xs.length;
+  const mx = xs.reduce((s,v)=>s+v,0)/n, my = ys.reduce((s,v)=>s+v,0)/n;
+  let sxx=0, sxy=0, syy=0;
+  xs.forEach((x,i)=>{ sxx+=(x-mx)**2; sxy+=(x-mx)*(ys[i]-my); syy+=(ys[i]-my)**2; });
+  const slope = sxy/sxx, intercept = my - slope*mx;
+  const r2 = sxx > 0 ? sxy*sxy/(sxx*syy) : 1;
+  return { slope, intercept, r2 };
+}
+
+function computeNCA(doseKey, lzPts, method) {
+  const info = PK41[doseKey];
+  const rawPts = info.data.filter(p => p.c > 0 || p.t === 0);
+  const totalDose = info.dose_kg * BW; // µg
+
+  // Find peak index (post-infusion peak at t=5)
+  let peakIdx = 0;
+  rawPts.forEach((p,i)=>{ if(p.c >= rawPts[peakIdx].c) peakIdx=i; });
+
+  // Terminal points for lambda_z
+  const postPeak = rawPts.filter(p => p.t > 5 && p.c > 0);
+  const nTerm = Math.min(lzPts, postPeak.length);
+  const termPts = postPeak.slice(-nTerm);
+
+  // Lambda_z via log-linear regression on terminal points
+  const lzXs = termPts.map(p => p.t);
+  const lzYs = termPts.map(p => Math.log(p.c));
+  const reg = linReg(lzXs, lzYs);
+  const lambda_z = -reg.slope;
+  const r2 = reg.r2;
+
+  // AUC_last using trapezoidal
+  const { auc: aucLast, aumc: aumcLast } = trapMethod(rawPts, method, peakIdx);
+
+  // Clast (predicted from regression)
+  const clast = rawPts[rawPts.length-1].c;
+  const tlast = rawPts[rawPts.length-1].t;
+  const clastPred = Math.exp(reg.intercept + reg.slope * tlast);
+
+  // Extrapolation
+  const aucInfExt = clastPred / lambda_z;
+  const aucInf = aucLast + aucInfExt;
+  const aumcInfExt = tlast * clastPred / lambda_z + clastPred / (lambda_z * lambda_z);
+  const aumcInf = aumcLast + aumcInfExt;
+
+  const pctExtrap = 100 * aucInfExt / aucInf;
+  const CL = totalDose / aucInf;           // µg / (µg·h/L) = L/h
+  const CL_per_kg = CL / BW;
+  const t_half = Math.log(2) / lambda_z;
+  const MRT = aumcInf / aucInf - 5/2;     // correct for infusion MIT = T_inf/2 = 2.5h
+  const Vss = MRT * CL_per_kg;
+
+  return { lambda_z, r2, aucLast, aucInf, pctExtrap, CL, CL_per_kg, t_half, MRT, Vss,
+           clastPred, tlast, reg, termPts, rawPts, peakIdx, totalDose };
+}
+
+// ── BUILD DATASETS ──
+function buildDatasets(nca) {
+  // [Scientific Logic]: NCA on IV infusion PK data (Turbojoint® PK41)
+  // AUC method: linear / log-linear / mixed trapezoidal rule
+  // lambda_z: log-linear regression on terminal points
+  // Assumptions: linear elimination from sampling compartment
+  const pts = nca.rawPts;
+  const datasets = [];
+
+  // AUC fill
+  if (state.showAUC) {
+    const fillData = pts.map(p => ({x: p.t, y: p.c}));
+    datasets.push({
+      label: 'AUC 면적', type: 'line',
+      data: fillData,
+      borderColor: 'transparent',
+      backgroundColor: 'rgba(201,168,76,0.12)',
+      fill: 'origin', tension: 0.3, pointRadius: 0, order: 2
+    });
+  }
+
+  // Main PK curve
+  datasets.push({
+    label: `Turbojoint® ${state.doseKey} µg/kg`,
+    data: pts.map(p => ({x: p.t, y: p.c})),
+    borderColor: '#c9a84c', borderWidth: 2.5,
+    backgroundColor: '#c9a84c',
+    pointRadius: 5, pointHoverRadius: 7,
+    tension: 0.2, fill: false, order: 1
+  });
+
+  // Lambda_z regression line
+  if (state.showLzLine && nca.lambda_z > 0) {
+    const { intercept, slope } = nca.reg;
+    const t1 = nca.termPts[0].t - 0.5;
+    const t2 = X_MAX - 0.2;
+    const lzData = [
+      {x: t1, y: Math.exp(intercept + slope * t1)},
+      {x: t2, y: Math.exp(intercept + slope * t2)}
+    ];
+    datasets.push({
+      label: 'λz 회귀선', data: lzData,
+      borderColor: 'rgba(64,152,232,0.7)', borderWidth: 1.5,
+      borderDash: [5, 4], pointRadius: 0, tension: 0, fill: false, order: 3
+    });
+  }
+
+  // Reference CL overlay (horizontal comparison)
+  if (state.referenceCL) {
+    datasets.push({
+      label: '기준선',
+      data: nca.rawPts.map(p => ({x: p.t, y: p.c * 0 + nca.rawPts[1].c})),
+      borderColor: 'rgba(138,128,112,0.5)', borderWidth: 1,
+      borderDash: [3,3], pointRadius: 0, fill: false, order: 4
+    });
+  }
+
+  return datasets;
+}
+
+// ── INIT CHART (single call) ──
+function initChart() {
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  const nca = computeNCA(state.doseKey, state.lzPoints, state.method);
+  state._currentNCA = nca;
+  chartObj = new Chart(ctx, {
+    type: 'line',
+    data: { datasets: buildDatasets(nca) },
+    options: {
+      animation: { duration: 180 },
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      scales: {
+        x: {
+          type: 'linear', min: 0, max: X_MAX,
+          title: { display: true, text: '시간 (h)', color: '#8a8070' },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#8a8070' },
+          border: { color: 'rgba(255,255,255,0.1)' }
+        },
+        y: {
+          type: 'linear', min: 0, max: HARD_Y_MAX,
+          title: { display: true, text: '농도 (µg/L)', color: '#8a8070' },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#8a8070' },
+          border: { color: 'rgba(255,255,255,0.1)' }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: '#8a8070', font: { family: 'IBM Plex Mono', size: 11 } } },
+        tooltip: {
+          backgroundColor: '#0c0c12', borderColor: '#c9a84c', borderWidth: 1,
+          titleColor: '#c9a84c', bodyColor: '#ede8df',
+          callbacks: {
+            label: ctx => `C = ${ctx.parsed.y.toFixed(2)} µg/L`
+          }
+        }
+      }
+    },
+    plugins: [INFUSION_MARKER_PLUGIN]
+  });
+  updateDerivedPanel(nca);
+  checkWarnings(nca);
+}
+
+// ── UPDATE CHART (destroy 금지, update('none') 만) ──
+function updateChart() {
+  const nca = computeNCA(state.doseKey, state.lzPoints, state.method);
+  state._currentData = nca.rawPts;
+  state._prevNCA = state._currentNCA;
+  state._currentNCA = nca;
+
+  if (!chartObj) { initChart(); return; }
+
+  chartObj.data.datasets = buildDatasets(nca);
+
+  const yScale = chartObj.options.scales.y;
+  yScale.type = state.logScale ? 'logarithmic' : 'linear';
+  yScale.min  = state.logScale ? LOG_Y_MIN : 0;
+  yScale.max  = state.logScale ? LOG_Y_MAX : HARD_Y_MAX;
+
+  chartObj.update('none');   // ← canvas 크기 재측정 없음
+  updateDerivedPanel(nca);
+  checkWarnings(nca);
+}
+
+// ── INFUSION MARKER PLUGIN (afterDraw hook) ──
+const INFUSION_MARKER_PLUGIN = {
+  id: 'infusionMarkers',
+  afterDraw(chart) {
+    const { ctx, scales: { x, y } } = chart;
+    // Vertical line at end of infusion (t=5h)
+    const xPx = x.getPixelForValue(5);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(64,152,232,0.35)';
+    ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(xPx, chart.chartArea.top); ctx.lineTo(xPx, chart.chartArea.bottom); ctx.stroke();
+    ctx.fillStyle = 'rgba(64,152,232,0.6)'; ctx.font = '9px IBM Plex Mono';
+    ctx.fillText('끝 t=5h', xPx+3, chart.chartArea.top+12);
+    // Lambda_z terminal points markers
+    const nca = state._currentNCA;
+    if (nca && nca.termPts) {
+      nca.termPts.forEach(p => {
+        const px = x.getPixelForValue(p.t);
+        const py = state.logScale ? y.getPixelForValue(Math.max(p.c, LOG_Y_MIN)) : y.getPixelForValue(p.c);
+        ctx.beginPath();
+        ctx.arc(px, py, 7, 0, 2*Math.PI);
+        ctx.strokeStyle = 'rgba(64,152,232,0.8)'; ctx.lineWidth=2; ctx.setLineDash([]);
+        ctx.stroke();
+      });
+    }
+    ctx.restore();
+  }
+};
+
+// ── DERIVED PANEL ──
+function updateDerivedPanel(nca) {
+  const fmt = (v, d) => isNaN(v) || !isFinite(v) ? '—' : v.toFixed(d);
+  document.getElementById('dv-lz').textContent    = `${fmt(nca.lambda_z,4)} h⁻¹`;
+  document.getElementById('dv-t12').textContent   = `${fmt(nca.t_half,2)} h`;
+  document.getElementById('dv-r2').textContent    = fmt(nca.r2, 4);
+  document.getElementById('dv-auclast').textContent = `${fmt(nca.aucLast,1)} µg·h/L`;
+  document.getElementById('dv-aucinf').textContent  = `${fmt(nca.aucInf,1)} µg·h/L`;
+
+  const pct = nca.pctExtrap;
+  const pctEl = document.getElementById('dv-pctex');
+  pctEl.textContent = `${fmt(pct,1)}%`;
+  pctEl.className = 'dv' + (pct > 25 ? ' delta-up' : '');
+
+  const clEl = document.getElementById('dv-cl');
+  clEl.textContent = `${fmt(nca.CL_per_kg,3)}`;
+
+  // Delta CL
+  const dclEl = document.getElementById('dv-dcl');
+  if (state.referenceCL && nca.CL_per_kg) {
+    const delta = (nca.CL_per_kg - state.referenceCL) / state.referenceCL * 100;
+    dclEl.textContent = `${delta > 0 ? '↑' : '↓'} ${Math.abs(delta).toFixed(1)}%`;
+    dclEl.className = 'dv ' + (delta > 0 ? 'delta-up' : 'delta-dn');
+  } else {
+    dclEl.textContent = '—'; dclEl.className = 'dv';
+  }
+}
+
+// ── WARNINGS ──
+function checkWarnings(nca) {
+  const banner = document.getElementById('warnBanner');
+  const warns = [];
+  if (nca.pctExtrap > 25) warns.push(`⚠ 외삽 비율 ${nca.pctExtrap.toFixed(1)}% > 25% — 샘플링 연장 필요`);
+  if (nca.r2 < 0.95)      warns.push(`⚠ λz R²=${nca.r2.toFixed(3)} < 0.95 — 말단 구간 재검토`);
+  if (nca.lzPoints > 1 && nca.lambda_z < 0) warns.push('⚠ λz < 0 — 말단 농도가 증가 중, 구간 오류');
+  if (warns.length) { banner.textContent = warns.join(' | '); banner.classList.add('show'); }
+  else banner.classList.remove('show');
+}
+
+// ── CONTROLS ──
+function selectDose(key, el) {
+  state.doseKey = key;
+  document.querySelectorAll('#doseRow .pbt').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  updateChart();
+}
+function setMethod(m) {
+  state.method = m;
+  ['linear','loglin','mixed'].forEach(k => {
+    const el = document.getElementById('btn-'+k);
+    if(el) el.classList.toggle('on', k === m);
+  });
+  updateChart();
+}
+function toggleOpt(key, btnId) {
+  state[key] = !state[key];
+  document.getElementById(btnId).classList.toggle('on', state[key]);
+  updateChart();
+}
+function saveRef() {
+  if (state._currentNCA) {
+    state.referenceCL = state._currentNCA.CL_per_kg;
+    document.getElementById('btn-ref').textContent = `기준선 저장됨 (${state.referenceCL.toFixed(3)})`;
+    document.getElementById('btn-ref').classList.add('on');
+    updateChart();
+  }
+}
+
+// ── MOUSE CURSOR (단 1회 등록 — 수정 규칙 1) ──
+document.addEventListener('DOMContentLoaded', () => {
+  const simCv = document.getElementById('simCanvas');
+  if (simCv) {
+    simCv.addEventListener('mousemove', e => {
+      if (!state._currentNCA || !state._currentNCA.rawPts) return;
+      const rect = simCv.getBoundingClientRect();
+      const tx = (e.clientX - rect.left) / rect.width * X_MAX;
+      // Find nearest point
+      const pts = state._currentNCA.rawPts;
+      let nearest = pts[0];
+      pts.forEach(p => { if (Math.abs(p.t - tx) < Math.abs(nearest.t - tx)) nearest = p; });
+      document.getElementById('cursorLabel').textContent =
+        `t = ${tx.toFixed(2)} h  |  C ≈ ${nearest.c} µg/L (t=${nearest.t}h 데이터점)`;
+    });
+  }
+  initChart();
+  initNormCanvas();
+  drawNorm(false);
+});
+
+// ════════════════════════════════════════════════════════════════
+//  §3 NORM CANVAS — V5.1 (버그 ④ 수정)
+// ════════════════════════════════════════════════════════════════
+let normW = 0, normH = 0;
+let normNormalized = false;
+const normCanvasEl = document.getElementById('normCanvas');
+let normCtx;
+
+function initNormCanvas() {
+  if (!normCanvasEl) return;
+  normCtx = normCanvasEl.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = normCanvasEl.getBoundingClientRect();
+  normW = Math.floor(rect.width  * dpr);
+  normH = Math.floor(rect.height * dpr);
+  normCanvasEl.width  = normW;
+  normCanvasEl.height = normH;
+  normCtx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function drawNorm(normalized) {
+  if (!normW || !normH || !normCtx) return;
+  normCtx.clearRect(0, 0, normW, normH);
+
+  const W = normW, H = normH;
+  const pad = { l: 50, r: 20, t: 20, b: 40 };
+  const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
+
+  // Background
+  normCtx.fillStyle = 'rgba(0,0,0,0)';
+  normCtx.fillRect(0, 0, W, H);
+
+  // Axes
+  normCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+  normCtx.lineWidth = 1;
+  normCtx.beginPath();
+  normCtx.moveTo(pad.l, pad.t); normCtx.lineTo(pad.l, pad.t+ph);
+  normCtx.lineTo(pad.l+pw, pad.t+ph); normCtx.stroke();
+
+  // Domains with different time scales
+  const domains = [
+    { label: '약동학 (PK)', color: '#c9a84c', halfLife: 2,  amplitude: 100 },
+    { label: '생존 분석',   color: '#4098e8', halfLife: 5,  amplitude:  80 },
+    { label: '채권 Duration',color:'#e87040', halfLife: 8,  amplitude:  60 },
+    { label: '물리 (열)',   color: '#a0c0a0', halfLife: 12, amplitude:  40 }
+  ];
+
+  const xMax = normalized ? 4 : 20;  // normalized: 0-4×MRT; raw: 0-20 time units
+  const yMax = 110;
+
+  domains.forEach(d => {
+    const k = Math.log(2) / d.halfLife;
+    const MRT = 1 / k;
+    normCtx.strokeStyle = d.color;
+    normCtx.lineWidth = 2;
+    normCtx.beginPath();
+    for (let xi = 0; xi <= 200; xi++) {
+      const t_raw = (xi / 200) * (normalized ? MRT * 4 : 20);
+      const xPlot = normalized ? t_raw / MRT : t_raw;
+      const yVal  = d.amplitude * Math.exp(-k * t_raw);
+      const xPx = pad.l + (xPlot / xMax) * pw;
+      const yPx = pad.t + ph - (yVal / yMax) * ph;
+      xi === 0 ? normCtx.moveTo(xPx, yPx) : normCtx.lineTo(xPx, yPx);
+    }
+    normCtx.stroke();
+
+    // Label
+    if (!normalized) {
+      const labelT = d.halfLife * 1.2;
+      const labelY = d.amplitude * Math.exp(-k * labelT);
+      const lxPx = pad.l + (labelT / xMax) * pw;
+      const lyPx = pad.t + ph - (labelY / yMax) * ph - 8;
+      normCtx.fillStyle = d.color;
+      normCtx.font = `${Math.floor(10 * (W/600))}px IBM Plex Mono`;
+      normCtx.fillText(d.label, lxPx, lyPx);
+    }
+  });
+
+  // Axis labels
+  normCtx.fillStyle = 'rgba(138,128,112,0.8)';
+  normCtx.font = `${Math.floor(11*(W/600))}px Noto Sans KR`;
+  normCtx.fillText(normalized ? '시간 / MRT (정규화)' : '시간 (각 도메인 단위)', pad.l + pw/2 - 60, H - 5);
+  normCtx.save();
+  normCtx.translate(12, pad.t + ph/2);
+  normCtx.rotate(-Math.PI/2);
+  normCtx.fillText('크기 (정규화)', -40, 0);
+  normCtx.restore();
+
+  // Title
+  normCtx.fillStyle = normalized ? '#c9a84c' : 'rgba(138,128,112,0.6)';
+  normCtx.font = `bold ${Math.floor(11*(W/600))}px IBM Plex Mono`;
+  normCtx.fillText(normalized ? '✓ 정규화 후: 모든 곡선이 하나로 수렴' : '정규화 전: 각 도메인의 실제 스케일', pad.l + 10, pad.t + 14);
+}
+
+window.addEventListener('resize', () => {
+  initNormCanvas();
+  drawNorm(normNormalized);
+  // chartObj resize는 Chart.js 자체 처리 — 수동 개입 금지
+});
+
+document.getElementById('normBtn').addEventListener('click', () => {
+  normNormalized = !normNormalized;
+  document.getElementById('normBtn').textContent = normNormalized ? '정규화 ON → OFF 토글' : '정규화 OFF → ON 토글';
+  document.getElementById('normBtn').classList.toggle('on', normNormalized);
+  drawNorm(normNormalized);
+});
+</script>
+</body>
+</html>
