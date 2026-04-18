@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>II-02 NONMEM 데이터셋 | PK/PD Mastery V5.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+MathJax = {
+  tex: { inlineMath:[['$','$']], displayMath:[['$$','$$']], processEscapes:true },
+  options: { skipHtmlTags:['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root {
+  --bg:#09090e; --surface:#0c0c12; --surface2:#111118;
+  --text:#ede8df; --muted:#8a8070; --accent:#c9a84c;
+  --accent-dim:rgba(201,168,76,0.08); --accent-dim2:rgba(201,168,76,0.05);
+  --danger:#c0392b; --danger-dim:rgba(192,57,43,0.08);
+  --info:#4098e8; --phantom:rgba(220,60,60,0.55);
+  --border:rgba(255,255,255,0.07); --sidebar-w:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:300;line-height:1.75}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:0.02em}
+code,pre,kbd,.mono{font-family:'IBM Plex Mono',monospace;font-size:0.82em}
+
+/* ── Sidebar ── */
+#sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+  background:var(--surface);border-right:1px solid var(--border);
+  overflow-y:auto;z-index:100;padding:1.5rem 0;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-track{background:transparent}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sb-title{padding:0 1.2rem 1rem;font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--accent);font-weight:700;letter-spacing:0.05em;border-bottom:1px solid var(--border)}
+.sb-session{padding:0.25rem 1.2rem;font-size:0.7rem;color:var(--muted);margin-top:0.5rem}
+.sb-nav{list-style:none;margin-top:0.5rem}
+.sb-nav li a{
+  display:block;padding:0.35rem 1.2rem;font-size:0.78rem;color:var(--muted);
+  text-decoration:none;transition:all 0.2s;border-left:2px solid transparent;
+}
+.sb-nav li a:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.sb-nav li a.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-dim)}
+.sb-nav .sub{padding-left:1.8rem;font-size:0.72rem}
+.sb-divider{height:1px;background:var(--border);margin:0.5rem 1.2rem}
+#menu-toggle{
+  display:none;position:fixed;top:0.8rem;left:0.8rem;z-index:200;
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  padding:0.4rem 0.7rem;cursor:pointer;border-radius:4px;font-size:1rem;
+}
+
+/* ── Main content ── */
+#content{
+  margin-left:var(--sidebar-w);max-width:calc(1100px + var(--sidebar-w));
+  padding:2.5rem 3rem 6rem;
+}
+.section{margin-bottom:4rem;padding-top:1rem}
+.section-label{font-size:0.7rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:0.5rem}
+.section-title{font-size:2rem;color:var(--text);margin-bottom:0.3rem;line-height:1.2}
+.section-subtitle{color:var(--muted);font-size:0.9rem;margin-bottom:2rem;font-style:italic}
+.divider{height:1px;background:var(--border);margin:3rem 0}
+
+/* ── Big Idea block ── */
+.big-idea{
+  border-left:4px solid var(--accent);background:var(--accent-dim);
+  padding:1.2rem 1.5rem;margin-bottom:1.8rem;border-radius:0 4px 4px 0;
+}
+.big-idea-label{font-size:0.65rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:0.5rem}
+.big-idea p{font-size:0.92rem;color:var(--text);margin-bottom:0.5rem;font-style:italic}
+.big-idea p:last-child{margin-bottom:0}
+.big-idea strong{color:var(--accent);font-style:normal}
+
+/* ── Concept cards ── */
+.concept-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.8rem;margin-bottom:2rem}
+.card-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem}
+.card-id{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--muted);background:rgba(255,255,255,0.05);padding:0.2rem 0.5rem;border-radius:3px}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600}
+.apex-badge{background:var(--accent);color:#0a0a0a;font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:3px;letter-spacing:0.05em;font-family:'IBM Plex Mono',monospace}
+.card-part{margin-bottom:1.3rem}
+.card-part-label{font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);font-family:'IBM Plex Mono',monospace;margin-bottom:0.5rem;font-weight:500}
+.card-part p{font-size:0.9rem;color:var(--text);margin-bottom:0.5rem}
+.card-part p:last-child{margin-bottom:0}
+
+/* ── Plausible Fallacy ── */
+.fallacy-block{border-left:3px solid var(--danger);background:var(--danger-dim);padding:1rem 1.2rem;border-radius:0 4px 4px 0;margin-top:0.8rem}
+.fallacy-label{font-size:0.65rem;color:var(--danger);letter-spacing:0.12em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:0.5rem}
+.fallacy-block p{font-size:0.88rem;color:var(--text);margin-bottom:0.4rem}
+
+/* ── Code blocks ── */
+pre{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:6px;padding:1.1rem 1.3rem;overflow-x:auto;margin:0.8rem 0;font-size:0.78rem;line-height:1.6;color:#c8d3d3}
+pre .cmt{color:var(--muted)}
+pre .kw{color:#c9a84c}
+pre .str{color:#9ecb8a}
+pre .ok{color:#9ecb8a}
+pre .err{color:#e87070}
+.citation{font-size:0.75em;color:var(--muted);font-style:italic;font-family:'IBM Plex Mono',monospace}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:0.85rem}
+th{background:rgba(201,168,76,0.1);color:var(--accent);padding:0.6rem 0.8rem;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;letter-spacing:0.08em;border-bottom:1px solid var(--border);font-weight:500}
+td{padding:0.55rem 0.8rem;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text);font-size:0.85rem}
+tr:hover td{background:rgba(255,255,255,0.02)}
+tr.critical-blow td{background:rgba(192,57,43,0.12);font-weight:600}
+tr.memory-hook td{color:var(--accent);background:rgba(201,168,76,0.06)}
+
+/* ── Accordions ── */
+.accordion{border:1px solid var(--border);border-radius:6px;margin-bottom:0.8rem;overflow:hidden}
+.accordion-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.9rem 1.2rem;cursor:pointer;background:var(--surface2);
+  transition:background 0.2s;user-select:none;
+}
+.accordion-header:hover{background:rgba(255,255,255,0.04)}
+.accordion-header .q-label{font-size:0.65rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;margin-right:0.8rem;white-space:nowrap}
+.accordion-header .q-text{font-size:0.88rem;color:var(--text);flex:1;line-height:1.4}
+.accordion-header .sr-tag{font-size:0.65rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;margin:0 0.8rem;white-space:nowrap}
+.accordion-header .chevron{color:var(--muted);transition:transform 0.3s;font-size:0.8rem;flex-shrink:0}
+.accordion-header.open .chevron{transform:rotate(180deg)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease;background:rgba(0,0,0,0.2)}
+.accordion-body.open{max-height:2000px}
+.accordion-body-inner{padding:1rem 1.2rem;font-size:0.86rem;color:var(--text);line-height:1.7}
+.accordion-body-inner p{margin-bottom:0.6rem}
+.accordion-body-inner strong{color:var(--accent)}
+.boss-header{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2)}
+.boss-badge{font-size:0.65rem;background:var(--accent);color:#0a0a0a;padding:0.15rem 0.4rem;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-weight:700;margin-right:0.5rem}
+.next-q{margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--muted);font-style:italic}
+
+/* ── §3 Isomorphism ── */
+.iso-preamble{border-left:3px solid var(--accent);background:var(--accent-dim2);padding:1.2rem 1.5rem;margin-bottom:1.5rem;border-radius:0 6px 6px 0;font-style:italic}
+.iso-preamble p{font-size:0.9rem;color:var(--text);margin-bottom:0.5rem}
+.iso-preamble p:last-child{margin-bottom:0}
+.iso-preamble strong{color:var(--accent);font-style:normal}
+.svg-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1.5rem;overflow:hidden}
+.norm-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.2rem;margin-bottom:1.5rem}
+.norm-wrap canvas{width:100%;height:240px;display:block;cursor:crosshair}
+.transfer-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-bottom:0.8rem;overflow:hidden}
+.transfer-q{padding:0.9rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:rgba(201,168,76,0.03)}
+.transfer-q:hover{background:rgba(201,168,76,0.06)}
+.transfer-q span{font-size:0.87rem;color:var(--text)}
+.transfer-ans{max-height:0;overflow:hidden;transition:max-height 0.35s ease}
+.transfer-ans.open{max-height:600px}
+.transfer-ans-inner{padding:1rem 1.2rem;border-top:1px solid var(--border)}
+.transfer-step{font-size:0.83rem;color:var(--muted);margin-bottom:0.5rem}
+.transfer-step strong{color:var(--text)}
+
+/* ── §4 Simulator ── */
+.sim-panel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem}
+.sim-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--accent);margin-bottom:1rem}
+.slider-group{margin-bottom:1rem}
+.slider-label{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--muted);margin-bottom:0.3rem}
+.slider-label strong{color:var(--accent);font-family:'IBM Plex Mono',monospace}
+input[type=range]{width:100%;appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer}
+.btn-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
+.btn{padding:0.4rem 0.9rem;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:0.75rem;border-radius:4px;font-family:'IBM Plex Mono',monospace;transition:all 0.2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.btn.danger{border-color:rgba(192,57,43,0.4);color:rgba(192,57,43,0.7)}
+.btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.canvas-wrap{position:relative;height:320px;overflow:hidden;flex-shrink:0;margin-bottom:0.5rem}
+#simCanvas{width:100%!important;height:100%!important;display:block;cursor:crosshair}
+.cursor-label{font-size:0.72rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;height:1.2rem;margin-bottom:0.5rem}
+.warn-banner{display:none;background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.3);border-radius:4px;padding:0.5rem 0.8rem;font-size:0.75rem;color:#e87070;margin-bottom:0.8rem;font-family:'IBM Plex Mono',monospace}
+.warn-banner.show{display:block}
+.derived-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;margin-bottom:1rem}
+.derived-item{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:6px;padding:0.7rem 0.8rem}
+.derived-name{font-size:0.65rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem}
+.derived-val{font-size:1rem;color:var(--text);font-family:'IBM Plex Mono',monospace;font-weight:500}
+.derived-delta{font-size:0.72rem;margin-top:0.2rem;font-family:'IBM Plex Mono',monospace}
+.delta-up{color:#e87040}
+.delta-dn{color:var(--info)}
+.delta-neu{color:var(--muted)}
+.preset-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem}
+.mission-box{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:6px;padding:1rem 1.2rem;margin-top:1rem}
+.mission-title{color:var(--accent);font-size:0.8rem;font-family:'IBM Plex Mono',monospace;margin-bottom:0.4rem}
+.mission-box p{font-size:0.85rem;color:var(--text);margin-bottom:0.3rem}
+.mission-hint{font-size:0.8rem;color:var(--muted);font-style:italic}
+
+/* ── §6 Scenario ── */
+.scenario-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem}
+.scenario-label{font-size:0.65rem;color:var(--info);letter-spacing:0.12em;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:0.5rem}
+.scenario-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;margin-bottom:0.8rem}
+.scenario-box p{font-size:0.88rem;margin-bottom:0.6rem}
+.diag-card{background:rgba(0,0,0,0.3);border-left:3px solid var(--danger);border-radius:0 6px 6px 0;padding:1rem 1.2rem;margin-bottom:1rem}
+.diag-name{color:var(--danger);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;font-weight:500;margin-bottom:0.4rem;letter-spacing:0.05em}
+.diag-card p{font-size:0.86rem;margin-bottom:0.3rem}
+
+/* ── §8 Meta ── */
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.meta-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.2rem}
+.meta-box h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--accent);margin-bottom:0.8rem}
+.meta-box p,.meta-box li{font-size:0.86rem;color:var(--text);margin-bottom:0.4rem;line-height:1.6}
+.meta-box ul{list-style:none;padding:0}
+.meta-box li::before{content:'→ ';color:var(--accent)}
+.moat-box{background:var(--surface2);border:1px solid rgba(201,168,76,0.25);border-radius:8px;padding:1.5rem}
+.moat-box blockquote{border-left:3px solid var(--accent);padding:0.8rem 1.2rem;color:var(--muted);font-style:italic;font-size:0.88rem;margin-bottom:1rem}
+.moat-box p{font-size:0.88rem;color:var(--text);margin-bottom:0.6rem}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%);transition:transform 0.3s}
+  #sidebar.open{transform:translateX(0)}
+  #menu-toggle{display:block}
+  #content{margin-left:0;padding:1.5rem 1.2rem 4rem}
+  .derived-grid{grid-template-columns:1fr 1fr}
+  .meta-grid{grid-template-columns:1fr}
+  .section-title{font-size:1.5rem}
+}
+p{margin-bottom:0.7rem;font-size:0.9rem;line-height:1.75}
+ul.body-list{list-style:disc;padding-left:1.5rem;margin-bottom:0.8rem}
+ul.body-list li{font-size:0.88rem;margin-bottom:0.3rem;color:var(--text)}
+ol.body-list{list-style:decimal;padding-left:1.5rem;margin-bottom:0.8rem}
+ol.body-list li{font-size:0.88rem;margin-bottom:0.3rem;color:var(--text)}
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav id="sidebar">
+  <div class="sb-title">PK/PD MASTERY</div>
+  <div class="sb-session">II-02 · NONMEM 데이터셋</div>
+  <ul class="sb-nav">
+    <li><a href="#section-1">§1 세션 헤더 &amp; 로드맵</a></li>
+    <li><a href="#section-2">§2 개념 해부 카드</a></li>
+    <li><a href="#card-c1" class="sub">C-1 데이터셋 구조 원칙</a></li>
+    <li><a href="#card-c2" class="sub">C-2 ⚡ 예약 변수 체계</a></li>
+    <li><a href="#card-c3" class="sub">C-3 투여 모델링 고급</a></li>
+    <li><a href="#card-c4" class="sub">C-4 제어구문 연결</a></li>
+    <li><a href="#card-c5" class="sub">C-5 공변량·시변 데이터</a></li>
+    <li><div class="sb-divider"></div></li>
+    <li><a href="#section-3">§3 구조적 동형성 지도</a></li>
+    <li><a href="#section-4">§4 인터랙티브 시뮬레이터</a></li>
+    <li><a href="#section-5">§5 혼동쌍 해부</a></li>
+    <li><a href="#pair-1" class="sub">MDV vs. EVID</a></li>
+    <li><a href="#pair-2" class="sub">SS=1 vs. SS=2 ⚡</a></li>
+    <li><a href="#pair-3" class="sub">ADDL vs. N(총횟수)</a></li>
+    <li><div class="sb-divider"></div></li>
+    <li><a href="#section-6">§6 실용 시나리오</a></li>
+    <li><a href="#section-7">§7 자기 테스트</a></li>
+    <li><a href="#section-8">§8 메타프레임</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+<main id="content">
+
+<!-- ═══ §1 SESSION HEADER ═══ -->
+<section class="section" id="section-1">
+  <div class="section-label">Session II-02 · Vol II — 구현 단권</div>
+  <h1 class="section-title">NONMEM 데이터셋</h1>
+  <p class="section-subtitle">Owen &amp; Fiedler-Kelly, Ch.4 pp.66–89 &nbsp;|&nbsp; PIPET 교재 Ch.2 pp.13–25</p>
+
+  <div class="big-idea">
+    <div class="big-idea-label">Big Idea</div>
+    <p>NONMEM 데이터셋은 단순한 스프레드시트가 아니라 <strong>"약물이 몸에 들어가고 측정되는 시간적 사건의 시퀀스를 기계가 읽을 수 있는 유일한 언어로 번역한 것"</strong>이며, 이 번역의 오류는 모델 추정치를 조용히, 그러나 치명적으로 오염시킨다.</p>
+  </div>
+
+  <h3 style="font-size:1.1rem;color:var(--accent);margin-bottom:0.8rem">개념 항법도</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>카드</th><th>핵심 개념</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono">C-1</span></td><td>데이터셋 구조 원칙 — 시간순 이벤트, 레코드 유형, ASCII 제약</td></tr>
+        <tr><td><span class="mono">C-2 ⚡</span></td><td>예약 변수 체계 — ID·DV·MDV·TIME·AMT·RATE·ADDL·II·SS·CMT·EVID</td></tr>
+        <tr><td><span class="mono">C-3</span></td><td>투여 모델링 고급 기법 — ADDL/II·SS=1/2·다중 경로·RATE=−1/−2</td></tr>
+        <tr><td><span class="mono">C-4</span></td><td>제어구문 연결 — $PROB·$DATA·$INPUT·DROP·IGNORE/ACCEPT</td></tr>
+        <tr><td><span class="mono">C-5</span></td><td>공변량·시변 데이터·헤더 행 실무 처리</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-size:1.1rem;color:var(--accent);margin:1.2rem 0 0.8rem">지식 그래프 위치</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>방향</th><th>세션 / 개념</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--muted)">← 선행</td><td>II-01 θ·η·ε 3층 계층 구조 &nbsp;|&nbsp; I-06 정주 투여·다중 투여 PK 이론</td></tr>
+        <tr><td style="color:var(--accent)">→ 후속</td><td>II-03 $SUBROUTINE·$PK 코딩 &nbsp;|&nbsp; II-05 초기추정값 전략 &nbsp;|&nbsp; II-07 기저 모델 구축 &nbsp;|&nbsp; II-08 공변량 분석</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ §2 CONCEPT CARDS ═══ -->
+<section class="section" id="section-2">
+  <div class="section-label">§2</div>
+  <h2 class="section-title">개념 해부 카드</h2>
+
+  <!-- C-1 -->
+  <div class="concept-card" id="card-c1">
+    <div class="card-header">
+      <span class="card-id">C-1</span>
+      <span class="card-title">데이터셋 구조 원칙</span>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> 투약 레코드의 TIME이 관측 레코드보다 1초라도 뒤에 놓이거나, 동일 레코드에 AMT와 DV가 함께 존재하면 — NONMEM은 에러를 내거나 더 나쁜 경우, 조용히 잘못된 PK 파라미터를 추정한다. NDA 제출 직전 데이터셋 오류가 발견된 사례는 드물지 않다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> 데이터셋은 <em>"행 = 한 순간에 일어난 단 하나의 사건"</em>이라는 원칙 위에 서 있다. 투약과 관측은 절대 같은 행에 공존할 수 없다 — 현실에서 동시에 일어나더라도 두 행으로 분리한다.</p>
+      <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> 모든 규칙이 이 한 가지 원칙의 파생임을 기억하라.</p>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">A. 정의</div>
+      <p>NONMEM(NM-TRAN) 분석 데이터셋은 <strong>ASCII 형식 평면 파일(flat file)</strong>로, 행(레코드)과 열(데이터 항목)의 2차원 배열이다. 각 레코드는 특정 시점에 동시적으로 발생한 사건의 집합이다. PREDPP를 사용하는 모든 모델은 데이터를 <strong>시간순 이벤트(time-ordered events)</strong>로 처리하며, 레코드는 세 유형으로 분류된다: 투약 이벤트(Dosing event), 관측 이벤트(Observation event), 기타 유형 이벤트(Other-type event).</p>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B. 코드 구조</div>
+      <p>동일 시점에 투약과 관측이 발생하는 경우 — <strong>반드시 두 행으로 분리</strong>:</p>
+<pre>
+<span class="cmt">; ✅ 올바른 코딩 — 동일 시점 이벤트의 두 행 분리</span>
+ID  TIME  AMT    DV     MDV
+001  0.0   100    .      1   <span class="cmt"> ← 투약 레코드: DV 결측</span>
+001  0.0   .      35.4   0   <span class="cmt"> ← 관측 레코드: AMT 결측</span>
+001  0.5   .      12.6   0
+
+<span class="cmt">; ❌ 잘못된 코딩 — AMT + DV 동일 레코드 (NM-TRAN 에러 또는 무결성 훼손)</span>
+ID  TIME  AMT    DV
+001  0.0   100    35.4   <span class="err"> ← NONMEM이 거부하거나 예측 불능 상태</span>
+</pre>
+      <span class="citation">[출처: Owen Ch.4, Table 4.3–4.4, p.70]</span>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">D. 가정 &amp; 경계조건</div>
+      <ul class="body-list">
+        <li>모든 레코드는 동일한 열 수를 유지. 누락값은 <span class="mono">"."</span> 또는 <span class="mono">"0"</span>으로 채운다. 빈칸은 허용되지 않는다(space-delimited 파일에서).</li>
+        <li>각 개체의 레코드는 <strong>연속적으로(contiguous)</strong> 배열. ID가 섞이면 NONMEM은 분리된 ID를 다른 개체로 처리한다.</li>
+        <li>TIME은 개체 내에서 단조 증가(non-decreasing). 단, 재설정 이벤트(EVID=3/4)가 있을 경우 예외.</li>
+        <li>NONMEM 7 기준 한 번의 실행에서 처리 가능한 최대 데이터 항목 수: <strong>50개</strong>. 초과 시 DROP 옵션 활용 필수.</li>
+      </ul>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">G. Zettelkasten Atom</div>
+      <p style="color:var(--muted);font-style:italic;font-size:0.85rem">NONMEM PREDPP 데이터셋은 시간순 이벤트 스트림이다. 투약 레코드(AMT ≠ 0, DV = missing)와 관측 레코드(DV ≠ missing, AMT = missing)는 절대 동일 행에 공존할 수 없다 — ODE 적분기의 분기 논리가 이를 요구하기 때문이다. 개체 레코드는 연속 배열(contiguous)되어야 하며, TIME은 개체 내 단조 증가해야 한다.</p>
+    </div>
+  </div>
+
+  <!-- C-2 APEX -->
+  <div class="concept-card" id="card-c2">
+    <div class="card-header">
+      <span class="card-id">C-2</span>
+      <span class="card-title">예약 변수 체계</span>
+      <span class="apex-badge">⚡ Apex Concept</span>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> NONMEM에 내장된 예약 변수명을 잘못 이해한 채 데이터셋을 만들면, NONMEM은 에러 없이 실행되지만 완전히 다른 모델을 추정한다 — EVID의 오기는 특정 관측값을 피팅에서 제외하거나, SS=1 누락은 수백 개의 허구 투약 이벤트를 삽입시킨다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> 예약 변수는 NONMEM과 사용자 사이의 <em>"계약서 조항"</em>이다. 각 변수의 값은 "지금 이 행에서 시스템 상태가 어떻게 변하는지"를 NONMEM에게 전달하는 신호이지, 단순한 숫자가 아니다.</p>
+      <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> 아래 각 변수를 "숫자"가 아닌 "시스템 상태 신호"로 읽으면 규칙이 전부 자연스럽게 도출된다.</p>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">A. 예약 변수 전체 목록</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>변수</th><th>상황</th><th>의미</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mono">ID</span></td><td>항상</td><td>개체 식별자 (숫자, 연속 배열 권장)</td></tr>
+            <tr><td><span class="mono">DV</span></td><td>항상</td><td>종속변수 — 피팅 대상 관측값</td></tr>
+            <tr><td><span class="mono">MDV</span></td><td>항상</td><td>결측 종속변수 플래그 (1=결측, 0=존재)</td></tr>
+            <tr><td><span class="mono">TIME</span></td><td>PREDPP</td><td>이벤트 시간 (단조 증가, non-negative)</td></tr>
+            <tr><td><span class="mono">AMT</span></td><td>PREDPP</td><td>투여 용량 (투약 레코드에만, 관측 레코드는 결측)</td></tr>
+            <tr><td><span class="mono">RATE</span></td><td>PREDPP</td><td>투여속도: 양수=직접 지정, 0=볼루스, −1=속도 추정, −2=기간 추정</td></tr>
+            <tr><td><span class="mono">ADDL</span></td><td>PREDPP</td><td>추가 투여 횟수 (첫 투여 제외한 N−1)</td></tr>
+            <tr><td><span class="mono">II</span></td><td>PREDPP</td><td>투여 간격 (ADDL/SS와 함께 사용)</td></tr>
+            <tr><td><span class="mono">SS</span></td><td>PREDPP</td><td>항정상태 플래그 (0/1/2)</td></tr>
+            <tr><td><span class="mono">CMT</span></td><td>PREDPP</td><td>구획 지정 (투약·관측 구획 분리 시 필수)</td></tr>
+            <tr><td><span class="mono">EVID</span></td><td>PREDPP</td><td>이벤트 유형 명시적 선언 (0/1/2/3/4)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <span class="citation">[출처: PIPET Ch.2, 표 2.2, p.19 + Owen Ch.4, §4.3, pp.71–80]</span>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B. EVID 체계 완전 해부</div>
+<pre>
+EVID=0  <span class="ok">→ 관측 이벤트</span>     (DV 필요, AMT 결측 필수)
+EVID=1  <span class="kw">→ 투약 이벤트</span>     (AMT 필요, DV 결측 필수)
+EVID=2  → 기타 유형 이벤트 (공변량 갱신, <span class="kw">예측값 반환용</span>)
+EVID=3  → 시스템 리셋        (구획 내 양을 0으로 초기화)
+EVID=4  → 리셋 + 즉시 투약   (EVID=3 + EVID=1 조합)
+
+<span class="cmt">; EVID별 AMT·DV 조건 (Owen Table 4.9)</span>
+EVID  DV                     AMT
+0     Generally nonmissing   Required to be missing
+1     Required to be missing Required to be nonmissing
+2     Required to be missing Required to be missing
+3     Required to be missing Required to be missing
+4     Required to be missing Required to be nonmissing
+</pre>
+      <span class="citation">[출처: Owen Ch.4, Table 4.9, p.76]</span>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">C-2. Plausible Fallacy (그럴싸한 오류)</div>
+      <div class="fallacy-block">
+        <div class="fallacy-label">⚠ 가장 자주 저지르는 오류</div>
+        <p><strong>오류:</strong> "EVID는 어차피 MDV로 대체 가능하다 — EVID=2는 그냥 MDV=1로 처리하면 된다."</p>
+        <p><strong>나비효과 1 — 교차시험 세션 간 농도 오염:</strong> EVID=3(리셋)을 사용하지 않으면 Period 1의 잔류 약물 양이 Period 2 적분에 포함된다. 결과: Period 2의 CL이 체계적으로 과소추정되고, 이 편향이 IIV 추정치로 흡수되어 η-shrinkage가 비정상적으로 증가한다.</p>
+        <p><strong>나비효과 2 — PK/PD 링크 단절:</strong> EVID=2 레코드를 MDV=1로 대체하면 해당 시점의 예측값이 $TABLE에 반환되지 않는다. PK/PD 링크 모델에서 PD 구획에 공급되는 농도(Cpred)가 비어 모델 전체가 붕괴된다.</p>
+        <p><strong>GOF 시그니처 — "Cross-Period Phantom Elevation":</strong> CWRES vs. TIME 플롯에서 각 Period 초반(0–2×t½ 구간)에 양의 방향 편향 클러스터가 반복적으로 나타난다. "흡수 모델 문제"로 오해하기 쉽지만 실제 원인은 이전 Period 잔류 약물의 잘못된 중첩이다.</p>
+      </div>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">G. Zettelkasten Atom</div>
+      <p style="color:var(--muted);font-style:italic;font-size:0.85rem">NONMEM 예약 변수는 사용자-시스템 간 계약 조항이다. EVID(0/1/2/3/4)는 각 레코드의 이벤트 유형을 명시하며, MDV는 DV를 피팅에 포함할지 여부를 제어한다. 두 변수는 독립적이지만 상호 보완적이다. EVID=2는 MDV=1이면서도 모델 예측값을 반환시키는 고유 기능을 가진다 — 이를 MDV=1로 대체하면 PK/PD 링크 모델이 붕괴된다.</p>
+    </div>
+  </div>
+
+  <!-- C-3 -->
+  <div class="concept-card" id="card-c3">
+    <div class="card-header">
+      <span class="card-id">C-3</span>
+      <span class="card-title">투여 모델링 고급 기법 — ADDL/II·SS·RATE</span>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> Phase 3 임상 데이터에서 환자가 수개월간 하루 두 번 복용했다면, ADDL에 총 투여 횟수(N)를 입력하면 약 하나가 더 투여된다 — 이 오류는 CL을 체계적으로 과소추정시킨다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> ADDL은 <em>"추가로 더 투여한 횟수"</em>이지 "총 투여 횟수"가 아니다 — <strong>ADDL = N−1</strong>.</p>
+      <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> SS·RATE의 값 체계도 "첫 이벤트는 레코드에 명시, 나머지는 묵시적 선언"이라는 같은 원칙으로 작동한다.</p>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B. ADDL + II 예시</div>
+<pre>
+<span class="cmt">; 경구 항생제 250mg, 하루 2회 10일간 → 총 20회 투여 (Owen Table 4.15)</span>
+ID  TIME  AMT  ADDL  II   DV    EVID  MDV  CMT  TAD
+1   0     250  19    12   .     1     1    1    0
+1   1.0   .    .     .    10.6  0     0    2    1.0
+1   220   .    .     .    12.3  0     0    2    4.0
+
+<span class="cmt">; ADDL=19: TIME=0에 첫 투약(명시) + 12시간 간격 19회 추가(묵시) = 총 20회</span>
+<span class="cmt">; ADDL = 20 - 1 = 19  ← 반드시 N-1</span>
+</pre>
+      <span class="citation">[출처: Owen Ch.4, Table 4.15, p.82]</span>
+
+      <p style="margin-top:0.8rem">SS 값 체계:</p>
+<pre>
+SS=0  비항정상태 — 이전 투약 이력 그대로 유지
+SS=1  항정상태 → 구획 내 양을 이론적 SS 조건으로 재설정
+      이전 투약 레코드 효과는 무시(reset). II 반드시 명시.
+SS=2  항정상태 + 이전 투약 이력 유지 (superposition)
+      → 예정에 없던 추가 투여가 있었을 때 사용
+</pre>
+
+      <p style="margin-top:0.8rem">RATE 값 체계:</p>
+<pre>
+RATE = 양수   직접 투여 속도 지정 (AMT per unit TIME). 지속시간 = AMT/RATE
+RATE = 0      볼루스 투여 (정주입이 아님)
+RATE = -1     투여속도를 파라미터로 추정 → $PK에 R1=THETA(n) 필요
+RATE = -2     투여지속시간을 파라미터로 추정 → $PK에 D1=THETA(n) 필요
+</pre>
+      <span class="citation">[출처: Owen Ch.4 §4.3.9–4.3.12 + PIPET §2.5.7–2.5.9, pp.77–80]</span>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B-2. SS=2 적용 예시 — 만성 투여 중 비정기 추가 투여</div>
+<pre>
+<span class="cmt">; 매일 7:00AM 250mg 만성 투여 + 11/20 18:00 추가 투여 → 11/22 10:30 채혈</span>
+ID  DATE      TIME   AMT  SS  II  DV    EVID  MDV  CMT  TAD
+1   11/20/10  18:00  250  0   .   .     1     1    1    0  <span class="cmt"> ← 추가 투여 (비항정상태)</span>
+1   11/22/10  7:00   250  2   24  .     1     1    1    0  <span class="cmt"> ← 만성 SS 투여 (superposition)</span>
+1   11/22/10  10:30  .    .   .   23.4  0     0    2    3.5
+</pre>
+      <span class="citation">[출처: Owen Ch.4, Table 4.18, p.84]</span>
+    </div>
+  </div>
+
+  <!-- C-4 -->
+  <div class="concept-card" id="card-c4">
+    <div class="card-header">
+      <span class="card-id">C-4</span>
+      <span class="card-title">제어구문 연결 — $PROB · $DATA · $INPUT</span>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> $INPUT의 열 선언이 데이터셋 실제 열 순서와 어긋나면 — NONMEM은 에러 없이 실행하지만 잘못된 열을 AMT로 읽는다. 이 오류는 출력 파일에서는 거의 보이지 않는다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> $INPUT은 데이터셋 열의 <em>"이름표(label)를 순서대로 붙이는 선언"</em>이다 — 데이터셋 자체는 바뀌지 않는다.</p>
+      <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> $DATA의 IGNORE/ACCEPT는 데이터셋을 필터링하고, $INPUT은 열에 이름을 부여하며, $PROB는 실행 이력을 관리한다 — 세 레코드의 역할은 완전히 분리되어 있다.</p>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B. 제어구문 필수 3행</div>
+<pre>
+$PROBLEM HO_IV_1comp_BaseModel_v1
+<span class="cmt">; ↑ 버전 관리 핵심 — 모델 복잡도 증가 시 v2, v3로 변경</span>
+
+$DATA ../HOdata_IV.csv IGNORE=@
+<span class="cmt">; ↑ IGNORE=@: 첫 글자가 알파벳인 행 제거 = 헤더 제거</span>
+<span class="cmt">; IGNORE=(SEX.EQ.1): 조건부 데이터 필터링</span>
+
+$INPUT ID TIME AMT DV MDV SEX AGE WT HT
+<span class="cmt">; ↑ 데이터셋 열 순서와 반드시 1:1 일치</span>
+<span class="cmt">; 불필요 열: RACE=DROP</span>
+<span class="cmt">; 변수명 재매핑: AMT=DOSE (데이터셋의 DOSE 열을 AMT로 인식)</span>
+</pre>
+      <span class="citation">[출처: PIPET Ch.2, §2.1, pp.14–15 + Owen Ch.4, §4.2, p.68–69]</span>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B-2. 단위 통일 전략 (AMT-DV 단위 불일치 해결)</div>
+<pre>
+<span class="cmt">; 방법 1: 데이터셋에서 미리 변환</span>
+<span class="cmt">; 투여 용량 mg → ng: AMT = 100,000 (ng), DV = 891.2 (ng/mL)</span>
+<span class="cmt">; PIPET 표 2.1의 실제 예시 수치</span>
+
+<span class="cmt">; 방법 2: $PK에서 scaling factor 적용</span>
+$PK
+  S1 = V/1000  <span class="cmt">; AMT(mg) / V(L) = mg/L, ×1000 = µg/mL</span>
+               <span class="cmt">; S1 = V → C = A1/S1 통해 mg/L 단위 달성</span>
+</pre>
+      <span class="citation">[출처: PIPET Ch.2, §2.5.6, p.22]</span>
+    </div>
+  </div>
+
+  <!-- C-5 -->
+  <div class="concept-card" id="card-c5">
+    <div class="card-header">
+      <span class="card-id">C-5</span>
+      <span class="card-title">공변량·시변 데이터·헤더 처리</span>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> 장기 연구에서 체중이 변화할 때 ADDL로 지정된 묵시적 투약 레코드의 공변량 값은 이전 레코드가 아닌 <strong>다음 물리적 레코드</strong>의 값을 사용한다 — 이를 모르면 체중 기반 공변량 모델이 의도와 다른 시점에서 체중을 바꾸게 된다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> NONMEM은 묵시적 이벤트의 공변량을 <em>"미래로부터"</em> 가져온다.</p>
+      <p><strong>이 직관을 머릿속에 박고 아래를 읽어라:</strong> $BIND 구문은 이 기본값을 제어하는 고급 기법이다.</p>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B. 시변 공변량 코딩</div>
+<pre>
+<span class="cmt">; 피험자 100: 0시간 체중 84kg → Day 5에 86.5kg 변화 (Owen §4.6.2)</span>
+ID   TIME  DV    AMT  ADDL  II   WTKG
+100  0     .     100  8     12   84    <span class="cmt"> ← 첫 투여 + 8회 추가(12h 간격)</span>
+100  2     56.5  .    .     .    84
+100  26    61.3  .    .     .    84
+100  98    60.4  .    .     .    86.5  <span class="cmt"> ← 체중 업데이트</span>
+
+<span class="err">⚠ 기본 동작: ADDL로 생성된 36h 묵시 투약부터 WTKG=86.5 적용</span>
+<span class="cmt">   (96h 레코드 이후가 아니라 — 직관에 반함)</span>
+<span class="cmt">   해결: $BIND 구문으로 공변량 반영 시점 제어</span>
+</pre>
+      <span class="citation">[출처: Owen Ch.4, §4.6.2, Table 4.23, pp.88–89]</span>
+    </div>
+
+    <div class="card-part">
+      <div class="card-part-label">B-2. 공변량 변수명 모범 사례</div>
+<pre>
+<span class="ok">✅ 단위와 의미가 명시된 변수명</span>
+DOSEMG   <span class="cmt">→ 용량 (mg)</span>
+WTKG     <span class="cmt">→ 체중 (kg)</span>
+HTCM     <span class="cmt">→ 신장 (cm)</span>
+CRCLML   <span class="cmt">→ 크레아티닌 청소율 (mL/min)</span>
+SEXF     <span class="cmt">→ 성별 (1=여성, 0=남성)</span>
+
+<span class="err">❌ 의미 불명확 → 해석 오류 위험</span>
+WT, HT, CL, SEX  <span class="cmt">(단위 불명)</span>
+</pre>
+      <span class="citation">[출처: Owen Ch.4, §4.6.1, p.87]</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §3 STRUCTURAL ISOMORPHISM ═══ -->
+<section class="section" id="section-3">
+  <div class="section-label">§3</div>
+  <h2 class="section-title">구조적 동형성 지도</h2>
+
+  <!-- Layer 0: Preamble -->
+  <div class="iso-preamble">
+    <p><strong>공통 원리: 상태-이벤트 로그(State-Event Log)의 보편성</strong></p>
+    <p>NONMEM 데이터셋의 핵심 구조 — "이벤트가 시스템 상태를 변경하거나 측정하며, 그 순서가 보존된다" — 는 자연계와 정보시스템 전반에서 동일하게 나타난다. 이 구조는 <em>중첩 원리(superposition principle)</em>를 수학적 기반으로 한다: 복수의 독립적 사건 효과는 선형적으로 합산된다.</p>
+    <p><strong>왜 이 형태인가:</strong> 연속 시간계에서 임의의 입력이 가해지는 선형 시스템은 각 입력의 임펄스 응답(impulse response)의 합으로 완전히 표현된다. NONMEM 데이터셋은 이 수학적 필연을 "레코드 = 사건, 순서 = 시간축"으로 구현한 것이다.</p>
+    <p><strong>예측 전이:</strong> 이 동형성을 이해하면, 데이터베이스 트랜잭션 로그나 EHR 투약 기록의 설계 원칙을 NONMEM 데이터셋 QC에 직접 전용할 수 있다.</p>
+  </div>
+
+  <!-- Layer 1: SVG -->
+  <div class="svg-wrap">
+    <svg viewBox="0 0 800 560" width="100%" xmlns="http://www.w3.org/2000/svg" style="max-height:520px">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(201,168,76,0.5)"/>
+        </marker>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Hub -->
+      <circle cx="400" cy="280" r="66" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="2" filter="url(#glow)"/>
+      <text x="400" y="270" text-anchor="middle" fill="#c9a84c" font-size="12" font-family="IBM Plex Mono" font-weight="500">시간순 이벤트 큐</text>
+      <text x="400" y="287" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="IBM Plex Mono">State(t) = Σ Effect_i</text>
+      <text x="400" y="302" text-anchor="middle" fill="#8a8070" font-size="9" font-family="IBM Plex Mono">* decay(t - t_i)</text>
+
+      <!-- Spoke 1: NONMEM Dataset (top) -->
+      <line x1="400" y1="214" x2="400" y2="145" stroke="rgba(201,168,76,0.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="305" y="60" width="190" height="80" rx="6" fill="rgba(201,168,76,0.12)" stroke="#c9a84c" stroke-width="1.5"/>
+      <text x="400" y="84" text-anchor="middle" fill="#c9a84c" font-size="11" font-family="IBM Plex Mono" font-weight="500">NONMEM Dataset</text>
+      <text x="400" y="100" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">AMT → 투약 이벤트</text>
+      <text x="400" y="115" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">DV → 관측 이벤트</text>
+      <text x="400" y="130" text-anchor="middle" fill="#8a8070" font-size="8.5" font-family="Noto Sans KR">시간순 정렬 + 구획 분리</text>
+
+      <!-- Spoke 2: EHR (top-right) -->
+      <line x1="455" y1="237" x2="540" y2="175" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="535" y="100" width="195" height="82" rx="6" fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+      <text x="632" y="124" text-anchor="middle" fill="#c9a84c" font-size="10.5" font-family="IBM Plex Mono">EHR 의약 기록</text>
+      <text x="632" y="141" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">처방 → 상태 변경</text>
+      <text x="632" y="156" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">혈액검사 → 상태 측정</text>
+      <text x="632" y="170" text-anchor="middle" fill="#8a8070" font-size="8.5" font-family="Noto Sans KR">HL7 FHIR 이벤트 모델</text>
+
+      <!-- Spoke 3: Financial Ledger (right) -->
+      <line x1="466" y1="280" x2="570" y2="280" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="568" y="240" width="195" height="82" rx="6" fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+      <text x="665" y="264" text-anchor="middle" fill="#c9a84c" font-size="10.5" font-family="IBM Plex Mono">금융 원장</text>
+      <text x="665" y="281" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">입출금 → 잔액 변경</text>
+      <text x="665" y="296" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">잔액 조회 → 상태 측정</text>
+      <text x="665" y="311" text-anchor="middle" fill="#8a8070" font-size="8.5" font-family="Noto Sans KR">복식부기 = 이벤트 로그</text>
+
+      <!-- Spoke 4: DB WAL (bottom-right) -->
+      <line x1="452" y1="328" x2="540" y2="390" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="533" y="388" width="200" height="82" rx="6" fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+      <text x="633" y="413" text-anchor="middle" fill="#c9a84c" font-size="10.5" font-family="IBM Plex Mono">데이터베이스 WAL</text>
+      <text x="633" y="430" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">INSERT/UPDATE → 상태 변경</text>
+      <text x="633" y="445" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">SELECT → 상태 측정</text>
+      <text x="633" y="460" text-anchor="middle" fill="#8a8070" font-size="8.5" font-family="Noto Sans KR">Write-Ahead Log 구조</text>
+
+      <!-- Spoke 5: Aviation (bottom-left) -->
+      <line x1="345" y1="330" x2="262" y2="393" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="62" y="390" width="200" height="82" rx="6" fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+      <text x="162" y="413" text-anchor="middle" fill="#c9a84c" font-size="10.5" font-family="IBM Plex Mono">항공 운항 로그</text>
+      <text x="162" y="430" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">이착륙 → 상태 변경</text>
+      <text x="162" y="445" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">레이더 → 상태 측정</text>
+      <text x="162" y="460" text-anchor="middle" fill="#8a8070" font-size="8.5" font-family="Noto Sans KR">ICAO 비행 계획 체계</text>
+
+      <!-- Spoke 6: Git (left) -->
+      <line x1="334" y1="280" x2="228" y2="280" stroke="rgba(201,168,76,0.35)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="32" y="240" width="195" height="82" rx="6" fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+      <text x="129" y="264" text-anchor="middle" fill="#c9a84c" font-size="10.5" font-family="IBM Plex Mono">Git 커밋 로그</text>
+      <text x="129" y="281" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">commit → 상태 변경</text>
+      <text x="129" y="296" text-anchor="middle" fill="#ede8df" font-size="9.5" font-family="Noto Sans KR">checkout → 상태 확인</text>
+      <text x="129" y="311" text-anchor="middle" fill="#8a8070" font-size="8.5" font-family="Noto Sans KR">SHA-1 시간순 DAG</text>
+    </svg>
+  </div>
+
+  <!-- Layer 2: Alignment Matrix -->
+  <h3 style="font-size:1.1rem;color:var(--accent);margin-bottom:0.8rem">Layer 2 — 구조 정렬 매트릭스</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>구조 차원</th><th>NONMEM Dataset</th><th>금융 원장</th><th>DB WAL</th><th>EHR 의약 기록</th></tr></thead>
+      <tbody>
+        <tr><td>상태 변수</td><td>구획 내 약물 양 A(t)</td><td>계좌 잔액 B(t)</td><td>테이블 행 값</td><td>체내 약물·바이오마커</td></tr>
+        <tr><td>변경 이벤트</td><td>AMT (투약 레코드)</td><td>입출금 트랜잭션</td><td>INSERT/UPDATE</td><td>처방·투약 기록</td></tr>
+        <tr><td>측정 이벤트</td><td>DV (관측 레코드)</td><td>잔액 조회</td><td>SELECT</td><td>혈액검사·활력징후</td></tr>
+        <tr><td>시간순 정렬</td><td>TIME 오름차순 필수</td><td>거래 타임스탬프</td><td>LSN (Log Sequence Number)</td><td>차트 날짜·시간순</td></tr>
+        <tr><td>동시 이벤트</td><td>별도 레코드 2행</td><td>동시 입출금 분리</td><td>별도 트랜잭션</td><td>동시 처방·검사 분리</td></tr>
+        <tr><td>이벤트 유형 코드</td><td>EVID (0/1/2/3/4)</td><td>거래 유형 코드</td><td>OpCode (I/U/D)</td><td>HL7 EventType</td></tr>
+        <tr><td>상태 리셋</td><td>EVID=3/4</td><td>계좌 개설/마감</td><td>TRUNCATE → 새 LSN</td><td>입원·퇴원 에피소드</td></tr>
+        <tr><td>압축 표현</td><td>ADDL + II</td><td>자동이체 (반복 패턴)</td><td>배치 INSERT</td><td>반복 처방 지시</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Layer 3: normCanvas -->
+  <h3 style="font-size:1.1rem;color:var(--accent);margin:1.5rem 0 0.8rem">Layer 3 — 축적 수렴 오버레이</h3>
+  <p style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem">ADDL=1,3,5,9 (총 2,4,6,10회 투여)와 SS 항정상태 곡선을 동시 표시. "정규화" 토글 시 모든 곡선이 SS 기준으로 수렴하는 순간을 시각화한다.</p>
+  <div class="norm-wrap">
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;flex-wrap:wrap">
+      <button class="btn active" id="btnNormRaw">원시 농도</button>
+      <button class="btn" id="btnNormNorm">SS 정규화 (÷ C_max_ss)</button>
+    </div>
+    <canvas id="normCanvas" style="height:240px;width:100%;display:block"></canvas>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;font-family:'IBM Plex Mono',monospace">모델: 1구획 IV bolus. ke=0.1 hr⁻¹, Dose/V=3.57 mg/L, τ=8 hr. 정규화 후 모든 곡선이 하나로 붕괴 → SS=1이 "이 이유로" 작동한다.</p>
+  </div>
+
+  <!-- Layer 4: Transfer Cards -->
+  <h3 style="font-size:1.1rem;color:var(--accent);margin-bottom:0.8rem">Layer 4 — 예측 전이 카드</h3>
+
+  <div class="transfer-card">
+    <div class="transfer-q" onclick="toggleTransfer(this)">
+      <span>🔁 전이 질문 1: 데이터베이스 설계자라면 NONMEM 데이터셋의 "투약과 관측이 같은 레코드에 있으면 안 된다"는 규칙을 보고 어떤 설계 원칙을 즉각 인식하는가?</span>
+      <span style="color:var(--muted)">▼</span>
+    </div>
+    <div class="transfer-ans">
+      <div class="transfer-ans-inner">
+        <div class="transfer-step"><strong>① 출발 도메인 — 관계형 DB 설계:</strong> 정규화(Normalization) 1NF 원칙은 "하나의 레코드는 하나의 원자적 사실만 표현해야 한다." 투약 사건과 관측 사건은 서로 다른 원자적 사실이다.</div>
+        <div class="transfer-step"><strong>② 공통 수학 구조 — 사건 분리의 필연:</strong> 시스템 상태를 추적하는 모든 이벤트 로그는 "입력(input) 이벤트"와 "측정(measurement) 이벤트"를 분리해야 한다. 이 둘이 동일 레코드에 있으면 시스템은 어느 것을 처리해야 할지 분기할 수 없다.</div>
+        <div class="transfer-step"><strong>③ 대응 현상 도출:</strong> 관계형 DB의 1NF, NONMEM의 "AMT/DV 동시 금지", HL7 FHIR의 "Medication + Observation 별도 리소스" — 모두 같은 원칙의 도메인별 구현이다. DB 설계자는 NONMEM 규칙을 처음 보는 순간 "아, 1NF 원칙이구나"라고 즉시 인식할 수 있다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="transfer-card">
+    <div class="transfer-q" onclick="toggleTransfer(this)">
+      <span>🔁 전이 질문 2: Git에서 "commit은 되돌릴 수 없고 시간 순서가 보존된다"는 원칙을 알면, NONMEM 데이터셋에서 왜 TIME이 개체 내에서 단조 증가해야 하는지 즉시 예측할 수 있는가?</span>
+      <span style="color:var(--muted)">▼</span>
+    </div>
+    <div class="transfer-ans">
+      <div class="transfer-ans-inner">
+        <div class="transfer-step"><strong>① 출발 도메인 — Git 커밋 로그:</strong> Git은 각 커밋을 SHA-1 해시로 연결하며 시간 순서를 보존한다. 과거 커밋을 현재 커밋 사이에 삽입하는 것은 불가능하다 — 이미 발생한 사건은 순서가 고정된다.</div>
+        <div class="transfer-step"><strong>② 공통 수학 구조 — 인과율(Causality):</strong> 이벤트 기반 시스템에서 t₂ &lt; t₁인 이벤트가 t₁ 이후에 처리되면 인과율이 위반된다. ODE 적분기는 시간 전진 방향으로만 적분할 수 있다.</div>
+        <div class="transfer-step"><strong>③ 대응 현상 도출:</strong> Git의 "시간순 DAG", NONMEM의 "TIME 단조 증가 필수", 금융 원장의 "거래 타임스탬프 불가역성" — 동일 원칙이다. Git에서 rebase가 히스토리를 재작성하는 "특수 작업"이듯, NONMEM에서 EVID=3(리셋)도 특수 선언이 필요한 예외적 작업이다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §4 SIMULATOR ═══ -->
+<section class="section" id="section-4">
+  <div class="section-label">§4</div>
+  <h2 class="section-title">인터랙티브 시뮬레이터</h2>
+  <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1.2rem">NONMEM 데이터셋의 ADDL/II/SS 코딩이 농도-시간 프로파일에 미치는 영향을 직접 조작하며 학습한다. 슬라이더 조작 시 그래프 배경(축·격자선)은 고정되고 데이터 곡선만 반응한다.</p>
+
+  <div class="sim-panel">
+    <div class="sim-title">ADDL · II · SS 투여 이력 시뮬레이터</div>
+
+    <!-- Presets -->
+    <div style="margin-bottom:0.8rem">
+      <div style="font-size:0.72rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:0.4rem">임상 프리셋</div>
+      <div class="preset-row">
+        <button class="btn active" onclick="applyPreset('theoph')" title="Owen 교재 theophylline 참고값">Theophylline</button>
+        <button class="btn" onclick="applyPreset('vanco')" title="Vancomycin 근사 (CL=5L/hr, V=40L)">Vancomycin</button>
+        <button class="btn" onclick="applyPreset('short')" title="단기 반감기 약물 (t½≈1.4hr)">단기 t½ 약물</button>
+        <button class="btn" onclick="applyPreset('ld')" title="로딩 도즈 후 유지 요법 시뮬레이션">로딩 도즈</button>
+      </div>
+    </div>
+
+    <!-- Sliders -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div>
+        <div class="slider-label"><span>청소율 CL (L/hr)</span><strong id="lbl-cl">2.8</strong></div>
+        <input type="range" id="sl-cl" min="0.5" max="15" step="0.1" value="2.8" oninput="sliderChange('cl',this.value)">
+      </div>
+      <div>
+        <div class="slider-label"><span>분포용적 V (L)</span><strong id="lbl-vd">28</strong></div>
+        <input type="range" id="sl-vd" min="5" max="80" step="1" value="28" oninput="sliderChange('vd',this.value)">
+      </div>
+      <div>
+        <div class="slider-label"><span>투여 용량 Dose (mg)</span><strong id="lbl-dose">100</strong></div>
+        <input type="range" id="sl-dose" min="50" max="500" step="10" value="100" oninput="sliderChange('dose',this.value)">
+      </div>
+      <div>
+        <div class="slider-label"><span>투여 간격 τ/II (hr)</span><strong id="lbl-tau">8</strong></div>
+        <input type="range" id="sl-tau" min="4" max="24" step="1" value="8" oninput="sliderChange('tau',this.value)">
+      </div>
+      <div>
+        <div class="slider-label"><span>추가 투여 횟수 ADDL</span><strong id="lbl-addl">3</strong></div>
+        <input type="range" id="sl-addl" min="0" max="9" step="1" value="3" oninput="sliderChange('addl',this.value)">
+      </div>
+    </div>
+
+    <!-- Toggles -->
+    <div class="btn-row">
+      <button class="btn active" id="btn-ss" onclick="toggleSS()">SS 기준선 표시</button>
+      <button class="btn active" id="btn-auc" onclick="toggleAUC()">AUC 면적</button>
+      <button class="btn" id="btn-log" onclick="toggleLog()">Log 스케일</button>
+      <button class="btn" id="btn-ref" onclick="saveRef()">기준선 저장</button>
+      <button class="btn danger" id="btn-phantom" onclick="togglePhantom()">2구획 Phantom</button>
+      <button class="btn" onclick="clearRef()">기준선 해제</button>
+    </div>
+
+    <div class="warn-banner" id="warnBanner"></div>
+    <div class="cursor-label" id="cursorLabel">마우스를 그래프 위로 이동하세요</div>
+
+    <div class="canvas-wrap">
+      <canvas id="simCanvas"></canvas>
+    </div>
+
+    <!-- Derived Panel -->
+    <div class="derived-grid">
+      <div class="derived-item">
+        <div class="derived-name">t½ (hr)</div>
+        <div class="derived-val" id="dv-t12">—</div>
+        <div class="derived-delta" id="dd-t12"> </div>
+      </div>
+      <div class="derived-item">
+        <div class="derived-name">C_max (mg/L)</div>
+        <div class="derived-val" id="dv-cmax">—</div>
+        <div class="derived-delta" id="dd-cmax"> </div>
+      </div>
+      <div class="derived-item">
+        <div class="derived-name">C_trough (mg/L)</div>
+        <div class="derived-val" id="dv-ctrough">—</div>
+        <div class="derived-delta" id="dd-ctrough"> </div>
+      </div>
+      <div class="derived-item">
+        <div class="derived-name">AUC(τ) (mg·hr/L)</div>
+        <div class="derived-val" id="dv-auc">—</div>
+        <div class="derived-delta" id="dd-auc"> </div>
+      </div>
+    </div>
+
+    <!-- Missions -->
+    <div class="mission-box">
+      <div class="mission-title">🎯 미션 1: 항생제 치료역 유지</div>
+      <p>Theophylline 프리셋에서 시작. <strong>ADDL을 1에서 9까지 증가</strong>시키면서 C_max와 C_trough의 변화를 관찰하라. SS 기준선과 얼마나 빠르게 수렴하는지 확인한다. 힌트: ADDL이 몇 회가 되면 C_trough가 SS 값의 90%에 도달하는가?</p>
+      <p class="mission-hint">→ 이것이 바로 SS=1 코딩이 수학적으로 정당화되는 시점이다.</p>
+    </div>
+    <div class="mission-box" style="margin-top:0.8rem">
+      <div class="mission-title">🎯 미션 2: 신부전 환자 용량 조정</div>
+      <p>기준선 저장 후, CL을 2.8에서 1.0 L/hr로 감소시켜라(신부전 CL 감소 시뮬레이션). Delta Indicator에서 C_trough와 AUC 변화 방향을 확인하라. <strong>독성 가능성</strong>을 판단하고, 투여 간격(τ/II)를 조정하여 안전한 C_max를 복원하라.</p>
+      <p class="mission-hint">힌트: t½가 증가하면 필요한 τ도 어떻게 변해야 하는가?</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §5 CONFUSION PAIRS ═══ -->
+<section class="section" id="section-5">
+  <div class="section-label">§5</div>
+  <h2 class="section-title">혼동쌍 해부</h2>
+
+  <!-- Pair 1: MDV vs EVID -->
+  <h3 id="pair-1" style="font-size:1.1rem;color:var(--accent);margin-bottom:0.8rem">혼동쌍 1 — MDV vs. EVID</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>비교 차원</th><th>MDV</th><th>EVID</th></tr></thead>
+      <tbody>
+        <tr><td><strong>표면적 유사성</strong></td><td colspan="2" style="color:var(--muted)">둘 다 "이 레코드가 관측값을 포함하는가"를 묻는 것처럼 보인다</td></tr>
+        <tr><td><strong>코드 형태</strong></td><td><span class="mono">MDV = 0/1</span></td><td><span class="mono">EVID = 0/1/2/3/4</span></td></tr>
+        <tr><td><strong>구조적 지시체</strong></td><td>"이 행의 DV를 OFV 계산에 포함시킬 것인가?" — <strong>피팅 포함 여부</strong></td><td>"이 행에서 시스템에 어떤 사건이 일어나는가?" — <strong>사건 유형 선언</strong></td></tr>
+        <tr><td><strong>핵심 차이</strong></td><td>MDV=1이어도 EVID=2이면 모델 예측값이 반환됨</td><td>EVID=2는 MDV=1을 내포하지만, 역은 성립 안 함</td></tr>
+        <tr><td><strong>임상/모델링 결과</strong></td><td colspan="2">MDV만 사용하고 EVID 생략 시: 교차시험 period 간 농도 중첩, PK/PD 링크 모델 예측값 누락</td></tr>
+        <tr class="memory-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>MDV = 채점표</strong> (이 관측값 점수를 줄 것인가?) · <strong>EVID = 출석부</strong> (오늘 어떤 수업이 있었는가?) — 채점표에 0이어도 수업 종류는 별도로 선언해야 한다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pair 2: SS=1 vs SS=2 (Critical Blow) -->
+  <h3 id="pair-2" style="font-size:1.1rem;color:var(--accent);margin:1.8rem 0 0.8rem">혼동쌍 2 — SS=1 vs. SS=2 &nbsp;<span style="font-size:0.7rem;background:var(--danger);color:#fff;padding:0.15rem 0.4rem;border-radius:2px;font-family:monospace">Critical Blow</span></h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>비교 차원</th><th>SS=1</th><th>SS=2</th></tr></thead>
+      <tbody>
+        <tr><td><strong>표면적 유사성</strong></td><td colspan="2" style="color:var(--muted)">둘 다 "항정상태 투약"을 선언한다</td></tr>
+        <tr><td><strong>코드 형태</strong></td><td><span class="mono">SS=1, II=τ</span></td><td><span class="mono">SS=2, II=τ</span></td></tr>
+        <tr><td><strong>이전 투약 이력</strong></td><td>모두 무시(reset) → 이론적 SS 구획 양으로 재설정</td><td>이전 이력 유지(superposition) → SS 조건 중첩</td></tr>
+        <tr><td><strong>적용 상황</strong></td><td>교차시험 Period 2 첫 투약 — 세척 기간 후 새로 시작</td><td>만성 투여 중 비정기 추가 투여 — 기존 SS에 중첩</td></tr>
+        <tr><td><strong>혼동 시 결과</strong></td><td colspan="2">SS=1이어야 할 곳에 SS=2 사용 시: Period 1 잔류 약물이 유령처럼 중첩 → CL 과소추정, η-shrinkage 팽창</td></tr>
+        <tr class="memory-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>SS=1은 "백지에서 다시 시작"</strong>(reset + SS 계산) · <strong>SS=2는 "이전 장에 새 이야기를 덧쓰기"</strong>(superposition) — 교차시험이면 백지, 만성 중 추가 투여면 덧쓰기</td></tr>
+        <tr class="critical-blow"><td colspan="3"><strong>치명적 타격:</strong> 교차시험 데이터에서 SS=1 대신 SS=2를 사용해 NDA 제출하면: 심사관이 Period별 PK 파라미터 비교에서 체계적 편향(systematic bias)을 발견하여 Deficiency Letter를 발행하고, 재분석을 요구한다. 이미 제출된 용량 권고도 재검토 대상이 된다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pair 3: ADDL vs N -->
+  <h3 id="pair-3" style="font-size:1.1rem;color:var(--accent);margin:1.8rem 0 0.8rem">혼동쌍 3 — ADDL vs. N (총 투여 횟수)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>비교 차원</th><th>ADDL</th><th>N (총 횟수)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>표면적 유사성</strong></td><td colspan="2" style="color:var(--muted)">둘 다 "몇 번 투여했는가"를 나타내는 것처럼 보인다</td></tr>
+        <tr><td><strong>정의</strong></td><td>ADDL = N − 1 (레코드에 명시된 첫 투여를 제외한 추가 횟수)</td><td>N = 총 투여 횟수 (레코드의 첫 투여 포함)</td></tr>
+        <tr><td><strong>실수 시나리오</strong></td><td>N=10 투여에서 ADDL=10 입력 → 실제로 11회 투여가 시뮬레이션됨</td><td></td></tr>
+        <tr><td><strong>임상/모델링 결과</strong></td><td colspan="2">총 AUC 약 10% 과대추정, CL 과소추정 — 소규모 데이터셋에서 θ(CL) 편향이 η로 흡수</td></tr>
+        <tr class="memory-hook"><td><strong>⚡ 기억 고리</strong></td><td colspan="2"><strong>"ADDL은 '추가'다 — 이미 레코드에 한 번이 있으니 거기서 하나 뺀다."</strong> ADDL = N−1은 수학 공식이 아니라 언어 정의다: Additional = 이미 있는 것에 더하는 것</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ §6 SCENARIOS ═══ -->
+<section class="section" id="section-6">
+  <div class="section-label">§6</div>
+  <h2 class="section-title">실용 시나리오 &amp; 진단 병리</h2>
+
+  <!-- Scenario 1: Drug Development -->
+  <div class="scenario-box">
+    <div class="scenario-label">Scenario 1 — 신약 개발 컨텍스트</div>
+    <div class="scenario-title">Phase 2b 다기관 연구 데이터셋 구축: 경구 항생제 ABX-1234</div>
+    <p>ABX-1234는 3상 진입 예정인 경구 광역 항생제로, 8곳의 임상 기관에서 Phase 2b 연구가 진행되었다. 연구 설계: 250mg을 12시간 간격으로 10일간 투여(BID × 10일 = 총 20회). 일부 기관은 체중을 kg, 나머지는 lbs로 기록했다. Day 1과 Day 10에 집중 채혈이 수행되었으며, 일부 환자는 Day 1 채혈 직전 추가 투여를 했다.</p>
+    <p><strong>데이터셋 구성 전략:</strong> (1) ADDL/II 압축 코딩으로 중간 투약 10일을 단일 레코드로 처리, (2) Day 10 채혈 직전 투약은 SS=1로 항정상태 선언, (3) 추가 투여가 있었던 환자는 SS=2로 superposition 처리, (4) 체중 단위를 $INPUT에서 변환: <span class="mono">IF(WTUNIT.EQ.1) WTKG=WT*0.453592</span></p>
+    <pre style="font-size:0.75rem">
+$PROBLEM ABX1234_Phase2b_PopPK_v3
+$DATA ../data/ABX1234_analysis.csv IGNORE=@
+$INPUT ID TIME AMT RATE ADDL II SS DV MDV CMT EVID WTKG CRCLML AGE SEXF CENTER
+
+<span class="cmt">; 데이터셋 핵심 레코드 구조 (피험자 10126 예시)</span>
+ID      TIME  AMT   ADDL  II   SS  DV    MDV  CMT  EVID
+10126   0     250   1     12   0   .     1    1    1   <span class="cmt"> ← Day 1 첫 투여 + ADDL=1 (BID Day 1)</span>
+10126   1     .     .     .    .   3.82  0    2    0   <span class="cmt"> ← Day 1 1hr 채혈</span>
+10126   4     .     .     .    .   5.11  0    2    0
+10126   216   250   1     12   1   .     1    1    1   <span class="cmt"> ← Day 10 아침 투여, SS=1</span>
+10126   217   .     .     .    .   4.93  0    2    0   <span class="cmt"> ← Day 10 1hr 채혈</span>
+</pre>
+
+    <p><strong>규제 언어 표현 (NDA 데이터셋 명세서):</strong></p>
+    <p style="font-style:italic;color:var(--muted);font-size:0.85rem;border-left:2px solid var(--border);padding-left:0.8rem">"Steady-state conditions were assumed for the Day 10 dose in subjects with documented medication adherence for at least 5 consecutive days prior to the Day 10 visit (≥5 half-lives; t½≈10h). These records were coded with SS=1 and II=12 in the analysis dataset. Subjects with an unscheduled additional dose within 24 hours of the Day 10 visit (n=3) were coded with SS=2 to allow superposition of the additional dose and the steady-state regimen."</p>
+  </div>
+
+  <!-- Scenario 2: TDM -->
+  <div class="scenario-box">
+    <div class="scenario-label">Scenario 2 — TDM 임상 컨텍스트</div>
+    <div class="scenario-title">반코마이신 TDM: 불규칙 투여 이력 재구성</div>
+    <p>중증 패혈증 환자에게 반코마이신 1500mg을 매 12시간 정맥주입(1시간 infusion)으로 투여 중이다. Day 3 오전 아침 투여 시작 전 혈액 채취(trough). 투여 이력 재구성이 필요하다.</p>
+<pre style="font-size:0.75rem">
+<span class="cmt">; 반코마이신 1구획 정맥주입 데이터셋</span>
+<span class="cmt">; AMT=1500mg, RATE=1500mg/hr (1시간 주입), II=12, SS=1 가정 (Day 3 trough)</span>
+ID   TIME  AMT   RATE  SS  II  DV    MDV  CMT  EVID
+1    0     1500  1500  1   12  .     1    1    1  <span class="cmt"> ← Day 3 아침 투여 (SS 가정)</span>
+1    0     .     .     .   .   18.3  0    1    0  <span class="cmt"> ← 투여 직전 trough (동일 시각, 두 행)</span>
+1    1     .     .     .   .   52.7  0    1    0  <span class="cmt"> ← 주입 완료 직후 peak</span>
+
+<span class="cmt">; RATE=1500: AMT(1500mg) / RATE(1500mg/hr) = 1hr 지속시간</span>
+<span class="cmt">; trough와 투여가 동일 시점 → 두 행으로 분리, trough 관측 레코드를 먼저</span>
+</pre>
+  </div>
+
+  <!-- Diagnostic Pathology -->
+  <h3 style="font-size:1.1rem;color:var(--accent);margin:1.5rem 0 0.8rem">진단 병리 시그니처</h3>
+
+  <div class="diag-card">
+    <div class="diag-name">SIGNATURE-1: "Cross-Period Phantom Elevation"</div>
+    <p><strong>GOF 플롯 패턴:</strong> CWRES vs. TIME에서 교차시험 각 Period 초반 0–2×t½ 구간에 양의 방향 편향 클러스터가 반복 출현. NPDE 분포가 기대값보다 음의 방향으로 치우침.</p>
+    <p><strong>기계론적 원인:</strong> SS=1이어야 할 레코드에 SS=2 코딩 → NONMEM이 이전 Period 잔류 약물을 현재 Period 초기 구획 양에 중첩. 모델은 실제보다 높은 초기 농도를 예측하므로 관측값이 상대적으로 낮아 보임 → 양의 CWRES.</p>
+    <p><strong>해결 방향:</strong> SS 코딩 전면 재검토. 교차시험 Period 시작 레코드를 모두 SS=1로 수정. 충분한 세척 기간(≥5×t½) 미충족 시에는 Period 1 마지막 농도를 초기조건($PK의 A_0)으로 직접 지정.</p>
+    <p><strong>η-shrinkage 관련:</strong> 이 오류는 CL η-shrinkage를 비정상 팽창시킨다. η-shrinkage > 30%와 상기 CWRES 패턴이 동시에 관찰되면 SS 코딩 오류를 최우선 의심해야 한다.</p>
+  </div>
+
+  <div class="diag-card">
+    <div class="diag-name">SIGNATURE-2: "Phantom Dose Overdose" — ADDL=N 오기</div>
+    <p><strong>GOF 플롯 패턴:</strong> DV vs. PRED 플롯에서 전체 데이터에 걸쳐 경미하지만 일관된 과소추정(PRED &gt; DV). OFV는 정상 범위이지만 CL 추정치가 문헌 기반 예상값보다 10–20% 낮음.</p>
+    <p><strong>기계론적 원인:</strong> ADDL=N(총 횟수)으로 오기 → NONMEM이 N+1회 투여를 시뮬레이션. 실제보다 한 번 더 투여가 있었다고 가정하므로 농도를 과대추정하고, 이를 보정하기 위해 CL을 과소추정한다.</p>
+    <p><strong>해결 방향:</strong> 데이터셋의 모든 ADDL 값을 N−1로 수정. QC 단계에서 ADDL×II 구간의 마지막 묵시적 투약 시각이 다음 관측 레코드 TIME보다 반드시 앞에 있는지 검증하는 로직 추가.</p>
+    <p><strong>ε-shrinkage 관련:</strong> 잔차 에러 구조가 정상임에도 ε-shrinkage가 높고 η-shrinkage가 낮은 경우, 데이터셋 수준의 투여 이력 오류를 의심한다 — 개체 파라미터가 아닌 모집단 파라미터가 편향되어 있기 때문이다.</p>
+  </div>
+</section>
+
+<!-- ═══ §7 SELF-TEST ═══ -->
+<section class="section" id="section-7">
+  <div class="section-label">§7</div>
+  <h2 class="section-title">자기 테스트 — 능동적 회상 모듈</h2>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q1 ○</span>
+      <span class="q-text">NONMEM PREDPP 데이터셋에서 투약 레코드와 관측 레코드가 동일 시점에 발생할 경우, 데이터셋에는 어떻게 기록해야 하는가? 그리고 그 이유는 무엇인가?</span>
+      <span class="sr-tag">SR ○</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>정답:</strong> 동일 시점이어도 <strong>두 개의 별도 레코드</strong>로 분리하여 동일한 TIME 값을 가진 연속 행에 기록한다.</p>
+        <p>이유: PREDPP의 ODE 적분기는 각 레코드를 처리할 때 "투약(AMT 진입) 또는 관측(DV 잔차 계산)" 중 하나의 분기만 처리할 수 있기 때문이다. AMT와 DV가 동일 레코드에 공존하면 분기 자체가 불가능하다.</p>
+        <div class="next-q">→ 다음 깊이 질문: 두 레코드의 순서(투약 레코드 먼저 vs. 관측 레코드 먼저)가 모델 추정 결과에 영향을 주는가?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q2 ★</span>
+      <span class="q-text">EVID=2 레코드의 고유 기능은 무엇이며, 이를 단순히 MDV=1로 대체했을 때 어떤 결과가 발생하는가?</span>
+      <span class="sr-tag">SR ★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>정답:</strong> EVID=2는 MDV=1이지만 <strong>해당 시점의 모델 예측값을 $TABLE에 반환</strong>하도록 지시한다.</p>
+        <p>PK/PD 동시 피팅에서 PD 관측 레코드와 연동된 예측 농도(Cpred) 반환, 개인 PK 프로파일 재구성, GOF 플롯 보조점 생성에 필수적이다.</p>
+        <p>MDV=1로 대체하면 이 시점의 예측값이 반환되지 않아 PK/PD 링크 모델에서 PD 구획에 공급되는 농도 예측이 누락되고 PK/PD 연결 모델 전체가 붕괴된다.</p>
+        <div class="next-q">→ 다음 깊이 질문: EVID=2 레코드에서 PCMT를 지정하면 어떤 추가 기능이 가능한가?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q3 ★★</span>
+      <span class="q-text">교차시험 2-period 데이터를 NONMEM 데이터셋으로 구성할 때, Period 2의 첫 투약 레코드에 SS=1 대신 SS=2를 사용했다. 어떤 결과가 예상되며, GOF 플롯에서 어떤 패턴으로 나타나는가?</span>
+      <span class="sr-tag">SR ★★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>정답:</strong> SS=2는 이전 레코드(Period 1)의 구획 내 약물 양을 초기화하지 않고 SS 농도에 중첩(superposition)한다. 충분한 세척 기간(washout)이 있었다고 가정된 상황에서 Period 1 잔류 약물이 Period 2 농도에 더해진다.</p>
+        <p><strong>결과:</strong> Period 2 초반의 관측 농도를 과소추정 (모델이 실제보다 높은 농도를 예측). CWRES vs. TIME 플롯에서 Period 2 개시 직후 구간(0–2×t½)에 <strong>양의 방향 편향 클러스터</strong> 형성. CL의 체계적 과대추정 또는 Vd 편향으로 이어지며, IIV(η)가 비정상 팽창.</p>
+        <div class="next-q">→ 다음 깊이 질문: 세척 기간이 완전하지 않았을 경우(잔류 약물이 실제로 존재), SS=1과 SS=2 중 어느 것을 사용해야 하는가?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q4 ★</span>
+      <span class="q-text">RATE=−1과 RATE=−2의 차이를 설명하고, 각각 $PK 블록에 어떤 파라미터 선언이 필요한지 기술하라.</span>
+      <span class="sr-tag">SR ★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>RATE=−1:</strong> 투여 <strong>속도(rate)</strong>를 파라미터로 추정. $PK에 <span class="mono">R1 = THETA(n)</span> 필요. AMT/시간 단위.</p>
+        <p><strong>RATE=−2:</strong> 투여 <strong>지속시간(duration)</strong>을 파라미터로 추정. $PK에 <span class="mono">D1 = THETA(n)</span> 필요.</p>
+        <p>두 경우 모두 데이터셋의 RATE 열에 −1 또는 −2를 기입하고, AMT에는 총 투여량을 기재한다. 응용 예: 경피 흡수 제제에서 흡수 지속시간을 RATE=−2로 추정하여 D1=THETA(1)로 모델링.</p>
+        <div class="next-q">→ 다음 깊이 질문: RATE=−2로 D1을 추정할 때 필요한 최소 데이터 밀도 요건은?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q5 ★</span>
+      <span class="q-text">피험자 ID=10010이 100mg을 12시간 간격으로 총 10회 투여받았다. ADDL과 II를 사용하여 단일 투약 레코드로 압축 표현하라. EVID와 MDV도 포함하라.</span>
+      <span class="sr-tag">SR ★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+<pre style="font-size:0.78rem">ID     TIME  AMT  ADDL  II  DV  EVID  MDV
+10010  0     100  9     12  .   1     1</pre>
+        <p><strong>핵심:</strong> ADDL = 10 − 1 = <strong>9</strong> (첫 투여가 레코드에 있으므로 추가 9회). II=12(시간). EVID=1(투약 이벤트). MDV=1(DV 결측). <span class="citation">[Owen Table 4.10, p.78]</span></p>
+        <div class="next-q">→ 다음 깊이 질문: 이 레코드에서 5번째 투약(48시간)과 동시에 관측이 이루어진다면, 데이터셋에 어떻게 추가해야 하는가?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q6 ★★</span>
+      <span class="q-text">다음 상황을 올바른 NONMEM 데이터셋 레코드로 표현하라: 피험자가 25mg 경구약을 매일 7:00에 최소 3개월간 복용(t½≈24hr, SS 도달 확인). 추가로 2일 전 오후 6:00에 임시 25mg 추가 복용. 검진일 오전 10:30에 채혈(농도 23.4 ng/mL). DATE 열 사용.</span>
+      <span class="sr-tag">SR ★★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+<pre style="font-size:0.76rem">ID  DATE      TIME   AMT  SS  II   DV    EVID  MDV  CMT  TAD
+1   11/20/10  18:00  25   0   .    .     1     1    1    0  <span class="cmt"> ← 비정기 추가 투여</span>
+1   11/22/10  7:00   25   2   24   .     1     1    1    0  <span class="cmt"> ← 만성 SS 투여, superposition</span>
+1   11/22/10  10:30  .    .   .    23.4  0     0    2    3.5</pre>
+        <p>첫 레코드: SS=0(항정상태 아님). 두 번째: SS=2(이전 추가 투여와 superposition), II=24. $INPUT에 DATE=DROP 필수 (달력 구분자 "/" 포함). <span class="citation">[Owen Table 4.18, p.84]</span></p>
+        <div class="next-q">→ 다음 깊이 질문: SS=1 대신 SS=2를 사용한 이유는? SS=1을 썼다면 어떤 일이 발생하는가?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q7 ○</span>
+      <span class="q-text">NONMEM 7에서 데이터셋 ID 열에 14자리 ID를 사용했을 때, 모델 추정과 $TABLE 출력에서 각각 어떤 문제가 발생하며, 어떻게 해결하는가?</span>
+      <span class="sr-tag">SR ○</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>모델 추정:</strong> 정확함. NONMEM 7은 내부적으로 14자리 ID를 올바르게 구별한다.</p>
+        <p><strong>$TABLE 출력 문제:</strong> 기본 출력 형식(s1PE11.4)은 5자리 유효숫자만 표현. 12345678901234와 12345678901235가 동일 값(1.2346E+13)으로 표시 → 후처리(plotting, 요약 통계) 시 두 개체가 하나로 합쳐짐.</p>
+        <p><strong>해결:</strong> $TABLE에 RFORMAT 옵션 사용: <span class="mono">RFORMAT="(F15.0,"</span></p>
+        <div class="next-q">→ 다음 깊이 질문: 다기관 연구에서 ID 충돌을 원천 방지하는 프로그래밍적 접근법은?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <span class="q-label">Q8 ★★</span>
+      <span class="q-text">장기 체중 감소 연구에서 ADDL을 사용한 투약 레코드가 있고, 4주 후 체중이 84kg에서 86.5kg으로 변화하였다. 이 체중 변화를 EVID=2로 업데이트했을 때, NONMEM의 기본 동작에서 묵시적 ADDL 투약 레코드에 어느 체중이 적용되는가?</span>
+      <span class="sr-tag">SR ★★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>정답:</strong> NONMEM의 기본 동작에서 묵시적 ADDL 투약 레코드의 공변량 값은 <strong>다음 물리적 레코드</strong>의 값을 사용한다.</p>
+        <p>즉, 체중이 실제로 업데이트되는 96시간 이전에 생성된 묵시적 투약 레코드들(예: 36, 48, 72시간)에도 86.5kg이 조기 적용된다. 분석가는 96시간 이후부터 86.5kg이 적용될 것을 기대하지만, 실제로는 36시간 묵시 투약부터 체중 기반 파라미터가 변경된다.</p>
+        <p><strong>해결:</strong> $BIND 구문을 사용하거나, ADDL 대신 모든 투약을 개별 레코드로 작성하고 해당 시점의 체중을 직접 기입. <span class="citation">[Owen §4.6.2, Table 4.23, pp.88–89]</span></p>
+        <div class="next-q">→ 다음 깊이 질문: 이 문제가 체중 기반 공변량 모델(CL = θ × (WT/70)^0.75)의 OFV에 미치는 영향은 어떤 방향인가?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boss Dilemma -->
+  <div class="accordion">
+    <div class="accordion-header boss-header" onclick="toggleAcc(this)">
+      <span class="boss-badge">BOSS DILEMMA</span>
+      <span class="q-text">Q9 — Phase 3 다기관 연구 최종 분석 직전 QC에서 발견: 전체 1,247명 중 23명의 교차시험 Period 2 첫 투약 레코드에 SS=2가 기재됨(SS=1이어야 했던 레코드). 수정 시 데이터셋 버전 변경과 재분석이 필요하며, 규제 제출 일정이 3주 지연된다. 민감도 분석에서 이 23명(1.8%)을 제외해도 최종 CL 추정치는 4.2% 차이. 당신은 수정 후 재분석(일정 3주 지연)을 택하는가, 아니면 민감도 분석 결과를 첨부하고 현재 데이터셋으로 제출하는가?</span>
+      <span class="sr-tag">SR ★★</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-body-inner">
+        <p><strong>수석 모델러의 답변: 반드시 수정 후 재분석한다.</strong></p>
+        <p><strong>Trade-off 분석 — 제출 강행의 유혹:</strong> 23명/1247명(1.8%)은 통계적으로 소수다. 4.2% 차이는 CL 추정의 불확실도 범위 내일 수 있다. 3주 지연은 상업적 비용이 크다.</p>
+        <p><strong>그러나 반드시 수정해야 하는 세 가지 구조적 이유:</strong></p>
+        <p>1. <strong>데이터셋 오류는 "알려진 편향(known bias)"이다.</strong> 불확실성(uncertainty)과 편향(bias)은 근본적으로 다르다. 심사관은 랜덤 변동성을 허용하지만 알려진 체계적 오류는 허용하지 않는다. 심사관이 독립적으로 재현 분석했을 때 이 오류를 발견하면 Deficiency Letter가 아닌 Complete Response Letter로 이어질 수 있다.</p>
+        <p>2. <strong>ICH E9(R1)과 FDA Population PK 가이던스는 데이터 무결성을 요구한다.</strong> SS 오코딩은 모델이 아닌 데이터 레벨의 오류다. 민감도 분석은 모델 가정의 변동을 탐색하는 도구이지, 알려진 데이터 오류를 정당화하는 도구가 아니다.</p>
+        <p>3. <strong>규제 방어 가능성:</strong> 수정 후 재분석 보고서에서는 "오류 발견 → 수정 → 재분석 → 결론 안정성 확인"의 완결된 QC 이력을 제시할 수 있다.</p>
+        <p style="font-style:italic;color:var(--muted);font-size:0.85rem;border-left:2px solid var(--accent);padding-left:0.8rem">"A dataset error was identified during final QC review: 23 subjects in the crossover cohort had SS=2 coded for the first dose of Period 2, where SS=1 was indicated. The dataset was corrected, and analysis was repeated. The final PK parameter estimates differed by less than 5% from the pre-correction analysis, confirming the robustness of the model."</p>
+        <p><strong>결론:</strong> 3주 지연의 단기 비용보다 데이터 무결성 훼손의 장기 규제 리스크가 훨씬 크다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §8 META-FRAME ═══ -->
+<section class="section" id="section-8">
+  <div class="section-label">§8</div>
+  <h2 class="section-title">메타프레임 &amp; 빅 픽처</h2>
+
+  <div class="meta-grid">
+    <div class="meta-box">
+      <h4>A. 28세션 아키텍처 내 위치</h4>
+      <ul>
+        <li>← 선행: II-01 θ·η·ε 계층 구조 (개체 파라미터가 데이터셋 ID와 연결되는 방식)</li>
+        <li>← 선행: I-06 정주 투여·다중 투여 PK 이론 (RATE·ADDL·SS의 생물학적 의미)</li>
+        <li>→ 직결: II-03 $SUBROUTINE·$PK 코딩 (데이터셋 변수가 코드 안으로 진입)</li>
+        <li>→ 직결: II-05 초기추정값 전략 (데이터셋 오류가 수렴 실패의 1차 원인)</li>
+        <li>→ 직결: II-07 기저 모델 구축 (EDA는 데이터셋 구조에서 시작)</li>
+        <li>→ 직결: II-08 공변량 분석 (공변량 열의 품질이 SCM 결과를 결정)</li>
+      </ul>
+    </div>
+    <div class="meta-box">
+      <h4>B. 이 섹션을 대충 넘겼을 때 고급 모델링에서 발생하는 실패 모드</h4>
+      <p><strong>실패 모드 1 — "무증상 CL 편향":</strong> ADDL=N(총 횟수) 오기는 CL을 5–15% 과소추정시킨다. 이 오류는 OFV와 GOF 플롯에서 거의 보이지 않는다 — 잔차가 허구 투약 이력에 맞게 파라미터가 조정되기 때문이다. 규제 제출 후 심사관의 독립 재현 분석에서 발견되는 시나리오가 실제 보고되어 있다.</p>
+      <p><strong>실패 모드 2 — "PK/PD 링크 단절":</strong> PK/PD 동시 분석에서 EVID=2 레코드를 MDV=1로 대체하면 $TABLE에 해당 시점의 농도 예측이 출력되지 않는다. 초보자는 이 오류를 "$ERROR 블록 문제"로 오진하여 수일을 소비한다.</p>
+    </div>
+  </div>
+
+  <div class="moat-box">
+    <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--accent);margin-bottom:1rem">C. Professional Moat</h4>
+    <blockquote>"NONMEM을 실행하고 파라미터를 추출하는 것은 이미 자동화 가능하다. 이 섹션의 코드 구조와 알고리즘 수학을 진정으로 내면화한 모델러만이 — 수렴 실패, $COV step 에러, CWRES 편향, 예상치 못한 OFV 상승 앞에서 — 무엇을 할 수 있는가?"</blockquote>
+    <p><strong>정밀한 답:</strong> 데이터셋 구조와 예약 변수 체계를 내면화한 모델러는 <strong>진단의 출발점을 모델 코드가 아닌 데이터셋으로 설정</strong>할 수 있다. CWRES의 시간축 편향 클러스터를 보고 "이것이 모델 구조 문제인가, ADDL 오기인가, SS 코딩 오류인가"를 데이터셋 레벨에서 먼저 분리한다.</p>
+    <p>AI는 OFV를 최소화하는 파라미터 조합을 찾을 수 있지만, 데이터셋의 TIME 오기 또는 SS 오코딩이 만들어내는 "잘못된 패턴에 완벽히 맞는 파라미터"를 탐지할 수 없다.</p>
+    <p>정주 투여 + 경구 유지요법 혼합 데이터에서 ADVAN2·CMT·EVID를 조합하여 단일 데이터셋에서 두 투여 경로를 동시에 처리하는 구조를 설계한다. 규제 제출용 데이터 명세서(dataset specification document)에서 각 예약 변수의 사용 근거와 QC 검증 이력을 FDA/EMA 심사관이 재현 가능한 언어로 기술한다.</p>
+    <p>이것은 모델 선택이나 추정 방법의 문제가 아니라 <strong>데이터와 모델이 만나는 경계면(interface)을 설계하는 능력</strong>이다 — 그리고 이 능력은 예약 변수 체계의 구조적 필연을 이해하지 못하면 획득되지 않는다.</p>
+  </div>
+</section>
+
+</main><!-- end #content -->
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+'use strict';
+
+// ── §7 & §3 Accordion ──
+function toggleAcc(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+function toggleTransfer(el) {
+  const ans = el.nextElementSibling;
+  ans.classList.toggle('open');
+  const arrow = el.querySelector('span:last-child');
+  arrow.textContent = ans.classList.contains('open') ? '▲' : '▼';
+}
+
+// ── IntersectionObserver for Sidebar ──
+(function() {
+  const links = document.querySelectorAll('#sidebar a[href^="#"]');
+  const sections = [];
+  links.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ el, link });
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const found = sections.find(s => s.el === entry.target);
+      if (found) found.link.classList.toggle('active', entry.isIntersecting);
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s.el));
+})();
+
+// ══════════════════════════════════════════════════
+// §3 normCanvas — V5.1 (initNormCanvas isolated)
+// ══════════════════════════════════════════════════
+const normCanvas = document.getElementById('normCanvas');
+const normCtx = normCanvas.getContext('2d');
+let normW = 0, normH = 0;
+let isNormalized = false;
+
+function initNormCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = normCanvas.getBoundingClientRect();
+  normW = Math.floor(rect.width * dpr);
+  normH = Math.floor(rect.height * dpr);
+  normCanvas.width = normW;
+  normCanvas.height = normH;
+  normCtx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+const KE_NORM = 0.1;    // hr^-1
+const DV_DOSE_V = 3.57; // mg/L (Dose/V)
+const TAU_NORM = 8;     // hr
+const XMAX_NORM = 48;   // hr
+
+function computeNormCurve(addl) {
+  const N = addl + 1;
+  const ts = [], cs = [];
+  for (let t = 0; t <= XMAX_NORM; t += 0.1) {
+    let C = 0;
+    for (let i = 0; i < N; i++) {
+      const tDose = i * TAU_NORM;
+      if (t >= tDose) C += DV_DOSE_V * Math.exp(-KE_NORM * (t - tDose));
+    }
+    ts.push(t); cs.push(C);
+  }
+  return { ts, cs };
+}
+function computeSSnorm() {
+  const ts = [], cs = [];
+  const denom = 1 - Math.exp(-KE_NORM * TAU_NORM);
+  for (let t = 0; t <= XMAX_NORM; t += 0.1) {
+    const tInInterval = t % TAU_NORM;
+    const C = DV_DOSE_V * Math.exp(-KE_NORM * tInInterval) / denom;
+    ts.push(t); cs.push(C);
+  }
+  return { ts, cs };
+}
+
+const NORM_COLORS = ['#4098e8','#9ecb8a','#e87040','#c96abd','#c9a84c'];
+const NORM_LABELS = ['N=2 (ADDL=1)','N=4 (ADDL=3)','N=6 (ADDL=5)','N=10 (ADDL=9)','SS 기준'];
+const normCurves = [
+  computeNormCurve(1), computeNormCurve(3),
+  computeNormCurve(5), computeNormCurve(9),
+  computeSSnorm()
+];
+
+function drawNorm() {
+  if (!normW || !normH) return;
+  normCtx.clearRect(0, 0, normW, normH);
+  const dpr = window.devicePixelRatio || 1;
+  const pad = { l: 50*dpr, r: 20*dpr, t: 20*dpr, b: 40*dpr };
+  const W = normW - pad.l - pad.r;
+  const H = normH - pad.t - pad.b;
+
+  const cMax_ss = DV_DOSE_V / (1 - Math.exp(-KE_NORM * TAU_NORM));
+  const yMax = isNormalized ? 1.1 : cMax_ss * 1.15;
+
+  // Grid
+  normCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+  normCtx.lineWidth = dpr;
+  for (let i = 0; i <= 6; i++) {
+    const y = pad.t + H * i / 6;
+    normCtx.beginPath(); normCtx.moveTo(pad.l, y); normCtx.lineTo(pad.l + W, y); normCtx.stroke();
+  }
+  for (let i = 0; i <= 8; i++) {
+    const x = pad.l + W * i / 8;
+    normCtx.beginPath(); normCtx.moveTo(x, pad.t); normCtx.lineTo(x, pad.t + H); normCtx.stroke();
+  }
+
+  // Axes labels
+  normCtx.fillStyle = 'rgba(138,128,112,0.8)';
+  normCtx.font = `${9*dpr}px IBM Plex Mono`;
+  normCtx.textAlign = 'right';
+  for (let i = 0; i <= 6; i++) {
+    const val = yMax * (6-i) / 6;
+    normCtx.fillText(val.toFixed(isNormalized ? 1 : 0), pad.l - 4*dpr, pad.t + H*i/6 + 3*dpr);
+  }
+  normCtx.textAlign = 'center';
+  for (let i = 0; i <= 8; i++) {
+    const val = XMAX_NORM * i / 8;
+    normCtx.fillText(val, pad.l + W*i/8, pad.t + H + 15*dpr);
+  }
+  normCtx.fillStyle = 'rgba(138,128,112,0.6)';
+  normCtx.fillText('Time (hr)', pad.l + W/2, normH - 5*dpr);
+
+  // Dose markers
+  for (let i = 0; i < 4; i++) {
+    const xPx = pad.l + (i * TAU_NORM / XMAX_NORM) * W;
+    normCtx.strokeStyle = 'rgba(201,168,76,0.2)';
+    normCtx.lineWidth = dpr;
+    normCtx.setLineDash([3*dpr, 4*dpr]);
+    normCtx.beginPath(); normCtx.moveTo(xPx, pad.t); normCtx.lineTo(xPx, pad.t + H); normCtx.stroke();
+    normCtx.setLineDash([]);
+  }
+
+  // Curves
+  normCurves.forEach((curve, ci) => {
+    normCtx.beginPath();
+    normCtx.strokeStyle = NORM_COLORS[ci];
+    normCtx.lineWidth = (ci === 4 ? 2.5 : 1.5) * dpr;
+    if (ci === 4) normCtx.setLineDash([6*dpr, 3*dpr]);
+    else normCtx.setLineDash([]);
+    curve.ts.forEach((t, i) => {
+      let yVal = curve.cs[i];
+      if (isNormalized) yVal = yVal / cMax_ss;
+      const xPx = pad.l + (t / XMAX_NORM) * W;
+      const yPx = pad.t + H * (1 - yVal / yMax);
+      if (i === 0) normCtx.moveTo(xPx, yPx); else normCtx.lineTo(xPx, yPx);
+    });
+    normCtx.stroke();
+    normCtx.setLineDash([]);
+  });
+
+  // Legend
+  const legX = pad.l + W - 160*dpr, legY = pad.t + 12*dpr;
+  normCurves.forEach((_, ci) => {
+    normCtx.fillStyle = NORM_COLORS[ci];
+    normCtx.fillRect(legX, legY + ci*14*dpr, 18*dpr, 2.5*dpr);
+    normCtx.fillStyle = 'rgba(200,195,188,0.8)';
+    normCtx.font = `${8*dpr}px IBM Plex Mono`;
+    normCtx.textAlign = 'left';
+    normCtx.fillText(NORM_LABELS[ci], legX + 22*dpr, legY + ci*14*dpr + 4*dpr);
+  });
+  if (isNormalized) {
+    // SS convergence line at y=1
+    const ySS = pad.t + H * (1 - 1.0/yMax) + pad.t; // Nope, simpler:
+    const ySSpx = pad.t + H * (1 - 1.0/yMax);
+    normCtx.strokeStyle = 'rgba(201,168,76,0.4)';
+    normCtx.lineWidth = dpr;
+    normCtx.setLineDash([4*dpr, 4*dpr]);
+    normCtx.beginPath(); normCtx.moveTo(pad.l, ySSpx); normCtx.lineTo(pad.l+W, ySSpx); normCtx.stroke();
+    normCtx.setLineDash([]);
+    normCtx.fillStyle = 'rgba(201,168,76,0.7)';
+    normCtx.font = `${8*dpr}px IBM Plex Mono`;
+    normCtx.textAlign = 'right';
+    normCtx.fillText('C_max_ss = 1.0', pad.l + W - 4*dpr, ySSpx - 4*dpr);
+  }
+}
+
+document.getElementById('btnNormRaw').addEventListener('click', function() {
+  isNormalized = false;
+  this.classList.add('active');
+  document.getElementById('btnNormNorm').classList.remove('active');
+  drawNorm();
+});
+document.getElementById('btnNormNorm').addEventListener('click', function() {
+  isNormalized = true;
+  this.classList.add('active');
+  document.getElementById('btnNormRaw').classList.remove('active');
+  drawNorm();
+});
+
+window.addEventListener('resize', () => {
+  initNormCanvas();
+  drawNorm();
+  // chartObj resize is handled by Chart.js internally — do NOT touch it here
+});
+
+// ══════════════════════════════════════════════════
+// §4 SIMULATOR — V5.1 (all 4 bug fixes applied)
+// ══════════════════════════════════════════════════
+
+// ── 전역 상수 (최상단, 절대 재할당 금지) ──
+const X_MAX = 48;       // hours — covers 6 dosing intervals at τ=8hr
+const DT = 0.1;         // hours — integration step
+const HARD_Y_MAX = 15;  // mg/L — fixed, never dynamic
+const LOG_Y_MIN = 0.001;
+const LOG_Y_MAX = 100;
+
+// ── 중앙 상태 ──
+const state = {
+  params: { cl:2.8, vd:28, dose:100, tau:8, addl:3 },
+  logScale: false,
+  showSS: true,
+  showAUC: true,
+  showPhantom: false,
+  referenceCurve: null,
+  _currentCurve: null,
+  _prevDerived: null,
+  warnings: {}
+};
+
+// ── Clinical Presets ──
+const PRESETS = {
+  theoph:  { cl:2.8,  vd:28,  dose:100, tau:8,  addl:3,  title:'Theophylline (Owen reference)' },
+  vanco:   { cl:5.0,  vd:40,  dose:500, tau:12, addl:2,  title:'Vancomycin 근사' },
+  short:   { cl:10,   vd:20,  dose:100, tau:6,  addl:5,  title:'단기 t½ 약물 (t½≈1.4hr)' },
+  ld:      { cl:2.8,  vd:28,  dose:300, tau:8,  addl:3,  title:'로딩 도즈 시뮬레이션' }
+};
+
+function applyPreset(key) {
+  const p = PRESETS[key];
+  if (!p) return;
+  state.params = { cl:p.cl, vd:p.vd, dose:p.dose, tau:p.tau, addl:p.addl };
+  document.getElementById('sl-cl').value = p.cl;
+  document.getElementById('sl-vd').value = p.vd;
+  document.getElementById('sl-dose').value = p.dose;
+  document.getElementById('sl-tau').value = p.tau;
+  document.getElementById('sl-addl').value = p.addl;
+  updateLabels();
+  document.querySelectorAll('.preset-row .btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  updateChart();
+}
+
+function sliderChange(key, val) {
+  state.params[key] = parseFloat(val);
+  updateLabels();
+  updateChart();
+}
+
+function updateLabels() {
+  const p = state.params;
+  document.getElementById('lbl-cl').textContent = p.cl.toFixed(1);
+  document.getElementById('lbl-vd').textContent = p.vd;
+  document.getElementById('lbl-dose').textContent = p.dose;
+  document.getElementById('lbl-tau').textContent = p.tau;
+  document.getElementById('lbl-addl').textContent = p.addl;
+}
+
+function toggleSS() {
+  state.showSS = !state.showSS;
+  document.getElementById('btn-ss').classList.toggle('active', state.showSS);
+  updateChart();
+}
+function toggleAUC() {
+  state.showAUC = !state.showAUC;
+  document.getElementById('btn-auc').classList.toggle('active', state.showAUC);
+  updateChart();
+}
+function toggleLog() {
+  state.logScale = !state.logScale;
+  document.getElementById('btn-log').classList.toggle('active', state.logScale);
+  updateChart();
+}
+function togglePhantom() {
+  state.showPhantom = !state.showPhantom;
+  document.getElementById('btn-phantom').classList.toggle('active', state.showPhantom);
+  updateChart();
+}
+function saveRef() {
+  if (state._currentCurve) {
+    state.referenceCurve = { ts:[...state._currentCurve.ts], cs:[...state._currentCurve.cs] };
+    document.getElementById('btn-ref').classList.add('active');
+    updateChart();
+  }
+}
+function clearRef() {
+  state.referenceCurve = null;
+  document.getElementById('btn-ref').classList.remove('active');
+  updateChart();
+}
+
+// Model: 1-compartment IV bolus, multiple doses using superposition
+function computeDoses(p) {
+  const ke = p.cl / p.vd;
+  const C0 = p.dose / p.vd;
+  const N = p.addl + 1;
+  const ts = [], cs = [];
+  for (let t = 0; t <= X_MAX; t += DT) {
+    let C = 0;
+    for (let i = 0; i < N; i++) {
+      const tDose = i * p.tau;
+      if (t >= tDose) C += C0 * Math.exp(-ke * (t - tDose));
+    }
+    ts.push(parseFloat(t.toFixed(2)));
+    cs.push(C);
+  }
+  return { ts, cs };
+}
+
+function computeSSCurve(p) {
+  const ke = p.cl / p.vd;
+  const C0 = p.dose / p.vd;
+  const denom = 1 - Math.exp(-ke * p.tau);
+  const ts = [], cs = [];
+  for (let t = 0; t <= X_MAX; t += DT) {
+    const tInInterval = t % p.tau;
+    const C = C0 * Math.exp(-ke * tInInterval) / denom;
+    ts.push(parseFloat(t.toFixed(2))); cs.push(C);
+  }
+  return { ts, cs };
+}
+
+// Phantom: 2-compartment approximation using biexponential
+function computePhantom(p) {
+  const ke = p.cl / p.vd;
+  const C0 = p.dose / p.vd;
+  const N = p.addl + 1;
+  const alpha = ke * 2.5, beta = ke * 0.4;
+  const A = C0 * 0.6, B = C0 * 0.4;
+  const ts = [], cs = [];
+  for (let t = 0; t <= X_MAX; t += DT) {
+    let C = 0;
+    for (let i = 0; i < N; i++) {
+      const tDose = i * p.tau;
+      if (t >= tDose) {
+        const dt2 = t - tDose;
+        C += A * Math.exp(-alpha * dt2) + B * Math.exp(-beta * dt2);
+      }
+    }
+    ts.push(parseFloat(t.toFixed(2))); cs.push(C);
+  }
+  return { ts, cs };
+}
+
+let phantomCache = null;
+function getPhantom(params) {
+  const key = JSON.stringify(params);
+  if (!phantomCache || phantomCache.key !== key) {
+    phantomCache = { key, data: computePhantom(params) };
+  }
+  return phantomCache.data;
+}
+
+// [Scientific Logic]: 1구획 IV bolus 다중 투여 모델
+// C(t) = Σ_{i=0}^{ADDL} (Dose/V) * exp(-ke*(t - i*tau)) for t >= i*tau
+// 가정: 순간 혼합, 1구획, ke 시간 불변, 중첩 원리 적용 (선형 PK)
+function buildDatasets(curve) {
+  const datasets = [];
+  // AUC fill (last dosing interval)
+  if (state.showAUC) {
+    const p = state.params;
+    const lastDoseTime = p.addl * p.tau;
+    const aucPts = curve.ts.map((t, i) => t >= lastDoseTime ? {x:t, y:curve.cs[i]} : null).filter(Boolean);
+    if (aucPts.length > 0) {
+      datasets.push({
+        label: 'AUC', data: aucPts,
+        borderColor: 'rgba(201,168,76,0.0)', borderWidth: 0,
+        backgroundColor: 'rgba(201,168,76,0.1)',
+        fill: 'origin', pointRadius: 0, tension: 0.3,
+        parsing: {xAxisKey:'x', yAxisKey:'y'}
+      });
+    }
+  }
+  // SS reference
+  if (state.showSS) {
+    const ss = computeSSCurve(state.params);
+    datasets.push({
+      label: 'SS 기준선', data: ss.ts.map((t,i) => ({x:t, y:ss.cs[i]})),
+      borderColor: 'rgba(138,128,112,0.5)', borderWidth: 1.5,
+      borderDash: [6,4], backgroundColor: 'transparent',
+      pointRadius: 0, tension: 0.3,
+      parsing: {xAxisKey:'x', yAxisKey:'y'}
+    });
+  }
+  // Main curve
+  datasets.push({
+    label: `ADDL=${state.params.addl} (${state.params.addl+1}회 투여)`,
+    data: curve.ts.map((t,i) => ({x:t, y:curve.cs[i]})),
+    borderColor: '#c9a84c', borderWidth: 2.5,
+    backgroundColor: 'transparent',
+    pointRadius: 0, tension: 0.3,
+    parsing: {xAxisKey:'x', yAxisKey:'y'}
+  });
+  // Reference
+  if (state.referenceCurve) {
+    datasets.push({
+      label: '기준선 (저장됨)',
+      data: state.referenceCurve.ts.map((t,i) => ({x:t, y:state.referenceCurve.cs[i]})),
+      borderColor: 'rgba(200,195,188,0.45)', borderWidth: 1.5,
+      borderDash: [4,4], backgroundColor: 'transparent',
+      pointRadius: 0, tension: 0.3,
+      parsing: {xAxisKey:'x', yAxisKey:'y'}
+    });
+  }
+  // Phantom
+  if (state.showPhantom) {
+    const ph = getPhantom(state.params);
+    datasets.push({
+      label: '2구획 Phantom',
+      data: ph.ts.map((t,i) => ({x:t, y:ph.cs[i]})),
+      borderColor: 'rgba(220,60,60,0.55)', borderWidth: 2,
+      borderDash: [6,4], backgroundColor: 'transparent',
+      pointRadius: 0, tension: 0.3,
+      parsing: {xAxisKey:'x', yAxisKey:'y'}
+    });
+  }
+  return datasets;
+}
+
+// Dose marker plugin (V5.1: afterDraw, no annotation plugin)
+const DOSE_MARKER_PLUGIN = {
+  id: 'doseMarkers',
+  afterDraw(chart) {
+    const { ctx, scales:{ x, y } } = chart;
+    const p = state.params;
+    const C0 = p.dose / p.vd;
+    // Dose event lines
+    for (let i = 0; i <= p.addl; i++) {
+      const tv = i * p.tau;
+      if (tv > X_MAX) continue;
+      const xPx = x.getPixelForValue(tv);
+      ctx.save();
+      ctx.strokeStyle = `rgba(201,168,76,${0.55 - i*0.04})`;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(xPx, chart.chartArea.top); ctx.lineTo(xPx, chart.chartArea.bottom); ctx.stroke();
+      ctx.fillStyle = 'rgba(201,168,76,0.6)';
+      ctx.font = '8px IBM Plex Mono';
+      ctx.fillText(`D${i+1}`, xPx+3, chart.chartArea.top + 12);
+      ctx.restore();
+    }
+    // Therapeutic window lines (example: MIC=2, TOX=10)
+    [{v:2.0, c:'rgba(64,152,232,0.4)', l:'Cmin'}, {v:10.0, c:'rgba(192,57,43,0.4)', l:'TOX'}].forEach(({v,c,l}) => {
+      if (state.logScale && v < LOG_Y_MIN) return;
+      if (!state.logScale && v > HARD_Y_MAX) return;
+      let yPx;
+      try { yPx = y.getPixelForValue(v); } catch(e) { return; }
+      ctx.save();
+      ctx.strokeStyle = c; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(chart.chartArea.left, yPx); ctx.lineTo(chart.chartArea.right, yPx); ctx.stroke();
+      ctx.fillStyle = c; ctx.font = '9px IBM Plex Mono';
+      ctx.fillText(l, chart.chartArea.right-30, yPx-3);
+      ctx.restore();
+    });
+  }
+};
+Chart.register(DOSE_MARKER_PLUGIN);
+
+let chartObj = null;
+
+// ✅ 수정 규칙 3: initChart() 단 1회 생성
+function initChart() {
+  const canvas = document.getElementById('simCanvas');
+  const ctx2d = canvas.getContext('2d');
+  chartObj = new Chart(ctx2d, {
+    type: 'line',
+    data: { datasets: buildDatasets(state._currentCurve || {ts:[],cs:[]}) },
+    options: {
+      animation: { duration: 150 },
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+      scales: {
+        x: {
+          type: 'linear', min: 0, max: X_MAX,
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#8a8070', font:{family:'IBM Plex Mono',size:9}, maxTicksLimit:10 },
+          title: { display:true, text:'Time (hr)', color:'#8a8070', font:{family:'IBM Plex Mono',size:9} }
+        },
+        y: {
+          type: 'linear', min: 0, max: HARD_Y_MAX,
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#8a8070', font:{family:'IBM Plex Mono',size:9} },
+          title: { display:true, text:'Concentration (mg/L)', color:'#8a8070', font:{family:'IBM Plex Mono',size:9} }
+        }
+      },
+      plugins: {
+        legend: { display:true, labels:{ color:'#8a8070', font:{family:'IBM Plex Mono',size:9}, boxWidth:20, padding:10 } },
+        tooltip: { enabled:true, backgroundColor:'rgba(12,12,18,0.9)', titleColor:'#c9a84c', bodyColor:'#ede8df', borderColor:'rgba(201,168,76,0.3)', borderWidth:1, titleFont:{family:'IBM Plex Mono'}, bodyFont:{family:'IBM Plex Mono',size:11}, callbacks: {
+          title: items => `t = ${parseFloat(items[0].parsed.x).toFixed(1)} hr`,
+          label: item => ` ${item.dataset.label}: ${item.parsed.y.toFixed(3)} mg/L`
+        }}
+      }
+    }
+  });
+}
+
+// ✅ 수정 규칙 3: updateChart() — destroy 금지, update('none') 만 호출
+function updateChart() {
+  const curve = computeDoses(state.params);
+  state._currentCurve = curve; // ← 커서 리스너용 저장
+
+  if (!chartObj) {
+    initChart();
+    return;
+  }
+
+  chartObj.data.datasets = buildDatasets(curve);
+
+  // 스케일 전환 (log/linear)
+  const yScale = chartObj.options.scales.y;
+  yScale.type = state.logScale ? 'logarithmic' : 'linear';
+  yScale.min  = state.logScale ? LOG_Y_MIN : 0;
+  yScale.max  = state.logScale ? LOG_Y_MAX : HARD_Y_MAX;
+
+  chartObj.update('none'); // ← canvas 크기 재측정 없음
+
+  const derived = calcDerived(state.params, curve);
+  updateDerivedPanel(derived);
+  updateDeltas(derived);
+  checkWarnings(state.params);
+}
+
+function calcDerived(p, curve) {
+  const ke = p.cl / p.vd;
+  const t12 = Math.LN2 / ke;
+  // Cmax: after last dose
+  const lastDose = p.addl * p.tau;
+  let cmax = 0;
+  if (curve) {
+    curve.ts.forEach((t,i) => { if(t >= lastDose && curve.cs[i] > cmax) cmax = curve.cs[i]; });
+  }
+  // Ctrough: at last dose time (before dosing)
+  let ctrough = 0;
+  if (curve) {
+    const idx = Math.round(lastDose / DT);
+    if (idx > 0 && curve.cs[idx-1] !== undefined) ctrough = curve.cs[idx-1];
+  }
+  // AUC(tau) of last interval: Dose/CL (1-compartment, linear PK)
+  const aucTau = p.dose / p.cl;
+  return { t12, cmax, ctrough, aucTau };
+}
+
+function updateDerivedPanel(d) {
+  document.getElementById('dv-t12').textContent = d.t12.toFixed(2);
+  document.getElementById('dv-cmax').textContent = d.cmax.toFixed(3);
+  document.getElementById('dv-ctrough').textContent = d.ctrough.toFixed(3);
+  document.getElementById('dv-auc').textContent = d.aucTau.toFixed(2);
+}
+
+function updateDeltas(d) {
+  const prev = state._prevDerived;
+  if (!prev) { state._prevDerived = { ...d }; return; }
+  const items = [
+    ['dd-t12', 't12'], ['dd-cmax', 'cmax'], ['dd-ctrough', 'ctrough'], ['dd-auc', 'aucTau']
+  ];
+  items.forEach(([elId, key]) => {
+    const pct = prev[key] > 0 ? (d[key] - prev[key]) / prev[key] * 100 : 0;
+    const el = document.getElementById(elId);
+    if (Math.abs(pct) < 1) {
+      el.textContent = '—'; el.className = 'derived-delta delta-neu';
+    } else if (pct > 0) {
+      el.textContent = `↑ ${pct.toFixed(1)}%`; el.className = 'derived-delta delta-up';
+    } else {
+      el.textContent = `↓ ${Math.abs(pct).toFixed(1)}%`; el.className = 'derived-delta delta-dn';
+    }
+  });
+  state._prevDerived = { ...d };
+}
+
+function checkWarnings(p) {
+  const ke = p.cl / p.vd;
+  const t12 = Math.LN2 / ke;
+  const warns = [];
+  if (p.tau < t12 * 0.5) warns.push('τ < 0.5×t½: 누적이 매우 빠름 — 독성 범위 진입 가능');
+  if (p.tau > t12 * 5)   warns.push('τ > 5×t½: 사실상 단회 투여 — 누적 효과 미미');
+  if (p.dose / p.vd > HARD_Y_MAX * 0.85) warns.push('C₀가 Y축 상한에 근접 — Log 스케일로 전환 권장');
+  const banner = document.getElementById('warnBanner');
+  if (warns.length) { banner.textContent = warns.join(' | '); banner.classList.add('show'); }
+  else banner.classList.remove('show');
+}
+
+// ✅ 수정 규칙 1: mousemove 리스너 초기화 단계에서 단 1회 등록 (updateChart() 밖)
+document.getElementById('simCanvas').addEventListener('mousemove', function(e) {
+  if (!state._currentCurve) return;
+  const rect = this.getBoundingClientRect();
+  const t = Math.max(0, Math.min(X_MAX, (e.clientX - rect.left) / rect.width * X_MAX));
+  const idx = Math.min(Math.floor(t / DT), state._currentCurve.ts.length - 2);
+  const C = state._currentCurve.cs[Math.max(0, idx)] || 0;
+  document.getElementById('cursorLabel').textContent =
+    `t = ${t.toFixed(1)} hr | C = ${C.toFixed(4)} mg/L`;
+});
+
+// ── Init sequence ──
+window.addEventListener('DOMContentLoaded', () => {
+  initNormCanvas();
+  drawNorm();
+  updateLabels();
+  updateChart();
+});
+
+// Resize: normCanvas only (chartObj handles its own resize via Chart.js)
+// Already registered above
+</script>
+</body>
+</html>
