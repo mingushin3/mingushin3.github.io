@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacometrics Masterplan v5.0 — Top 20 재랭킹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ DESIGN TOKENS ═══════════ */
+:root {
+  /* Dark Theme */
+  --bg:          #0a0b0e;
+  --bg-2:        #0f1117;
+  --bg-3:        #161820;
+  --bg-4:        #1d2030;
+  --border:      #252840;
+  --border-2:    #1a1d2e;
+  --text:        #e8eaf2;
+  --text-2:      #9da3c4;
+  --text-3:      #636888;
+  --text-4:      #3a3f58;
+
+  /* S-Tier: Amber/Gold */
+  --s:           #f4a523;
+  --s-2:         #f7c55a;
+  --s-bg:        #1a1000;
+  --s-bd:        #3a2500;
+  --s-glow:      rgba(244,165,35,0.15);
+
+  /* A-Tier: Emerald */
+  --a:           #10b981;
+  --a-2:         #34d399;
+  --a-bg:        #001a10;
+  --a-bd:        #003822;
+  --a-glow:      rgba(16,185,129,0.12);
+
+  /* B-Tier: Indigo/Blue */
+  --b:           #6366f1;
+  --b-2:         #818cf8;
+  --b-bg:        #08091e;
+  --b-bd:        #141630;
+  --b-glow:      rgba(99,102,241,0.12);
+
+  /* Warning: Red/Orange */
+  --w:           #ef4444;
+  --w-2:         #f87171;
+  --w-bg:        #1a0000;
+  --w-bd:        #3a0808;
+  --w-glow:      rgba(239,68,68,0.1);
+
+  /* New badge */
+  --new:         #0ea5e9;
+  --new-bg:      #001520;
+
+  --radius:      8px;
+  --radius-sm:   4px;
+  --radius-lg:   16px;
+}
+
+[data-theme="light"] {
+  --bg:          #f0f2f8;
+  --bg-2:        #ffffff;
+  --bg-3:        #f8f9fc;
+  --bg-4:        #eef0f8;
+  --border:      #d8dbe8;
+  --border-2:    #e4e7f0;
+  --text:        #13152a;
+  --text-2:      #383d5e;
+  --text-3:      #6b7096;
+  --text-4:      #a0a8c0;
+
+  --s:           #c07800;
+  --s-2:         #a06000;
+  --s-bg:        #fff8e0;
+  --s-bd:        #ffe08a;
+  --s-glow:      rgba(192,120,0,0.08);
+
+  --a:           #059669;
+  --a-2:         #047857;
+  --a-bg:        #ecfdf5;
+  --a-bd:        #a7f3d0;
+  --a-glow:      rgba(5,150,105,0.06);
+
+  --b:           #4f46e5;
+  --b-2:         #4338ca;
+  --b-bg:        #eff0fe;
+  --b-bd:        #c7d2fe;
+  --b-glow:      rgba(79,70,229,0.06);
+
+  --w:           #dc2626;
+  --w-2:         #b91c1c;
+  --w-bg:        #fff5f5;
+  --w-bd:        #fca5a5;
+  --w-glow:      rgba(220,38,38,0.05);
+
+  --new:         #0284c7;
+  --new-bg:      #e0f2fe;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:15px;}
+body{
+  font-family:'Noto Sans KR',system-ui,sans-serif;
+  font-weight:300;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
+  overflow-x:hidden;
+}
+
+/* ═══════════ LAYOUT ═══════════ */
+.container{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+
+/* ═══════════ TYPOGRAPHY ═══════════ */
+.serif{font-family:'Noto Serif KR',Georgia,serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--text-3);
+}
+
+/* ═══════════ THEME TOGGLE ═══════════ */
+.theme-btn{
+  position:fixed;top:1.2rem;right:1.2rem;z-index:9999;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:2rem;
+  padding:.4rem .9rem;
+  cursor:pointer;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:var(--text-2);
+  letter-spacing:.06em;
+  display:flex;align-items:center;gap:.4rem;
+  transition:all .2s;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);
+}
+.theme-btn:hover{border-color:var(--text-3);color:var(--text);}
+
+/* ═══════════ HERO ═══════════ */
+.hero{
+  position:relative;
+  padding:5rem 0 4rem;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-200px;left:50%;
+  transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse at center,rgba(244,165,35,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-meta{
+  display:flex;align-items:center;gap:.75rem;
+  margin-bottom:1.5rem;
+  flex-wrap:wrap;
+}
+.version-chip{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  background:var(--s-bg);
+  border:1px solid var(--s-bd);
+  color:var(--s);
+  padding:.25rem .7rem;
+  border-radius:2rem;
+  letter-spacing:.08em;
+}
+.post-chip{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  background:var(--a-bg);
+  border:1px solid var(--a-bd);
+  color:var(--a);
+  padding:.25rem .7rem;
+  border-radius:2rem;
+  letter-spacing:.08em;
+}
+.hero-headline{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(1.8rem,5vw,3.2rem);
+  font-weight:700;
+  line-height:1.2;
+  color:var(--text);
+  margin-bottom:1.25rem;
+  letter-spacing:-.02em;
+}
+.hero-headline em{font-style:normal;color:var(--s);}
+.hero-sub{
+  font-size:1rem;
+  color:var(--text-2);
+  max-width:680px;
+  line-height:1.85;
+  margin-bottom:2rem;
+}
+.hero-sub strong{color:var(--text);font-weight:500;}
+
+.ethical-box{
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-left:4px solid var(--s);
+  border-radius:var(--radius);
+  padding:1.1rem 1.4rem;
+  margin-bottom:2rem;
+  max-width:720px;
+}
+.ethical-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--s);
+  margin-bottom:.5rem;
+}
+.ethical-text{
+  font-family:'Noto Serif KR',serif;
+  font-size:.95rem;
+  color:var(--text-2);
+  line-height:1.8;
+  font-style:italic;
+}
+
+/* ═══════════ PILLARS ═══════════ */
+.pillars-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1rem;
+  margin-bottom:2.5rem;
+}
+.pillar{
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  padding:1.25rem 1.1rem;
+  transition:transform .2s,box-shadow .2s;
+}
+.pillar:hover{transform:translateY(-2px);}
+.pillar-1{border-top:3px solid var(--s);} 
+.pillar-1:hover{box-shadow:0 8px 32px var(--s-glow);}
+.pillar-2{border-top:3px solid var(--a);}
+.pillar-2:hover{box-shadow:0 8px 32px var(--a-glow);}
+.pillar-3{border-top:3px solid var(--b);}
+.pillar-3:hover{box-shadow:0 8px 32px var(--b-glow);}
+.pillar-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  margin-bottom:.4rem;
+}
+.pillar-1 .pillar-num{color:var(--s);}
+.pillar-2 .pillar-num{color:var(--a);}
+.pillar-3 .pillar-num{color:var(--b);}
+.pillar-title{
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:.45rem;
+  line-height:1.35;
+}
+.pillar-desc{
+  font-size:.82rem;
+  color:var(--text-3);
+  line-height:1.65;
+}
+.pillar-desc strong{color:var(--text-2);font-weight:500;}
+
+/* Intersection */
+.intersection{
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.1rem 1.4rem;
+  margin-bottom:2rem;
+}
+.intersection-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--text-3);
+  margin-bottom:.75rem;
+}
+.coord-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.6rem;
+}
+.coord-item{
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  padding:.6rem .85rem;
+  font-size:.8rem;
+  color:var(--text-3);
+  line-height:1.55;
+}
+.coord-item strong{color:var(--text-2);font-weight:500;}
+
+/* ═══════════ FORMULA ═══════════ */
+.section-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:2.5rem 0;
+}
+.formula-section{
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  padding:1.5rem;
+  margin-bottom:2.5rem;
+}
+.formula-display{
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(.95rem,2.5vw,1.25rem);
+  color:var(--s);
+  letter-spacing:.05em;
+  margin-bottom:.9rem;
+}
+.formula-note{
+  font-size:.82rem;
+  color:var(--text-3);
+  line-height:1.65;
+  margin-bottom:.9rem;
+}
+.formula-note strong{color:var(--text-2);font-weight:500;}
+.fvars{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;}
+.fvar{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:var(--text-4);
+}
+.fvar b{color:var(--text-3);font-weight:400;}
+
+/* ═══════════ REALITY CHECKS ═══════════ */
+.rc-section{margin-bottom:2.5rem;}
+.rc-header{
+  display:flex;align-items:center;gap:1rem;
+  margin-bottom:1rem;
+}
+.rc-header-icon{
+  width:36px;height:36px;
+  background:var(--w-bg);
+  border:1px solid var(--w-bd);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  box-shadow:0 0 16px var(--w-glow);
+}
+.rc-header-text .rc-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--w);
+  margin-bottom:2px;
+}
+.rc-header-text .rc-title{
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--text);
+  line-height:1.3;
+}
+.rc-card{
+  background:var(--w-bg);
+  border:1px solid var(--w-bd);
+  border-left:3px solid var(--w);
+  border-radius:var(--radius);
+  padding:1.1rem 1.3rem;
+  margin-bottom:.6rem;
+}
+.rc-problem{
+  font-size:.85rem;
+  color:var(--text-2);
+  line-height:1.75;
+  margin-bottom:.85rem;
+}
+.rc-problem strong{color:var(--text);font-weight:500;}
+.rc-planb{
+  background:var(--bg-3);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  padding:.75rem 1rem;
+}
+.rc-planb-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--a);
+  margin-bottom:.35rem;
+}
+.rc-planb-body{
+  font-size:.82rem;
+  color:var(--text-3);
+  line-height:1.72;
+}
+.rc-planb-body strong{color:var(--text-2);font-weight:500;}
+
+/* ═══════════ SECTION HEADS ═══════════ */
+.section-head{
+  display:flex;align-items:center;gap:1rem;
+  margin:2.5rem 0 1rem;
+}
+.section-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  padding:.3rem .9rem;
+  border-radius:2rem;
+  border:1px solid;
+  white-space:nowrap;
+}
+.section-tag-s{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.section-tag-a{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.section-tag-b{color:var(--b);border-color:var(--b-bd);background:var(--b-bg);}
+.section-line{flex:1;height:1px;background:var(--border-2);}
+.section-range{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--text-4);
+  white-space:nowrap;
+}
+
+/* ═══════════ CARDS ═══════════ */
+.card{
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  padding:1.2rem 1.4rem 1rem;
+  margin-bottom:.65rem;
+  transition:border-color .2s,box-shadow .2s,transform .2s;
+  position:relative;
+  overflow:hidden;
+}
+.card::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  opacity:0;
+  transition:opacity .2s;
+}
+.card:hover{transform:translateY(-2px);}
+.card-s{border-left:2px solid var(--s);}
+.card-s:hover{border-color:var(--s);box-shadow:0 6px 28px var(--s-glow);}
+.card-s::after{background:linear-gradient(90deg,var(--s),transparent);}
+.card-s:hover::after{opacity:1;}
+.card-a{border-left:2px solid var(--a);}
+.card-a:hover{border-color:var(--a);box-shadow:0 6px 28px var(--a-glow);}
+.card-a::after{background:linear-gradient(90deg,var(--a),transparent);}
+.card-a:hover::after{opacity:1;}
+.card-b{border-left:2px solid var(--b);}
+.card-b:hover{border-color:var(--b);box-shadow:0 6px 28px var(--b-glow);}
+.card-b::after{background:linear-gradient(90deg,var(--b),transparent);}
+.card-b:hover::after{opacity:1;}
+
+.card-top{
+  display:flex;align-items:flex-start;gap:12px;
+  margin-bottom:10px;
+}
+.rank-num{
+  font-family:'Noto Serif KR',serif;
+  font-size:2rem;
+  font-weight:700;
+  line-height:1;
+  min-width:28px;
+  margin-top:2px;
+  flex-shrink:0;
+  opacity:.5;
+}
+.card-s .rank-num{color:var(--s);}
+.card-a .rank-num{color:var(--a);}
+.card-b .rank-num{color:var(--b);}
+.card-body{flex:1;min-width:0;}
+.card-title{
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--text);
+  line-height:1.4;
+  margin-bottom:.4rem;
+}
+.card-why{
+  font-size:.8rem;
+  color:var(--text-3);
+  line-height:1.7;
+}
+.card-badges{
+  display:flex;flex-direction:column;gap:4px;
+  flex-shrink:0;align-items:flex-end;
+}
+
+/* Tags */
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  padding:.2rem .6rem;
+  border-radius:2rem;
+  border:1px solid;
+  white-space:nowrap;
+  letter-spacing:.04em;
+}
+.t-now{color:#d08050;border-color:#401808;background:#180800;}
+.t-6m{color:#38bdf8;border-color:#0c3040;background:#040f18;}
+.t-12m{color:var(--a-2);border-color:var(--a-bd);background:var(--a-bg);}
+.t-2y{color:#888;border-color:#282828;background:#101010;}
+.t-kr{color:#a855f7;border-color:#2e0a50;background:#0c0418;}
+.t-gl{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.t-new{color:var(--new);border-color:#0c2840;background:var(--new-bg);}
+.t-warn{color:var(--w-2);border-color:var(--w-bd);background:var(--w-bg);}
+[data-theme="light"] .t-now{background:#fff6f0;border-color:#e0b080;color:#904820;}
+[data-theme="light"] .t-6m{background:#e0f2fe;border-color:#7dd3fc;color:#0369a1;}
+[data-theme="light"] .t-12m{background:var(--a-bg);border-color:var(--a-bd);color:var(--a);}
+[data-theme="light"] .t-2y{background:#f4f4f4;border-color:#c0c0c0;color:#505050;}
+[data-theme="light"] .t-kr{background:#f5eeff;border-color:#c0a0e0;color:#6b21a8;}
+[data-theme="light"] .t-gl{background:var(--s-bg);border-color:var(--s-bd);color:var(--s);}
+[data-theme="light"] .t-new{background:#e0f2fe;border-color:#7dd3fc;color:#0284c7;}
+[data-theme="light"] .t-warn{background:var(--w-bg);border-color:var(--w-bd);color:var(--w);}
+
+/* Params */
+.params{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0 8px;}
+.pill{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  background:var(--bg-3);
+  border:1px solid var(--border-2);
+  color:var(--text-4);
+  padding:.2rem .6rem;
+  border-radius:3px;
+}
+.pill-hi{color:var(--text-2);border-color:var(--border);}
+
+/* Score Bar */
+.score-row{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:10px;
+}
+.sbar-bg{
+  flex:1;height:2px;
+  background:var(--bg-4);
+  border-radius:2px;overflow:hidden;
+}
+.sbar{height:100%;border-radius:2px;}
+.card-s .sbar{background:linear-gradient(90deg,var(--s),var(--s-2));}
+.card-a .sbar{background:linear-gradient(90deg,var(--a),var(--a-2));}
+.card-b .sbar{background:linear-gradient(90deg,var(--b),var(--b-2));}
+.snum{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;
+  font-weight:500;
+  min-width:54px;
+  text-align:right;
+}
+.card-s .snum{color:var(--s);}
+.card-a .snum{color:var(--a);}
+.card-b .snum{color:var(--b);}
+
+/* Card details */
+.card-detail{
+  font-size:.8rem;
+  color:var(--text-3);
+  line-height:1.72;
+  border-top:1px solid var(--border-2);
+  padding-top:8px;
+  margin-top:2px;
+}
+.card-detail b{color:var(--text-2);font-weight:500;}
+
+/* Collapsible */
+details{
+  margin-top:7px;
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);
+  background:var(--bg-3);
+  overflow:hidden;
+}
+summary{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;
+  letter-spacing:.08em;
+  color:var(--text-3);
+  padding:.4rem .8rem;
+  cursor:pointer;
+  user-select:none;
+  list-style:none;
+  display:flex;align-items:center;gap:.5rem;
+}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:'▶';font-size:.6rem;transition:transform .15s;color:var(--text-4);}
+details[open] summary::before{transform:rotate(90deg);}
+.details-body{
+  padding:.6rem .85rem .8rem;
+  border-top:1px solid var(--border-2);
+}
+.db-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--a);
+  margin-bottom:.3rem;
+}
+.db-label-warn{color:var(--w-2);}
+.db-text{font-size:.8rem;color:var(--text-3);line-height:1.72;}
+.db-text strong{color:var(--text-2);font-weight:500;}
+
+/* OCR */
+.ocr-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:.4rem;margin-top:8px;
+}
+.ocr-item{
+  background:var(--bg-3);
+  border:1px solid var(--border-2);
+  border-radius:3px;
+  padding:.35rem .6rem;
+}
+.ocr-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text-4);margin-bottom:2px;}
+.ocr-bar-bg{height:2px;background:var(--bg-4);border-radius:1px;margin-bottom:2px;overflow:hidden;}
+.ocr-bar{height:100%;border-radius:1px;}
+.ocr-opt .ocr-bar{background:#38bdf8;}
+.ocr-cmp .ocr-bar{background:var(--a);}
+.ocr-rsk .ocr-bar{background:var(--w);}
+.ocr-val{font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+.ocr-opt .ocr-val{color:#38bdf8;}
+.ocr-cmp .ocr-val{color:var(--a-2);}
+.ocr-rsk .ocr-val{color:var(--w-2);}
+
+/* Notes */
+.note-new{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;
+  color:var(--new);
+  background:var(--new-bg);
+  border:1px solid #0c2840;
+  border-radius:2px;
+  padding:1px 5px;
+  vertical-align:middle;
+  margin-left:5px;
+}
+.note-adj{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;
+  color:var(--s);
+  background:var(--s-bg);
+  border:1px solid var(--s-bd);
+  border-radius:2px;
+  padding:1px 5px;
+  vertical-align:middle;
+  margin-left:5px;
+}
+.note-tl{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:var(--text-4);
+  background:var(--bg-3);
+  border:1px solid var(--border-2);
+  border-radius:3px;
+  padding:.2rem .7rem;
+  display:inline-flex;align-items:center;gap:.4rem;
+  margin-top:6px;
+}
+.note-a9{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--a);
+  background:var(--a-bg);
+  border:1px solid var(--a-bd);
+  border-radius:3px;
+  padding:2px 8px;
+  display:inline-block;margin-top:5px;
+}
+.note-dt{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--w-2);
+  background:var(--w-bg);
+  border:1px solid var(--w-bd);
+  border-radius:3px;
+  padding:2px 8px;
+  display:inline-block;margin-top:5px;
+}
+
+[data-theme="light"] .note-new{background:#e0f2fe;border-color:#7dd3fc;color:#0284c7;}
+[data-theme="light"] .note-adj{background:var(--s-bg);border-color:var(--s-bd);color:var(--s);}
+[data-theme="light"] .note-tl{background:var(--bg-3);border-color:var(--border-2);color:var(--text-3);}
+
+/* ═══════════ TIMELINE ═══════════ */
+.timeline-wrap{
+  position:relative;
+  padding-left:2.5rem;
+  margin-bottom:2.5rem;
+}
+.timeline-wrap::before{
+  content:'';
+  position:absolute;
+  left:.85rem;top:0;bottom:0;
+  width:2px;
+  background:linear-gradient(to bottom,var(--s),var(--a),var(--b));
+  border-radius:2px;
+}
+.tl-phase{
+  position:relative;
+  margin-bottom:1.5rem;
+}
+.tl-dot{
+  position:absolute;
+  left:-2.5rem;
+  top:.3rem;
+  width:1.5rem;height:1.5rem;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;
+  font-weight:500;
+  flex-shrink:0;
+  border:2px solid;
+  z-index:1;
+}
+.tl-dot-1{background:var(--s-bg);border-color:var(--s);color:var(--s);}
+.tl-dot-2{background:var(--a-bg);border-color:var(--a);color:var(--a);}
+.tl-dot-3{background:var(--b-bg);border-color:var(--b);color:var(--b);}
+.tl-dot-4{
+  background:var(--bg-2);
+  border-color:var(--s);
+  color:var(--s);
+  box-shadow:0 0 0 4px var(--s-glow);
+}
+.tl-header{
+  display:flex;align-items:baseline;gap:.75rem;
+  margin-bottom:.6rem;
+}
+.tl-period{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--text-3);
+  letter-spacing:.05em;
+}
+.tl-phase-title{
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--text);
+}
+.tl-card{
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  padding:.85rem 1rem;
+}
+.tl-items{
+  display:flex;flex-direction:column;gap:.4rem;
+}
+.tl-item{
+  display:flex;align-items:flex-start;gap:.5rem;
+  font-size:.82rem;
+  color:var(--text-3);
+  line-height:1.55;
+  padding:.2rem 0;
+}
+.tl-item::before{content:'→';color:var(--text-4);flex-shrink:0;font-size:.75rem;margin-top:1px;}
+.tl-item strong{color:var(--text-2);font-weight:500;}
+.tl-item.priority::before{content:'★';color:var(--s);}
+.tl-item.warn::before{content:'⚠';color:var(--w);}
+.tl-item.exit::before{content:'◉';color:var(--a);}
+
+/* ═══════════ SUMMARY TABLE ═══════════ */
+.summary-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.82rem;
+  margin-bottom:2.5rem;
+}
+.summary-table th{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--text-3);
+  text-align:left;
+  padding:.5rem .75rem;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-3);
+}
+.summary-table td{
+  padding:.5rem .75rem;
+  border-bottom:1px solid var(--border-2);
+  color:var(--text-3);
+  vertical-align:middle;
+}
+.summary-table tr:hover td{background:var(--bg-3);}
+.st-rank{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:500;
+  font-size:.85rem;
+}
+.st-s .st-rank{color:var(--s);}
+.st-a .st-rank{color:var(--a);}
+.st-b .st-rank{color:var(--b);}
+.st-name{color:var(--text-2);font-weight:400;}
+.st-score{font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+.st-s .st-score{color:var(--s);}
+.st-a .st-score{color:var(--a);}
+.st-b .st-score{color:var(--b);}
+.tier-chip{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;
+  padding:.1rem .5rem;
+  border-radius:2rem;
+  border:1px solid;
+}
+.tc-s{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.tc-a{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.tc-b{color:var(--b);border-color:var(--b-bd);background:var(--b-bg);}
+.tc-new{color:var(--new);border-color:#0c2840;background:var(--new-bg);}
+
+/* ═══════════ GIVE-UP & OBSIDIAN ═══════════ */
+.giveup-section{
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius);
+  padding:1.4rem;
+  margin-bottom:2rem;
+}
+.giveup-items{
+  display:flex;flex-direction:column;gap:.7rem;
+  margin-top:.9rem;
+}
+.giveup-item{
+  display:flex;align-items:flex-start;gap:.75rem;
+  font-size:.84rem;
+  color:var(--text-3);
+  line-height:1.65;
+}
+.giveup-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  background:var(--w-bg);
+  border:1px solid var(--w-bd);
+  color:var(--w);
+  padding:.1rem .5rem;
+  border-radius:3px;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.giveup-item b{color:var(--text-2);font-weight:500;}
+
+.obsidian-section{
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.4rem;
+  margin-bottom:3rem;
+}
+.obs-grid{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:.4rem 1rem;
+  margin-top:.9rem;
+  font-size:.83rem;
+}
+.obs-key{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--text-3);
+  padding-top:.05rem;
+  white-space:nowrap;
+}
+.obs-val{color:var(--text-2);line-height:1.6;}
+.obs-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem;}
+.obs-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  background:var(--bg-2);
+  border:1px solid var(--border-2);
+  color:var(--text-3);
+  padding:.15rem .5rem;
+  border-radius:2rem;
+}
+
+/* ═══════════ FOOTER ═══════════ */
+footer{
+  border-top:1px solid var(--border-2);
+  padding:1.5rem 0;
+}
+.ft-inner{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+.ft-txt{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;
+  color:var(--text-4);
+  letter-spacing:.04em;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:720px){
+  .pillars-grid{grid-template-columns:1fr;}
+  .coord-grid{grid-template-columns:1fr;}
+  .card-badges{flex-direction:row;flex-wrap:wrap;align-items:flex-start;}
+  .ocr-row{grid-template-columns:repeat(3,1fr);}
+  .theme-btn{top:.75rem;right:.75rem;}
+  .timeline-wrap{padding-left:2rem;}
+  .summary-table{display:block;overflow-x:auto;}
+  .tl-dot{left:-2rem;}
+}
+
+/* ═══════════ ANIMATIONS ═══════════ */
+.fade-in{opacity:0;transform:translateY(14px);}
+.fade-in.visible{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease;}
+</style>
+</head>
+<body>
+
+<button class="theme-btn" onclick="toggleTheme()" aria-label="테마 전환">
+  <span id="theme-icon">☀</span> <span id="theme-txt">라이트</span>
+</button>
+
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-meta">
+      <span class="version-chip">v5.0 · 2026.04</span>
+      <span class="post-chip">Top 20 재랭킹</span>
+      <span class="label">Post Brutal-Audit · 5대 Reality Check</span>
+    </div>
+    <h1 class="hero-headline serif">
+      계량약리학이라는 무기로<br><em>"한 명이라도 더"</em> 살린다
+    </h1>
+    <p class="hero-sub">
+      계량약리학의 본래 사명은 신약 개발과 임상 현장에서 <strong>'분자 이후에 벌어지는 실패'</strong>로 인해 죽거나 불필요하게 고통받는 사람 수를 <strong>한 명이라도 더 줄이는 것</strong>이다. 그 실패는 세 지점에서 발생한다 — <strong>잘못된 용량 결정(Dose), 배제된 집단과 생존 위기 현장의 번역 실패(Population·Crisis), 새로운 모달리티에 맞지 않는 낡은 방법론(Modality)</strong>에서.
+    </p>
+    <div class="ethical-box">
+      <div class="ethical-label">규범적 앵커 — 카라페탼·쉰들러 원칙</div>
+      <div class="ethical-text serif">"이 차를 팔았다면 10명을 더, 이 배지를 팔았다면 2명을 더... 내가 돈을 조금만 더 벌었더라면 한 명이라도 더 살릴 수 있었을 텐데..." — 이 고백이 계량약리학이 짊어져야 할 윤리적 나침반이다.</div>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar pillar-1 fade-in">
+        <div class="pillar-num pillar-num-s">Pillar I — 용량 결정 실패</div>
+        <div class="pillar-title">Dose Selection Failure</div>
+        <div class="pillar-desc">MTD 패러다임이 표적치료제·ADC·이중항체·CAR-T에서 <strong>체계적으로 잘못된 용량을 허가받게</strong> 만들었다. Project Optimus + TGI-OS가 이 실패를 수리적으로 해결한다.</div>
+      </div>
+      <div class="pillar pillar-2 fade-in">
+        <div class="pillar-num" style="color:var(--a)">Pillar II — 배제·생존 위기 현장</div>
+        <div class="pillar-title">Translation Gap &amp; Critical Care Crisis</div>
+        <div class="pillar-desc">소아·임산부·CKD뿐 아니라 <strong>ECMO/CRRT 중환자</strong>와 <strong>ARC 소아 FN 환자</strong>가 지금 이 순간 표준 용량이 맞지 않아 죽어가고 있다. 8년 TDM 경험의 최대 발화점.</div>
+      </div>
+      <div class="pillar pillar-3 fade-in">
+        <div class="pillar-num" style="color:var(--b)">Pillar III — 모달리티 전환</div>
+        <div class="pillar-title">Novel Modality Gap</div>
+        <div class="pillar-desc">ADC 4분석물, 이중항체 CRS-QSP, CAR-T DDE, <strong>mRNA-LNP Minimal PBPK</strong> — 신모달리티에 기존 방법론은 작동하지 않는다. 방법론 공백과 산업 수요가 일치하는 유일한 지점.</div>
+      </div>
+    </div>
+
+    <div class="intersection fade-in">
+      <div class="intersection-label">세 기둥의 교집합 — 한국 PhD 비교우위 좌표 (v5.0 · 4개)</div>
+      <div class="coord-grid">
+        <div class="coord-item"><strong>좌표 1:</strong> ADC·이중항체 + Project Optimus + 한국 ADC 산업(LigaChem·Samsung Biologics·ABL·Celltrion)</div>
+        <div class="coord-item"><strong>좌표 2 ★신규:</strong> ECMO/CRRT·ARC 소아 FN MIPD + 한국 3차 병원 TDM 데이터 직접 접근</div>
+        <div class="coord-item"><strong>좌표 3 ★신규:</strong> TGI-OS 모델링 + Seoul 7년 연속 세계 최다 산업 주도 임상시험 도시</div>
+        <div class="coord-item"><strong>좌표 4:</strong> Agentic QSP-Copilot 응용 + 8년 임상 차트 리터러시 × LLM 워크플로우</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- ═══ FORMULA ═══ -->
+<div class="formula-section fade-in">
+  <div class="label" style="margin-bottom:.75rem">우선순위 최적화 함수</div>
+  <div class="formula-display">Score = [A × B × C × (1 − D)] × E<sup style="font-size:.65em">V</sup></div>
+  <div class="formula-note"><strong>해석 원칙:</strong> 절대값이 아닌 <strong>티어 경계(S≥2,000 / A=500–1,999 / B=100–499)</strong>만 의미 있게 본다. 목적함수 = "36개월 제약 하 커리어 옵션성 × 과학적 무결성 × 한계 생명 구제."</div>
+  <div class="fvars">
+    <span class="fvar"><b>A</b> 글로벌 효용</span>
+    <span class="fvar"><b>B</b> 착수 가능성</span>
+    <span class="fvar"><b>C</b> 비교우위</span>
+    <span class="fvar"><b>(1-D)</b> 비대체성</span>
+    <span class="fvar"><b>E</b> 생태계 레버리지</span>
+    <span class="fvar"><b>V</b> AI 속도 지수</span>
+  </div>
+</div>
+
+<!-- ═══ REALITY CHECKS ═══ -->
+<div class="label" style="margin-bottom:1rem">5대 Reality Check — 실행 진흙탕의 전면 공개</div>
+<div class="rc-section">
+
+  <div class="rc-header">
+    <div class="rc-header-icon">⚠</div>
+    <div class="rc-header-text"><div class="rc-num">Reality Check 01</div><div class="rc-title">ADC 데이터 수급의 구조적 불가능성</div></div>
+  </div>
+  <div class="rc-card">
+    <div class="rc-problem"><strong>문제:</strong> LigaChem·Samsung Biologics의 ADC multi-analyte 원시 PK 데이터는 1년차 박사과정생에게 공개될 확률 0. AIMS 컨설팅 ADC 과제를 기다리는 것은 기도다. 출판된 농도 데이터의 <strong>85%가 원본과 5% 이상 불일치</strong>, QSP/PBPK 논문 83–94%가 이 사용 사실 자체를 미공개[확인 필요].</div>
+    <div class="rc-planb">
+      <div class="rc-planb-label">▶ Plan B — 역설계 시뮬레이션 코호트 + 추출 오류 민감도 분석 (v5.0 강화)</div>
+      <div class="rc-planb-body">Enhertu NDA 761139 등 승인 ADC의 공개 PK 그래프를 <strong>WebPlotDigitizer로 역추출 + 추출 오류 ±10% 민감도 분석 의무화</strong>. 이 민감도 분석 자체가 <em>CPT:PSP</em> 투고 가능한 방법론 서명 논문. 실데이터 접근 시 Plan A 검증 논문으로 전환.</div>
+    </div>
+  </div>
+
+  <div class="rc-header" style="margin-top:1.25rem">
+    <div class="rc-header-icon">⚠</div>
+    <div class="rc-header-text"><div class="rc-num">Reality Check 02</div><div class="rc-title">MIPD 3차 병원 구현의 속도계 오류</div></div>
+  </div>
+  <div class="rc-card">
+    <div class="rc-problem"><strong>문제:</strong> IRB 심의(3–6개월) + 정보보호심의위(6–12개월) + EMR 연동 개발(6–18개월) + 파일럿(6–12개월). 낙관적으로도 2년, 박사 36개월 내 완주 불가. Swartling 2024(Uppsala) vancomycin MIPD 구현 논문이 현실적 경로를 실증.</div>
+    <div class="rc-planb">
+      <div class="rc-planb-label">▶ Plan B — 후향 코호트(축1) + 단일 병동 태블릿 관찰(축2) 이원화</div>
+      <div class="rc-planb-body">EMR 연동·전향 파일럿 <strong>명시적 포기</strong>. 축1: 반코마이신·타크로리무스 TDM 3–5년치 후향 코호트 → 예측 정확도 검증. 축2: 단일 ICU 병동 오프라인 태블릿 Shiny 앱 관찰 연구 → IRB 장벽 최소화.</div>
+    </div>
+  </div>
+
+  <div class="rc-header" style="margin-top:1.25rem">
+    <div class="rc-header-icon">⚠</div>
+    <div class="rc-header-text"><div class="rc-num">Reality Check 03</div><div class="rc-title">인지적 과부하 — SciML 타임박싱 원칙 (협상 불가)</div></div>
+  </div>
+  <div class="rc-card">
+    <div class="rc-problem"><strong>문제:</strong> NONMEM + R + PK-Sim + 대학원 수업 + AIMS + 1st paper 위에 Julia 생태계(DifferentialEquations.jl · Zygote · DeepNLME)를 얹으면 번아웃이 구조적으로 보장된다.</div>
+    <div class="rc-planb">
+      <div class="rc-planb-label">▶ Pinned Hobby 모델 — 하드 원칙 2개</div>
+      <div class="rc-planb-body"><strong>원칙 1:</strong> #1 ADC FOCE-I 수렴 성공 전까지 Julia REPL 열지 않는다. <strong>원칙 2:</strong> T+30~36 박사 마무리 6개월간 SciML 완전 중단. 이 원칙 위반 시 #1·#3·#4까지 도미노 붕괴.</div>
+    </div>
+  </div>
+
+  <div class="rc-header" style="margin-top:1.25rem">
+    <div class="rc-header-icon">⚠</div>
+    <div class="rc-header-text"><div class="rc-num">Reality Check 04 ★신규</div><div class="rc-title">후향 MIPD 코호트의 반사실 추론 결함</div></div>
+  </div>
+  <div class="rc-card">
+    <div class="rc-problem"><strong>문제:</strong> 후향 TDM 데이터는 MIPD를 적용받지 않은 환자들의 데이터다. "만약 MIPD를 썼다면 어땠을까"를 이 데이터로 평가하는 것은 반사실적 추론(counterfactual reasoning)의 근본 문제를 내포한다.</div>
+    <div class="rc-planb">
+      <div class="rc-planb-label">▶ Target Trial Emulation 적용</div>
+      <div class="rc-planb-body">후향 코호트 분석 범위를 <strong>"MIPD 알고리즘의 예측 정확도 검증"으로만 제한</strong>. "임상 결과 개선 인과 추론"은 명시적 보류. Target Trial Emulation 방법론으로 반사실 추론 한계 구조적 통제.</div>
+    </div>
+  </div>
+
+  <div class="rc-header" style="margin-top:1.25rem">
+    <div class="rc-header-icon">⚠</div>
+    <div class="rc-header-text"><div class="rc-num">Reality Check 05 ★신규</div><div class="rc-title">Agentic AI 환각과 구조적 제어</div></div>
+  </div>
+  <div class="rc-card">
+    <div class="rc-problem"><strong>문제:</strong> LLM은 단순 NONMEM 구획 모델 코딩에서 만점에 가깝지만, 복잡 다중 구획 모델·잔차 오류 모델링에서는 그럴듯한 환각 코드를 생성한다. 단일 챗봇에 의존하면 임상적 재앙이 발생할 수 있다.</div>
+    <div class="rc-planb">
+      <div class="rc-planb-label">▶ Multi-agent DAG + Human-in-the-Loop (Saini & Farnoud 2025 QSP-Copilot 아키텍처)</div>
+      <div class="rc-planb-body">단일 챗봇 의존 <strong>절대 금지</strong>. DAG 기반 모듈형 multi-agent 워크플로우(문헌 추출 에이전트 → 지식 그래프 에이전트 → ODE 변환 에이전트 → 검증 에이전트) + 각 단계 전문가 감독 checkpoint. QSP-Copilot은 모델 개발 시간 약 40% 단축 실증[확인 필요].</div>
+    </div>
+  </div>
+
+</div><!-- end rc-section -->
+
+<!-- ═══ TOP 20 SUMMARY TABLE ═══ -->
+<div class="label" style="margin-bottom:.75rem">Top 20 요약 — Score 기준 재랭킹</div>
+<div style="overflow-x:auto;margin-bottom:2rem;">
+<table class="summary-table">
+<thead><tr>
+  <th>#</th><th>항목</th><th>Score</th><th>Tier</th><th>상태</th>
+</tr></thead>
+<tbody>
+<tr class="st-s"><td class="st-rank">1</td><td class="st-name">ADC 4분석물 PopPK/E-R + DAR 모델링</td><td class="st-score">3,600</td><td><span class="tier-chip tc-s">S</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-s"><td class="st-rank">2</td><td class="st-name">Project Optimus 방법론 확장</td><td class="st-score">2,320</td><td><span class="tier-chip tc-s">S</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-s"><td class="st-rank">3</td><td class="st-name">ECMO/CRRT 중환자 Bayesian MIPD</td><td class="st-score">2,275</td><td><span class="tier-chip tc-s">S</span></td><td><span class="tier-chip tc-new">★신규</span></td></tr>
+<tr class="st-a"><td class="st-rank">4</td><td class="st-name">MIPD 구현과학 — 후향 코호트 + 태블릿</td><td class="st-score">1,775</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-a"><td class="st-rank">5</td><td class="st-name">ARC 소아 β-lactam 최적화 AMR 억제</td><td class="st-score">1,520</td><td><span class="tier-chip tc-a">A</span></td><td><span class="tier-chip tc-new">★신규</span></td></tr>
+<tr class="st-a"><td class="st-rank">6</td><td class="st-name">Neural-ODE / SciML — Pinned Hobby</td><td class="st-score">1,570</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-a"><td class="st-rank">7</td><td class="st-name">이중항체/TCE CRS-Efficacy QSP</td><td class="st-score">1,490</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-a"><td class="st-rank">8</td><td class="st-name">Agentic QSP-Copilot 응용 설계</td><td class="st-score">1,410</td><td><span class="tier-chip tc-a">A</span></td><td><span class="tier-chip tc-new">★신규</span></td></tr>
+<tr class="st-a"><td class="st-rank">9</td><td class="st-name">TGI-OS 생존율 예측 모델링</td><td class="st-score">1,340</td><td><span class="tier-chip tc-a">A</span></td><td><span class="tier-chip tc-new">★신규</span></td></tr>
+<tr class="st-a"><td class="st-rank">10</td><td class="st-name">CAR-T CK/PD 포지션 페이퍼</td><td class="st-score">1,650</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">재조정</td></tr>
+<tr class="st-a"><td class="st-rank">11</td><td class="st-name">EMR→NONMEM LLM 파이프라인</td><td class="st-score">1,400</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">재배치</td></tr>
+<tr class="st-a"><td class="st-rank">12</td><td class="st-name">MFDS–FDA–EMA 국제 비교 분석</td><td class="st-score">1,320</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">재배치</td></tr>
+<tr class="st-a"><td class="st-rank">13</td><td class="st-name">한국인 PK 공변량 DB — Data Moat</td><td class="st-score">1,000</td><td><span class="tier-chip tc-a">A</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-b"><td class="st-rank">14</td><td class="st-name">mRNA-LNP Minimal PBPK</td><td class="st-score">930</td><td><span class="tier-chip tc-b">B</span></td><td><span class="tier-chip tc-new">★신규</span></td></tr>
+<tr class="st-b"><td class="st-rank">15</td><td class="st-name">소아 희귀질환 PBPK Supportive 외삽</td><td class="st-score">870</td><td><span class="tier-chip tc-b">B</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">재배치</td></tr>
+<tr class="st-b"><td class="st-rank">16</td><td class="st-name">CKD PBPK 용량 재정립</td><td class="st-score">770</td><td><span class="tier-chip tc-b">B</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-b"><td class="st-rank">17</td><td class="st-name">반코마이신/타크로리무스 R Shiny MVP</td><td class="st-score">900</td><td><span class="tier-chip tc-b">B</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-b"><td class="st-rank">18</td><td class="st-name">희귀질환 External Controls MIDD</td><td class="st-score">590</td><td><span class="tier-chip tc-b">B</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-b"><td class="st-rank">19</td><td class="st-name">임산부/수유부 PBPK 시뮬레이터</td><td class="st-score">540</td><td><span class="tier-chip tc-b">B</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+<tr class="st-b"><td class="st-rank">20</td><td class="st-name">유전자·RNA 치료제 PK 프레임워크</td><td class="st-score">460</td><td><span class="tier-chip tc-b">B</span></td><td class="label" style="letter-spacing:.04em;color:var(--text-3)">유지</td></tr>
+</tbody>
+</table>
+</div>
+
+
+<!-- ═══ S-TIER CARDS ═══ -->
+<div class="section-head">
+  <span class="section-tag section-tag-s">S-Tier</span>
+  <div class="section-line"></div>
+  <span class="section-range">Score ≥ 2,000 · 창이 닫히기 전 즉각 전략적 투자</span>
+</div>
+
+<!-- #1 ADC -->
+<div class="card card-s fade-in" id="c1">
+  <div class="card-top">
+    <div class="rank-num">1</div>
+    <div class="card-body">
+      <div class="card-title">ADC 다중분석물(Multi-Analyte) PopPK/E-R + DAR 모델링<span class="note-adj">Plan B 강화</span></div>
+      <div class="card-why">FDA 2024.03 ADC 가이던스 이후 4분석물(Intact ADC·총항체·유리 페이로드·활성대사체) PopPK + E-R이 의무화. Samsung Biologics 송도 ADC 전용 시설 2024 개소, LigaChem-Samsung 2025.01 파트너십 확대, Orion의 LigaChem 인수 $400M+. "지리적 비교우위 × 방법론 프론티어 × 규제 의무 × 산업 자본" 네 변수 완전 정렬.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-now">즉시</span>
+      <span class="tag t-kr">한국 1위</span>
+      <span class="tag t-gl">FDA 의무</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill pill-hi">B=7</span><span class="pill pill-hi">C=9</span>
+    <span class="pill pill-hi">(1-D)=0.88</span><span class="pill pill-hi">E=3.0</span><span class="pill pill-hi">V=1.8</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:100%"></div></div><div class="snum">3,600</div></div>
+  <div class="card-detail"><b>오늘 밤:</b> FDA ADC 가이던스(2024.03) 원문 + Enhertu NDA 761139 리뷰 확보. WebPlotDigitizer 설치 → Enhertu 3분석물 PK 곡선 디지타이징 → <b>추출 오류 ±10% 민감도 분석 프로토콜 설계</b>. 지도교수 1페이지 안건: ADC 제1축 제안 + Plan A/B 병렬.</div>
+  <div class="note-tl">T+0~12: 역설계 코호트 + 민감도 분석 → T+12~24: 방법론 논문 투고 → T+24~36: Plan A 검증</div>
+  <details>
+    <summary>Plan B / P3 반론 + OCR 상세</summary>
+    <div class="details-body">
+      <div class="db-label">Plan B — 추출 오류 민감도 분석을 방법론 기여로 포지셔닝 (v5.0 강화)</div>
+      <div class="db-text">WebPlotDigitizer 추출 오류 ±5–15% 변동 시 CL 추정의 비선형 증폭 정도를 수리적으로 규명하는 것 자체가 <em>CPT:PSP</em> 투고 가능한 방법론 서명 논문. 실데이터 접근이 열리면 Plan A 검증 논문으로 자연 확장.</div>
+      <div class="db-label db-label-warn" style="margin-top:.7rem">P3 반론</div>
+      <div class="db-text">"한국 ADC 기업 실데이터 최초 분석자" 서사 자본을 일부 포기한다 — 이것이 v5.0의 5번째 정직한 포기 항목. 대신 방법론 엄밀성이 장기적 신뢰 자산이 된다.</div>
+    </div>
+  </details>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-val">9/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-label">Compounding</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-val">9/10</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:50%"></div></div><div class="ocr-val">5/10 · Plan B로 차단</div></div>
+  </div>
+</div>
+
+<!-- #2 Project Optimus -->
+<div class="card card-s fade-in" id="c2">
+  <div class="card-top">
+    <div class="rank-num">2</div>
+    <div class="card-body">
+      <div class="card-title">Project Optimus 방법론 확장 — 신모달리티 E-R 용량 최적화</div>
+      <div class="card-why">FDA Project Optimus 최종 가이던스(2024.08) 이후 방법론 수요가 소분자 중심 — ADC·이중항체·면역항암제·CAR-T의 복잡 E-R(CRS-효능 트레이드오프, 트리분자 복합체, 세포독성 페이로드)에 체계적 확장 공백 존재. Bayesian dose-optimization 채택률 48%→75%[확인 필요]. #1과 기술 기반 90% 공유 — Compounding 최상위.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-6m">12개월</span>
+      <span class="tag t-gl">FDA 최우선</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill pill-hi">B=6</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.85</span><span class="pill pill-hi">E=3.0</span><span class="pill pill-hi">V=1.8</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:64%"></div></div><div class="snum">2,320</div></div>
+  <div class="card-detail"><b>첫 행동:</b> CPT:PSP Bayesian dose-optimization 리뷰 3편 + Project Optimus 가이던스 대조표. "ADC·Bispecific dose-optimization 방법론 공백 3가지" Perspective 초고 작성.</div>
+  <div class="note-tl">T+12~18: Perspective 투고 | 학위 논문 Chapter 2 이론 뼈대</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:70%"></div></div><div class="ocr-val">7/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">9/10 · #1·#7·#9 기반</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:40%"></div></div><div class="ocr-val">4/10</div></div>
+  </div>
+</div>
+
+<!-- #3 ECMO -->
+<div class="card card-s fade-in" id="c3">
+  <div class="card-top">
+    <div class="rank-num">3</div>
+    <div class="card-body">
+      <div class="card-title">ECMO/CRRT 중환자 Bayesian MIPD — 한국 3차 병원 파일럿<span class="note-new">★ v5.0 신규</span></div>
+      <div class="card-why">지용성 약물(fentanyl·propofol·midazolam·voriconazole)은 ECMO 회로에 투여 즉시 대량 흡착 → 혈중 농도 급감 → 과소 진정·치료 실패 → ICU 사망. 친수성 β-lactam은 CRRT 제거율 변동으로 치료역 이탈. 이것이 계량약리학이 대체 불가능하게 해결할 수 있는 급성 생존 문제다. 한국 SNUH·아산·삼성서울은 아시아 최상위 ECMO 건수. 8년 중증 환자 TDM 경험의 최대 발화점.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-now">즉시 IRB</span>
+      <span class="tag t-kr">TDM 8년 직결</span>
+      <span class="tag t-new">생존 직결</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill pill-hi">B=8</span><span class="pill pill-hi">C=10</span>
+    <span class="pill pill-hi">(1-D)=0.85</span><span class="pill">E=2.2</span><span class="pill">V=1.5</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:63%"></div></div><div class="snum">2,275</div></div>
+  <div class="card-detail"><b>오늘 밤 (가장 우선):</b> 소속·협력 3차 병원의 ECMO 환자 voriconazole·β-lactam TDM 전자기록 3~5년치 접근 가능성 조사 → IRB 후향 승인 경로 확인. Minimal-PBPK 모델 문헌 1개 선정 + 회로 흡착 파라미터 통합 설계.</div>
+  <div class="note-tl">T+0~6: IRB + 데이터 → T+6~18: Minimal-PBPK + 후향 코호트 → T+18~30: 투고 (Crit Care Med 타겟)</div>
+  <details>
+    <summary>Plan B / P3 반론</summary>
+    <div class="details-body">
+      <div class="db-label">Reality Check 4 대응</div>
+      <div class="db-text">후향 코호트 분석 = <strong>예측 정확도 검증</strong>으로만 제한. "임상 결과 개선 인과 추론"은 명시적 보류. Target Trial Emulation 방법론으로 반사실 추론 한계 통제.</div>
+      <div class="db-label db-label-warn" style="margin-top:.7rem">P3 반론</div>
+      <div class="db-text">ECMO PK 연구자 수 급증 중. Novelty 방어선 = 한국 코호트 × Minimal-PBPK + Bayesian MIPD + 8년 임상 내부자 관점의 삼중 교집합.</div>
+    </div>
+  </details>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-val">9/10 · ICU·MIPD·빅파마</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:80%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">8/10</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:40%"></div></div><div class="ocr-val">4/10</div></div>
+  </div>
+</div>
+
+<!-- ═══ A-TIER CARDS ═══ -->
+<div class="section-head">
+  <span class="section-tag section-tag-a">A-Tier</span>
+  <div class="section-line"></div>
+  <span class="section-range">Score 500–1,999 · 즉시~18개월 착수</span>
+</div>
+
+<!-- #4 MIPD -->
+<div class="card card-a fade-in" id="c4">
+  <div class="card-top">
+    <div class="rank-num">4</div>
+    <div class="card-body">
+      <div class="card-title">MIPD 구현과학 — 후향 코호트 + 단일 병동 태블릿 이원화<span class="note-adj">RC2 대응</span></div>
+      <div class="card-why">Swartling 2024(Uppsala vancomycin MIPD) + Kalamees 2024(신생아 vancomycin MIPD)가 방법론 템플릿 제공. C=10 유지(임상약사-계량약리학자 하이브리드 희소성). EMR 연동·전향 파일럿 명시적 포기 → 후향 코호트(축1) + 오프라인 태블릿(축2).</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-6m">6개월</span>
+      <span class="tag t-kr">TDM 8년</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill pill-hi">B=8</span><span class="pill pill-hi">C=10</span>
+    <span class="pill pill-hi">(1-D)=0.85</span><span class="pill">E=2.2</span><span class="pill">V=1.5</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:49%"></div></div><div class="snum">1,775</div></div>
+  <div class="card-detail"><b>첫 행동:</b> Swartling 2024 정독 후 한국 맥락 수정. 반코마이신 후향 TDM 3~5년 데이터 접근. #17 Shiny MVP를 태블릿 친화 UI로 개발.</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:80%"></div></div><div class="ocr-val">8/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:70%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">7/10 · #17 씨앗</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:30%"></div></div><div class="ocr-val">3/10</div></div>
+  </div>
+</div>
+
+<!-- #5 ARC -->
+<div class="card card-a fade-in" id="c5">
+  <div class="card-top">
+    <div class="rank-num">5</div>
+    <div class="card-body">
+      <div class="card-title">ARC 소아 종양 환자 β-lactam 최적화 — AMR 억제 국제 기여<span class="note-new">★ v5.0 신규</span></div>
+      <div class="card-why">화학요법 후 발열성 호과립구감소증(FN) + ARC → Meropenem·Pip/Tazo 표준 간헐 주입 fT>MIC 달성률 처참히 미달 → 치료 실패 → MDR 출현 → AMR. WHO 2050년 연 1,000만 사망 예측[확인 필요]. 서울대어린이병원·아산어린이병원·삼성서울병원에서 직접 데이터 접근 가능. 방법론(β-lactam PopPK·PTA simulation·extended infusion)은 확립.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-6m">6개월 IRB</span>
+      <span class="tag t-kr">소아암 센터</span>
+      <span class="tag t-new">AMR 방파제</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill pill-hi">B=7</span><span class="pill pill-hi">C=8</span>
+    <span class="pill pill-hi">(1-D)=0.80</span><span class="pill">E=2.0</span><span class="pill">V=1.4</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:42%"></div></div><div class="snum">1,520</div></div>
+  <div class="card-detail"><b>첫 행동:</b> 국내 소아암 센터 Meropenem TDM 데이터 접근 가능성 조사. McIlleron/Standing 그룹 소아 ARC β-lactam 문헌 리뷰 → 한국인 소아 코호트 특이성 차별화 전략 수립.</div>
+  <div class="note-tl">T+6~18: IRB + 데이터 → T+18~30: ARC 소아 PopPK + PTA simulation 완성</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:80%"></div></div><div class="ocr-val">8/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:70%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">7/10 · #13 DB 재료</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:50%"></div></div><div class="ocr-val">5/10</div></div>
+  </div>
+</div>
+
+<!-- #6 Neural-ODE -->
+<div class="card card-a fade-in" id="c6">
+  <div class="card-top">
+    <div class="rank-num">6</div>
+    <div class="card-body">
+      <div class="card-title">Neural-ODE / SciML — Pinned Hobby 타임박싱<span class="note-adj">RC3 원칙</span></div>
+      <div class="card-why">Tacrolimus Latent ODE RMSPE 7.99% vs 9.24%(it2B)[확인 필요], Dalbavancin SHAP 분석, Mosunetuzumab PINODE(체중만으로 미관측 용량 외삽). "응용 설계자" 포지션. 그러나 인지적 과부하 → RC3 타임박싱 원칙 협상 불가.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-12m">T+18 조건부</span>
+      <span class="tag" style="color:#a855f7;border-color:#2e0a50;background:#0c0418;">Pinned Hobby</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill">(B=5)</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.90</span><span class="pill pill-hi">E=2.5</span><span class="pill pill-hi">V=2.0</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:44%"></div></div><div class="snum">1,570</div></div>
+  <div class="card-detail"><b>첫 행동:</b> Julia DifferentialEquations.jl 튜토리얼 환경 구축만(REPL 금지). PIPET-Vault SciML 씨앗 노트 작성. <b>하드 원칙:</b> #1 FOCE-I 수렴 전 Julia REPL 금지. T+30~36 완전 중단.</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-val">9/10 · 극소수 풀</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:70%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">7/10 · T+36 이후</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:70%"></div></div><div class="ocr-val">7/10 · 번아웃 경로</div></div>
+  </div>
+</div>
+
+<!-- #7 Bispecific -->
+<div class="card card-a fade-in" id="c7">
+  <div class="card-top">
+    <div class="rank-num">7</div>
+    <div class="card-body">
+      <div class="card-title">이중항체/T세포 인게이저 CRS-Efficacy QSP</div>
+      <div class="card-why"><b>mosunetuzumab QSP가 pre-IND에서 step-up dosing 스케줄(1/2/60mg C1D1/D8/D15)을 예측했고 그 스케줄이 최종 허가에 그대로 채택</b> — QSP가 임상 설계를 바꾼 가장 청결한 사례. ABL Bio·Celltrion·Samsung 파이프라인 접근성. #1과 수리적 기반 공유.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-12m">T+24~36</span>
+      <span class="tag t-kr">ABL/Celltrion</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill pill-hi">B=6</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.85</span><span class="pill pill-hi">E=2.5</span><span class="pill">V=1.8</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:41%"></div></div><div class="snum">1,490</div></div>
+  <div class="card-detail"><b>첫 행동:</b> mosunetuzumab E-R 논문 + IQ Consortium bispecific PK white paper. <b>P3:</b> 36개월 안에 #1과 동시 1저자는 과욕 — 포스트닥 주제로 명시 이관.</div>
+</div>
+
+<!-- #8 Agentic QSP -->
+<div class="card card-a fade-in" id="c8">
+  <div class="card-top">
+    <div class="rank-num">8</div>
+    <div class="card-body">
+      <div class="card-title">Agentic QSP-Copilot 응용 설계 — Multi-agent DAG 실증<span class="note-new">★ v5.0 신규</span></div>
+      <div class="card-why">Saini & Farnoud 2025 QSP-Copilot(<em>CPT:PSP</em> 14:1775, Boehringer Ingelheim) — Streamlit 기반 개인 무료 접근 가능. 모델 개발 시간 약 40% 단축[확인 필요]. DAG 기반 multi-agent(문헌 추출→지식 그래프→SBML/mrgsolve 코드→validation) + human-in-the-loop. "EMR→NONMEM 변환"(#11)보다 상위 버전 — QSP 전체 라이프사이클 커버.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-6m">6개월</span>
+      <span class="tag t-new">CPT:PSP 2025</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=7</span><span class="pill pill-hi">B=7</span><span class="pill pill-hi">C=8</span>
+    <span class="pill pill-hi">(1-D)=0.75</span><span class="pill pill-hi">E=2.5</span><span class="pill pill-hi">V=2.0</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:39%"></div></div><div class="snum">1,410</div></div>
+  <div class="card-detail"><b>첫 행동:</b> QSP-Copilot 논문 + Lu & Desikan 2026 CPT:PSP agentic QSP 논의 팔로우. Streamlit 플랫폼 설치. "한국 ICU 패혈증 QSP 케이스" 1건 선정 → Copilot workflow 적용 시연.</div>
+  <div class="note-tl">T+6~18: Prototype + 방법론 평가 → T+18~30: Application Note 투고</div>
+  <div class="note-dt">⚠ D(t) 경고 — Boehringer QSP-Copilot 급속 발전 중. 18개월 후 Score 하락 가능. 지금 선점 창 존재.</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:80%"></div></div><div class="ocr-val">8/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">9/10 · #11 상위 버전</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:60%"></div></div><div class="ocr-val">6/10 · 환각 제어 필수</div></div>
+  </div>
+</div>
+
+<!-- #9 TGI-OS -->
+<div class="card card-a fade-in" id="c9">
+  <div class="card-top">
+    <div class="rank-num">9</div>
+    <div class="card-body">
+      <div class="card-title">TGI-OS 생존율 예측 모델링 — Virtual Clinical Trial Bridging<span class="note-new">★ v5.0 신규</span></div>
+      <div class="card-why">Yoshida 2025(<em>CPT:PSP</em> psp4.70073) HR+/HER2- breast cancer TGI-OS 모델. Chan 2021 OAK NSCLC TGI-OS ML platform. TGI-OS는 <b>1상 tumor size 변화 → 3상 OS 예측</b>이라는 수학적 연결고리 — Pillar I의 심장이다. FDA 2022 ODAC NSCLC OS primary endpoint 강조. Seoul 세계 최다 임상시험 도시의 풍부한 한국 코호트 접근성.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-12m">12개월</span>
+      <span class="tag t-gl">OS 예측</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill pill-hi">B=6</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.80</span><span class="pill">E=2.2</span><span class="pill">V=1.6</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:37%"></div></div><div class="snum">1,340</div></div>
+  <div class="card-detail"><b>첫 행동:</b> Yoshida 2025 + Chan 2021 + Sheng 2024 세 편 정독 → Vivli 가입 + 데이터 접근 가능성 확인 → 한국 코호트 TGI 모델 설계. <b>P3:</b> Bruno(Genentech) 그룹 선점 — novelty 전략: "ADC multi-analyte exposure × TGI-OS 결합."</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:90%"></div></div><div class="ocr-val">9/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:80%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">8/10 · #1과 결합</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:50%"></div></div><div class="ocr-val">5/10</div></div>
+  </div>
+</div>
+
+<!-- #10 CAR-T -->
+<div class="card card-a fade-in" id="c10">
+  <div class="card-top">
+    <div class="rank-num">10</div>
+    <div class="card-body">
+      <div class="card-title">CAR-T CK/PD 평가 방법론 포지션 페이퍼<span class="note-adj">E 재조정</span></div>
+      <div class="card-why">TC011 CSR 실무 + 계량약리학 수련 결합 = T+12 이전 가능한 가장 빠른 1저자 경로. "Korean regulatory pharmacometrician's perspective"를 CPT:PSP에 1저자. E=2.2로 재조정(MFDS 국제 파급력 한계 반영). Tegenge 2025 FDA CBER AAPS J(CAR-T + mRNA-LNP PBPK 포함)와 패키지 구성.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-now">T+12 이전</span>
+      <span class="tag t-kr">빠른 1저자</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=7</span><span class="pill pill-hi">B=9</span><span class="pill pill-hi">C=8</span>
+    <span class="pill pill-hi">(1-D)=0.82</span><span class="pill">E=2.2</span><span class="pill">V=1.6</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:46%"></div></div><div class="snum">1,650</div></div>
+  <div class="card-detail"><b>첫 행동:</b> TC011 CSR PK 섹션 + FDA CBER CAR-T 가이던스 → "Korean context missing한 CAR-T PK 평가 요소 3가지" 추출 → bioRxiv 선공개.</div>
+</div>
+
+<!-- #11 LLM Pipeline -->
+<div class="card card-a fade-in" id="c11">
+  <div class="card-top">
+    <div class="rank-num">11</div>
+    <div class="card-body">
+      <div class="card-title">비정형 EMR/RWD → NONMEM 데이터셋 LLM 자동화 파이프라인<span class="note-adj">#8 서브모듈</span></div>
+      <div class="card-why">8년 차트 리터러시 + NONMEM 포맷 내부자 지식 + LLM 조합. D(t) 상승 빠름. #8 Agentic QSP-Copilot의 준비 단계 또는 서브 모듈로 재포지셔닝 — 독립 항목보다 #8 생태계의 일부로 가치가 높아진다.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-now">즉시</span>
+      <span class="tag t-warn">D(t) 급등</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill pill-hi">B=8</span><span class="pill pill-hi">C=9</span>
+    <span class="pill">(1-D)=0.65</span><span class="pill">E=2.0</span><span class="pill pill-hi">V=1.9</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:39%"></div></div><div class="snum">1,400</div></div>
+  <div class="card-detail"><b>첫 행동:</b> 가상 비정형 EMR 50건 생성(Claude) → NONMEM AMT/TIME/DV/MDV 자동변환 프롬프트 최적화 → 오류율 정량화. PIPET-Vault 05_JIT-DEBUG-LOG 기록.</div>
+  <div class="note-dt">⚠ 18개월 후 Score ≈ 700. 지금이 선점 창 절반. 한국 임상 데이터 정형화 노하우가 진짜 자산.</div>
+</div>
+
+<!-- #12 MFDS -->
+<div class="card card-a fade-in" id="c12">
+  <div class="card-top">
+    <div class="rank-num">12</div>
+    <div class="card-body">
+      <div class="card-title">MFDS–FDA–EMA 첨단바이오 PK 가이드라인 국제 비교 분석</div>
+      <div class="card-why">한국어·영어 이중 역량 + MFDS 문서 접근권. ISoP/PAGE "Korean regulatory pharmacometrician" 각인. MFDS가 목적지가 아니라 <b>ISoP/PAGE 진입 티켓</b>임을 명심. #10 CAR-T 포지션 페이퍼와 패키지 구성 권장.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-12m">6–12개월</span>
+      <span class="tag t-kr">서사 자본</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill">A=6</span><span class="pill pill-hi">B=7</span><span class="pill pill-hi">C=9</span>
+    <span class="pill pill-hi">(1-D)=0.80</span><span class="pill pill-hi">E=2.5</span><span class="pill">V=1.7</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:37%"></div></div><div class="snum">1,320</div></div>
+  <div class="card-detail"><b>첫 행동:</b> FDA CBER + EMA + MFDS 첨단바이오 삼열 비교표 초안. Clinical Pharmacokinetics급을 현실적 상한으로.</div>
+</div>
+
+<!-- #13 Korean PK DB -->
+<div class="card card-a fade-in" id="c13">
+  <div class="card-top">
+    <div class="rank-num">13</div>
+    <div class="card-body">
+      <div class="card-title">한국인 PK 공변량 데이터베이스 — Data Moat</div>
+      <div class="card-why">SLCO1B1·CYP3A·한국인 체성분 공변량 DB. <b>#1 ADC, #3 ECMO, #4 반코마이신, #5 ARC 소아, #16 CKD, #19 임산부의 공통 재료</b> — v5.0 의존성 재계산으로 Compounding 10/10. KNHANES IRB 즉시 신청 필요.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-now">IRB 즉시</span>
+      <span class="tag t-kr">Data Moat</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=7</span><span class="pill pill-hi">B=7</span><span class="pill pill-hi">C=9</span>
+    <span class="pill pill-hi">(1-D)=0.80</span><span class="pill">E=2.0</span><span class="pill">V=1.5</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:28%"></div></div><div class="snum">1,000</div></div>
+  <div class="card-detail"><b>첫 행동:</b> 국내 발표 PopPK 논문 20편 메타분석 → 부재 변수 목록화 → KNHANES 접근 신청 즉시 확인.</div>
+  <div class="ocr-row">
+    <div class="ocr-item ocr-opt"><div class="ocr-label">Optionality</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:70%"></div></div><div class="ocr-val">7/10</div></div>
+    <div class="ocr-item ocr-cmp"><div class="ocr-bar-bg"><div class="ocr-bar" style="width:100%"></div></div><div class="ocr-label">Compounding</div><div class="ocr-val">10/10 · 전체 포트폴리오 기반</div></div>
+    <div class="ocr-item ocr-rsk"><div class="ocr-label">Risk</div><div class="ocr-bar-bg"><div class="ocr-bar" style="width:40%"></div></div><div class="ocr-val">4/10</div></div>
+  </div>
+</div>
+
+<!-- ═══ B-TIER CARDS ═══ -->
+<div class="section-head">
+  <span class="section-tag section-tag-b">B-Tier</span>
+  <div class="section-line"></div>
+  <span class="section-range">Score 100–999 · 기반 구축 및 중장기 설계</span>
+</div>
+
+<!-- #14 mRNA-LNP -->
+<div class="card card-b fade-in" id="c14">
+  <div class="card-top">
+    <div class="rank-num">14</div>
+    <div class="card-body">
+      <div class="card-title">mRNA-LNP Minimal PBPK — Pillar III 최신 방법론<span class="note-new">★ v5.0 신규</span></div>
+      <div class="card-why">Tegenge 2025(AAPS J 27:157) FDA CBER가 mRNA 치료제 Minimal PBPK의 규제 적용 방향을 공식화. 구조: plasma-lymph-leaky/tight tissue-intracellular. KEYNOTE-942(mRNA-4157 + pembrolizumab) 5년 RFS 개선이 mRNA 암 백신의 상업적 궤도를 확인. 전 세계 전문가 극소수 — 역량 투자 ROI 잠재 최상위.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-12m">T+18 이후</span>
+      <span class="tag t-gl">15년 지평</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill">(B=5)</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.88</span><span class="pill">E=2.0</span><span class="pill">V=1.8</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:26%"></div></div><div class="snum">930</div></div>
+  <div class="card-detail"><b>첫 행동:</b> Tegenge 2025 AAPS J + Zhou 2025 Clin Pharmacol Ther "MIDD Applications in mRNA-LNP" 정독. #20 유전자·RNA PK와 기술 기반 공유.</div>
+  <div class="note-a9">⬆ B 향상 시 A-Tier 잠재 — 역량 투자 ROI 잠재 최상위 항목</div>
+</div>
+
+<!-- #15 Pediatric PBPK -->
+<div class="card card-b fade-in" id="c15">
+  <div class="card-top">
+    <div class="rank-num">15</div>
+    <div class="card-body">
+      <div class="card-title">소아 희귀질환 PBPK Supportive 용량 외삽</div>
+      <div class="card-why">A=9 글로벌 효용 최상위. 감사 보정: 소아 PBPK 외삽은 <em>supportive</em>이지 pivotal 단독 허가 사례 사실상 없음. 포지셔닝 = "supportive dose selection + 최소 임상 PK 데이터의 정합 설계자." B=5 역량 갭이 Score를 제한 — PK-Sim 설치·학습 후 B→8 향상 시 Score 급등.</div>
+    </div>
+    <div class="card-badges">
+      <span class="tag t-12m">T+12 이후</span>
+      <span class="tag t-gl">A=9 최고효용</span>
+    </div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill">(B=5→8)</span><span class="pill pill-hi">C=8</span>
+    <span class="pill pill-hi">(1-D)=0.85</span><span class="pill">E=2.0</span><span class="pill">V=1.5</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:24%"></div></div><div class="snum">870</div></div>
+  <div class="card-detail"><b>첫 행동:</b> PK-Sim 설치(NONMEM·R 기초 확립 이후) + KNHANES 소아 생리학 파라미터 추출 가능성 확인.</div>
+  <div class="note-a9">⬆ B 향상 시 Score ≈ 2,400 → S-Tier 진입 가능</div>
+</div>
+
+<!-- #16 CKD PBPK -->
+<div class="card card-b fade-in" id="c16">
+  <div class="card-top">
+    <div class="rank-num">16</div>
+    <div class="card-body">
+      <div class="card-title">CKD·간부전 PBPK 기반 용량 재정립</div>
+      <div class="card-why">eGFR/CrCl 괴리를 8년 목격한 임상 내부자만의 질문. ICH M9 규제 수용성 상승. 간부전 PBPK는 파라미터 부재로 CKD 쪽으로 범위 축소가 현실적.</div>
+    </div>
+    <div class="card-badges"><span class="tag t-12m">T+18~30</span></div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=7</span><span class="pill pill-hi">B=8</span><span class="pill pill-hi">C=8</span>
+    <span class="pill pill-hi">(1-D)=0.75</span><span class="pill">E=1.8</span><span class="pill">V=1.4</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:21%"></div></div><div class="snum">770</div></div>
+  <div class="card-detail"><b>첫 행동:</b> eGFR/CrCl 괴리 컸던 약물 5개 리스트업 → rxode2 Minimal-PBPK 설계.</div>
+</div>
+
+<!-- #17 Shiny MVP -->
+<div class="card card-b fade-in" id="c17">
+  <div class="card-top">
+    <div class="rank-num">17</div>
+    <div class="card-body">
+      <div class="card-title">반코마이신/타크로리무스 R Shiny 베이지안 TDM MVP</div>
+      <div class="card-why">#4 MIPD 축 2(단일 병동 태블릿)의 본체. R 입문자의 첫 실제 임상 프로젝트로 이상적. novelty = "한국인 코호트 + 임상약사 워크플로우 통합."</div>
+    </div>
+    <div class="card-badges"><span class="tag t-6m">T+3~6 MVP</span></div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=7</span><span class="pill pill-hi">B=9</span><span class="pill pill-hi">C=8</span>
+    <span class="pill pill-hi">(1-D)=0.75</span><span class="pill">E=1.8</span><span class="pill">V=1.5</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:25%"></div></div><div class="snum">900</div></div>
+  <div class="card-detail"><b>첫 행동:</b> 반코마이신 한국인 코호트 PopPK 파라미터 3세트 수집 → R Shiny MVP → 동료 임상약사 5인 베타 테스트.</div>
+</div>
+
+<!-- #18 External Controls -->
+<div class="card card-b fade-in" id="c18">
+  <div class="card-top">
+    <div class="rank-num">18</div>
+    <div class="card-body">
+      <div class="card-title">희귀질환 External Controls 기반 MIDD<span class="note-adj">리브랜딩</span></div>
+      <div class="card-why">"가상 임상시험" 폐기 → "자연경과/RWD 외부 대조군 활용 MIDD"로 재명명. EMA CAMD(알츠하이머)·cTAP(DMD) qualification opinion이 실제 허용 경로. B=4 현재 역량 부족 — 포스트닥 주제 또는 박사 "향후 연구" 챕터.</div>
+    </div>
+    <div class="card-badges"><span class="tag t-2y">포스트닥</span><span class="tag t-gl">A=9</span></div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill">(B=4)</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.82</span><span class="pill">E=2.0</span><span class="pill">V=1.5</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:16%"></div></div><div class="snum">590</div></div>
+  <div class="card-detail"><b>첫 행동:</b> FDA MIDD pilot 승인 사례 3건 분석. EMA CAMD qualification opinion 문서 정독.</div>
+  <div class="note-a9">⬆ B 향상 시 A-Tier 잠재 — 포스트닥 핵심 후보</div>
+</div>
+
+<!-- #19 Maternal PBPK -->
+<div class="card card-b fade-in" id="c19">
+  <div class="card-top">
+    <div class="rank-num">19</div>
+    <div class="card-body">
+      <div class="card-title">임산부/수유부 PBPK 안전성 시뮬레이터</div>
+      <div class="card-why">윤리적 이유로 임상시험 완전 배제 — BIG IDEA 번역 문제의 가장 순수한 사례. PBPK가 유일한 과학적 접근법. PK-Sim 학습 이후 착수 가능.</div>
+    </div>
+    <div class="card-badges"><span class="tag t-12m">T+18 이후</span></div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=8</span><span class="pill">(B=5)</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.82</span><span class="pill">E=1.8</span><span class="pill">V=1.4</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:15%"></div></div><div class="snum">540</div></div>
+  <div class="card-detail"><b>첫 행동:</b> 임산부 PK 파라미터(GFR +50%, CYP3A4 유도, Vd 증가) 공개 DB 수집.</div>
+</div>
+
+<!-- #20 Gene/RNA -->
+<div class="card card-b fade-in" id="c20">
+  <div class="card-top">
+    <div class="rank-num">20</div>
+    <div class="card-body">
+      <div class="card-title">유전자·RNA 치료제 PK 프레임워크 — 15년 지평 씨앗</div>
+      <div class="card-why">AAV·GalNAc-siRNA 승인 축적, 통합 PBPK-PD 프레임워크 부재. 전 세계 전문가 극소수. #14 mRNA-LNP PBPK와 기술 기반 공유. 포스트닥 또는 첫 빅파마 이후 본격 진입.</div>
+    </div>
+    <div class="card-badges"><span class="tag t-2y">포스트닥 이후</span><span class="tag t-gl">A=9</span></div>
+  </div>
+  <div class="params">
+    <span class="pill pill-hi">A=9</span><span class="pill">(B=3)</span><span class="pill pill-hi">C=7</span>
+    <span class="pill pill-hi">(1-D)=0.90</span><span class="pill">E=2.0</span><span class="pill">V=1.8</span>
+  </div>
+  <div class="score-row"><div class="sbar-bg"><div class="sbar" style="width:13%"></div></div><div class="snum">460</div></div>
+  <div class="card-detail"><b>첫 행동:</b> IQ Consortium 2023 gene therapy PK position paper 완독. PIPET-Vault 03_AI-ML 씨앗 노트 작성.</div>
+  <div class="note-a9">⬆ A=9 · V=1.8 — 장기 최고 비교우위 원천</div>
+</div>
+
+<div class="section-divider"></div>
+
+
+<!-- ═══ 36-MONTH TIMELINE ═══ -->
+<div class="label" style="margin-bottom:1rem" id="timeline">36개월 역방향 타임라인 — v5.0</div>
+<div class="timeline-wrap fade-in">
+
+  <!-- Phase I -->
+  <div class="tl-phase">
+    <div class="tl-dot tl-dot-1">I</div>
+    <div class="tl-header">
+      <span class="tl-period">T+0~12</span>
+      <span class="tl-phase-title">2026.03–2027.03 — Plan B 즉시 시동 + 1저자 조기 확보</span>
+    </div>
+    <div class="tl-card">
+      <div class="tl-items">
+        <div class="tl-item priority"><strong>#3 ECMO/CRRT MIPD</strong> — IRB 신청 + 데이터 접근 경로 확보 (★ 최우선)</div>
+        <div class="tl-item priority"><strong>#1 ADC</strong> — WebPlotDigitizer 역설계 코호트 + 추출 오류 민감도 분석 즉시 시동</div>
+        <div class="tl-item"><strong>#10 CAR-T</strong> 포지션 페이퍼 초안 → bioRxiv 선공개 (빠른 1저자)</div>
+        <div class="tl-item"><strong>#11 LLM 파이프라인</strong> Prototype + #8 QSP-Copilot 환경 구축</div>
+        <div class="tl-item"><strong>#17 반코마이신</strong> R Shiny MVP T+3~6</div>
+        <div class="tl-item"><strong>#13 KNHANES</strong> IRB 신청 병렬 진행</div>
+        <div class="tl-item warn">SciML 순수 개념 학습만 — Julia REPL 금지 (RC3)</div>
+        <div class="tl-item"><strong>#4 MIPD</strong> 후향 코호트 IRB 경로 사전 조사</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase II -->
+  <div class="tl-phase">
+    <div class="tl-dot tl-dot-2">II</div>
+    <div class="tl-header">
+      <span class="tl-period">T+12~24</span>
+      <span class="tl-phase-title">2027.03–2028.03 — 핵심 역량 확장 + 방법론 논문 양산</span>
+    </div>
+    <div class="tl-card">
+      <div class="tl-items">
+        <div class="tl-item priority"><strong>#1 ADC</strong> Plan B 방법론 논문 투고 (실데이터 무관하게 진행)</div>
+        <div class="tl-item priority"><strong>#3 ECMO</strong> Minimal-PBPK 모델 구축 + 후향 코호트 분석</div>
+        <div class="tl-item"><strong>#5 ARC 소아</strong> β-lactam IRB + 데이터 확보</div>
+        <div class="tl-item"><strong>#4 MIPD</strong> 후향 코호트 분석 착수</div>
+        <div class="tl-item"><strong>#8 Agentic QSP-Copilot</strong> 한국 ICU 케이스 application</div>
+        <div class="tl-item"><strong>#9 TGI-OS</strong> 방법론 구축 + Vivli 데이터 접근</div>
+        <div class="tl-item"><strong>#12 MFDS</strong> 국제 비교 투고</div>
+        <div class="tl-item"><strong>#13 DB</strong> 본격 구축</div>
+        <div class="tl-item warn">SciML 주말 Pinned Hobby 시작 (#1 FOCE-I 수렴 조건 충족 시만)</div>
+        <div class="tl-item exit">PAGE/ISoP 포스터 + 타겟 네트워킹 시작 (30분 포스터 대화 → 미팅)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase III -->
+  <div class="tl-phase">
+    <div class="tl-dot tl-dot-3">III</div>
+    <div class="tl-header">
+      <span class="tl-period">T+24~36</span>
+      <span class="tl-phase-title">2028.03–2029.03 — 1저자 완성 + Exit Networking + 글로벌 포지셔닝</span>
+    </div>
+    <div class="tl-card">
+      <div class="tl-items">
+        <div class="tl-item priority"><strong>#1 ADC</strong> signature paper 완성 (Plan A 실데이터 or Plan B 확장)</div>
+        <div class="tl-item priority"><strong>#3 ECMO MIPD</strong> 논문 투고 (Crit Care Med 타겟)</div>
+        <div class="tl-item"><strong>#4 MIPD</strong> 후향/태블릿 논문 완성</div>
+        <div class="tl-item"><strong>#5 ARC 소아</strong> β-lactam 투고</div>
+        <div class="tl-item"><strong>#8 Agentic QSP</strong> Application Note 완성</div>
+        <div class="tl-item"><strong>#9 TGI-OS</strong> 한국 코호트 논문</div>
+        <div class="tl-item warn">T+30~36 SciML 완전 중단 — 논문 마무리 집중 (RC3)</div>
+        <div class="tl-item exit"><strong>Exit Networking 본격화</strong> — PAGE/ISoP 타겟 PI·기업 공식 접촉. 포스트닥 or 빅파마 지원.</div>
+        <div class="tl-item">#18 External Controls, #6 SciML → 박사 "향후 연구" 챕터 명시</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T+36 -->
+  <div class="tl-phase">
+    <div class="tl-dot tl-dot-4">★</div>
+    <div class="tl-header">
+      <span class="tl-period">T+36</span>
+      <span class="tl-phase-title">2029.03 — 도달 목표 상태</span>
+    </div>
+    <div class="tl-card" style="border-color:var(--s);box-shadow:0 0 24px var(--s-glow);">
+      <div class="tl-items">
+        <div class="tl-item priority">ADC pharmacometrics × Korean ADC 산업 중심 포지션</div>
+        <div class="tl-item priority">ECMO/CRRT + ARC 소아 MIPD 임상 파일럿 하이브리드</div>
+        <div class="tl-item">Agentic QSP 응용 설계자 + TGI-OS + SciML 응용 역량 병행</div>
+        <div class="tl-item"><strong>1저자 논문 4~5편:</strong> #1 ADC + #3 ECMO + #4 MIPD + #10 CAR-T (+ #5·#8·#9 중 1~2)</div>
+        <div class="tl-item exit"><strong>경로 A:</strong> 글로벌 포스트닥 (UCSF·Maryland·Buffalo ADC pharmacometrics × FDA 포닥)</div>
+        <div class="tl-item exit"><strong>경로 B:</strong> 한국 빅파마/CRO 직합류 (LG Chem·SK Biopharmaceuticals·Certara Korea)</div>
+        <div class="tl-item exit"><strong>경로 C ★신규:</strong> ICU/소아 중환자 임상약리학 trans-boundary 포지션</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end timeline-wrap -->
+
+<div class="section-divider"></div>
+
+<!-- ═══ GIVE-UP LIST ═══ -->
+<div class="label" style="margin-bottom:.75rem" id="giveup">v5.0 정직한 포기 목록 (5개)</div>
+<div class="giveup-section fade-in">
+  <div class="giveup-items">
+    <div class="giveup-item"><span class="giveup-num">1</span><span><b>TB/HIV LMIC 직접 기여 포기</b> — A=10이지만 C=4. Cape Town·Radboud·Uppsala 네트워크가 이미 점령. 시니어 단계에서 국제 공중보건 자문으로 복귀 채널은 열어둠.</span></div>
+    <div class="giveup-item"><span class="giveup-num">2</span><span><b>MFDS 공무원 경로 안정성 포기</b> — 글로벌 포지셔닝 대가로 초기 경력 불확실성 감수. MFDS는 학계·산업계에서 자문하는 대상이지 커리어 종착지가 아니다.</span></div>
+    <div class="giveup-item"><span class="giveup-num">3</span><span><b>방법론 창시자(CS 영역) 포기</b> — "응용 설계자" 선택. 수학·CS 기반 부재를 현실로 인정하고 신경망 기반 도구를 임상 문제에 가장 선도적으로 응용하는 포지션으로.</span></div>
+    <div class="giveup-item"><span class="giveup-num">4</span><span><b>ADC 실데이터 pivotal evidence 우선권 포기</b> — Plan B(역설계 시뮬레이션)가 기본 경로. "한국 ADC 기업 실데이터 최초 분석자" 서사 자본 일부 포기. 실데이터 접근 시 Plan A로 추가 논문 전환.</span></div>
+    <div class="giveup-item"><span class="giveup-num">5</span><span><b>★ Top 20 동시 1저자 완주 포기</b> — 36개월 현실적 상한: #1 ADC + #3 ECMO + #4 MIPD + #10 CAR-T = 4편. #5·#8·#9 중 1~2편 부차적으로 가능. 나머지는 공동 저자 또는 포스트닥 이관.</span></div>
+  </div>
+</div>
+
+<!-- ═══ OBSIDIAN ═══ -->
+<div class="label" style="margin-bottom:.75rem">PIPET-Vault 정리 가이드</div>
+<div class="obsidian-section fade-in">
+  <div class="obs-grid">
+    <span class="obs-key">📂 경로</span>
+    <span class="obs-val"><code style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--a);">03_PROJECTS/Dissertation/</code></span>
+    <span class="obs-key">📝 파일명</span>
+    <span class="obs-val"><code style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-2);">2026-04-19_BIG-IDEA-Masterplan-v5.0-Top20-Rerank_TYPE1-전략.md</code></span>
+    <span class="obs-key">🏷️ 태그</span>
+    <span class="obs-val">
+      <div class="obs-tags">
+        <span class="obs-tag">#BIG_IDEA</span><span class="obs-tag">#ProjectOptimus</span><span class="obs-tag">#ADC_pharmacometrics</span>
+        <span class="obs-tag">#ECMO_MIPD</span><span class="obs-tag">#ARC_Pediatric_AMR</span><span class="obs-tag">#TGI_OS</span>
+        <span class="obs-tag">#mRNA_LNP_PBPK</span><span class="obs-tag">#Agentic_QSP_Copilot</span><span class="obs-tag">#SciML_PinnedHobby</span>
+        <span class="obs-tag">#PhD_Roadmap</span><span class="obs-tag">#P1_Action</span><span class="obs-tag">#P3_Audit</span>
+      </div>
+    </span>
+    <span class="obs-key">🔗 신규 노트</span>
+    <span class="obs-val" style="font-size:.8rem;color:var(--text-3);line-height:1.8;">
+      [[ECMO 회로 약물 흡착 Minimal PBPK]] · [[ARC 소아 β-lactam fT>MIC 시뮬레이션]] · [[QSP-Copilot Multi-agent DAG 아키텍처]] · [[TGI-OS 모델링 Korean Cohort 적용]] · [[mRNA-LNP Tegenge 2025 CBER PBPK]] · [[반사실 추론 Target Trial Emulation]] · [[Agentic AI 환각 위험 구조적 제어]]
+    </span>
+  </div>
+</div>
+
+</div><!-- end .container -->
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <div class="ft-inner">
+      <span class="ft-txt">PIPET-Lab · 계량약리학 박사 마스터플랜 v5.0 · 2026.04</span>
+      <span class="ft-txt">Pharmacometrics Masterplan — "한 명이라도 더"</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─── THEME ─── */
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('theme-icon').textContent=isDark?'☾':'☀';
+  document.getElementById('theme-txt').textContent=isDark?'다크':'라이트';
+}
+
+/* ─── SCROLL REVEAL ─── */
+const reveals=document.querySelectorAll('.fade-in');
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.06});
+reveals.forEach((el,i)=>{
+  el.style.transitionDelay=(i%5)*0.06+'s';
+  io.observe(el);
+});
+
+/* ─── SCORE BAR ANIMATION ─── */
+const scoreBars=document.querySelectorAll('.sbar');
+const sio=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const w=e.target.style.width;
+      e.target.style.transform='scaleX(0)';
+      e.target.style.transformOrigin='left';
+      setTimeout(()=>{
+        e.target.style.transition='transform .6s ease-out';
+        e.target.style.transform='scaleX(1)';
+      },100);
+      sio.unobserve(e.target);
+    }
+  });
+},{threshold:0.5});
+scoreBars.forEach(b=>sio.observe(b));
+</script>
+</body>
+</html>
