@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook #12 v2.1 — MFDS·FDA·EMA 규제 비교 방법론 최종 통합본</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07080c;--bg-2:#0d0f18;--bg-3:#13162000;--bg-3s:#131620;--bg-4:#1a1d2c;
+  --border:#1f2338;--border-2:#171a28;
+  --text:#e6e9f4;--text-2:#9ba4cc;--text-3:#5c6390;--text-4:#323660;
+  --s:#f0a020;--s-2:#f5c060;--s-bg:#150e00;--s-bd:#302000;--s-glow:rgba(240,160,32,0.14);
+  --a:#0fba81;--a-2:#30d898;--a-bg:#001811;--a-bd:#003322;--a-glow:rgba(15,186,129,0.10);
+  --b:#5f63ef;--b-2:#7c80f8;--b-bg:#070818;--b-bd:#111328;--b-glow:rgba(95,99,239,0.10);
+  --w:#ef4040;--w-2:#f87070;--w-bg:#180000;--w-bd:#360606;--w-glow:rgba(239,64,64,0.08);
+  --c:#0ea5e9;--c-bg:#001520;--c-bd:#0c2840;
+  --v:#a855f7;--v-2:#c084fc;--v-bg:#0a0418;--v-bd:#200840;--v-glow:rgba(168,85,247,0.12);
+  --g:#22c55e;--g-bg:#001a08;--g-bd:#004018;--g-glow:rgba(34,197,94,0.10);
+  --radius:8px;--radius-sm:4px;
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Noto Serif KR',Georgia,serif;
+  --sans:'Noto Sans KR',system-ui,sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f2f4fb;--bg-2:#ffffff;--bg-3:#f8f9fd00;--bg-3s:#f8f9fd;--bg-4:#edf0fa;
+  --border:#d6daf0;--border-2:#e4e8f6;
+  --text:#0f1228;--text-2:#363d64;--text-3:#6b73a0;--text-4:#a0a8c8;
+  --s:#b87000;--s-2:#966000;--s-bg:#fff8e0;--s-bd:#ffe090;--s-glow:rgba(184,112,0,0.06);
+  --a:#048a60;--a-2:#036b4c;--a-bg:#edfdf5;--a-bd:#a7f3d0;--a-glow:rgba(4,138,96,0.05);
+  --b:#4646cc;--b-2:#3636a8;--b-bg:#eeeefd;--b-bd:#c7c7fb;--b-glow:rgba(70,70,204,0.05);
+  --w:#cc2020;--w-2:#a81818;--w-bg:#fff5f5;--w-bd:#fca5a5;--w-glow:rgba(204,32,32,0.04);
+  --c:#0284c7;--c-bg:#e0f2fe;--c-bd:#7dd3fc;
+  --v:#8b2fd4;--v-2:#7020b0;--v-bg:#f5eeff;--v-bd:#c4a0e8;--v-glow:rgba(139,47,212,0.05);
+  --g:#15803d;--g-bg:#f0fdf4;--g-bd:#86efac;--g-glow:rgba(21,128,61,0.05);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14.5px;}
+body{font-family:var(--sans);font-weight:300;background:var(--bg);color:var(--text);line-height:1.78;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;overflow-x:hidden;}
+.container{max-width:1060px;margin:0 auto;padding:0 1.6rem;}
+.theme-btn{position:fixed;top:1.1rem;right:1.1rem;z-index:9999;background:var(--bg-4);border:1px solid var(--border);border-radius:2rem;padding:.35rem .85rem;cursor:pointer;font-family:var(--mono);font-size:.68rem;color:var(--text-3);letter-spacing:.06em;display:flex;align-items:center;gap:.4rem;transition:all .2s;box-shadow:0 2px 16px rgba(0,0,0,.25);}
+.theme-btn:hover{border-color:var(--text-3);color:var(--text);}
+
+/* HERO */
+.hero{position:relative;padding:4.5rem 0 3.5rem;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 60%,rgba(168,85,247,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 80% 20%,rgba(240,160,32,.07) 0%,transparent 70%);pointer-events:none;}
+.hero-meta{display:flex;align-items:center;gap:.65rem;margin-bottom:1.4rem;flex-wrap:wrap;}
+.chip{font-family:var(--mono);font-size:.65rem;padding:.22rem .7rem;border-radius:2rem;border:1px solid;letter-spacing:.07em;white-space:nowrap;}
+.chip-v{color:var(--v);border-color:var(--v-bd);background:var(--v-bg);}
+.chip-s{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.chip-a{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.chip-c{color:var(--c);border-color:var(--c-bd);background:var(--c-bg);}
+.chip-w{color:var(--w);border-color:var(--w-bd);background:var(--w-bg);}
+.chip-g{color:var(--g);border-color:var(--g-bd);background:var(--g-bg);}
+.hero-title{font-family:var(--serif);font-size:clamp(1.7rem,4.5vw,2.9rem);font-weight:700;line-height:1.22;color:var(--text);margin-bottom:1.1rem;letter-spacing:-.02em;}
+.hero-title em{font-style:normal;color:var(--v);}
+.hero-title strong{color:var(--s);}
+.hero-sub{font-size:.95rem;color:var(--text-2);max-width:680px;line-height:1.88;margin-bottom:1.8rem;}
+.hero-sub b{color:var(--text);font-weight:500;}
+
+/* Score Panel */
+.score-panel{display:inline-flex;align-items:stretch;border:1px solid var(--s-bd);border-radius:var(--radius);overflow:hidden;background:var(--s-bg);margin-bottom:2rem;box-shadow:0 4px 24px var(--s-glow);}
+.sp-main{padding:.85rem 1.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.sp-score{font-family:var(--serif);font-size:2.8rem;font-weight:700;color:var(--s);line-height:1;}
+.sp-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--s);opacity:.7;margin-top:2px;}
+.sp-divider{width:1px;background:var(--s-bd);}
+.sp-dims{padding:.7rem 1.2rem;display:grid;grid-template-columns:auto auto;gap:.25rem .9rem;align-content:center;}
+.sp-dim{font-family:var(--mono);font-size:.68rem;color:var(--s);}
+.sp-dim-label{color:var(--text-3);font-size:.62rem;}
+
+/* Section structure */
+.sec-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-4);margin-bottom:.6rem;}
+.sec-head{display:flex;align-items:center;gap:.9rem;margin:2.8rem 0 1.1rem;}
+.sec-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:.28rem .9rem;border-radius:2rem;border:1px solid;white-space:nowrap;flex-shrink:0;}
+.st-neg1{color:var(--text-3);border-color:var(--border);background:var(--bg-4);}
+.st-0{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.st-a{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.st-b{color:var(--b);border-color:var(--b-bd);background:var(--b-bg);}
+.st-v{color:var(--v);border-color:var(--v-bd);background:var(--v-bg);}
+.st-c{color:var(--c);border-color:var(--c-bd);background:var(--c-bg);}
+.st-w{color:var(--w);border-color:var(--w-bd);background:var(--w-bg);}
+.st-g{color:var(--g);border-color:var(--g-bd);background:var(--g-bg);}
+.st-s{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.sec-line{flex:1;height:1px;background:var(--border-2);}
+.sec-range{font-family:var(--mono);font-size:.65rem;color:var(--text-4);white-space:nowrap;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:2.2rem 0;}
+
+/* Cards */
+.card{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius);padding:1.1rem 1.3rem;margin-bottom:.7rem;transition:box-shadow .2s,transform .2s;position:relative;}
+.card:hover{transform:translateY(-1px);}
+.card-v{border-left:2px solid var(--v);}.card-v:hover{box-shadow:0 6px 24px var(--v-glow);}
+.card-a{border-left:2px solid var(--a);}.card-a:hover{box-shadow:0 6px 24px var(--a-glow);}
+.card-s{border-left:2px solid var(--s);}.card-s:hover{box-shadow:0 6px 24px var(--s-glow);}
+.card-w{border-left:2px solid var(--w);}.card-w:hover{box-shadow:0 6px 24px var(--w-glow);}
+.card-b{border-left:2px solid var(--b);}.card-b:hover{box-shadow:0 6px 24px var(--b-glow);}
+.card-g{border-left:2px solid var(--g);}.card-g:hover{box-shadow:0 6px 24px var(--g-glow);}
+.card-c{border-left:2px solid var(--c);}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:1rem;}
+.tbl th{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);text-align:left;padding:.5rem .8rem;border-bottom:1px solid var(--border);background:var(--bg-4);white-space:nowrap;}
+.tbl td{padding:.55rem .8rem;border-bottom:1px solid var(--border-2);color:var(--text-3);vertical-align:top;line-height:1.65;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--bg-4);}
+.tbl td b,.tbl td strong{color:var(--text-2);font-weight:500;}
+.tbl-icon{font-size:1.1rem;text-align:center;width:2.2rem;padding-left:.5rem;}
+
+/* Code blocks */
+.code-block{background:var(--bg-4);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:1rem 1.1rem;margin:.7rem 0;font-family:var(--mono);font-size:.78rem;color:var(--text-2);line-height:1.72;white-space:pre-wrap;overflow-x:auto;}
+.code-block .kw{color:var(--v-2);}
+.code-block .cm{color:var(--text-4);}
+.code-block .st{color:var(--a-2);}
+.code-block .nm{color:var(--s-2);}
+.code-block .er{color:var(--w-2);}
+.code-block .gr{color:var(--g);}
+
+/* Alerts */
+.alert{border-radius:var(--radius);padding:1rem 1.2rem;margin:.8rem 0;}
+.alert-w{background:var(--w-bg);border:1px solid var(--w-bd);border-left:3px solid var(--w);}
+.alert-a{background:var(--a-bg);border:1px solid var(--a-bd);border-left:3px solid var(--a);}
+.alert-v{background:var(--v-bg);border:1px solid var(--v-bd);border-left:3px solid var(--v);}
+.alert-s{background:var(--s-bg);border:1px solid var(--s-bd);border-left:3px solid var(--s);}
+.alert-c{background:var(--c-bg);border:1px solid var(--c-bd);border-left:3px solid var(--c);}
+.alert-g{background:var(--g-bg);border:1px solid var(--g-bd);border-left:3px solid var(--g);}
+.alert-b{background:var(--b-bg);border:1px solid var(--b-bd);border-left:3px solid var(--b);}
+.alert-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
+.alert-w .alert-label{color:var(--w-2);}
+.alert-a .alert-label{color:var(--a);}
+.alert-v .alert-label{color:var(--v-2);}
+.alert-s .alert-label{color:var(--s);}
+.alert-c .alert-label{color:var(--c);}
+.alert-g .alert-label{color:var(--g);}
+.alert-b .alert-label{color:var(--b-2);}
+.alert-body{font-size:.83rem;color:var(--text-3);line-height:1.75;}
+.alert-body b{color:var(--text-2);font-weight:500;}
+
+/* Badges */
+.badge{font-family:var(--mono);font-size:.62rem;padding:.08rem .45rem;border-radius:2px;border:1px solid;vertical-align:middle;display:inline-flex;align-items:center;}
+.bd-v{color:var(--v-2);border-color:var(--v-bd);background:var(--v-bg);}
+.bd-s{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.bd-a{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.bd-w{color:var(--w-2);border-color:var(--w-bd);background:var(--w-bg);}
+.bd-c{color:var(--c);border-color:var(--c-bd);background:var(--c-bg);}
+.bd-g{color:var(--g);border-color:var(--g-bd);background:var(--g-bg);}
+.bd-b{color:var(--b-2);border-color:var(--b-bd);background:var(--b-bg);}
+
+/* Checklist */
+.checklist{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin:.6rem 0;}
+.checklist li{display:flex;align-items:flex-start;gap:.55rem;font-size:.82rem;color:var(--text-3);line-height:1.6;}
+.checklist li::before{content:'☐';font-size:.85rem;color:var(--text-4);flex-shrink:0;margin-top:.05rem;}
+.checklist li b{color:var(--text-2);font-weight:500;}
+.checklist li .req{font-family:var(--mono);font-size:.62rem;color:var(--w-2);background:var(--w-bg);border:1px solid var(--w-bd);padding:.02rem .4rem;border-radius:2px;white-space:nowrap;flex-shrink:0;}
+.checklist li .opt{font-family:var(--mono);font-size:.62rem;color:var(--a);background:var(--a-bg);border:1px solid var(--a-bd);padding:.02rem .4rem;border-radius:2px;white-space:nowrap;flex-shrink:0;}
+.checklist li .str{font-family:var(--mono);font-size:.62rem;color:var(--s);background:var(--s-bg);border:1px solid var(--s-bd);padding:.02rem .4rem;border-radius:2px;white-space:nowrap;flex-shrink:0;}
+
+/* Timeline */
+.timeline{position:relative;padding-left:2.4rem;}
+.timeline::before{content:'';position:absolute;left:.75rem;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--v),var(--a),var(--s));border-radius:2px;}
+.phase{position:relative;margin-bottom:1.6rem;}
+.phase-dot{position:absolute;left:-2.4rem;top:.3rem;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.58rem;font-weight:600;border:2px solid;z-index:1;}
+.pd-0{background:var(--bg-2);border-color:var(--w);color:var(--w);}
+.pd-1{background:var(--v-bg);border-color:var(--v);color:var(--v);}
+.pd-2{background:var(--a-bg);border-color:var(--a);color:var(--a);}
+.pd-3{background:var(--s-bg);border-color:var(--s);color:var(--s);}
+.pd-final{background:var(--bg-2);border-color:var(--s);color:var(--s);box-shadow:0 0 0 4px var(--s-glow);}
+.phase-head{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.6rem;}
+.phase-period{font-family:var(--mono);font-size:.68rem;color:var(--text-4);}
+.phase-title{font-size:.95rem;font-weight:600;color:var(--text);}
+.phase-card{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius);padding:.9rem 1.1rem;}
+.task{display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;color:var(--text-3);line-height:1.6;padding:.25rem 0;border-bottom:1px solid var(--border-2);}
+.task:last-child{border-bottom:none;}
+.task-icon{font-family:var(--mono);font-size:.68rem;flex-shrink:0;margin-top:.1rem;white-space:nowrap;}
+.ti-green{color:var(--a);background:var(--a-bg);border:1px solid var(--a-bd);padding:.05rem .4rem;border-radius:2px;}
+.ti-red{color:var(--w);background:var(--w-bg);border:1px solid var(--w-bd);padding:.05rem .4rem;border-radius:2px;}
+.ti-shift{color:var(--s);background:var(--s-bg);border:1px solid var(--s-bd);padding:.05rem .4rem;border-radius:2px;}
+.ti-wait{color:var(--b-2);background:var(--b-bg);border:1px solid var(--b-bd);padding:.05rem .4rem;border-radius:2px;}
+.ti-deep{color:var(--v-2);background:var(--v-bg);border:1px solid var(--v-bd);padding:.05rem .4rem;border-radius:2px;}
+.task-body b{color:var(--text-2);font-weight:500;}
+.task-timebox{font-family:var(--mono);font-size:.63rem;color:var(--text-4);background:var(--bg-4);border:1px solid var(--border-2);border-radius:2px;padding:.02rem .45rem;white-space:nowrap;margin-left:.3rem;flex-shrink:0;}
+
+/* KV grid */
+.kv-grid{display:grid;grid-template-columns:auto 1fr;gap:.4rem .9rem;font-size:.83rem;}
+.kv-key{font-family:var(--mono);font-size:.68rem;color:var(--text-3);white-space:nowrap;padding-top:.1rem;}
+.kv-val{color:var(--text-2);line-height:1.65;}
+
+/* Tonight / Copy box */
+.tonight{background:var(--bg-2);border:1px solid var(--s-bd);border-radius:var(--radius);padding:1.3rem;box-shadow:0 4px 28px var(--s-glow);}
+.tonight-title{font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--s);margin-bottom:1rem;}
+.tonight-item{display:flex;align-items:flex-start;gap:.9rem;padding:.75rem .9rem;background:var(--bg-4);border:1px solid var(--border-2);border-radius:var(--radius-sm);margin-bottom:.55rem;}
+.tonight-num{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--s);opacity:.5;line-height:1;flex-shrink:0;}
+.tonight-body{flex:1;}
+.tonight-body b{color:var(--text);font-weight:600;font-size:.9rem;display:block;margin-bottom:.25rem;}
+.tonight-body span{font-size:.82rem;color:var(--text-3);line-height:1.65;}
+.copy-box{background:var(--bg-4);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;font-family:var(--mono);font-size:.78rem;color:var(--text-2);line-height:1.8;white-space:pre-wrap;position:relative;}
+.copy-btn{position:absolute;top:.65rem;right:.65rem;background:var(--bg-3s);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.25rem .6rem;font-family:var(--mono);font-size:.62rem;color:var(--text-3);cursor:pointer;transition:all .15s;}
+.copy-btn:hover{border-color:var(--text-3);color:var(--text);}
+
+/* Delta table highlight */
+.tbl .delta-strong td{background:rgba(240,160,32,.04);}
+.tbl .delta-new td{background:rgba(15,186,129,.03);}
+.delta-badge{font-family:var(--mono);font-size:.58rem;padding:.05rem .4rem;border-radius:2px;border:1px solid;display:inline-block;margin-bottom:2px;}
+.db-strong{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.db-mod{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.db-keep{color:var(--text-3);border-color:var(--border);background:var(--bg-4);}
+.db-new{color:var(--v-2);border-color:var(--v-bd);background:var(--v-bg);}
+
+/* Tiered Submission visual */
+.tier-flow{display:flex;flex-direction:column;gap:.4rem;margin:.8rem 0;}
+.tier-row{display:flex;align-items:center;gap:.6rem;}
+.tier-num{font-family:var(--mono);font-size:.65rem;color:var(--text-4);flex-shrink:0;width:1.4rem;text-align:right;}
+.tier-bar{flex:1;border-radius:4px;padding:.5rem .9rem;font-size:.82rem;border:1px solid;line-height:1.55;}
+.tier-arrow{color:var(--text-4);font-size:.75rem;text-align:center;}
+.tb-1{background:var(--v-bg);border-color:var(--v-bd);color:var(--v-2);}
+.tb-2{background:var(--a-bg);border-color:var(--a-bd);color:var(--a-2);}
+.tb-3{background:var(--c-bg);border-color:var(--c-bd);color:var(--c);}
+.tb-4{background:var(--s-bg);border-color:var(--s-bd);color:var(--s-2);}
+.tier-bar b{display:block;font-size:.88rem;margin-bottom:.1rem;font-weight:600;}
+.tier-bar span{font-size:.75rem;opacity:.8;}
+
+/* Evidence level tag */
+.ev{display:inline-block;font-family:var(--mono);font-size:.6rem;padding:.06rem .45rem;border-radius:2px;border:1px solid;margin-left:.35rem;vertical-align:middle;}
+.ev-strong{color:var(--a);border-color:var(--a-bd);background:var(--a-bg);}
+.ev-mod{color:var(--s);border-color:var(--s-bd);background:var(--s-bg);}
+.ev-weak{color:var(--text-3);border-color:var(--border);background:var(--bg-4);}
+
+/* Verified table */
+.v-yes::before{content:"✅ ";font-size:.85rem;}
+.v-partial::before{content:"⚠️ ";font-size:.85rem;}
+.v-no::before{content:"❌ ";font-size:.85rem;}
+
+/* Footer */
+footer{border-top:1px solid var(--border-2);padding:1.4rem 0;margin-top:3rem;}
+.ft-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.ft-txt{font-family:var(--mono);font-size:.65rem;color:var(--text-4);letter-spacing:.04em;}
+
+/* Animations */
+.fade-in{opacity:0;transform:translateY(12px);}
+.fade-in.visible{opacity:1;transform:translateY(0);transition:opacity .45s ease,transform .45s ease;}
+
+@media(max-width:680px){
+  .sp-dims{grid-template-columns:1fr;gap:.2rem;}
+  .sec-range{display:none;}
+  .tbl th:nth-child(n+4),.tbl td:nth-child(n+4){display:none;}
+  .tier-flow{gap:.3rem;}
+}
+</style>
+</head>
+<body>
+<button class="theme-btn" onclick="toggleTheme()"><span id="ti">☀</span><span id="tt">라이트</span></button>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-meta">
+      <span class="chip chip-v">TYPE_B · 규제 비교·리뷰</span>
+      <span class="chip chip-s">Playbook #12 · <b>v2.1</b></span>
+      <span class="chip chip-a">2026.04 · PIPET-Lab</span>
+      <span class="chip chip-g">선택적 통합(Selective Integration)</span>
+      <span class="chip chip-c">v1.0 ✚ v2.0 비판 → v2.1 최종</span>
+    </div>
+    <h1 class="hero-title">
+      <em>MFDS·FDA·EMA</em> 첨단바이오의약품<br>PK 가이드라인 국제 비교<br>
+      <strong>방법론 마스터 플레이북 v2.1</strong>
+    </h1>
+    <p class="hero-sub">
+      v1.0은 <b>안전하지만 과소 야심</b>(TCP 단독 조준). v2.0 비판문서는 <b>야심 있으나 과대 낙관</b>(CPT:PSP 단독, Sino-US-DrugQA MFDS 무비판 적용, Landis–Koch를 AC1에 적용). <b>v2.1은 두 문서의 장점을 취하고 각 제안의 근거 수준을 독립 평가하여 통합</b>합니다. Cohen's κ → Gwet's AC2 robustness panel, Tiered submission (CPT:PSP→TIRS→BJCP→TCP), 3인 코더, OSF pre-registration.
+    </p>
+    <div class="score-panel">
+      <div class="sp-main">
+        <div class="sp-score">92</div>
+        <div class="sp-label">/ 100 · S+ 유지</div>
+      </div>
+      <div class="sp-divider"></div>
+      <div class="sp-dims">
+        <span class="sp-dim-label">독립성</span><span class="sp-dim">10/10</span>
+        <span class="sp-dim-label">기술매칭</span><span class="sp-dim">10/10</span>
+        <span class="sp-dim-label">소요기간</span><span class="sp-dim">9/10</span>
+        <span class="sp-dim-label">인지효율</span><span class="sp-dim">10/10</span>
+        <span class="sp-dim-label">가시성</span><span class="sp-dim">7→8/10</span>
+        <span class="sp-dim-label">마스터플랜</span><span class="sp-dim">A-Tier 1,320</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- ═══ 섹션 -1 | Pre-Flight ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-neg1">섹션 -1</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">Pre-Flight Declaration v2.1 — LLM 인지 셋업</span>
+</div>
+<div class="code-block fade-in"><span class="cm">/* ═══════════════════════════════════════════════════════════ */</span>
+<span class="cm">/* [Pre-Flight Declaration v2.1 — 선택적 통합본]              */</span>
+<span class="cm">/* ═══════════════════════════════════════════════════════════ */</span>
+
+<span class="kw">PROJECT_TYPE</span>         : <span class="st">TYPE_B</span> (Position Paper · 규제 비교 · 방법론 리뷰)
+<span class="kw">수학적 사전 검증</span>     : <span class="st">X — 생략</span> (NONMEM·ODE 불필요. mrgsolve option-B만 선택적 추가)
+
+<span class="kw">통계 합의 (v1.0 변경)</span>: <span class="gr">Gwet's AC2 quadratic weights (Primary)</span>
+                         <span class="nm">+ Krippendorff ordinal α (Secondary)</span>
+                         <span class="st">+ Fleiss weighted κ (Reference)</span>
+                         <span class="er">Cohen's κ → 단독 사용 금지 (Kappa Paradox 위험)</span>
+                         임계값: Gwet cumulative-probability benchmarking
+                         (Landis–Koch를 AC2에 적용 금지 — Vach & Gerke 2023)
+
+<span class="kw">저널 전략 (v1.0 변경)</span>: <span class="gr">Tiered Submission</span>
+                         1° CPT:PSP (Tutorial/Perspective + Option-B scenario)
+                         2° TIRS (DIA, regulatory science 정전)
+                         3° BJCP (Methods in Clinical Pharmacology)
+                         4° TCP (Korea, 게재 보증 — Fallback)
+                         <span class="er">단독 CPT:PSP 조준 또는 단독 TCP 조준 모두 최선 아님</span>
+
+<span class="kw">코더 구조 (v1.0 변경)</span>: <span class="gr">3인</span> — 각하(전수) + 한성필(전수) + 한승훈(20–30% audit)
+<span class="kw">OSF 사전등록</span>        : <span class="gr">권장</span> (Registered Report 형식은 부적합, Protocol+Codebook만)
+<span class="kw">LLM 도구</span>            : Claude Sonnet API(ZDR) + Gemini Vertex Seoul(Korean OCR)
+                         <span class="er">Consumer plan 사용 금지</span>
+
+<span class="kw">규제 이벤트 교정</span>     : <span class="nm">FDA ADC 2024.03 FINAL ✓ | FDA CAR-T 2024.01 FINAL ✓</span>
+                         <span class="nm">FDA CGT 2025.09 3종 DRAFT ✓ (v2.0 누락 → v2.1 추가)</span>
+                         <span class="nm">Prasad JAMA 2025 정책신호 (draft guidance 아님) ✓</span>
+                         <span class="nm">ICH M15 → "draft/under development" 교정 ✓</span>
+                         <span class="nm">EMA ADC 전용 reflection paper → 부재 확인 ✓ (핵심 novelty)</span>
+
+<span class="kw">LLM benchmark 주의</span>  : Sino-US-DrugQA (medRxiv 2026.02 preprint, US-China only)
+                         <span class="er">MFDS/Korea context에 직접 적용 불가 → analogical evidence만</span>
+
+<span class="kw">T+6 Checkpoint</span>      : Option-B 추가 가부 판단 (시간 부족 시 Option-A + Perspective 전환)
+<span class="kw">PAGE 2027</span>            : primary dissemination venue (T+9 투고와 동시 abstract)</div>
+
+<!-- ═══ 섹션 0 | Project Charter ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-0">섹션 0</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">프로젝트 헌장 v2.1 — Project Charter</span>
+</div>
+
+<div class="sec-label">완료의 정의 (Definition of Done)</div>
+<div class="card card-v fade-in">
+  <table class="tbl">
+    <thead><tr><th>#</th><th>완료 조건</th><th>측정 기준</th></tr></thead>
+    <tbody>
+      <tr><td class="tbl-icon">①</td><td><b>3기관(MFDS·FDA·EMA) 비교 매트릭스 완성</b> — 4개 도메인(데이터 요건·모델 평가·특수집단 면제·첨단바이오 특이) × 3기관 × 조문 번호 수준</td><td>Excel·Markdown + JSON 추출 파일, 인용 번호 전수</td></tr>
+      <tr><td class="tbl-icon">②</td><td><b>격차 분류 체계 확정</b> — 4범주 순위 코드(silent &lt; optional &lt; recommended &lt; required), Gwet's AC2 robustness panel 계산 완료</td><td>코드북 + AC2/α/κ 값 기록 + OSF pre-reg 공개</td></tr>
+      <tr><td class="tbl-icon">③</td><td><b>한국 맥락 임플리케이션</b> — LigaChem·Samsung Biologics·ABL Bio 허가 전략에 영향 격차 Top 5 추출 + COI proactive disclosure</td><td>논문 Discussion 3문단 + Competing Interests 섹션</td></tr>
+      <tr><td class="tbl-icon">④</td><td><b>Option-B scenario analysis</b> (T+6 checkpoint 후 가능 시) 또는 Option-A 질적 시나리오 포함한 원고 완성</td><td>1 figure + 1 table (Option-B) 또는 qualitative box (Option-A)</td></tr>
+      <tr><td class="tbl-icon">⑤</td><td><b>투고 완료</b> — CPT:PSP 또는 TIRS 또는 BJCP (Tiered 순서에 따라)</td><td>투고 수신 이메일 날짜 기록</td></tr>
+    </tbody>
+  </table>
+  <div class="alert alert-s">
+    <div class="alert-label">CV에 추가되는 대체 불가 한 줄 (목표 최상위)</div>
+    <div class="alert-body">
+      <b>"Korean Regulatory Pharmacometrician's Perspective: Comparative Analysis of MFDS, FDA, and EMA Population Pharmacokinetic Requirements for Advanced Biologic Modalities (ADC, Bispecific, CAR-T) with Pharmacometric Scenario Analysis."</b><br>
+      CPT: Pharmacometrics &amp; Systems Pharmacology 또는 Therapeutic Innovation &amp; Regulatory Science, 2027. 1저자.
+    </div>
+  </div>
+</div>
+
+<div class="sec-label" style="margin-top:1.4rem">단일 최대 리스크 (v2.1 재정의)</div>
+<div class="alert alert-w fade-in">
+  <div class="alert-label">⚠ v2.1의 최대 위협 — 타임라인 초과</div>
+  <div class="alert-body">
+    v1.0의 최대 위협이 "저널 타겟 오선정"이었다면, v2.1은 <b>Tiered 전략으로 저널 위험을 상각했으므로 최대 위협은 "박사 1년차 시간 제약으로 인한 타임라인 초과"</b>입니다. TC011 CAR-T CSR 업무 + coursework + NONMEM 습득 + P12가 모두 T+9 안에 공존해야 합니다. <b>T+6 checkpoint에서 Option-B 가부를 냉정히 판단</b>하는 것이 가장 중요한 단일 의사결정입니다. "조금만 더"는 없습니다.
+  </div>
+</div>
+
+<div class="sec-label" style="margin-top:1.4rem">포기 선언 (Out-of-Scope — v2.1 유지)</div>
+<div class="card card-b fade-in">
+  <table class="tbl">
+    <thead><tr><th>포기 항목</th><th>사유</th></tr></thead>
+    <tbody>
+      <tr><td><b>NONMEM estimation (SSE 포함)</b></td><td>Option-B는 mrgsolve simulation-only. NONMEM estimation은 타임라인 초과 위험. 학습은 병렬이나 P12에는 사용 안 함.</td></tr>
+      <tr><td><b>원시 PK 데이터 수집·분석</b></td><td>공개 가이던스 텍스트 + 게재 논문 파라미터만. IRB 불필요의 전제 조건 유지.</td></tr>
+      <tr><td><b>MFDS 내부 미공개 문서</b></td><td>공개 민원인안내서 + 공무원지침서만. 내부 자료 접근 불가.</td></tr>
+      <tr><td><b>Registered Report 형식 투고</b></td><td>CPT:PSP·TIRS RR 포맷 미지원. OSF protocol 사전등록으로 대체.</td></tr>
+      <tr><td><b>#10 CAR-T 포지션 페이퍼 병렬</b></td><td>P12 완성 후 순차 착수. 인지부하 임계치 초과 위험.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ 섹션 A | 통계 방법론 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-a">섹션 A</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">통계 방법론 결정 — v1.0 대비 핵심 변경</span>
+</div>
+
+<div class="alert alert-a fade-in">
+  <div class="alert-label">결론 (근거 수준 Strong — 조건부)</div>
+  <div class="alert-body">
+    본 연구(4범주 순위 코딩, 한쪽 치우친 주변분포 예상)에서 <b>Gwet's AC2 (quadratic ordinal weights) 사용은 강하게 지지</b>됩니다. 단, 단독 사용이 아니라 <b>Robustness Panel의 primary</b>로만 위치시킵니다. Vach &amp; Gerke 2023(MethodsX)의 반론을 방법론 섹션에서 선제적으로 언급하여 reviewer 지적을 차단합니다.
+  </div>
+</div>
+
+<div class="card card-a fade-in">
+  <div class="sec-label">A.1 Kappa Paradox 기전 (v1.0 Cohen's κ ≥ 0.70 폐기 근거)</div>
+  <div class="kv-grid">
+    <span class="kv-key">수학적 기전</span>
+    <span class="kv-val">Cohen's κ = (Po − Pe)/(1 − Pe). 한 범주의 주변확률 → 1 (예: 항목의 85%가 "silent")이면 Pe → 1, 분모(1 − Pe)가 분자보다 빠르게 0 수렴 → 관찰 일치가 높아도 κ가 인위적으로 deflate. 본 연구는 MFDS-ABSENT·silent 범주 우세가 거의 확실하므로 <b>Paradox 1 고위험</b>.</span>
+    <span class="kv-key">Vach & Gerke 2023</span>
+    <span class="kv-val">AC1/AC2와 κ는 "우연"의 정의 자체가 다름 (κ=기대 일치, AC1=기대 불일치). <b>Landis–Koch 등급을 AC2에 적용 금지</b> — AC1은 κ보다 체계적으로 크므로 같은 기준 적용 시 "결함을 whitewash". 이 한계를 Methods에 명시해야 함.</span>
+    <span class="kv-key">Feinstein & Cicchetti 1990</span>
+    <span class="kv-val">동일 raw agreement에서 주변분포가 다르면 κ가 크게 달라지는 "Paradox 1, 2" 최초 기술. 규제 문서 코딩에서의 위험성을 지지하는 고전적 근거.</span>
+  </div>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">A.2 Robustness Panel (v2.1 확정)</div>
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>역할</th><th>통계량</th><th>구현 (R)</th><th>임계값 해석</th><th>근거</th></tr></thead>
+  <tbody>
+    <tr><td><b>Primary</b></td><td><b>Gwet's AC2</b><br>(quadratic ordinal)</td><td><code>irrCAC::gwet.ac1.raw(..., weights="quadratic")</code></td><td>Gwet cumulative-probability benchmarking (Gwet 2014 Handbook ch.6). CI가 어떤 벤치마크 구간과 95% 이상 겹치는지로 판정. <b>Landis–Koch 사용 금지</b>.</td><td>Strong</td></tr>
+    <tr><td><b>Secondary</b></td><td><b>Krippendorff's α</b><br>(ordinal difference)</td><td><code>irrCAC::krippen.alpha.raw(..., weights="ordinal")</code></td><td>α ≥ 0.80 = acceptable, α ≥ 0.67 = tentative (Krippendorff 2004). 결측 허용, ≥3명 코더 native 지원.</td><td>Strong</td></tr>
+    <tr><td><b>Reference</b></td><td><b>Fleiss weighted κ</b><br>(quadratic)</td><td><code>irrCAC::fleiss.kappa.raw()</code><br>⚠️ SPSS/rel 패키지 오류 있음, irrCAC만 사용</td><td>Landis–Koch 적용 가능. 기존 문헌과의 교량 역할. 단독 보고 금지.</td><td>Moderate</td></tr>
+    <tr><td><b>진단</b></td><td>주변확률 분포<br>Byrt 1993 PABAK</td><td>기술통계 + 이분형 sensitivity</td><td>범주별 주변확률 bar chart로 paradox 위험도 시각화. PABAK는 4범주 primary 불가.</td><td>Moderate</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card card-s fade-in">
+  <div class="sec-label">A.3 Sample Size Justification (근거 수준: Moderate)</div>
+  <div class="code-block" style="margin:.5rem 0 0"><span class="cm"># R: kappaSize::CI4Cats() — κ 전용이나 "similar large-sample variance" 근사</span>
+<span class="cm"># 본 연구 설정</span>
+CI4Cats(<span class="kw">kappa0</span>=0.70, <span class="kw">kappaL</span>=0.60, <span class="kw">kappaU</span>=0.80,
+        <span class="kw">props</span>=c(0.25, 0.35, 0.10, 0.30),  <span class="cm"># 파일럿 후 보정</span>
+        <span class="kw">raters</span>=3, <span class="kw">alpha</span>=0.05)
+<span class="cm"># → 필요 item 수 ≈ 55–80</span>
+<span class="cm"># 실제: 80 item × 3기관 = 240 codings → 목표 precision 충족</span>
+<span class="cm"># 주의: kappaSize는 AC2용 표준 도구 없음 → Methods에 "근사" 명시 필수</span>
+<span class="cm"># Donner & Rotondi 2010 (Int J Biostat): 3명 코더 시 분산 감소 지지</span></div>
+  <p style="font-size:.8rem;color:var(--text-3);margin-top:.5rem;">도메인별 stratification(도메인당 ~20 item)은 CI 반폭 0.18–0.22로 넓어짐 → <b>pooled AC2를 primary, 도메인별은 탐색적 + caveat</b>으로 보고.</p>
+</div>
+
+<div class="card card-b fade-in" style="margin-top:.7rem;">
+  <div class="sec-label">A.4 3인 코더 역할 배분 (근거 수준: Strong)</div>
+  <table class="tbl">
+    <thead><tr><th>코더</th><th>역할</th><th>코딩 비율</th><th>통계적 기여</th></tr></thead>
+    <tbody>
+      <tr><td><b>각하 (제1저자)</b></td><td>전수 코딩, LLM 추출 운영, 원고 작성</td><td>100%</td><td>Primary coder</td></tr>
+      <tr><td><b>한성필 (부지도)</b></td><td>전수 독립 코딩, 도메인 3–4 기술 리드</td><td>100%</td><td>Secondary coder — full AC2/α/κ 계산</td></tr>
+      <tr><td><b>한승훈 (주지도)</b></td><td>20–30% random sample audit, 삼자 adjudication, 원고 strategic review</td><td>20–30%</td><td>Adjudicator — 과부하 완화 구조</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.8rem;color:var(--text-3);margin-top:.4rem;">GRRAS checklist (Kottner et al. 2011, J Clin Epidemiol 64:96–106) 준수. CPT:PSP·TIRS 모두 reliability/agreement 연구에 GRRAS 암묵적 기대.</p>
+</div>
+
+<!-- ═══ 섹션 B | 저널 전략 Tiered ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-b">섹션 B</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">저널 전략 — Tiered Submission (v1.0 TCP 단독 → v2.1 4단계)</span>
+</div>
+
+<div class="sec-label">B.1 Tiered Submission 플로우</div>
+<div class="tier-flow fade-in">
+  <div class="tier-row">
+    <span class="tier-num">1°</span>
+    <div class="tier-bar tb-1"><b>CPT: Pharmacometrics &amp; Systems Pharmacology (CPT:PSP)</b><span>IF CiteScore 6.3 · Tutorial 또는 Perspective 형식 · Option-B scenario analysis 포함 필수 · Open access · ASCPT early career 친화</span></div>
+  </div>
+  <div class="tier-arrow">↓ desk reject (2주 이내) 시 즉시 전환</div>
+  <div class="tier-row">
+    <span class="tier-num">2°</span>
+    <div class="tier-bar tb-2"><b>Therapeutic Innovation &amp; Regulatory Science (TIRS)</b><span>IF 2.43 · DIA 공식 저널 · regulatory science 정전 · cross-regulator 비교가 표준 · Desk rejection risk Low · Reformatting 최소 (Scenario → Supplementary)</span></div>
+  </div>
+  <div class="tier-arrow">↓ peer review 후 reject 시</div>
+  <div class="tier-row">
+    <span class="tier-num">3°</span>
+    <div class="tier-bar tb-3"><b>British Journal of Clinical Pharmacology (BJCP)</b><span>IF ~3.1 · "Methods in Clinical Pharmacology" 섹션 · FDA/EMA 비교 사례 존재 · Reformatting 중간 난이도</span></div>
+  </div>
+  <div class="tier-arrow">↓ reject 시 최종 안전망</div>
+  <div class="tier-row">
+    <span class="tier-num">4°</span>
+    <div class="tier-bar tb-4"><b>Translational and Clinical Pharmacology (TCP, KSCPT)</b><span>IF ~1.1 · Koo et al. 2025 ADC clin pharm review 게재 · 한국 regulatory community visibility 높음 · 게재 보증성 최고 · Reformatting 최소</span></div>
+  </div>
+</div>
+
+<div class="alert alert-g fade-in">
+  <div class="alert-label">원고 설계 원칙 — 재작업 최소화</div>
+  <div class="alert-body">
+    ① 본문은 <b>저널 무관 구조 (IMRaD + 4도메인 매트릭스)</b>.<br>
+    ② Scenario analysis는 <b>분리 가능한 독립 섹션</b> (CPT:PSP = 본문, TIRS = supplement, TCP = 제외 가능).<br>
+    ③ Discussion "regulatory harmonization implications" 단락을 <b>저널별 2–3문장 교체 블록</b>으로 사전 설계.
+  </div>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">B.2 저널별 Scope Fit 상세 평가</div>
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>저널</th><th>IF</th><th>Scope fit</th><th>Desk rej. risk</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td><b>CPT:PSP</b></td><td>CiteScore 6.3</td><td>4/5 (quantitative content 요구)</td><td><b>Medium-High</b><br>(scenario analysis 없으면 Higher)</td><td>Tutorial·Perspective 트랙 존재. Manolis et al. 2024 게재 사례(EMA 소속). open access.</td></tr>
+    <tr><td><b>TIRS (DIA)</b></td><td>2.43 (SJR Q1)</td><td><b>5/5</b></td><td><b>Low</b></td><td>regulatory science 정전. cross-regulator 비교 표준 콘텐츠. 한성필 DIA 네트워크 활용 가능.</td></tr>
+    <tr><td><b>BJCP</b></td><td>~3.1</td><td>3/5</td><td>Medium</td><td>"Methods in Clinical Pharmacology" 섹션. FDA/EMA 비교 사례 드물지 않음.</td></tr>
+    <tr><td><b>TCP (KSCPT)</b></td><td>~1.1</td><td>4/5</td><td><b>Very Low</b></td><td>Koo et al. 2025 ADC clin pharm review 게재. 한국 regulatory visibility 최고. 게재 보증.</td></tr>
+    <tr><td>AAPS Journal</td><td>~4.0</td><td>3/5</td><td>Medium</td><td>ADC/biologics 친화. Elmeliegy et al. bispecific TCE 2024.</td></tr>
+    <tr><td>Frontiers Pharmacol</td><td>~4.4</td><td>4/5</td><td>Low-Medium</td><td>Regulatory Science section. APC ~$2,950. 대안 가능.</td></tr>
+    <tr><td>RTP</td><td>~3.5</td><td>3/5</td><td>Medium</td><td>Toxicology 편향. v1.0 backup 위치에서 제거, 4°TCP로 대체.</td></tr>
+    <tr><td>CPT (ASCPT)</td><td>~6.3</td><td>2/5</td><td>High</td><td>translational 편향. 규제 비교 단독 논문 적합성 낮음.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">B.3 CPT:PSP Desk Rejection 위험 현실 평가</div>
+<div class="card card-w fade-in">
+  <div class="kv-grid">
+    <span class="kv-key">위험 실재 여부</span>
+    <span class="kv-val">실재. CPT:PSP scope이 "quantitative methods and MIDD"를 강조하므로 pharmacometric content가 없는 순수 규제 비교는 desk rejection 가능. van der Graaf 2012 inaugural editorial 및 2021 future vision 모두 "quantitative content" 강조.</span>
+    <span class="kv-key">완화 방법</span>
+    <span class="kv-val">Option-B scenario analysis 추가 (mrgsolve simulation-only). Cover letter에 "This Tutorial provides a reproducible methodology AND an illustrative pharmacometric scenario analysis demonstrating how jurisdictional gaps propagate to parameter precision" 명시.</span>
+    <span class="kv-key">근거 수준</span>
+    <span class="kv-val">Desk rejection 완화 효과는 <b>Moderate inference</b> (입증된 사실 아님). Manolis et al. 2024 같은 regulatory perspective piece가 simulation 없이도 게재된 사례 존재 — 단 저자진이 EMA 공식 소속. 1년차 PhD에게는 scenario analysis가 보험.</span>
+    <span class="kv-key">OSF pre-registration</span>
+    <span class="kv-val">Protocol+Codebook 사전등록으로 방법론 투명성 추가. Registered Report는 CPT:PSP·TIRS 모두 미지원.</span>
+  </div>
+</div>
+
+<!-- ═══ 섹션 C | 규제 가이드라인 최신화 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-c">섹션 C</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">2024–2026 규제 가이드라인 최신화 (1차 자료 검증 결과)</span>
+</div>
+
+<div class="alert alert-c fade-in">
+  <div class="alert-label">검증 원칙</div>
+  <div class="alert-body">모든 항목은 FDA Federal Register / EMA.europa.eu / MFDS.go.kr 1차 자료 직접 확인. v2.0 비판문서의 날짜·문서유형 오류를 교정합니다.</div>
+</div>
+
+<div class="sec-label">C.1 FDA 검증 결과</div>
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>v2.0 주장</th><th>실재</th><th>교정·보충</th></tr></thead>
+  <tbody>
+    <tr><td><b>FDA ADC Clinical Pharmacology Guidance (2024.03)</b></td><td class="v-yes"><b>VERIFIED</b></td><td>Federal Register 2024-04375. <b>최종(final)</b> guidance, 2024-03-01 공지. 3 analyte (intact ADC, total antibody, unconjugated payload), organ impairment PK, QTc, DDI 모두 명시. Draft 2022-02-08.</td></tr>
+    <tr><td><b>FDA CAR-T guidance (2024.01 final)</b></td><td class="v-yes"><b>VERIFIED</b></td><td>FR 2024-01789. "Considerations for the Development of CAR T Cell Products." 2024-01-30 공지, 서명 2024-01-29. CMC+nonclinical+임상(cellular kinetics 포함) 통합. Draft 2022-03.</td></tr>
+    <tr><td><b>FDA Dec 2025 RCT 선호 전환 "draft guidance"</b></td><td class="v-partial"><b>PARTIAL — 교정 필요</b></td><td>2025년 12월자 공식 draft guidance <b>없음</b>. 실체: Prasad et al. <em>JAMA</em> 2025 (FDA leadership perspective piece) — CAR-T 신규 승인에 RCT with OS/time-to-event endpoint 선호. <b>정책 신호(policy signal)로 분류</b>. Citation: "Prasad et al. JAMA 2025".</td></tr>
+    <tr><td><b>(v2.0 누락) FDA CGT 2025.09 3종 draft</b></td><td class="v-yes"><b>VERIFIED + v2.1 추가</b></td><td>2025-09 FDA 3종 draft: (1) Innovative Designs for Clinical Trials of CGT, (2) Expedited Programs for Regenerative Medicine Therapies, (3) Postapproval Methods for Safety/Efficacy. <b>v2.0 누락 → v2.1 도메인 4에 반드시 포함.</b></td></tr>
+    <tr><td><b>FDA 2026.01 CGT CMC flexibility</b></td><td class="v-yes"><b>VERIFIED</b></td><td>2026-01-11 FDA CBER announcement "Flexible Requirements for CGT to Advance Innovation." 21 CFR 211 compliance relaxation Phase 1–2, PPQ lot flexibility. <b>공식 guidance 아닌 CBER announcement</b>. Citation 형식 교정.</td></tr>
+    <tr><td><b>FDA 2026.03 biosimilar 3-way PK bridging 철폐</b></td><td class="v-yes"><b>VERIFIED</b></td><td>2026-03-09 "New and Revised Draft Q&As on Biosimilar Dev. (Revision 4)." Q&A I.8/I.10/I.19 개정. 3-way bridging 요건 삭제, non-US comparator 인정. Comment 2026-05-11. <b>본 연구 scope 외이나 Discussion에 regulatory modernization context로 언급 가치.</b></td></tr>
+    <tr><td><b>ICH M15 "implementation"</b></td><td class="v-partial"><b>PARTIAL — 교정 필요</b></td><td>2026.04 현재 <b>최종 확정되지 않음</b> (Step 2b/3 진행 중). v2.0의 "ICH M15 implementation" 표기는 오류. <b>→ "ICH M15 (under development)" 로 교정.</b></td></tr>
+    <tr><td><b>ICH M10 bioanalytical</b></td><td class="v-yes"><b>VERIFIED</b></td><td>2022 finalized. FDA: 2022-11 implementation. EMA: 2023 adoption. MFDS: 공무원지침서 업데이트. 3기관 모두 도입. 기관별 bioanalytical 격차는 M10 기반이 아닌 modality-specific policy 차이임을 명시.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">C.2 EMA 주요 확인 사항</div>
+<div class="card card-c fade-in">
+  <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:.83rem;color:var(--text-3);">
+    <li><b style="color:var(--a);">✅ EMA ADC 전용 reflection paper</b> — <b>부재</b> 확인(2026.04). FDA ADC 2024 guidance가 국제 기준 역할. 본 연구는 이 gap을 "EMA silent on ADC-specific clin pharm requirements"로 정량화 → <b>핵심 novelty.</b></li>
+    <li><b style="color:var(--a);">✅ EMA Bispecific antibody</b> — 전용 guideline 없음. Case-by-case scientific advice 의존. Bispecific은 3기관 모두 전용 guidance 부재 → gap 정량화 기회.</li>
+    <li><b style="color:var(--s);">⚠ EMA ATMP 가이드라인</b> — "Guideline on quality, non-clinical, clinical aspects of medicinal products containing genetically modified cells" 현행. 2024–2026 주요 개정 없음 — 개별 확인 권장.</li>
+    <li><b style="color:var(--a);">✅ EMA MIDD perspective</b> — Manolis et al. CPT:PSP 2024;13:1820 (pregnancy/breastfeeding MIDD). CPT:PSP 규제 콘텐츠 수용 증거. EMA official 소속 저자.</li>
+    <li><b style="color:var(--a);">✅ EMA Biosimilar tailored approach reflection paper</b> — EMA/CHMP/BMWP/60916/2025, 2025-04. Public consultation 2025-09-30. Regulatory modernization context.</li>
+  </ul>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">C.3 MFDS 확인 사항 (핵심 novelty)</div>
+<div class="card card-g fade-in">
+  <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:.83rem;color:var(--text-3);">
+    <li><b style="color:var(--a);">✅ MFDS 집단약동학 가이드라인</b> — "의약품 개발 시 집단 약동학 활용을 위한 가이드라인 [민원인 안내서]" 현행. 식약처 민원인안내서 브라우저 접근.</li>
+    <li><b style="color:var(--a);">✅ 생명공학의약품 약동학 시험 가이드라인</b> — 현행 (식약처).</li>
+    <li><b style="color:var(--a);">✅ 첨단바이오의약품 맞춤형 심사 업무 절차</b> — 공무원지침서 지침서-1008-02, 2025-09-29 등록. 1차 자료.</li>
+    <li><b style="color:var(--s);">⚠ MFDS ADC/CAR-T 전용 가이드라인</b> — 전용 clin pharm guidance <b>부재</b>. 「첨단재생바이오법」(2020.08 시행) + 첨단바이오의약품 장기추적조사 시스템이 제도적 근간. <b>→ "MFDS는 FDA ADC guidance 및 ICH 기준을 de facto 준용" 구조를 정량화 = 핵심 novelty.</b></li>
+    <li><b style="color:var(--a);">✅ 규제과학혁신법</b> — 2024.02 시행. 한국 regulatory science의 법적 프레임. Introduction 배경에 활용.</li>
+  </ul>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">C.4 4도메인 매트릭스 반영 방식</div>
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>도메인</th><th>주요 비교 항목</th><th>핵심 gap</th></tr></thead>
+  <tbody>
+    <tr><td><b>Domain 1</b><br>데이터 요건</td><td>ICH M10 (3기관), FDA ADC 2024의 3 analyte 요건, MFDS 생명공학의약품 약동학 가이드라인</td><td>FDA만 3 analyte (intact ADC, total Ab, free payload) 명시. EMA·MFDS silent.</td></tr>
+    <tr><td><b>Domain 2</b><br>모델 평가·보고</td><td>FDA PopPK 2022, EMA PBPK reflection, MFDS 집단약동학, ICH M15 draft</td><td>ICH M15 under development → 기관별 구현 상이. EMA GOF criteria 상세, MFDS 간략.</td></tr>
+    <tr><td><b>Domain 3</b><br>특수집단 면제</td><td>ADC organ impairment (FDA 2024), pediatric extrapolation (ICH E11A), EMA 2024 MIDD pregnancy</td><td>FDA: payload를 소분자로 취급, 전용 hepatic/renal PK study 요구. EMA·MFDS: 명시적 요건 부재.</td></tr>
+    <tr><td><b>Domain 4</b><br>첨단바이오 특이</td><td>FDA CAR-T 2024 final, CGT 2025.09 3종 draft, FDA 2026.01 CMC, EMA ATMP, MFDS 첨단바이오 맞춤심사</td><td>Bispecific: 3기관 모두 전용 guidance 부재. CAR-T: FDA CK 요건 명시, EMA·MFDS 불완전. MFDS: 전용 clin pharm guidance 전무.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ 섹션 D | LLM HITL ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-v">섹션 D</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">LLM-Augmented Human-in-the-Loop 워크플로우</span>
+</div>
+
+<div class="card card-v fade-in">
+  <div class="sec-label">D.1 Sino-US-DrugQA 벤치마크 (근거 수준: Moderate)</div>
+  <div class="kv-grid">
+    <span class="kv-key">실재 여부</span>
+    <span class="kv-val"><b>✅ VERIFIED as preprint</b>. Fu, Chen, Lu. medRxiv 2026.02.13.26346236 (2026-02). 11,871 MCQ, US FDA/CFR Title 21 vs China NMPA 이중언어. Zero-shot 정확도 78.97–84.51%, cross-jurisdictional comparative reasoning에서 6–9pp drop. 수치 정확.</span>
+    <span class="kv-key">⚠ 한계</span>
+    <span class="kv-val">① Preprint, peer-reviewed 아님. ② MFDS/Korea 데이터 없음 — US-China 벤치마크. ③ MCQ 형식 ≠ verbatim extraction 과제. <b>본 연구에서는 "analogical evidence"로만 인용</b>.</span>
+    <span class="kv-key">권장 인용 문구</span>
+    <span class="kv-val"><i>"As analogical evidence, the Sino-US-DrugQA benchmark (Fu et al., medRxiv preprint, February 2026) demonstrated that frontier LLMs' monolingual retrieval accuracy (78.97–84.51%) drops 6–9 percentage points in cross-jurisdictional comparative reasoning tasks. Although that benchmark did not include Korean or MFDS content, the pattern motivates our restriction of LLM use to extraction and the reservation of comparative coding to human experts."</i></span>
+    <span class="kv-key">보완 근거</span>
+    <span class="kv-val">Lightweight LLM for regulatory affairs translation, <em>Scientific Reports</em> 2025 (PMC12575748). EMA Reflection Paper on AI in Medicinal Product Lifecycle (2024-10). FDA Draft Guidance on AI in Regulatory Decision-Making (2025-01).</span>
+  </div>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">D.2 LLM 도구 선택 (2026 기준)</div>
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>모델</th><th>Context</th><th>한국어</th><th>데이터 보존</th><th>본 연구 적합성</th></tr></thead>
+  <tbody>
+    <tr><td><b>Claude Sonnet 4.5/4.6</b><br>(Anthropic API)</td><td>200K / 1M beta</td><td>우수</td><td>API ZDR 가능</td><td><b>Primary — 영문 FDA/EMA 추출</b><br>⚠ Consumer plan (claude.ai) 사용 금지</td></tr>
+    <tr><td><b>Gemini 2.5/3 Pro</b><br>(Vertex AI Seoul)</td><td>1M native</td><td>매우 우수<br>(Korean OCR)</td><td>Vertex 데이터 residency KR/APAC</td><td><b>Secondary — MFDS Korean PDF OCR</b><br>Seoul region 호스팅 활용</td></tr>
+    <tr><td>GPT-5.2 (OpenAI)</td><td>400K</td><td>우수</td><td>Enterprise ZDR</td><td>Screening 용. Consumer 금지.</td></tr>
+    <tr><td>Claude Opus 4.5/4.6</td><td>200K</td><td>우수</td><td>API ZDR</td><td>고비용. 어려운 항목 verification용.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">D.3 Verbatim Extraction Prompt Template (temperature=0)</div>
+<div class="code-block fade-in"># ROLE
+You are a regulatory science extraction assistant. Your ONLY job is
+to return verbatim text from the provided document with precise
+source metadata. You MUST NOT paraphrase, summarize, or synthesize.
+
+# SETTINGS  → temperature=0 | max_tokens=8192 | response_format=JSON
+
+# TASK
+From {DOC_TITLE} ({AGENCY: FDA | EMA | MFDS}), extract every passage
+relevant to {TOPIC, e.g., "population pharmacokinetic data requirements
+for antibody-drug conjugates"}.
+
+# RULES
+<span class="gr">1. EXTRACT ONLY. No paraphrase.</span> Exact source text with original
+   punctuation, numbering, and line breaks.
+   Korean sources → verbatim in original_text (language="ko-KR")
+                  + literal English in english_literal
+                    (translation_method="literal_non_official")
+
+2. Each passage MUST include:
+   document_id | agency | version/date | page | section_number |
+   section_heading | paragraph_index | original_text |
+   english_literal (if applicable) |
+   relevance_rationale (≤25 words — ONLY non-verbatim field) |
+   confidence {HIGH,MEDIUM,LOW} | uncertainty_flags
+
+<span class="er">3. If page/section cannot be located exactly:
+   confidence=LOW + "page_number_inferred" / "section_number_inferred"
+   DO NOT GUESS.</span>
+
+4. Korean→English: preserve regulatory terms untranslated on first
+   mention with bracketed literal gloss.
+   Flag ambiguous Korean terms: "korean_ambiguous_term".
+
+5. Tables/figures → structured JSON + flag "table_or_figure_content".
+<span class="er">6. Output ONLY valid JSON. No markdown, no commentary outside JSON.</span>
+7. Zero matches → {"extractions":[],"notes":"no_relevant_content"}
+
+# HUMAN REVIEW TRIGGERS (requires_human_review = true if ANY)
+   confidence=LOW | korean_ambiguous_term | paraphrase_risk_high |
+   crosses section boundary | contains numeric requirement (N, %, dose)
+
+# DOUBLE-CHECK PROTOCOL
+After extraction → re-call same model with fresh context to diff
+original_text vs. source PDF. Differences → human review flag.</div>
+
+<div class="sec-label" style="margin-top:1.2rem">D.4 PIPET-Vault (Obsidian) 통합</div>
+<div class="card card-b fade-in">
+  <div class="code-block" style="margin:.5rem 0"><span class="cm"># PIPET-Vault 폴더 구조</span>
+PIPET-Vault/
+└── 30_Projects/P12_RegPopPK_Playbook/
+    ├── 00_methods_guide_v2.1.md
+    ├── 01_codebook_v2.1.md          <span class="cm"># PI 승인 후 동결</span>
+    ├── 02_coding_manual_v2.1.md
+    ├── 10_sources/                  <span class="cm"># PDF via git-LFS</span>
+    ├── 20_extractions/              <span class="cm"># JSON, human-reviewed</span>
+    ├── 30_synthesis/
+    │   ├── matrix_domain1_data.md
+    │   ├── matrix_domain2_model.md
+    │   ├── matrix_domain3_specpop.md
+    │   └── matrix_domain4_modality.md
+    ├── 40_manuscript/               <span class="cm"># Quarto/.qmd</span>
+    ├── 50_scripts/
+    │   ├── agreement_analysis.R     <span class="cm"># Gwet AC2 + α + κ</span>
+    │   └── scenario_simulation.R    <span class="cm"># mrgsolve Option-B</span>
+    ├── 60_preregistration/          <span class="cm"># OSF pre-reg protocol</span>
+    └── 90_archive/</div>
+  <div style="font-size:.8rem;color:var(--text-3);margin-top:.6rem;">
+    <b>YAML frontmatter 예시 (추출 노트):</b>
+    <div class="code-block" style="margin:.4rem 0;font-size:.72rem;">project: P12_RegPopPK_Playbook | type: extraction | agency: FDA
+document_id: ADC_Guidance_2024_03 | page: 12 | section: "II.B.1"
+domain: 1  <span class="cm"># 1|2|3|4</span>
+code_v1: "required"  <span class="cm"># silent|optional|recommended|required</span>
+confidence: HIGH | requires_human_review: false
+coder: J_KIM | coded_at: 2026-05-15
+tags: [P12, regPopPK, ADC, FDA, domain1]</div>
+    <b>Obsidian 태그:</b> <code style="color:var(--a);">#P12 #P12/FDA #P12/EMA #P12/MFDS #P12/ADC #P12/CAR-T #P12/BsAb #P12/domain1~4 #P12/review_required</code>
+  </div>
+</div>
+
+<!-- ═══ 섹션 E | Scenario Analysis ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-g">섹션 E</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">Pharmacometrics-Informed Scenario Analysis — Option B 실행 프로토콜</span>
+</div>
+
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>Option</th><th>수준</th><th>소요시간</th><th>CPT:PSP 적합성</th><th>박사 1년차 실행 가능성</th></tr></thead>
+  <tbody>
+    <tr><td><b>A. 질적 시나리오</b></td><td>Lowest</td><td>1–2주</td><td>낮음</td><td>✅ 항상 가능</td></tr>
+    <tr><td><b>B. 게재 파라미터 재사용<br>+ mrgsolve simulation-only</b></td><td>Medium</td><td><b>~40 focused hours<br>(6주 part-time)</b></td><td><b>중간-높음 ★</b></td><td>✅ T+6 checkpoint 후 가부 판단</td></tr>
+    <tr><td>C. 공공 데이터 재분석</td><td>Highest</td><td>3–4개월 full</td><td>높음</td><td>❌ T+9 타임라인 충돌</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card card-g fade-in">
+  <div class="sec-label">Option B 실행 프로토콜 (6단계, mrgsolve-only — NONMEM 불필요)</div>
+  <div class="code-block" style="margin:.5rem 0"><span class="cm">## Step 1 — 게재 모델 2개 선택 (1주)</span>
+<span class="gr">[ADC]</span>   Lu D et al. (2014) Cancer Chemother Pharmacol 74:399–410
+          T-DM1 PopPK, linear 2-cpt
+          CL=0.676 L/day, Vc=3.127 L
+          공변량: 체중, 알부민, AST, tumor burden
+
+<span class="gr">[CAR-T]</span> Stein AM et al. (2019) CPT:PSP 8:285–295
+          tisagenlecleucel piecewise expansion/contraction
+          <span class="nm">→ CPT:PSP 게재 모델 = target journal 내적 정합성</span>
+
+<span class="cm">## Step 2 — mrgsolve 재코드 (3–5일)</span>
+공개 파라미터 주입 + 30% CV CL/Vc ω, 15% proportional σ
+
+<span class="cm">## Step 3 — 2개 시나리오 정의 (2–3일)</span>
+<span class="gr">Scenario A (T-DM1, 간기능장애 평가 방식 차이)</span>
+  FDA-compliant : N=120 정상 + 전용 N=24 hepatic impairment sub-study
+                  (FDA 2024 ADC guidance 준수)
+  EMA-minimum   : N=144 pooled, AST 자연분포만
+  Metric        : AST-on-CL 공변량 %RSE,
+                  AST>3×ULN에서 30% CL 감소 검출 power (500 replicates)
+
+<span class="gr">Scenario B (tisagenlecleucel, 소아-성인 외삽)</span>
+  MFDS-aligned  : 소아 단독 N=79 (ELIANA-like)
+  FDA post-approval: 소아+성인 pooled N=150
+  Metric        : expansion rate ρ, terminal β의 %RSE
+                  연령층 간 +20% ρ 차이 검출 capability
+
+<span class="cm">## Step 4 — Simulation-only (NOT full SSE) (1–2주)</span>
+500 replicate simulation → empirical 95% CI of parameter estimates
+Full SSE (simulation-estimation loop) = NONMEM 필요 → 제외
+<span class="er">이 단순화를 Methods에 명시: "illustrative scenario using published
+parameters; not a novel estimation study"</span>
+
+<span class="cm">## Step 5 — 집계 (3–5일)</span>
+1 figure (power curve or %RSE comparison) + 1 table (scenario summary)
+
+<span class="cm">## Step 6 — Paper integration (1주)</span>
+Methods 1단락 + Results 1단락 + figure + table
+CPT:PSP = 본문 | TIRS = supplement | TCP = 제외 가능
+
+<span class="cm">## 총 소요: ~40 focused hours ≈ 6주 part-time (주 6–8시간)</span></div>
+</div>
+
+<div class="alert alert-s fade-in">
+  <div class="alert-label">T+6 Checkpoint — 냉정한 판단 기준</div>
+  <div class="alert-body">
+    Extraction + Coding 완료 상태에서: <b>"지금 6주 part-time (주 6–8시간)을 P12 scenario analysis에 쓸 수 있는가?"</b> YES → Option-B 진행, CPT:PSP 1°. NO → Option-A 질적 시나리오 + <b>Perspective 형식 전환 + 1° TIRS</b> 로 downgrade. 이것이 타임라인 붕괴를 막는 안전장치입니다.
+  </div>
+</div>
+
+<!-- ═══ 섹션 F | 2인 지도 체제 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-s">섹션 F</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">2인 지도 체제 활용 — 한승훈(주지도) + 한성필(부지도)</span>
+</div>
+
+<div class="card card-s fade-in">
+  <div class="sec-label">F.1 PI 커뮤니케이션 전략 변경 (v1.0 주지도 1:1 → v2.1 joint)</div>
+  <table class="tbl">
+    <thead><tr><th>이벤트</th><th>v1.0</th><th>v2.1</th></tr></thead>
+    <tbody>
+      <tr><td><b>Phase 0 킥오프</b></td><td>주지도 1:1</td><td><b>주지도 + 부지도 joint 30분</b></td></tr>
+      <tr><td><b>파일럿 코딩 결과</b></td><td>주지도 공유</td><td><b>양 지도교수 동시</b> 공유 (email 또는 meeting)</td></tr>
+      <tr><td><b>Matrix v1.0 draft</b></td><td>주지도 review</td><td>부지도 기술 review → 주지도 strategic review (역할 분리)</td></tr>
+      <tr><td><b>원고 draft</b></td><td>주지도 1회</td><td><b>부지도 1차 → 주지도 final</b> 2단계</td></tr>
+      <tr><td><b>저널 결정</b></td><td>주지도 결정</td><td><b>주지도 final call, 부지도 advisory</b> (이해상충 회피)</td></tr>
+      <tr><td><b>불일치 조정</b></td><td>주지도 단독</td><td><b>삼자 adjudication 회의</b> (주지도 최종 결정권)</td></tr>
+    </tbody>
+  </table>
+  <div class="alert alert-w" style="margin:.7rem 0 0">
+    <div class="alert-label">Conflict Management</div>
+    <div class="alert-body">2인 지도 체제의 고전적 위험은 "교수님 간 선호 충돌". 사전에 <b>문서화된 저널 선택 기준(§B)</b>을 공유하고, 결정 권한은 PI(주지도)에게 명시적 위임. 모든 결정은 PIPET-Vault의 <code>decisions/</code> 폴더에 날짜별 meeting note로 기록.</div>
+  </div>
+</div>
+
+<div class="card card-a fade-in" style="margin-top:.7rem;">
+  <div class="sec-label">F.2 Phase 0 킥오프 발언 템플릿 (v2.1 — 2인 지도 joint 미팅)</div>
+  <div class="code-block" style="margin:.5rem 0 0">"교수님들, P12 규제 비교 논문 Domain 1 비교 매트릭스 초안을 완성했습니다.
+ 오늘 결정해야 할 사항이 네 가지입니다.
+
+ 첫째, 통계 방법론입니다. Cohen's κ 대신 Gwet's AC2 + Krippendorff α
+ robustness panel을 제안합니다. 주변분포가 치우친 규제 비교에서
+ Kappa Paradox가 발생하기 때문입니다. [1페이지 통계 근거 제시]
+
+ 둘째, 저널 전략입니다. CPT:PSP (1°) → TIRS → BJCP → TCP 순서의
+ Tiered Submission을 제안합니다. TCP 단독은 visibility 손실,
+ CPT:PSP 단독은 desk rejection 위험이 있어 중간 경로를 선택했습니다.
+
+ 셋째, 코딩 구조입니다. 제가 100%, 한성필 교수님 100%, 한승훈 교수님
+ 20–30% audit으로 3인 구조를 제안합니다. 주지도 교수님 시간 부담을
+ 최소화하면서 통계적 robustness를 확보할 수 있습니다.
+
+ 넷째, Option-B scenario analysis를 T+6에서 가부 판단하는 checkpoint를
+ 설정하고 싶습니다. 지금 확정이 아니라 실행 가능성에 따라 결정합니다.
+
+ 네 가지 모두 승인해 주시겠습니까?"</div>
+</div>
+
+<!-- ═══ 섹션 1 | 인식론적 방어선 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-a">섹션 1</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">인식론적 방어선 — TYPE_B (수학적 검증 생략)</span>
+</div>
+
+<div class="alert alert-v fade-in">
+  <div class="alert-label">목적 함수 (v2.1 업데이트)</div>
+  <div class="alert-body">
+    MFDS·FDA·EMA의 첨단바이오의약품(ADC·이중항체·CAR-T) 집단약동학 가이드라인 간 구조적 격차를 공개 문서 기반으로 체계적으로 수량화(<b>Gwet's AC2 robustness panel + GRRAS 기반 3인 코딩</b>)하여, 한국 제약사가 글로벌 동시 허가를 추진할 때 발생하는 규제 불일치 비용을 저감하는 실행 가능한 의사결정 프레임워크를 제시한다. <b>Option-B가 추가될 경우, 규제 격차가 PopPK 파라미터 추정 정밀도에 미치는 정량적 영향을 illustrative scenario analysis로 제시</b>하여 pharmacometric 방법론 기여를 강화한다.
+  </div>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">심사위원 반론 및 방어 스크립트 (v2.1 — 4개 반론)</div>
+<div class="card card-a fade-in">
+  <div class="alert alert-w" style="margin:0 0 .7rem">
+    <div class="alert-label">반론 1 — "단순 요약 아닌가?"</div>
+    <div class="alert-body"><b>예상 반론:</b> "세 기관 가이드라인을 나열한 narrative review이며 방법론적 기여가 없다."<br><b>방어:</b> "① 사전 정의된 4범주 순위 코드(silent/optional/recommended/required) + ② 3인 독립 코딩 + Gwet's AC2 robustness panel + ③ GRRAS checklist 준수 + ④ OSF pre-registration으로 완전 재현 가능한 방법론을 제시합니다. Option-B 포함 시 quantitative scenario analysis로 regulatory gap이 PopPK parameter precision에 미치는 영향을 정량화합니다."</div>
+  </div>
+  <div class="alert alert-w" style="margin:0 0 .7rem">
+    <div class="alert-label">반론 2 — "한국어만 읽을 수 있는 MFDS 자료"</div>
+    <div class="alert-body"><b>예상 반론:</b> "국제 독자가 MFDS 가이드라인에 접근할 수 없다."<br><b>방어:</b> "그것이 바로 이 연구의 기여입니다. MFDS 문서를 영어로 최초 체계화하여 국제 공동 임상시험을 준비하는 연구자·기업에 직접 실용적 가치를 제공합니다. 번역 프로세스(LLM verbatim extraction + human review, 번역 불확실 조항 원문 병기)를 Methods에 상세 기술합니다."</div>
+  </div>
+  <div class="alert alert-w" style="margin:0 0 .7rem">
+    <div class="alert-label">반론 3 — "AC2를 Gwet's AC1 대신 왜 쓰는가?"</div>
+    <div class="alert-body"><b>예상 반론:</b> "v2.0 비판문서는 AC1을 권고했는데 왜 AC2인가?"<br><b>방어:</b> "본 연구의 4범주 코드(silent &lt; optional &lt; recommended &lt; required)는 순위형(ordinal)입니다. AC1은 단순 일치(nominal)용, <b>AC2는 ordinal 불일치를 quadratic weights로 반영하므로 더 적합</b>합니다. Vach &amp; Gerke 2023의 반론(AC1/AC2가 chance agreement를 상이하게 정의함)을 Methods에 선제 언급하여 reviewer 지적을 흡수합니다."</div>
+  </div>
+  <div class="alert alert-w" style="margin:0">
+    <div class="alert-label">반론 4 — "가이드라인이 곧 바뀌면?"</div>
+    <div class="alert-body"><b>예상 반론:</b> "FDA·EMA 개정 시 즉시 무용지물이 된다."<br><b>방어:</b> "임상지침 비교 논문의 가치는 특정 시점 스냅샷에 있습니다. NEJM·JAMA 임상지침 비교 논문과 동일 방식입니다. 더 중요하게, 본 연구가 '격차 수량화 방법론'을 확립하면 향후 개정 시 동일 방법론으로 update paper를 발행하는 지속적 기여 경로가 생깁니다."</div>
+  </div>
+</div>
+
+<!-- ═══ 섹션 2 | Methods-First ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-v">섹션 2</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">Methods-First 초안 v2.1 — 데이터 0점 전에 완성</span>
+</div>
+
+<div class="alert alert-v fade-in">
+  <div class="alert-label">⚠ 핵심 원칙</div>
+  <div class="alert-body"><b>어떤 가이드라인 텍스트도 추출하기 전에 이 초안을 완성한다.</b> Methods가 요구하는 작업 목록을 역방향으로 도출하고 그 순서대로만 실행한다. 임의적 탐색(ad hoc browsing) 금지.</div>
+</div>
+
+<div class="card card-v fade-in">
+<div class="code-block" style="margin:.5rem 0 0"><span class="cm">// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// METHODS 초안 v2.1 (v1.0 Methods 대비 변경사항 표시)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="kw">2.1 가이드라인 선정 기준</span>
+포함: 2015년 이후 발행 또는 최종 개정 | 영어 또는 한국어 원문 공개
+      집단약동학 데이터 요건·분석 방법·허가 전략 관련 | ICH 공동채택 포함
+제외: Draft guidance (단, "emerging trend" 별도 기술)
+      소형분자 전용 (첨단바이오 교차 적용 명시 없는 경우)
+      내부 미공개 행정 문서
+검색 완료 날짜: <span class="nm">[YYYY-MM-DD]</span>
+<span class="gr">LLM-augmented extraction 프로세스: Claude Sonnet API (temperature=0),
+Gemini Vertex AI Seoul (Korean PDF OCR). 모든 추출은 human expert review.
+Sino-US-DrugQA benchmark (Fu et al., medRxiv preprint, Feb 2026)를
+analogical evidence로 HITL 설계 근거에 인용.</span>
+
+<span class="kw">2.2 비교 도메인 (사전 정의, PI 승인 후 확정)</span>
+Domain 1: 집단약동학 분석 대상 데이터 요건
+           (최소 환자 수 · 채혈 시점 · 복수 용량군 · ICH M10 bioanalytical)
+Domain 2: 모델 평가 및 보고 요건
+           (GOF criteria · VPC · 잔차 오류 모델 · ICH M15 draft 언급)
+Domain 3: 특수 집단 PopPK 면제 근거 요건
+           (ADC organ impairment · 소아 extrapolation · pregnancy MIDD)
+Domain 4: 첨단바이오 모달리티 특이 요건
+           (ADC: 3 analyte · Bispecific: receptor occupancy · CAR-T: CK)
+
+<span class="kw">2.3 격차 분류 체계 (v1.0 HARMONIZED/PARTIAL/DISCORDANT 확장)</span>
+- <span class="st">SILENT</span>      : 해당 기관 요건 미명시 (silent by absence)
+- <span class="st">OPTIONAL</span>   : 권고하지 않으나 허용
+- <span class="st">RECOMMENDED</span>: 명시적 권고, 강제 아님
+- <span class="st">REQUIRED</span>   : 필수 요건 명시
+<span class="cm">※ 3기관 조합으로 HARMONIZED/PARTIAL/DISCORDANT/MFDS-ABSENT 파생 가능</span>
+<span class="gr">※ 4범주 순위형(ordinal)으로 설계 — Gwet's AC2 quadratic weights 사용 근거</span>
+
+<span class="kw">2.4 신뢰도 검증 (v1.0 Cohen's κ ≥ 0.70 → v2.1 Robustness Panel)</span>
+비교 코딩: 3인 독립 (각하 100% · 한성필 100% · 한승훈 20–30% audit)
+Primary  : <span class="gr">Gwet's AC2 (quadratic ordinal weights) — irrCAC::gwet.ac1.raw()</span>
+Secondary: <span class="gr">Krippendorff's ordinal α — irrCAC::krippen.alpha.raw()</span>
+Reference: <span class="gr">Fleiss weighted κ — irrCAC::fleiss.kappa.raw()</span>
+임계값   : <span class="gr">Gwet cumulative-probability benchmarking (Gwet 2014 ch.6)</span>
+           <span class="er">Landis–Koch를 AC2에 적용 금지 (Vach & Gerke 2023)</span>
+불일치   : 삼자 adjudication 회의 1회 → 재계산
+코드북   : OSF pre-registration 사전 공개 + Supplementary 공개
+Reporting: GRRAS checklist (Kottner et al. 2011)
+
+<span class="kw">2.5 Scenario Analysis (Option-B, T+6 checkpoint 후 가부)</span>
+<span class="gr">게재 파라미터 재사용 (Lu 2014 T-DM1 + Stein 2019 tisagenlecleucel)
+mrgsolve simulation-only, 500 replicates, NOT full SSE (estimation 제외)
+"Illustrative scenario; not a novel estimation study" 명시</span>
+<span class="cm">Option-A (질적 시나리오)로 downgrade 가능 — T+6 checkpoint 결정</span></div>
+</div>
+
+<div class="sec-label" style="margin-top:1.2rem">역방향 실행 체크리스트 (Methods v2.1이 요구하는 선행 작업)</div>
+<ul class="checklist fade-in">
+  <li><span class="req">Phase 0 전 필수</span> <b>OSF pre-registration 프로젝트 생성</b> — codebook + 4도메인 scope + AC2 robustness panel 계획 업로드</li>
+  <li><span class="req">Phase 0 전 필수</span> <b>저널 Tiered 전략 양 지도교수 joint 합의</b></li>
+  <li><span class="req">Phase 0 전 필수</span> <b>4범주 순위 코드(silent/optional/recommended/required) + 3기관 파생 코드(HARMONIZED 등) PI 승인</b></li>
+  <li><span class="req">Phase 0 전 필수</span> <b>MFDS 가이드라인 존재 여부 확인 + Pivot Trigger 판단</b></li>
+  <li><span class="req">Phase 0 전 필수</span> <b>Claude Sonnet API (ZDR) 설정 + Gemini Vertex AI Seoul region 계정 확인</b></li>
+  <li><span class="opt">Phase 1 착수 전</span> <b>irrCAC R 패키지 설치 + AC2/α/κ 계산 코드 파일럿 테스트</b></li>
+  <li><span class="opt">Phase 1 착수 전</span> <b>mrgsolve + T-DM1 파라미터 테스트 시뮬레이션 (Option-B 대비)</b></li>
+  <li><span class="opt">Phase 2</span> <b>3인 독립 코딩 완료 → AC2/α/κ 계산 → 삼자 adjudication 일정 확정</b></li>
+  <li><span class="str">T+6 Checkpoint</span> <b>Option-B 진행 가부 결정 (실행 가능 → CPT:PSP 1° / 불가 → Option-A + TIRS 1°)</b></li>
+</ul>
+
+<!-- ═══ 섹션 3 | 역설계 요건 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-c">섹션 3</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">역설계 요건 및 지식 공백 — TYPE_B 규제 비교 (v2.1 업데이트)</span>
+</div>
+
+<div class="sec-label">필수 규제 문서 목록 (v2.1 — FDA CGT 3종 draft 추가)</div>
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>기관</th><th>문서명</th><th>문서번호·발행일</th><th>유형</th><th>상태</th></tr></thead>
+  <tbody>
+    <tr><td><b>FDA</b></td><td>Population Pharmacokinetics</td><td>FDA-2022-D-0318 / 2022.07</td><td>Final</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>FDA</b></td><td>ADC Clinical Pharmacology Considerations</td><td>FR 2024-04375 / 2024.03.01</td><td><b>Final ✅</b></td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>FDA</b></td><td>Bispecific Antibody Clinical Development Programs</td><td>CDER / 2024</td><td>Final</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>FDA</b></td><td>CAR T Cell Products Development</td><td>FR 2024-01789 / 2024.01.30</td><td><b>Final ✅</b></td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>FDA</b></td><td><b>[NEW] Innovative Designs for CGT Clinical Trials</b></td><td>CBER / 2025.09</td><td><b>Draft (v2.0 누락)</b></td><td><span class="badge bd-a">신규 수집</span></td></tr>
+    <tr><td><b>FDA</b></td><td><b>[NEW] Expedited Programs for Regenerative Medicine</b></td><td>CBER / 2025.09</td><td><b>Draft (v2.0 누락)</b></td><td><span class="badge bd-a">신규 수집</span></td></tr>
+    <tr><td><b>FDA</b></td><td><b>[NEW] Postapproval Methods for CGT Safety/Efficacy</b></td><td>CBER / 2025.09</td><td><b>Draft (v2.0 누락)</b></td><td><span class="badge bd-a">신규 수집</span></td></tr>
+    <tr><td><b>EMA</b></td><td>Reporting Results of Population PK Analyses</td><td>EMA/CHMP/EWP/185990/2006 / 2007.06</td><td>Guideline</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>EMA</b></td><td>Biological Medicines Development (mAb/ADC)</td><td>EMA/CHMP/BWP/534898/2008 rev.</td><td>Guideline</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>EMA</b></td><td>Bispecific Antibodies Scientific Guideline</td><td>EMA/CHMP/BWP/392185/2021</td><td>Guideline</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>EMA</b></td><td>ATMP (genetically modified cells)</td><td>Current version</td><td>Guideline</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>MFDS</b></td><td>집단 약동학 활용 가이드라인 [민원인안내서]</td><td>MFDS / 2022 개정</td><td>민원인안내서</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>MFDS</b></td><td>생명공학의약품 약동학 시험 가이드라인</td><td>MFDS / 현행</td><td>민원인안내서</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>MFDS</b></td><td><b>[NEW] 첨단바이오의약품 맞춤형 심사 업무 절차</b></td><td>지침서-1008-02 / 2025.09.29</td><td>공무원지침서</td><td><span class="badge bd-a">신규 수집</span></td></tr>
+    <tr><td><b>MFDS</b></td><td>ADC/CAR-T 전용 clin pharm guidance</td><td>—</td><td><b>부재 확인</b></td><td><span class="badge bd-g">Gap = novelty</span></td></tr>
+    <tr><td><b>ICH</b></td><td>E17: Multi-Regional Clinical Trials</td><td>ICH E17 / 2017.11</td><td>Step 5 (3기관 adopted)</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>ICH</b></td><td>M10: Bioanalytical Method Validation</td><td>ICH M10 / 2022</td><td>Step 5 (3기관 adopted)</td><td><span class="badge bd-w">수집 필요</span></td></tr>
+    <tr><td><b>ICH</b></td><td>M15: Model-Informed Drug Development</td><td>Step 2b/3 진행 중</td><td><b>Draft — "under development"</b></td><td><span class="badge bd-s">참조만</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ 섹션 4 | 수공업 기준서 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-b">섹션 4</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">수공업 기준서 + 로그 아키텍처 + 디렉토리</span>
+</div>
+
+<div class="code-block fade-in">PROJECT_ROOT/
+└── P12_RegComp_MFDS_FDA_EMA/
+    ├── <span class="st">00_source_docs/</span>          <span class="cm"># 원본 PDF (수정 절대 금지)</span>
+    │   ├── FDA_PopPK_Guidance_20220700.pdf
+    │   ├── FDA_ADC_Guidance_20240301.pdf          <span class="cm"># FR 2024-04375</span>
+    │   ├── FDA_CART_Dev_Guidance_20240130.pdf     <span class="cm"># FR 2024-01789</span>
+    │   ├── FDA_CGT_InnovativeDesigns_20250900.pdf <span class="cm"># 신규 추가</span>
+    │   ├── FDA_CGT_ExpeditedPrograms_20250900.pdf <span class="cm"># 신규 추가</span>
+    │   ├── FDA_CGT_PostApproval_20250900.pdf      <span class="cm"># 신규 추가</span>
+    │   ├── EMA_PopPK_Guideline_CHMP185990_2007.pdf
+    │   ├── MFDS_PopPK_guideline_[YYYYMMDD].pdf
+    │   ├── MFDS_첨단바이오_맞춤심사_지침서1008-02_20250929.pdf <span class="cm"># 신규</span>
+    │   └── ICH_E17_20171100.pdf | ICH_M10_2022.pdf
+    │
+    ├── <span class="st">01_extraction/</span>           <span class="cm"># JSON (LLM verbatim) + human-review flags</span>
+    │   ├── <span class="nm">20260501_FDA_domain1_extraction.json</span>
+    │   └── ...
+    │
+    ├── <span class="st">02_coding/</span>               <span class="cm"># 4범주 순위 코드 (silent/optional/recommended/required)</span>
+    │   ├── <span class="nm">20260601_codebook_v2.1_OSF.xlsx</span>  <span class="cm"># OSF pre-reg용</span>
+    │   ├── <span class="nm">20260615_coding_J_KIM_v001.xlsx</span>
+    │   ├── <span class="nm">20260620_coding_HS_HAN_v001.xlsx</span>
+    │   ├── <span class="nm">20260622_coding_SH_HAN_audit_v001.xlsx</span> <span class="cm"># 20-30% random sample</span>
+    │   ├── <span class="nm">20260625_AC2_alpha_kappa_analysis.R</span>   <span class="cm"># irrCAC 패키지</span>
+    │   └── archive/
+    │
+    ├── <span class="st">03_comparison_matrix/</span>
+    │   └── <span class="nm">20260701_matrix_v001_FROZEN.xlsx</span>
+    │
+    ├── <span class="st">04_manuscript/</span>               <span class="cm"># Quarto .qmd (재현 가능 원고)</span>
+    │   ├── <span class="nm">manuscript_v001.qmd</span>
+    │   └── <span class="nm">scenario_analysis_supplement.qmd</span>  <span class="cm"># Option-B 분리 섹션</span>
+    │
+    ├── <span class="st">50_scripts/</span>
+    │   ├── <span class="nm">agreement_analysis.R</span>         <span class="cm"># AC2+α+κ robustness panel</span>
+    │   └── <span class="nm">scenario_simulation.R</span>        <span class="cm"># mrgsolve Option-B</span>
+    │
+    ├── <span class="st">60_preregistration/</span>          <span class="cm"># OSF 연동</span>
+    │   └── <span class="nm">osf_protocol_v0.1.md</span>
+    └── <span class="st">90_logs/</span>
+        ├── <span class="nm">action_log.md</span>               <span class="cm"># What</span>
+        └── <span class="nm">decision_log.md</span>             <span class="cm"># Why (저장: PI 합의 결정 전수)</span></div>
+
+<!-- ═══ 섹션 5 | 타임라인 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-s">섹션 5</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">타임라인 v2.1 — Phase별 실행 설계</span>
+</div>
+
+<div class="alert alert-s fade-in">
+  <div class="alert-label">타임라인 원칙 v2.1</div>
+  <div class="alert-body">각 작업: <b>[태그] | 작업명 | DoD | 선행 조건 | 강제 타임박스</b>. 타임박스 초과 → 즉각 중단 + PI 안건 이관. <b>T+6 checkpoint</b>에서 Option-B 가부를 냉정히 판단. 총 예상 시간: 280–360h (주 8–10h × 9개월).</div>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:.8rem 0 1.2rem;">
+  <span class="badge bd-a">🟢 Low-Cognitive</span><span class="badge bd-v">🔴 Deep-Work</span>
+  <span class="badge bd-c">⏳ Wait-Time</span><span class="badge bd-s">🚀 Shift-Left</span>
+</div>
+
+<div class="timeline">
+  <div class="phase fade-in">
+    <div class="phase-dot pd-0">0</div>
+    <div class="phase-head"><span class="phase-period">T+0 ~ T+3주</span><span class="phase-title">Phase 0 — End-to-End Tracer Bullet · 강제 관문</span></div>
+    <div class="alert alert-w" style="margin-bottom:.7rem;">
+      <div class="alert-label">Phase 0 완료 조건 v2.1 (v1.0 대비 변경)</div>
+      <div class="alert-body">
+        ① OSF pre-registration 프로젝트 생성 + protocol draft v0.1 업로드<br>
+        ② Claude Sonnet API (ZDR) + Gemini Vertex AI Seoul 설정 완료<br>
+        ③ Domain 1(데이터 요건) 3기관 비교 매트릭스 초안 + 4범주 코드 1인 코딩<br>
+        ④ <b>양 지도교수 joint 미팅</b> — Tiered journal strategy + Robustness panel + 3인 코더 구조 합의<br>
+        ⑤ MFDS 가이드라인 존재 여부 전수 확인 + Pivot Trigger 판단<br>
+        <b>Phase 0 미완료 시 Phase 1 착수 절대 금지</b>
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="task"><span class="task-icon ti-shift">🚀</span><div class="task-body"><b>OSF 프로젝트 생성 + protocol draft v0.1</b> — osf.io → New Project "P12_RegPopPK_Playbook". v2.1 방법론 가이드 + 4도메인 scope + AC2 robustness panel 계획 업로드. Visibility: Private.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: OSF URL 획득 + PIPET-Vault 60_preregistration 미러링 | 선행: 없음</span></div><span class="task-timebox">⏱ 45분</span></div>
+      <div class="task"><span class="task-icon ti-shift">🚀</span><div class="task-body"><b>MFDS 가이드라인 전수 확인 + Pivot Trigger 판단</b> — mfds.go.kr 검색어: "집단 약동학", "항체약물복합체", "이중항체", "CAR-T", "유전자치료제", "첨단바이오". 결과 decision_log.md 즉시 기록. ADC/CAR-T 전용 clin pharm guidance 부재 → <b>핵심 novelty 확인</b>.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 문서 목록 + URL + 발행일 Excel 기록 완료 | 타임박스 60분 이후 탐색 금지</span></div><span class="task-timebox">⏱ 60분</span></div>
+      <div class="task"><span class="task-icon ti-shift">🚀</span><div class="task-body"><b>선점 논문 유무 확인</b> — PubMed + Scopus: <code style="font-size:.75rem;font-family:var(--mono);">("MFDS" OR "KFDA") AND "FDA" AND "EMA" AND "population pharmacokinetics" AND ("ADC" OR "bispecific" OR "CAR-T")</code><br><span style="font-size:.8rem;color:var(--text-3);">DoD: 전수 제목 스크린. 동일 주제 발견 시 즉시 양 지도교수 보고.</span></div><span class="task-timebox">⏱ 90분</span></div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>LLM extraction pipeline 파일럿 테스트</b> — Claude Sonnet API: FDA PopPK 2022 + FDA ADC 2024 Domain 1 verbatim extraction JSON 생성. Human review diff 프로세스 검증.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 01_extraction/ 파일럿 JSON 1건 + human-review annotation 완료</span></div><span class="task-timebox">⏱ 3시간</span></div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>Domain 1 비교 매트릭스 초안 + 4범주 코드 1인 코딩</b> — FDA·EMA·MFDS 3열 × Domain 1 항목. 4범주(silent/optional/recommended/required) 코딩 포함.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: matrix_v001.xlsx Domain 1 탭 완성 | 선행: 추출 완료</span></div><span class="task-timebox">⏱ 2시간</span></div>
+      <div class="task"><span class="task-icon ti-shift">🚀</span><div class="task-body"><b>양 지도교수 joint 미팅 안건 준비 + 이메일 발송</b> — 제목: "[P12] v2.1 방법론 통합본 공유 및 Phase 0 킥오프 요청". 본문: ① Tiered journal (CPT:PSP→TIRS→BJCP→TCP), ② Gwet's AC2 robustness panel, ③ 3인 코더 구조, ④ T+6 Option-B checkpoint. 첨부: v2.1 방법론 가이드. 2주 내 30분 joint 미팅 제안.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 이메일 발송 + 미팅 날짜 확정</span></div><span class="task-timebox">⏱ 40분</span></div>
+      <div class="task"><span class="task-icon ti-wait">⏳</span><div class="task-body"><b>[대기] 양 지도교수 joint 미팅 + 합의</b><br>병렬: irrCAC 패키지 테스트 (AC2/α/κ 계산) + mrgsolve T-DM1 파라미터 주입 시험 (Option-B 대비)</div><span class="task-timebox">대기 최대 2주</span></div>
+      <div class="task" style="background:var(--a-bg);border-color:var(--a-bd);">
+        <span class="task-icon ti-green">✓</span>
+        <div class="task-body" style="color:var(--a);"><b>Phase 0 Gate v2.1 — 아래 전부 충족 시만 Phase 1 진입</b><br>
+        □ OSF pre-registration draft 업로드<br>
+        □ MFDS 가이드라인 전수 확인 (ADC/CAR-T clin pharm guidance 부재 = 핵심 novelty 확인)<br>
+        □ 선점 논문 없음 확인<br>
+        □ Domain 1 매트릭스 초안 + 4범주 코딩<br>
+        □ 양 지도교수 합의: Tiered journal + AC2 panel + 3인 코더 + T+6 checkpoint</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase fade-in">
+    <div class="phase-dot pd-1">I</div>
+    <div class="phase-head"><span class="phase-period">T+1개월 ~ T+3개월</span><span class="phase-title">Phase 1 — 전체 추출 + 매트릭스 완성</span></div>
+    <div class="phase-card">
+      <div class="task"><span class="task-icon ti-green">🟢</span><div class="task-body"><b>전체 가이드라인 PDF 수집 (섹션 3 목록 전수)</b> — FDA CGT 2025.09 3종 draft 포함. 파일명 YYYYMMDD_기관_문서명.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 18건 전부 00_source_docs 저장 | 타임박스 총 4시간 (이후 추가 탐색 금지)</span></div><span class="task-timebox">⏱ 4시간</span></div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>Domain 2–4 LLM extraction + human review + 1인 코딩</b> — Domains 2, 3, 4 순서. Domain 4는 MFDS-ABSENT 코드 다발 예상 → 핵심 발견. UNCERTAIN 항목 적극 표시.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 01_extraction JSON 전수 + 02_coding 탭 4개 완성</span></div><span class="task-timebox">⏱ 17시간</span></div>
+      <div class="task"><span class="task-icon ti-wait">⏳</span><div class="task-body"><b>[대기] 한성필 부지도 독립 코딩 완료 대기</b><br>병렬: 한국 제약사(LigaChem·Samsung Biologics·ABL Bio) 허가 전략 공개자료 수집. Discussion 임플리케이션 초안.</div><span class="task-timebox">대기 최대 2주</span></div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>AC2 + α + κ robustness panel 계산 + 삼자 adjudication 준비</b> — irrCAC 3종 계산. 불일치·UNCERTAIN 항목 목록 + 합의 초안. 주지도 20–30% audit 시트 별도 준비.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: AC2_alpha_kappa_analysis.R 실행 결과 + 불일치 목록 | 선행: 부지도 코딩 완료</span></div><span class="task-timebox">⏱ 3시간</span></div>
+      <div class="task"><span class="task-icon ti-wait">⏳</span><div class="task-body"><b>[대기] 삼자 adjudication 회의</b> — UNCERTAIN·불일치 항목 전수 합의. AC2 재계산. OSF pre-registration Public 전환.</div><span class="task-timebox">2시간</span></div>
+      <div class="task"><span class="task-icon ti-green">🟢</span><div class="task-body"><b>최종 매트릭스 동결 (FROZEN)</b> — 양 지도교수 이메일 확인 → "_FROZEN" 파일명 추가. OSF에 codebook + 코딩 결과 최종 업로드.</div><span class="task-timebox">⏱ 30분</span></div>
+    </div>
+  </div>
+
+  <div class="phase fade-in">
+    <div class="phase-dot pd-2">II</div>
+    <div class="phase-head"><span class="phase-period">T+3 ~ T+6개월</span><span class="phase-title">Phase 2 — 논문 초고 + T+6 Checkpoint</span></div>
+    <div class="phase-card">
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>Introduction + Methods 초고 작성</b> — v2.1 Methods 초안(섹션 2) 반영. AC2 robustness panel 수학적 근거 + LLM HITL 방법 상세 기술.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: Intro + Methods 부지도 1차 검토 완료 | 선행: 매트릭스 FROZEN</span></div><span class="task-timebox">⏱ 7시간</span></div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>Results 작성</b> — 4도메인별 AC2/α/κ 값 + 범주 분포 표 + 매트릭스 heat map figure.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 핵심 figure 2개 + 500단어 이내 본문 | 타임박스 6시간</span></div><span class="task-timebox">⏱ 6시간</span></div>
+      <div class="task" style="background:var(--s-bg);border-color:var(--s-bd);">
+        <span class="task-icon ti-shift" style="background:var(--s-bg);">⏱</span>
+        <div class="task-body">
+          <b style="color:var(--s);">T+6 CHECKPOINT — Option-B 가부 냉정 판단</b><br>
+          <span style="font-size:.8rem;color:var(--text-3);">질문: "지금부터 6주 part-time(주 6–8시간)을 P12 scenario analysis에 쓸 수 있는가?"<br>
+          YES → Option-B 착수 (mrgsolve + T-DM1 + tisagenlecleucel), CPT:PSP 1° 유지.<br>
+          NO → Option-A 질적 시나리오 (1–2주), 1° 타겟을 TIRS로 조정, 양 지도교수 보고.</span>
+        </div>
+      </div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>Discussion + Scenario Analysis 작성</b> — 한국 제약사 임플리케이션 Top 5 + COI statement. Option-B 포함 시 1 figure + 1 table 추가.<br><span style="font-size:.8rem;color:var(--text-3);">DoD: Discussion + scenario section 완성 + 부지도 검토 | 800단어 Discussion</span></div><span class="task-timebox">⏱ 8시간</span></div>
+      <div class="task"><span class="task-icon ti-green">🟢</span><div class="task-body"><b>Zotero 정리 + medRxiv preprint 준비</b> — MFDS 원문 인용 fair-use 검증 후 medRxiv 업로드 준비. CPT:PSP 허용 확인.</div><span class="task-timebox">⏱ 3시간</span></div>
+    </div>
+  </div>
+
+  <div class="phase fade-in">
+    <div class="phase-dot pd-3">III</div>
+    <div class="phase-head"><span class="phase-period">T+6 ~ T+9개월</span><span class="phase-title">Phase 3 — 교정·투고·Fallback</span></div>
+    <div class="phase-card">
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>주지도 최종 검토 반영 + 영문 교정 의뢰</b> — 피드백 48시간 내 전수 반영. AJE/에디티지 투고 2주 전 의뢰.</div><span class="task-timebox">대기 포함 1주</span></div>
+      <div class="task"><span class="task-icon ti-green">🟢</span><div class="task-body"><b>투고 형식 최종 점검</b> — 선택 저널 Guide for Authors 전수 확인. GitHub 코드 공개 리포 + OSF pre-registration Public 전환. Cover letter 저널별 맞춤 단락 삽입.</div><span class="task-timebox">⏱ 2시간</span></div>
+      <div class="task"><span class="task-icon ti-shift">🚀</span><div class="task-body"><b>투고 (Submit) — T+9 이전</b> + medRxiv preprint 동시 업로드 (MFDS 저작권 검증 완료 후).<br><span style="font-size:.8rem;color:var(--text-3);">DoD: 투고 수신 이메일 + medRxiv DOI decision_log.md 기록</span></div><span class="task-timebox">당일</span></div>
+      <div class="task"><span class="task-icon ti-wait">⏳</span><div class="task-body"><b>[대기] 심사 (4–8주)</b><br>병렬: #10 CAR-T 포지션 페이퍼 착수 준비. PAGE 2027 abstract 초안.</div><span class="task-timebox">4–8주</span></div>
+      <div class="task"><span class="task-icon ti-deep">🔴</span><div class="task-body"><b>리비전 또는 Tiered 재투고 대응</b><br>Desk reject (2주 이내) → TIRS 포맷 전환 2주 내 재투고<br>Peer review reject → BJCP "Methods in Clinical Pharmacology" 재투고<br>BJCP reject → TCP 재투고 (한국어 abstract 추가)</div><span class="task-timebox">각 2주 이내</span></div>
+    </div>
+  </div>
+
+  <div class="phase fade-in">
+    <div class="phase-dot pd-final">★</div>
+    <div class="phase-head"><span class="phase-period">T+9 ~ T+12</span><span class="phase-title">도달 목표 — 투고 완료 + PAGE 2027 abstract</span></div>
+    <div class="phase-card" style="border-color:var(--s);box-shadow:0 0 20px var(--s-glow);">
+      <div class="task"><span class="task-icon ti-shift">🚀</span><div class="task-body" style="color:var(--s);"><b>1저자 논문 투고 완료 또는 Accept</b> — CPT:PSP / TIRS / BJCP / TCP 중 하나.</div></div>
+      <div class="task"><span class="task-icon" style="color:var(--a);">✓</span><div class="task-body">PAGE 2027 (2027.06) abstract 제출. "Korean Regulatory Pharmacometrician" 서사 자본 확보.</div></div>
+      <div class="task"><span class="task-icon" style="color:var(--a);">✓</span><div class="task-body">GitHub 리포 + OSF 코드북 공개. Update paper 경로 확보. #10 CAR-T 포지션 페이퍼 착수.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DELTA TABLE ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-g">변경 로그</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">v1.0 → v2.0 비판 → v2.1 최종 Delta 표</span>
+</div>
+
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>항목</th><th>v1.0</th><th>v2.0 비판문서</th><th>v2.1 최종</th><th>근거</th></tr></thead>
+  <tbody>
+    <tr class="delta-strong"><td><b>Agreement statistic</b></td><td>Cohen's κ ≥ 0.70 단독</td><td>Gwet's AC1 단독</td><td><div class="delta-badge db-strong">Strong</div><br><b>AC2 quadratic primary + Krippendorff ordinal α secondary + Fleiss weighted κ reference</b></td><td>Kappa paradox 실재. AC1 단독은 Vach & Gerke 2023 반론 있음 → robustness panel.</td></tr>
+    <tr class="delta-strong"><td><b>Threshold 해석</b></td><td>Landis–Koch 0.70 cutoff</td><td>미명시</td><td><div class="delta-badge db-strong">Strong</div><br>Gwet cumulative-prob benchmarking. <b>Landis–Koch를 AC2에 적용 금지</b></td><td>Vach & Gerke 2023 명시 근거.</td></tr>
+    <tr class="delta-strong"><td><b>코더 수</b></td><td>2인 (제1저자 + 주지도)</td><td>미변경</td><td><div class="delta-badge db-strong">Strong</div><br><b>3인</b> (각하 100% + 한성필 100% + 한승훈 20–30% audit)</td><td>2인 지도 체제 자산 활용. 통계적 robustness 증가.</td></tr>
+    <tr class="delta-strong"><td><b>코드 체계</b></td><td>HARMONIZED/PARTIAL/DISCORDANT/MFDS-ABSENT (명목형)</td><td>동일</td><td><div class="delta-badge db-strong">Strong</div><br><b>4범주 순위형: silent &lt; optional &lt; recommended &lt; required</b> (AC2 quadratic weights 적용 근거)</td><td>Ordinal scale이 규제 요건 강도를 더 정확히 포착.</td></tr>
+    <tr><td><b>Primary journal</b></td><td>TCP (IF ~1.1) 또는 RTP</td><td>CPT:PSP 단독</td><td><div class="delta-badge db-mod">Moderate-Strong</div><br><b>Tiered: 1°CPT:PSP → 2°TIRS → 3°BJCP → 4°TCP</b></td><td>단독 조준 양쪽 모두 최선 아님. Tiered가 desk reject 위험을 시간 비용으로 상각.</td></tr>
+    <tr><td><b>Scenario analysis</b></td><td>없음</td><td>"필수" pharmacometric scenario</td><td><div class="delta-badge db-mod">Moderate</div><br>Option-B (mrgsolve simulation-only) — T+6 checkpoint 후 가부 판단. <b>필수 아닌 optional risk-mitigation</b></td><td>Desk reject 완화는 inference이지 입증 사실 아님. 시간 제약 반영.</td></tr>
+    <tr><td><b>LLM benchmark</b></td><td>미포함</td><td>Sino-US-DrugQA 확정 인용</td><td><div class="delta-badge db-strong">Strong</div><br><b>analogical evidence로만 인용</b> (preprint + US-China only + MFDS 무관 명시)</td><td>한계 미명시 시 reviewer 비판 가능.</td></tr>
+    <tr><td><b>규제 이벤트</b></td><td>FDA ADC 2022 draft</td><td>FDA ADC 2024 final, CAR-T 2024, Dec 2025 RCT</td><td><div class="delta-badge db-strong">Strong</div><br>v2.0 목록 + <b>CGT 2025.09 3종 draft 추가</b>. <b>RCT 선호 = "Prasad JAMA 2025 policy signal" 교정. ICH M15 "under development" 교정.</b></td><td>1차 자료 검증 완료.</td></tr>
+    <tr class="delta-new"><td><b>EMA ADC gap</b></td><td>미명시</td><td>미명시</td><td><div class="delta-badge db-new">New</div><br><b>EMA ADC 전용 reflection paper 부재 → 매트릭스 핵심 novelty</b></td><td>1차 자료 확인.</td></tr>
+    <tr class="delta-new"><td><b>MFDS clin pharm gap</b></td><td>미명시</td><td>미명시</td><td><div class="delta-badge db-new">New</div><br><b>MFDS ADC/CAR-T 전용 clin pharm guidance 전무 → FDA/ICH de facto 준용 구조 정량화</b></td><td>1차 자료 확인. 한국적 novelty 핵심.</td></tr>
+    <tr class="delta-new"><td><b>OSF pre-registration</b></td><td>미명시</td><td>미명시</td><td><div class="delta-badge db-new">New</div><br>OSF protocol + codebook 사전등록 권장. Registered Report는 부적합(CPT:PSP/TIRS 미지원).</td><td>방법론 투명성 + desk rejection 완화 (Moderate).</td></tr>
+    <tr class="delta-new"><td><b>COI statement</b></td><td>미명시</td><td>미명시</td><td><div class="delta-badge db-new">New</div><br><b>TDM/MFDS 맥락 노출을 Competing Interests에 proactive disclosure</b></td><td>Bias 선제 대응. ICMJE COI form 필수.</td></tr>
+    <tr class="delta-new"><td><b>Conference timing</b></td><td>미명시</td><td>미명시</td><td><div class="delta-badge db-new">New</div><br><b>PAGE 2027 (2027.06) = primary dissemination</b>. ACoP 2026 Hackathon 선택적.</td><td>실측 일정 기반.</td></tr>
+    <tr class="delta-new"><td><b>Reporting checklist</b></td><td>미명시</td><td>미명시</td><td><div class="delta-badge db-new">New</div><br><b>GRRAS (Kottner et al. 2011, J Clin Epidemiol)</b></td><td>Reliability/agreement 연구 전용 표준.</td></tr>
+    <tr><td><b>최대 위협</b></td><td>저널 타겟 오선정</td><td>미변경</td><td><div class="delta-badge db-mod">Moderate</div><br><b>타임라인 초과</b> (Tiered 전략으로 저널 위험 상각 → 시간이 새 최대 위협)</td><td>박사 1년차 현실 제약 반영.</td></tr>
+    <tr><td><b>T+9 timeline</b></td><td>유지</td><td>묵시적 유지</td><td><div class="delta-badge db-mod">Moderate</div><br>유지. 단 <b>T+6 checkpoint 추가</b> (Option-B 가부 판단)</td><td>1년차 인지부하 제약 반영 안전장치.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ FALLBACK PLAN ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-w">Fallback Plan</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">투고 거절 단계별 즉시 실행 체크리스트</span>
+</div>
+
+<div class="card card-w fade-in">
+  <div class="sec-label">각 거절 단계별 대응 (재작업 ≤ 1주 설계)</div>
+  <div class="alert alert-w" style="margin:0 0 .7rem">
+    <div class="alert-label">CPT:PSP Desk Reject (2주 이내)</div>
+    <div class="alert-body">
+      ① 거절 사유 분석 30분. ② <b>TIRS 포맷 전환 체크리스트</b>: title 정제, abstract 250단어, Scenario analysis → Supplementary, DIA topic alignment statement 추가. ③ <b>재투고 목표 2주</b>.
+    </div>
+  </div>
+  <div class="alert alert-a" style="margin:0 0 .7rem">
+    <div class="alert-label">CPT:PSP Peer Review 후 Reject</div>
+    <div class="alert-body">
+      ① Reviewer comment 모두 보관 (다음 저널 pre-emptive 대응). ② 양 지도교수 1시간 debrief. ③ <b>BJCP "Methods in Clinical Pharmacology" 섹션으로 재투고</b> (reformatting 중간 난이도).
+    </div>
+  </div>
+  <div class="alert alert-c" style="margin:0 0 .7rem">
+    <div class="alert-label">BJCP Reject</div>
+    <div class="alert-body">
+      ① <b>TCP 재투고</b> (한국어 abstract 추가, KSCPT 네트워크 활용). ② 게재 보증 수준. 한국 regulatory community visibility 유의미.
+    </div>
+  </div>
+  <div class="alert alert-g" style="margin:0">
+    <div class="alert-label">모든 단계 공통 원칙</div>
+    <div class="alert-body">
+      ① 원고 구조를 저널 간 재사용 가능하게 설계 → 각 재투고 재작업 ≤ 1주.<br>
+      ② Cover letter는 저널별 맞춤 단락 2–3문장만 교체.<br>
+      ③ Scenario analysis는 modular — 저널 기대에 따라 본문/supplement/제외 선택.<br>
+      ④ 각 거절 사유를 PIPET-Vault decision_log.md에 기록 → 다음 저널 strategy 반영.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Tonight's 3 Actions ═══ -->
+<div class="tonight fade-in" style="margin-top:2rem;">
+  <div class="tonight-title">▶ Tonight's 3 Actions — v2.1 (v1.0 대비 개선판)</div>
+  <div class="tonight-item">
+    <div class="tonight-num">1</div>
+    <div class="tonight-body">
+      <b>🚀 OSF 프로젝트 생성 + Pre-registration Draft v0.1 업로드</b>
+      <span>osf.io → New Project "P12_RegPopPK_Playbook_v2.1". 초기 파일: 본 v2.1 방법론 가이드 PDF + 4도메인 scope 1-pager + Gwet's AC2 robustness panel 계획. Visibility: Private (사전등록 시점에 Public). PIPET-Vault 60_preregistration/draft_v0.1.md로 미러링. <b>v1.0 action 1(MFDS 확인)보다 먼저</b> — OSF 링크가 양 지도교수 미팅 안건에 포함됩니다.<br>⏱ 타임박스: <b>45분</b></span>
+    </div>
+  </div>
+  <div class="tonight-item">
+    <div class="tonight-num">2</div>
+    <div class="tonight-body">
+      <b>🚀 양 지도교수 Joint Email 초안 작성 (발송은 검토 후)</b>
+      <span>제목: "[P12] v2.1 방법론 통합본 공유 및 Phase 0 킥오프 요청". 단락 1: v1.0 → v2.1 핵심 변화 3가지(AC2 robustness panel, Tiered journal, 3인 코더). 단락 2: 주지도 20–30% audit role 제안(시간 부담 완화). 단락 3: 2주 내 joint 30분 미팅 3가지 시간대 제시. 첨부: v2.1 방법론 가이드. OSF draft URL 포함. <b>v1.0은 주지도 1:1이었으나 v2.1은 양 지도교수 동시 발송</b>.<br>⏱ 타임박스: <b>40분</b></span>
+    </div>
+  </div>
+  <div class="tonight-item">
+    <div class="tonight-num">3</div>
+    <div class="tonight-body">
+      <b>🟢 디렉토리 구조 생성 + 규제문서 URL 리스트 초기화</b>
+      <span>섹션 4 폴더 트리 그대로 로컬 드라이브 생성 (파일은 아직 생성 안 함). 90_logs/action_log.md + decision_log.md 빈 파일 + 오늘 첫 엔트리. 추가: 10_sources/README.md에 섹션 3의 18건 핵심 문서 URL + 접근 방법 문서화 (PDF download는 아직 금지 — fair-use 검토 전). Claude Sonnet API key 유무 확인, 없으면 계정 설정 체크리스트 작성.<br>⏱ 타임박스: <b>30분</b></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 섹션 H | 기타 고려사항 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-neg1">섹션 H</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">기타 중대 고려사항 (v2.1 신규)</span>
+</div>
+
+<div class="fade-in" style="overflow-x:auto;">
+<table class="tbl">
+  <thead><tr><th>항목</th><th>내용</th><th>근거 수준</th></tr></thead>
+  <tbody>
+    <tr><td><b>저작권·Fair Use</b></td><td>FDA/EMA 원문: US 연방정부 저작물 public domain (17 USC §105). EMA: 출처 표기 하에 인용 허용. MFDS: 공공누리 제1유형(자유이용) 대부분 — 개별 문서 표기 확인 필수. 전재(full-text) supplement 업로드 회피. 직접 인용 문단당 ≤3문장, 전체 ≤10%. Citation: agency-section-page 삼자 필수.</td><td>Strong</td></tr>
+    <tr><td><b>이해충돌 투명성</b></td><td>Methods/Competing Interests: "One author (각하) is a clinical pharmacist with TDM experience in a Korean tertiary hospital and has previously reviewed MFDS documents in clinical practice. This may influence familiarity but codings were independently verified by two supervisors. No financial or regulatory-body employment COI exists." 주지도·부지도의 MFDS/기업 자문 경력 모두 disclose. ICMJE COI form 보수적 기재.</td><td>Moderate</td></tr>
+    <tr><td><b>Open Science</b></td><td>적극 공개: 코드북, 코딩 매뉴얼, R analysis 코드 → GitHub 공개 리포 + OSF. CPT:PSP code availability 조건화 추세. 제한 공개: MFDS 원문 추출 JSON → URL 링크로 대체.</td><td>Strong</td></tr>
+    <tr><td><b>Pre-print 전략</b></td><td>medRxiv 업로드 (CPT:PSP/TIRS/BJCP/TCP 모두 허용). 투고와 동시 또는 직후. MFDS 원문 인용 fair-use 검증 완료 후 게시. DOI 획득으로 조기 가시성.</td><td>Moderate</td></tr>
+    <tr><td><b>한국 커뮤니티 연계</b></td><td>KSCPT (TCP journal 생태계). KoPhaM (한국 pharmacometrics 네트워크). RAPS Korea Chapter (pre-submission 내부 peer review). DIA Korea Affiliate (TIRS 저널 생태계). 한승훈 교수 네트워크 활용.</td><td>Moderate</td></tr>
+    <tr><td><b>Conference 정합성</b></td><td>PAGE 2026 (2026.06) ❌ 놓침. ISoP Mid-Year 2026 ❌ 놓침. ACoP 2026 (2026.11) ⚠ Hackathon 선택적. <b>PAGE 2027 (2027.06) ✅ primary dissemination</b>. ACoP 2027 ✅ 확장 발표.</td><td>Strong</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ 보고 프롬프트 ═══ -->
+<div class="sec-head">
+  <span class="sec-tag st-w">섹션 7</span>
+  <div class="sec-line"></div>
+  <span class="sec-range">결과 보고 템플릿 v2.1 — 복사+붙여넣기용</span>
+</div>
+
+<div class="sec-label">Tonight's 3 Actions 완료 후 보고 프롬프트</div>
+<div class="copy-box fade-in" id="report-tonight">
+[결과 보고 프롬프트 — P12 v2.1 Tonight's 3 Actions 완료 후]
+
+1. 🚀 [OSF 프로젝트 생성] 결과: (완료 / 부분 완료 / 실패)
+   - OSF 프로젝트 URL:
+   - 업로드 파일: v2.1 방법론 가이드 (Yes/No) | 4도메인 scope (Yes/No)
+   - PIPET-Vault 미러링: (완료/미완료)
+
+2. 🚀 [양 지도교수 Joint Email] 결과: (초안 완성 / 발송 완료 / 미완료)
+   - 초안 주요 내용 3줄 요약:
+   - Joint 미팅 제안 시간대:
+
+3. 🟢 [디렉토리 + URL 리스트] 결과: (완료 / 부분 완료 / 실패)
+   - 생성 경로: [로컬 드라이브 경로]
+   - action_log.md 첫 엔트리: (완료/미완료)
+   - 18건 URL README.md 문서화: (완료/미완료)
+   - Claude Sonnet API key: (보유/미보유 → 계정 설정 필요)
+
+MFDS 가이드라인 확인 결과 (tonight 가능 시):
+   발견된 문서 수: __개
+   ADC/CAR-T 전용 clin pharm guidance 존재 여부: (있음/없음)
+   → 없음이면: "핵심 novelty 확인 완료" 로 기록
+
+Pivot Trigger 이상 신호: (있음/없음)
+   → 있음 시 내용:
+
+양 지도교수 미팅 날짜 확정: (확정 YYYY-MM-DD / 미확정)
+T+6 checkpoint 인식: (명확히 이해함 / 추가 설명 필요)
+
+다음 단계 지시를 주십시오.
+<button class="copy-btn" onclick="copyText('report-tonight', this)">복사</button></div>
+
+<div class="sec-label" style="margin-top:1rem;">Phase 0 완료 후 보고 프롬프트</div>
+<div class="copy-box fade-in" id="report-p0">
+[결과 보고 프롬프트 — P12 v2.1 Phase 0 완료 후]
+
+[Phase 0 Gate v2.1 전수 확인]
+□ OSF pre-registration draft 업로드: (Yes/No) URL:
+□ MFDS ADC/CAR-T clin pharm guidance 부재 확인: (Yes/No)
+  → 핵심 novelty 확인 완료 여부:
+□ 선점 논문 없음 확인: (Yes / 선점 논문 발견됨 → 제목:)
+□ Domain 1 매트릭스 초안 + 4범주 코딩:
+  silent:__ / optional:__ / recommended:__ / required:__
+□ 양 지도교수 joint 미팅 합의 완료: (Yes/No)
+  - Tiered journal 확정 1°:
+  - AC2 robustness panel 승인: (Yes/No)
+  - 3인 코더 구조 승인: (Yes/No)
+  - T+6 checkpoint 설정 동의: (Yes/No)
+□ LLM extraction pipeline 파일럿 완료: (Yes/No)
+□ irrCAC + mrgsolve R 패키지 테스트: (Yes/No)
+
+발견된 신규 지식 공백: (있음/없음)
+Pivot Trigger 이상 신호: (있음/없음)
+
+Phase 1 착수 준비: (Yes / No — 미완료 항목:)
+
+다음 Phase 1 지시를 주십시오.
+<button class="copy-btn" onclick="copyText('report-p0', this)">복사</button></div>
+
+<!-- OBSIDIAN NOTE -->
+<div class="divider"></div>
+<div class="sec-label">PIPET-Vault 저장 가이드 v2.1</div>
+<div class="card card-b fade-in">
+  <div class="kv-grid">
+    <span class="kv-key">📂 경로</span>
+    <span class="kv-val"><code style="font-family:var(--mono);font-size:.78rem;color:var(--a);">30_Projects/P12_RegPopPK_Playbook/</code></span>
+    <span class="kv-key">📝 파일명</span>
+    <span class="kv-val"><code style="font-family:var(--mono);font-size:.75rem;color:var(--text-2);">2026-04-20_P12-MFDS-FDA-EMA-Playbook-v2.1_TYPE-B.md</code></span>
+    <span class="kv-key">🏷️ 태그</span>
+    <span class="kv-val" style="font-size:.78rem;color:var(--a);">#P12 #P12/regPopPK #P12/FDA #P12/EMA #P12/MFDS #P12/ADC #P12/CAR-T #P12/BsAb #P12/domain1~4 #P12/review_required #GwetAC2 #TieredSubmission #OSF_preregistration #RegulatoryHarmonization #GRRAS #PhD_Roadmap</span>
+    <span class="kv-key">🔗 연계 노트</span>
+    <span class="kv-val" style="font-size:.8rem;color:var(--text-3);line-height:1.85;">[[Gwet AC2 R code — irrCAC]] · [[FDA ADC Guidance 2024 핵심 요건]] · [[FDA CGT 2025.09 3종 draft 정리]] · [[EMA ADC silent — 핵심 novelty]] · [[MFDS ADC CAR-T guidance 부재 확인]] · [[mrgsolve T-DM1 Option-B simulation]] · [[CPT:PSP Tiered journal 전략]] · [[OSF P12 pre-registration protocol]]</span>
+  </div>
+</div>
+
+</div><!-- end .container -->
+
+<footer>
+  <div class="container">
+    <div class="ft-inner">
+      <span class="ft-txt">PIPET-Lab · P12 v2.1 최종 통합본 · 2026.04 · 선택적 통합(v1.0 ✚ v2.0 비판 → v2.1)</span>
+      <span class="ft-txt">TYPE_B · Gwet AC2 + Tiered CPT:PSP→TIRS→BJCP→TCP · PAGE 2027</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){
+  const h=document.documentElement;
+  const d=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',d?'light':'dark');
+  document.getElementById('ti').textContent=d?'☾':'☀';
+  document.getElementById('tt').textContent=d?'다크':'라이트';
+}
+const reveals=document.querySelectorAll('.fade-in');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+},{threshold:0.04});
+reveals.forEach((el,i)=>{el.style.transitionDelay=(i%6)*0.05+'s';io.observe(el);});
+function copyText(id,btn){
+  const el=document.getElementById(id);
+  const clone=el.cloneNode(true);
+  clone.querySelectorAll('.copy-btn').forEach(b=>b.remove());
+  navigator.clipboard.writeText(clone.innerText.trim()).then(()=>{
+    btn.textContent='✓ 복사됨';
+    setTimeout(()=>btn.textContent='복사',1800);
+  });
+}
+</script>
+</body>
+</html>
