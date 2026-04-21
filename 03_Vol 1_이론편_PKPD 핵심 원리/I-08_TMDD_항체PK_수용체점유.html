@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>I-08 TMDD — 항체 PK·수용체 점유 | PK/PD Mastery V5.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']],processEscapes:true},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--bg:#09090e;--surface:#0c0c12;--surface2:#10101a;--text:#ede8df;--muted:#8a8070;--accent:#c9a84c;--accent-dim:rgba(201,168,76,0.08);--danger:#c0392b;--danger-dim:rgba(192,57,43,0.08);--info:#4098e8;--phantom:rgba(220,60,60,0.55);--border:rgba(255,255,255,0.06);--radius:8px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:15px;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.75;min-height:100vh;}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:700;line-height:1.3;}
+code,pre,.mono{font-family:'IBM Plex Mono',monospace;}
+/* Sidebar */
+#sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:20px 0;z-index:100;transition:.3s;}
+#sidebar::-webkit-scrollbar{width:4px;}#sidebar::-webkit-scrollbar-track{background:transparent;}#sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.sidebar-logo{padding:0 16px 16px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.sidebar-logo .series{font-size:.7em;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;}
+.sidebar-logo .session{font-family:'Cormorant Garamond',serif;font-size:1.1em;color:var(--text);}
+.nav-section{padding:4px 0;}
+.nav-section .sec-label{font-size:.68em;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;padding:6px 16px 2px;}
+.nav-link{display:block;padding:5px 16px;font-size:.82em;color:var(--muted);text-decoration:none;border-left:2px solid transparent;transition:.2s;}
+.nav-link:hover{color:var(--text);background:var(--accent-dim);}
+.nav-link.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-dim);}
+.nav-sub{padding:2px 16px 2px 28px;font-size:.76em;color:var(--muted);text-decoration:none;display:block;transition:.2s;}
+.nav-sub:hover{color:var(--accent);}
+/* Main */
+#main{margin-left:240px;max-width:calc(1100px + 240px);padding:0 48px;}
+@media(max-width:768px){#sidebar{transform:translateX(-100%);}#main{margin-left:0;padding:0 20px;}}
+/* Sections */
+.section{padding:60px 0 40px;border-bottom:1px solid var(--border);}
+.section:last-child{border-bottom:none;}
+.section-tag{font-size:.7em;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+.section-title{font-size:2em;color:var(--text);margin-bottom:24px;}
+.section-title span{color:var(--accent);}
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:24px;}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.card-num{font-family:'IBM Plex Mono',monospace;font-size:.75em;color:var(--muted);background:var(--surface2);padding:3px 8px;border-radius:4px;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.3em;color:var(--text);}
+.apex-badge{background:var(--accent);color:#09090e;font-size:.65em;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:.08em;font-family:'IBM Plex Mono',monospace;}
+/* Big Idea block */
+.big-idea{border-left:4px solid var(--accent);background:var(--accent-dim);padding:18px 20px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:22px;}
+.big-idea-label{font-size:.68em;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.big-idea p{margin-bottom:10px;font-size:.92em;}
+.big-idea p:last-child{margin-bottom:0;}
+.big-idea strong{color:var(--accent);}
+/* Fallacy block */
+.fallacy{border-left:4px solid var(--danger);background:var(--danger-dim);padding:18px 20px;border-radius:0 var(--radius) var(--radius) 0;margin:20px 0;}
+.fallacy-label{font-size:.68em;color:var(--danger);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+/* Micro citation */
+.cite{font-size:.78em;color:var(--muted);font-style:italic;display:inline-block;margin-left:6px;}
+/* Tables */
+.data-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.85em;}
+.data-table th{background:var(--surface2);color:var(--accent);padding:8px 12px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.82em;letter-spacing:.05em;}
+.data-table td{padding:7px 12px;border-bottom:1px solid var(--border);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table .highlight{color:var(--accent);font-weight:700;}
+.data-table .danger-row td{background:rgba(192,57,43,0.12);font-weight:700;}
+.data-table .hook-row td{color:var(--accent);background:rgba(201,168,76,0.06);}
+/* Part labels */
+.part-label{font-family:'IBM Plex Mono',monospace;font-size:.72em;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 8px;}
+/* Info boxes */
+.info-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin:16px 0;font-size:.88em;}
+/* Code blocks */
+.code-block{background:#050508;border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:'IBM Plex Mono',monospace;font-size:.8em;overflow-x:auto;line-height:1.6;color:#b8c0cc;margin:16px 0;}
+.code-block .comment{color:#5a6070;}
+.code-block .kw{color:#c9a84c;}
+.code-block .str{color:#7ec8a0;}
+/* Zettelkasten */
+.zettel{background:rgba(64,152,232,0.05);border:1px solid rgba(64,152,232,0.15);border-radius:var(--radius);padding:14px 18px;margin-top:20px;font-size:.82em;}
+.zettel-label{font-family:'IBM Plex Mono',monospace;font-size:.7em;color:var(--info);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+/* Simulator */
+.sim-container{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;}
+.canvas-wrap{position:relative;height:360px;overflow:hidden;flex-shrink:0;}
+#simCanvas{width:100%!important;height:100%!important;display:block;cursor:crosshair;}
+.sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+.slider-group{display:flex;flex-direction:column;gap:4px;}
+.slider-label{font-size:.8em;color:var(--muted);display:flex;justify-content:space-between;}
+.slider-label span{color:var(--text);font-family:'IBM Plex Mono',monospace;}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+.btn{padding:6px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:4px;cursor:pointer;font-size:.8em;font-family:'IBM Plex Mono',monospace;transition:.2s;}
+.btn:hover,.btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.btn.danger{border-color:var(--danger);color:var(--danger);}
+.btn.danger:hover,.btn.danger.active{background:var(--danger-dim);}
+.cursor-label{font-family:'IBM Plex Mono',monospace;font-size:.78em;color:var(--muted);min-height:1.4em;margin-top:4px;}
+.warn-banner{background:rgba(192,57,43,0.12);border:1px solid var(--danger);border-radius:4px;padding:6px 12px;font-size:.8em;color:var(--danger);margin:8px 0;display:none;}
+.warn-banner.show{display:block;}
+.derived-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;}
+.derived-item{background:var(--surface2);border-radius:4px;padding:8px 12px;}
+.derived-item .d-label{font-size:.68em;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.derived-item .d-value{font-size:.95em;font-family:'IBM Plex Mono',monospace;color:var(--text);}
+.derived-item .d-delta{font-size:.75em;font-family:'IBM Plex Mono',monospace;}
+.delta-up{color:#e87040;}.delta-down{color:#4098e8;}.delta-nil{color:var(--muted);}
+.mission-box{border:1px solid rgba(201,168,76,0.3);background:rgba(201,168,76,0.04);border-radius:var(--radius);padding:16px 20px;margin:16px 0;}
+.mission-box h4{color:var(--accent);font-size:.9em;margin-bottom:8px;}
+/* §3 */
+.iso-intro{border-left:4px solid var(--accent);background:rgba(201,168,76,0.05);padding:18px 20px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:24px;font-style:italic;}
+.iso-intro p{margin-bottom:10px;font-size:.92em;}.iso-intro p:last-child{margin-bottom:0;}
+.norm-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;}
+#normCanvas{width:100%;height:240px;display:block;}
+/* §5 confusion pairs */
+.pair-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.84em;}
+.pair-table th{background:var(--surface2);color:var(--accent);padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:.78em;letter-spacing:.05em;text-align:left;}
+.pair-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.pair-table .dim-row td{background:var(--surface2);color:var(--muted);font-size:.82em;}
+.pair-table .hook-row td:first-child{color:var(--accent);background:rgba(201,168,76,0.06);}
+.pair-table .hook-row td{background:rgba(201,168,76,0.06);}
+.pair-table .crit-row td{background:rgba(192,57,43,0.12);font-weight:700;}
+/* §7 accordions */
+.qa-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.qa-header{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--surface);}
+.qa-header:hover{background:var(--surface2);}
+.qa-q{font-size:.9em;color:var(--text);}
+.qa-meta{font-family:'IBM Plex Mono',monospace;font-size:.72em;color:var(--muted);display:flex;gap:8px;align-items:center;}
+.star-badge{color:var(--accent);}
+.qa-toggle{color:var(--muted);font-size:1.1em;transition:.3s;}
+.qa-body{display:none;padding:18px;background:var(--surface2);border-top:1px solid var(--border);font-size:.88em;}
+.qa-body.open{display:block;}
+.qa-body p{margin-bottom:8px;}
+.next-q{margin-top:14px;padding:10px 14px;background:rgba(64,152,232,0.08);border-left:3px solid var(--info);border-radius:0 4px 4px 0;font-size:.85em;color:var(--info);}
+.boss-dilemma{border:2px solid var(--accent);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.boss-dilemma .qa-header{background:rgba(201,168,76,0.08);}
+.boss-dilemma .qa-q{color:var(--accent);}
+/* §6 */
+.scenario-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0;}
+.scenario-tag{font-size:.7em;color:var(--info);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;}
+.diagnostic-sig{background:var(--surface2);border-left:3px solid var(--danger);padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;margin:12px 0;font-size:.88em;}
+.sig-name{color:var(--danger);font-family:'IBM Plex Mono',monospace;font-size:.8em;letter-spacing:.05em;margin-bottom:6px;font-weight:700;}
+/* §8 */
+.moat-item{border-left:3px solid var(--accent);padding:12px 16px;margin:12px 0;background:rgba(201,168,76,0.04);}
+/* Cliff simulator */
+.cliff-container{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0;}
+.canvas-wrap-sm{position:relative;height:240px;overflow:hidden;flex-shrink:0;}
+#cliffCanvas{width:100%!important;height:100%!important;display:block;}
+#cwresCanvas{width:100%!important;height:100%!important;display:block;}
+.dose-buttons{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+/* Transfer cards */
+.transfer-card{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:12px 0;}
+.transfer-header{padding:12px 16px;cursor:pointer;background:var(--surface);display:flex;justify-content:space-between;align-items:center;}
+.transfer-header:hover{background:var(--surface2);}
+.transfer-q{font-size:.88em;color:var(--text);}
+.transfer-body{display:none;padding:16px;background:var(--surface2);border-top:1px solid var(--border);font-size:.86em;}
+.transfer-body.open{display:block;}
+.transfer-step{margin:8px 0;padding-left:16px;border-left:2px solid var(--border);}
+.transfer-step strong{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="series">PK/PD Mastery V5.1</div>
+    <div class="session">I-08 TMDD</div>
+  </div>
+  <div class="nav-section">
+    <div class="sec-label">섹션</div>
+    <a class="nav-link" href="#s1">§1 세션 헤더</a>
+    <a class="nav-link" href="#s2">§2 개념 해부 카드</a>
+    <a class="nav-sub" href="#c1">카드 1: 단백질 약물 PK</a>
+    <a class="nav-sub" href="#c2">카드 2: Turnover ODE</a>
+    <a class="nav-sub" href="#c3">⚡ 카드 3: TMDD 풀 모델</a>
+    <a class="nav-sub" href="#c4">카드 4: 4상 패턴</a>
+    <a class="nav-sub" href="#c5">카드 5: MM 근사 한계</a>
+    <a class="nav-link" href="#s3">§3 구조적 동형성</a>
+    <a class="nav-link" href="#s4">§4 인터랙티브 시뮬레이터</a>
+    <a class="nav-link" href="#s5">§5 혼동쌍 해부</a>
+    <a class="nav-sub" href="#p1">Km vs Kd (Critical Blow)</a>
+    <a class="nav-sub" href="#p2">Phase B vs Phase D</a>
+    <a class="nav-sub" href="#p3">비특이적 CL vs TMDD CL</a>
+    <a class="nav-link" href="#s6">§6 실용 시나리오</a>
+    <a class="nav-link" href="#s7">§7 자기 테스트</a>
+    <a class="nav-link" href="#s8">§8 메타프레임</a>
+  </div>
+</nav>
+
+<div id="main">
+
+<!-- §1 SESSION HEADER -->
+<section class="section" id="s1">
+  <div class="section-tag">Session I-08 · Vol I</div>
+  <h1 class="section-title">TMDD — <span>항체 PK · 수용체 점유</span></h1>
+
+  <div class="card">
+    <div class="part-label">소스</div>
+    <table class="data-table">
+      <tr><th>교재</th><th>챕터/섹션</th><th>페이지</th></tr>
+      <tr><td>Rowland & Tozer 5e (R&T)</td><td>Chapter 21: Protein Drugs</td><td>pp. 687–718</td></tr>
+      <tr><td>Gabrielsson & Weiner 5e</td><td>§2.6.2–2.6.3, Case Study PK27</td><td>pp. 97–105, 602–610</td></tr>
+    </table>
+
+    <div class="part-label">Big Idea</div>
+    <div class="big-idea">
+      <p>단백질 약물에서 <strong>표적(receptor)은 약물의 약력학적 작용 부위인 동시에 청소율 경로 자체</strong>이다 — 이 PK·PD의 분자적 일체성을 이해하는 것이 mAb 임상 개발 전 과정의 열쇠다.</p>
+    </div>
+
+    <div class="part-label">개념 항법도</div>
+    <ol style="padding-left:20px;font-size:.9em;line-height:2;">
+      <li>단백질 약물 PK의 구조적 특이성 — 분자량·림프계·FcRn·신장 처리</li>
+      <li>내인성 단백질 Turnover — 항상성의 ODE 표현 (IgX, IgG 실제 데이터)</li>
+      <li><strong>[⚡ Apex] TMDD 풀 모델</strong> — 4개 ODE·8개 파라미터의 구조적 필연성 + $K_m \neq K_d$</li>
+      <li>TMDD 4상(A–D) 패턴 — 농도-시간 곡선의 지배 방정식 전환</li>
+      <li>MM 근사의 적용 조건과 구조적 한계 — 언제 쓰고 언제 버리는가</li>
+    </ol>
+
+    <div class="part-label">지식 그래프 위치</div>
+    <div class="info-box">
+      <p><strong style="color:var(--muted);">선행 필수:</strong> I-01(CL·V·t½), I-04(2구획), I-07(MM 비선형 PK), I-09(Emax)</p>
+      <p><strong style="color:var(--accent);">직접 열어주는 것:</strong> II-04($DES ODE 코딩), II-11(PK/PD NONMEM 구현), II-08(공변량 — $R_0$·질환 중증도)</p>
+      <p><strong style="color:var(--info);">의존하는 고급 도메인:</strong> Bispecific mAb PK, ADC(항체-약물 접합체), PBPK-TMDD 통합</p>
+    </div>
+  </div>
+</section>
+
+<!-- §2 CONCEPT CARDS -->
+<section class="section" id="s2">
+  <div class="section-tag">§2</div>
+  <h2 class="section-title">개념 해부 카드</h2>
+
+  <!-- CARD 1 -->
+  <div class="card" id="c1">
+    <div class="card-header">
+      <span class="card-num">카드 01</span>
+      <span class="card-title">단백질 약물 PK의 구조적 특이성 — 분자량이 운명을 결정한다</span>
+    </div>
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> 건강인 Phase 1 PK를 중증 환자에게 외삽하거나, 소분자 약물의 직관(경구 흡수, CYP 대사, 신기능 → $CL_{renal}$ 비례 조정)을 단백질 약물에 그대로 적용하면 체계적으로 틀린다. MW &lt; 30 kDa 단백질은 신기능이 CL을 직접 결정하고, MW &gt; 60 kDa mAb는 신기능이 거의 무관하다는 차이를 모르면 Anakinra를 ESRD 환자에게 표준 용량으로 처방하는 독성 사고로 이어진다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> 분자량이 커질수록 혈관 모세관은 닫히고 림프계가 열린다 — 이 단 하나의 물리 원리가 단백질 약물의 느린 흡수, 낮은 Vd, 신장 대사(사구체 여과 → 세뇨관 분해)를 동시에 설명한다.</p>
+      <p><em>"고분자는 혈관이 아닌 림프계의 승객이다"를 유지한 채 아래 수치들을 읽으면, 모든 패턴이 하나의 물리적 원리에서 나온다는 것이 보인다.</em></p>
+    </div>
+
+    <div class="part-label">A. Formal Definition</div>
+    <p style="font-size:.9em;margin-bottom:12px;">단백질 약물(MW ~1–200 kDa)의 PK는 소분자와 구별되는 세 가지 구조적 특성을 갖는다: (1) 흡수 — SC/IM 투여 시 MW &gt; 16–20 kDa는 주로 림프계 경로로 전신 순환에 도달, (2) 분포 — Vd ≈ 혈장(0.04 L/kg) ~ 세포외액(0.23 L/kg); mAb 실측: 0.043–0.18 L/kg, (3) 소실 — MW &lt; 30 kDa → 사구체 여과 후 세뇨관 효소 분해; IgG → FcRn 재순환으로 t½ ≈ 21일.</p>
+
+    <div class="part-label">B. 림프계 흡수의 MW 의존성 (Supersaxo et al. 양 실험)</div>
+    <table class="data-table">
+      <tr><th>화합물</th><th>MW (g/mol)</th><th>림프 회수율</th></tr>
+      <tr><td>FUdR</td><td>246</td><td>~2%</td></tr>
+      <tr><td>Inulin</td><td>5,200</td><td>~20%</td></tr>
+      <tr><td>Cytochrome C</td><td>12,300</td><td>~40%</td></tr>
+      <tr class="highlight"><td>Interferon-α-2a</td><td>19,000</td><td class="highlight">~60%</td></tr>
+    </table>
+    <span class="cite">[출처: Gabrielsson 5e, §2.6.2, p.99; R&T 5e, Ch.21, Figure 21-16]</span>
+
+    <div class="part-label">임상 증거 — Anakinra 신기능별 PK <span class="cite">[R&T Table 21-16]</span></div>
+    <table class="data-table">
+      <tr><th>그룹</th><th>CrCl (mL/min)</th><th>AUC (mg·h/L)</th><th>SC t½ (h)</th></tr>
+      <tr><td>정상 신기능</td><td>95</td><td>10.2 ± 2.1</td><td><strong>5.24 ± 0.45</strong></td></tr>
+      <tr><td>경증 저하</td><td>65</td><td>13.0</td><td>4.48</td></tr>
+      <tr><td>중등도 저하</td><td>41</td><td>21.1</td><td>5.24</td></tr>
+      <tr><td>중증 저하</td><td>16</td><td>33.1</td><td>7.15</td></tr>
+      <tr class="highlight"><td>ESRD</td><td>~2</td><td class="highlight">39.4 ± 4.3</td><td class="highlight">9.71 ± 3.4</td></tr>
+    </table>
+    <p style="font-size:.86em;margin:8px 0;">핵심 패턴: CrCl 95→16 mL/min 감소 시 AUC 3.2배 증가, SC t½는 거의 불변. SC 투여 후 말단 기울기가 흡수 속도(flip-flop)에 지배되기 때문이다. IV t½ = 2.6 h &lt; SC t½ 5.24 h → flip-flop 확인. ESRD에서야 flip-flop이 깨지며 t½ 증가.</p>
+
+    <div class="part-label">FcRn 매개 재순환 — IgG t½ ≈ 21일의 분자 기전</div>
+    <ol style="padding-left:18px;font-size:.88em;line-height:2.0;">
+      <li>혈중 IgG → 내피세포/단핵세포 endocytosis → <strong>산성 엔도좀(pH ~6.0)</strong></li>
+      <li>FcRn이 IgG의 Fc 부위에 고친화도 결합 (pH 의존적 — 낮을수록 친화도 높음)</li>
+      <li>FcRn-IgG 복합체 → 재순환 엔도좀 → 세포 표면 귀환</li>
+      <li><strong>생리적 pH(7.4)에서 친화도 급감</strong> → IgG 혈중 방출, 리소좀 분해 회피</li>
+    </ol>
+    <span class="cite">[출처: R&T 5e, Ch.21, Figure 21-5, FcRn-Mediated Clearance section]</span>
+
+    <div class="part-label">신장 처리의 MW 경계 <span class="cite">[R&T Table 21-9]</span></div>
+    <table class="data-table">
+      <tr><th>단백질</th><th>MW (g/mol)</th><th>사구체 체 계수(SC)</th></tr>
+      <tr><td>인슐린</td><td>6,000</td><td>0.89</td></tr>
+      <tr><td>Myoglobin</td><td>16,900</td><td>0.75</td></tr>
+      <tr><td>성장 호르몬</td><td>22,000</td><td>0.65</td></tr>
+      <tr><td>Superoxide dismutase</td><td>32,000</td><td>0.33</td></tr>
+      <tr class="highlight"><td>알부민</td><td>69,000</td><td class="highlight">0.001</td></tr>
+    </table>
+
+    <div class="zettel">
+      <div class="zettel-label">Zettelkasten Atom</div>
+      <p>단백질 약물 PK: MW 결정 세 경로 — 흡수(림프계, MW &gt; 16 kDa, 회수율 ≥ 50%), 분포(Vd 혈장-세포외액), 소실(MW &lt; 30 kDa → 신장 처리, 50–200 kDa → RME, IgG → FcRn t½ ≈ 21일). Anakinra ESRD: AUC 3.8배↑, SC t½ 5.24→9.71 h (flip-flop 깨짐 지점).</p>
+    </div>
+  </div>
+
+  <!-- CARD 2 -->
+  <div class="card" id="c2">
+    <div class="card-header">
+      <span class="card-num">카드 02</span>
+      <span class="card-title">내인성 단백질 Turnover — 항상성의 ODE 표현</span>
+    </div>
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> 바이오의약품은 반드시 내인성 단백질의 turnover dynamics 위에 놓인 시스템에 투여된다. 내인성 $k_{in}$과 $k_{out}$을 모르면, 투여된 약물의 효과와 내인성 항상성 복귀를 구분할 수 없다 — 이것이 TMDD 풀 모델에서 수용체 ODE($dR/dt = k_{in} - k_{out} \cdot R$)가 반드시 존재해야 하는 이유다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> 기저값 복귀 속도는 항상 $k_{out}$이 결정한다 — $k_{in}$을 바꾸면 새 정상상태만 달라지고, $k_{out}$을 바꾸면 정상상태와 복귀 속도가 동시에 달라진다.</p>
+      <p><em>IgG 반감기 23일 vs. IgE 반감기 2.5일의 차이를 "왜"라는 질문으로 보면, 이 카드 전체가 하나의 답이다.</em></p>
+    </div>
+
+    <div class="part-label">A. Turnover ODE 기본 구조</div>
+    <p style="font-size:.88em;margin-bottom:8px;">내인성 단백질의 기본 turnover ODE:</p>
+    $$\frac{dA}{dt} = k_{in} - k_{out} \cdot A$$
+    <p style="font-size:.86em;margin:10px 0;">정상상태: $A_0 = k_{in}/k_{out}$ &nbsp;·&nbsp; 반감기: $t_{1/2} = \ln 2 / k_{out}$ &nbsp;·&nbsp; Turnover time: $\bar{t} = 1/k_{out} = t_{1/2}/\ln 2$</p>
+    <div class="info-box" style="background:rgba(201,168,76,0.06);border-color:rgba(201,168,76,0.2);">
+      $\bar{t}$는 항상 $t_{1/2}$보다 $1/\ln 2 \approx 1.44$배 길다 — 수학적 필연.
+    </div>
+    <span class="cite">[출처: Gabrielsson 5e, §2.6.1, Eqs 2:237–2:244]</span>
+
+    <div class="part-label">B. IgX 실험 데이터 (Gabrielsson Case Study PK30)</div>
+    <p style="font-size:.87em;margin-bottom:10px;">건강인 1명, IgX(growth hormone 유사 면역글로불린) SC 40 µg/kg 투여. Pre-dose 기저값: 32 µg/L.</p>
+    $$V \cdot \frac{d[IgX]}{dt} = k_{in} + In_{sc} - Cl \cdot C_{IgX}, \quad In_{sc} = K_a \cdot F \cdot D_{sc} \cdot e^{-K_a \cdot t}$$
+    <span class="cite">[출처: Gabrielsson 5e, §2.6.3, Eqs 2:245–2:246]</span>
+
+    <table class="data-table" style="margin-top:12px;">
+      <tr><th>파라미터</th><th>값</th><th>단위</th><th>의미</th></tr>
+      <tr><td>Cl/F</td><td>0.03</td><td>L/h/kg</td><td>외관 청소율</td></tr>
+      <tr><td>V/F</td><td>0.10</td><td>L/kg</td><td>외관 분포 용적</td></tr>
+      <tr class="highlight"><td>$k_{in}$ (합성율)</td><td class="highlight">0.78</td><td>µg/h/kg</td><td>내인성 IgX 합성 속도</td></tr>
+      <tr class="highlight"><td>Turnover time $\bar{t}$</td><td class="highlight">2.7</td><td>h</td><td>$= V_{ss}/CL$</td></tr>
+      <tr><td>MIT (SC 흡수)</td><td>1.8</td><td>h</td><td>림프계 지연 반영</td></tr>
+      <tr><td>$t_{1/2}$</td><td>2.5</td><td>h</td><td>말단 반감기</td></tr>
+      <tr><td>$k_{out}$</td><td>0.27</td><td>h⁻¹</td><td>시간당 27% 이화</td></tr>
+    </table>
+    <span class="cite">[출처: Gabrielsson 5e, §2.6.3, p.101]</span>
+
+    <div class="part-label">면역글로불린 클래스별 Turnover 데이터 <span class="cite">[Gabrielsson Table 2.11]</span></div>
+    <table class="data-table">
+      <tr><th>특성</th><th>IgA</th><th>IgD</th><th>IgE</th><th style="color:var(--accent);">IgG</th><th>IgM</th></tr>
+      <tr><td>MW (kD)</td><td>160</td><td>175</td><td>190</td><td class="highlight">150</td><td>950</td></tr>
+      <tr><td>반감기 (일)</td><td>5.8</td><td>2.8</td><td>2.5</td><td class="highlight">23</td><td>5.1</td></tr>
+      <tr><td>분획 이화율 (%/일)</td><td>25</td><td>37</td><td>89</td><td class="highlight">6.7</td><td>18</td></tr>
+      <tr><td>Turnover rate (mg/kg/일)</td><td>24</td><td>0.4</td><td>0.016</td><td class="highlight">33</td><td>6.7</td></tr>
+    </table>
+    <p style="font-size:.84em;margin:8px 0;">IgG만 23일 반감기를 가지는 이유: FcRn 보호 → $k_{out}$ 극소화. IgE 반감기 2.5일: FcRn 결합 구조 부재 → $k_{out}$ 매우 높음.</p>
+
+    <div class="zettel">
+      <div class="zettel-label">Zettelkasten Atom</div>
+      <p>내인성 단백질 항상성: $dA/dt = k_{in} - k_{out} \cdot A$. Turnover time = $t_{1/2}/\ln 2$ (수학적 필연). IgX SC 40µg/kg: Cl/F=0.03 L/h/kg, kout=0.27/h, t½=2.5h, tt=2.7h. IgG t½=23일(FcRn) vs IgE 2.5일 — Table 2.11.</p>
+    </div>
+  </div>
+
+  <!-- CARD 3 APEX -->
+  <div class="card" id="c3">
+    <div class="card-header">
+      <span class="card-num">카드 03</span>
+      <span class="card-title">TMDD 풀 모델 — 4개 ODE와 8개 파라미터의 구조적 필연성</span>
+      <span class="apex-badge">⚡ Apex Concept</span>
+    </div>
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> FIH 시작 용량의 MABEL 계산, 환자-건강인 PK 차이의 규제적 설명, 임상 채혈 설계 결정 — 이 세 가지 모두 TMDD 8개 파라미터를 이해하지 못하면 방어할 수 없다. 특히 "$K_m = K_d$"라는 착각은 FIH 안전 마진을 수십-수백 배 과대 추정하게 하여 치명적 첫 인간 투여 사고로 이어질 수 있다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> TMDD 모델에서 수용체($R$)는 약물의 약력학적 표적인 동시에 약물의 청소율 경로 자체다 — $R_0$가 클수록 $CL_{total}$이 크다.</p>
+      <p><em>아래 4개 ODE의 각 항은 "약물이 어디서 어떤 속도로 없어지는가"를 기술하는 청소율 분해식임을 기억하며 읽어라.</em></p>
+    </div>
+
+    <div class="part-label">A. Formal Definition</div>
+    <p style="font-size:.88em;margin-bottom:10px;">표적 매개 약물 처리(TMDD): 약물이 약리학적 표적에 고친화도로 결합하여, 이 결합 자체가 약물 PK(CL, 분포)에 유의미한 영향을 미치는 현상. 1994년 Levy 개념 정립, 2001년 Mager &amp; Jusko 정량적 모델 확립.</p>
+
+    <div class="part-label">B. 4개 ODE (R&T Eqs 21-1~21-4 / Gabrielsson PK27 Eqs 27:1~27:3)</div>
+    <p style="font-size:.84em;margin-bottom:8px;">상태변수: $C_L$ (리간드, 중심), $C_t$ (리간드, 조직), $R$ (유리 수용체), $C_{RL}$ (복합체)</p>
+    $$\frac{dC_L}{dt} = \frac{1}{V_c}\!\left[Input_L - CL_L \cdot C_L - Cl_d(C_L - C_t) - \underbrace{k_{on} \cdot C_L \cdot R}_{\text{TMDD 소실}} + k_{off} \cdot C_{RL}\right]$$
+    $$\frac{dC_t}{dt} = \frac{Cl_d}{V_t}(C_L - C_t)$$
+    $$\frac{dR}{dt} = \underbrace{k_{in}}_{\text{합성}} - \underbrace{k_{out} \cdot R}_{\text{기저 이화}} - \underbrace{k_{on} \cdot C_L \cdot R}_{\text{결합소실}} + \underbrace{k_{off} \cdot C_{RL}}_{\text{해리복귀}}$$
+    $$\frac{dC_{RL}}{dt} = k_{on} \cdot C_L \cdot R - k_{off} \cdot C_{RL} - k_{e(RL)} \cdot C_{RL}$$
+    <span class="cite">[출처: R&T 5e, Ch.21, Eqs 21-1~21-4; Gabrielsson 5e, PK27, Eqs 27:1~27:3]</span>
+
+    <div class="part-label">8개 파라미터 — PK27 실제값 (cynomolgus monkey mAb, L+R+RL 동시 피팅)</div>
+    <table class="data-table">
+      <tr><th>파라미터</th><th>생물학적 의미</th><th>추정값</th><th>CV% (L+R+RL)</th></tr>
+      <tr><td>$k_{on}$</td><td>2차 결합 속도 [L/(mg·h)]</td><td>0.096</td><td class="highlight">1</td></tr>
+      <tr><td>$k_{off}$</td><td>1차 해리 속도 [h⁻¹]</td><td>0.001</td><td class="highlight">3</td></tr>
+      <tr><td>$k_{e(RL)}$</td><td>복합체 내재화·소실 [h⁻¹]</td><td>0.003</td><td class="highlight">2</td></tr>
+      <tr><td>$k_{out}$</td><td>수용체 이화 속도 [h⁻¹]</td><td>0.009</td><td class="highlight">2</td></tr>
+      <tr class="highlight"><td>$R_0 = k_{in}/k_{out}$</td><td>수용체 기저 농도 [mg/L]</td><td class="highlight">12</td><td>1</td></tr>
+      <tr><td>$CL_L$</td><td>비특이적 리간드 청소율</td><td>0.001</td><td>1</td></tr>
+      <tr><td>$V_c$</td><td>중심 구획 부피 [L/kg]</td><td>0.05</td><td>고정</td></tr>
+      <tr><td>$Cl_d$, $V_t$</td><td>조직 분포 파라미터</td><td>0.003, 0.101</td><td>3, 1</td></tr>
+    </table>
+    <p style="font-size:.84em;color:var(--danger);">리간드만 피팅 시: $k_{off}$ CV% = 27%, $k_{e(RL)}$ CV% = 27% → L+R+RL 동시 피팅으로 정밀도 극적 개선.</p>
+    <span class="cite">[출처: Gabrielsson 5e, PK27, Table 27.2]</span>
+
+    <div class="part-label">핵심 관계식 — $K_m \neq K_d$ (수학적 필연)</div>
+    $$K_m = \frac{k_{off} + k_{e(RL)}}{k_{on}} = \frac{0.001 + 0.003}{0.096} \approx \mathbf{0.042} \text{ mg/L}$$
+    $$K_d = \frac{k_{off}}{k_{on}} = \frac{0.001}{0.096} \approx \mathbf{0.010} \text{ mg/L}$$
+    <span class="cite">[출처: R&T 5e, Ch.21, Eqs 21-5~21-6; Gabrielsson 5e, PK27, Figure 27.1]</span>
+
+    <!-- PLAUSIBLE FALLACY -->
+    <div class="fallacy">
+      <div class="fallacy-label">⚠ C-2. Plausible Fallacy — "$K_m = K_d$" 착각</div>
+      <p><strong>오류의 형태:</strong> TMDD를 MM 근사로 단순화했을 때 추정된 $K_m$이 in vitro SPR로 측정한 친화도 상수 $K_d$와 같아야 한다고 가정하고, MM 피팅 결과를 "$K_d$ 검증"으로 해석한다.</p>
+      <p style="margin-top:10px;"><strong>왜 구조적으로 불가능한가:</strong> $K_m = (k_{off} + k_{e(RL)})/k_{on} \neq K_d = k_{off}/k_{on}$. $k_{e(RL)} \geq 0$이므로 $K_m \geq K_d$는 수학적 필연이다.</p>
+      <p style="margin-top:10px;"><strong>나비효과 — PK27 정량적 증거:</strong></p>
+      <ul style="padding-left:18px;font-size:.87em;line-height:1.9;">
+        <li>MM 피팅 추정 $K_m = 3.7$ mg/L vs TMDD 실제 $K_m = 0.042$ mg/L → <strong style="color:var(--danger);">88배 과대 추정</strong></li>
+        <li>In vitro $K_d$ (0.010 mg/L) 대비: <strong style="color:var(--danger);">370배</strong></li>
+        <li>임상 파급: FIH 시작 용량 계산 시 표적 포화 농도 수십-수백 배 과대 산정</li>
+      </ul>
+      <p style="margin-top:10px;"><strong>GOF 시그니처 — "Phase D 낙차 오인 패턴":</strong> MM 모델을 다용량 데이터(저용량 포함)에 적합시키면 말단(Phase D) 구간에서 CWRES가 음성 편향($&lt; -2$). MM의 저농도 행동은 단일 기울기이지만, TMDD Phase D는 $k_{e(RL)}$이 지배하는 별도 선형 구간이다.</p>
+    </div>
+
+    <div class="part-label">D. Assumptions &amp; Boundary Conditions</div>
+    <ul style="padding-left:18px;font-size:.87em;line-height:1.9;">
+      <li>가용성 표적(soluble target): PK27은 혈장 내 가용성 수용체 기반. 막결합 표적(anti-HER2, anti-CD20)에서 $V_c$·$k_{in}$ 해석 다름</li>
+      <li>1:1 결합 화학량론: 리간드 1분자 = 수용체 1분자</li>
+      <li>Molar units 사용 권고: $k_{on}$ 단위 = [농도]⁻¹·[시간]⁻¹ → mg와 nmol 혼용 시 추정값이 분자량 배수만큼 달라짐 <span class="cite">[Gabrielsson 5e, PK27, p.610]</span></li>
+    </ul>
+
+    <div class="zettel">
+      <div class="zettel-label">Zettelkasten Atom</div>
+      <p>TMDD 풀 모델: 4 ODE (L, Lt, R, RL), 8 파라미터. $K_m = (k_{off}+k_{e(RL)})/k_{on}$, $K_d = k_{off}/k_{on}$, 항상 $K_m \geq K_d$. PK27: kon=0.096, koff=0.001, ke(RL)=0.003, R0=12 mg/L, Vc=0.05 L/kg (cynomolgus mAb). MM 피팅 Km=3.7 vs 실제 0.042 mg/L — 88배 오차.</p>
+    </div>
+  </div>
+
+  <!-- CARD 4 -->
+  <div class="card" id="c4">
+    <div class="card-header">
+      <span class="card-num">카드 04</span>
+      <span class="card-title">TMDD 4상(A–D) 패턴 — 농도-시간 곡선의 지배 방정식 전환</span>
+    </div>
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> mAb의 다용량 IV bolus 데이터에서 농도-시간 곡선이 용량별로 다른 모양을 보일 때, "2구획 모델로 피팅이 안 되는 이상한 데이터"가 아니라 "TMDD의 4상 패턴"임을 즉각 인식하는 눈이 없으면 잘못된 모델 구조 선택이 이어진다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> 용량이 낮을수록 Phase D가 더 일찍, 더 두드러지게 나타난다 — 표적이 상대적으로 더 충분해서 TMDD 경로가 더 오래 활성화되기 때문이다.</p>
+      <p><em>각 Phase를 "지금 어떤 항이 $dC_L/dt$의 주인인가"라는 질문으로 읽어라.</em></p>
+    </div>
+
+    <div class="part-label">A–D. Phase 정의 + 지배 방정식 <span class="cite">[R&T Figure 21-9; Gabrielsson PK27, Figure 27.7]</span></div>
+
+    <table class="data-table">
+      <tr><th>Phase</th><th>지배 방정식</th><th>조건</th><th>Semi-log 패턴</th></tr>
+      <tr><td><strong style="color:#e87040;">A</strong></td><td>$-dC_L/dt \approx k_{on} \cdot C_L \cdot R$</td><td>초기 고농도, 수용체 풍부</td><td>가파른 곡선; <strong>저용량이 더 가파름</strong></td></tr>
+      <tr><td><strong style="color:#c9a84c;">B</strong></td><td>$-dC_L/dt \approx CL_L/V_c \cdot C_L$</td><td>$C_L \gg R_0$ (표적 포화)</td><td>평행 직선 (1차 소실)</td></tr>
+      <tr><td><strong style="color:#7ec8a0;">C</strong></td><td>혼합: $CL_L/V_c + k_{in}C_L/(C_L+K_d)$</td><td>$C_L \approx K_m$ (표적 부분 포화)</td><td>비선형 구간, 곡선 수렴</td></tr>
+      <tr><td><strong style="color:#4098e8;">D</strong></td><td>$-dC_L/dt \approx k_{e(RL)} \cdot C_L$</td><td>$C_L \ll K_m$ (표적 탈포화)</td><td>직선; 기울기 = $k_{e(RL)} \neq CL_L/V_c$</td></tr>
+    </table>
+
+    <div class="part-label">실제 데이터 — PK27 cynomolgus monkey mAb (4 IV doses)</div>
+    <table class="data-table">
+      <tr><th>용량 (mg/kg)</th><th>초기 $C_L$ (mg/L)</th><th>$C_L/R_0$ 배수</th><th>특징</th></tr>
+      <tr><td>1.5</td><td>30</td><td>2.5배</td><td>Phase A 강함, Phase D 조기 출현</td></tr>
+      <tr><td>5</td><td>100</td><td>8.3배</td><td>Phase B 시작</td></tr>
+      <tr><td>15</td><td>300</td><td>25배</td><td>Phase B 지배</td></tr>
+      <tr class="highlight"><td>45</td><td class="highlight">900</td><td class="highlight">75배</td><td>Phase B 명확, Phase D 늦게 출현</td></tr>
+    </table>
+    <span class="cite">[출처: Gabrielsson 5e, PK27, Figures 27.1, 27.4, 27.5]</span>
+
+    <div class="zettel">
+      <div class="zettel-label">Zettelkasten Atom</div>
+      <p>TMDD 4상: A(kon·CL·R 지배, 2차)→B(CL_L/Vc 지배, 1차, 표적포화)→C(혼합, 비선형)→D(ke(RL) 지배, 1차, 저농도). 저용량에서 Phase D 조기 출현 — 다용량 교차 패턴이 TMDD의 시각적 signature. PK27 4용량(1.5-45 mg/kg)에서 전형.</p>
+    </div>
+  </div>
+
+  <!-- CARD 5 -->
+  <div class="card" id="c5">
+    <div class="card-header">
+      <span class="card-num">카드 05</span>
+      <span class="card-title">MM 근사의 적용 조건과 구조적 한계</span>
+    </div>
+    <div class="big-idea">
+      <div class="big-idea-label">개념 Big Idea: 거장의 시각</div>
+      <p><strong>왜 치명적으로 중요한가:</strong> MM 근사(2-parameter)는 파라미터 식별성이 좋고 수렴이 쉬워 임상 PopPK에서 자주 쓰인다. 그러나 잘못된 조건에서 쓰이면 $K_m$이 실제 $K_d$보다 수십-수백 배 과대 추정되고, FIH 용량 안전 마진 계산이 완전히 뒤집힌다.</p>
+      <p><strong>체화해야 할 단 하나의 직관:</strong> MM 근사는 "특정 농도 범위만 잘 맞추겠다"는 계약이다 — 용량 범위 전체를 커버하려 하면 구조적으로 실패한다.</p>
+    </div>
+
+    <div class="part-label">A. MM 근사 공식 <span class="cite">[Gabrielsson PK27 Eq 27:4~27:5]</span></div>
+    $$Cl_{MM} = \frac{V_{max}}{K_m + C_L}, \quad \frac{dC_L}{dt} = \frac{1}{V_c}\!\left[Input_L - CL_L \cdot C_L - Cl_d(C_L-C_t) - Cl_{MM} \cdot C_L\right]$$
+
+    <div class="part-label">B. MM 근사 실패의 정량적 증거 <span class="cite">[PK27 Figure 27.6]</span></div>
+    <table class="data-table">
+      <tr><th>항목</th><th>MM 피팅 값</th><th>TMDD 풀 모델 실제값</th><th>오차 배수</th></tr>
+      <tr class="danger-row"><td>$K_m$ 추정</td><td>3.7 mg/L</td><td>0.042 mg/L</td><td>88배 과대</td></tr>
+      <tr><td>고용량 GOF</td><td>양호</td><td>양호</td><td>—</td></tr>
+      <tr class="danger-row"><td>저용량 GOF</td><td>심각한 체계적 편차</td><td>양호</td><td>—</td></tr>
+    </table>
+
+    <div class="part-label">적용 가능 vs. 불가 조건</div>
+    <table class="data-table">
+      <tr><th>기준</th><th style="color:#7ec8a0;">MM 근사 정당</th><th style="color:var(--danger);">MM 근사 포기</th></tr>
+      <tr><td>농도 조건</td><td>$C_L \gg R_0$ (TO &gt; 90%)</td><td>저농도 Phase D 포함</td></tr>
+      <tr><td>용량 범위</td><td>제한 범위 (2-3개 용량)</td><td>전체 임상 농도 범위</td></tr>
+      <tr><td>목적</td><td>임상 범위 내 PK 기술</td><td>FIH MABEL, TO 예측</td></tr>
+      <tr><td>파라미터</td><td>$V_{max}$·$K_m$ 충분</td><td>$k_{off}$·$k_{e(RL)}$ 개별 추정 필요</td></tr>
+    </table>
+
+    <div class="zettel">
+      <div class="zettel-label">Zettelkasten Atom</div>
+      <p>MM 근사(2-param) vs TMDD 풀 모델(5+param). PK27: MM Km=3.7 mg/L vs 실제 0.042 mg/L — 88배 과대 추정. MM은 고용량 3개에서 양호, 저용량(Phase D)에서 구조적 실패. 적용 조건: CL&gt;&gt;R0, 제한 용량 범위, TO&gt;90%.</p>
+    </div>
+  </div>
+</section>
+
+<!-- §3 STRUCTURAL ISOMORPHISM -->
+<section class="section" id="s3">
+  <div class="section-tag">§3</div>
+  <h2 class="section-title">구조적 동형성 지도</h2>
+
+  <div class="iso-intro">
+    <p><strong>공통 원리:</strong> TMDD의 핵심 수학 구조 — $dA/dt = k_{in} - k_{out} \cdot A$ (zero-order 합성 + first-order 이화의 비대칭 결합) — 는 자연계에서 항상성이 유지되어야 하는 모든 시스템에 등장한다. 이는 우연이 아니라 <em>선형 복원력이 있는 단일 저장소 시스템</em>이 가질 수 있는 유일한 안정적 ODE 구조이기 때문이다.</p>
+    <p><strong>왜 이 형태인가:</strong> Zero-order 입력(합성)은 내부 상태에 무관한 외부 드라이브를 나타내고, first-order 손실은 음성 피드백(농도가 높을수록 더 빠른 제거)을 내재한다. 이 두 항의 비대칭 결합만이 안정적 정상상태($A_0 = k_{in}/k_{out}$)를 보장한다.</p>
+    <p><strong>예측 전이:</strong> 이 동형성을 이해하면, IgG 반감기를 아는 면역학자는 약물 turnover 모델을 즉시 이해하고, 약동학자는 생태학의 포식자-피식자 안정화 조건을 직관적으로 예측할 수 있다.</p>
+  </div>
+
+  <!-- Hub-and-Spoke SVG -->
+  <svg viewBox="0 0 800 520" width="100%" style="margin:16px 0;">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#c9a84c" opacity="0.6"/>
+      </marker>
+    </defs>
+    <!-- Center hub -->
+    <circle cx="400" cy="260" r="64" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="400" y="252" text-anchor="middle" fill="#c9a84c" font-family="IBM Plex Mono" font-size="11">dA/dt =</text>
+    <text x="400" y="268" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="11">k_in − k_out·A</text>
+    <text x="400" y="284" text-anchor="middle" fill="#8a8070" font-family="IBM Plex Mono" font-size="9">Zero-order + 1st-order</text>
+    <!-- Nodes at 72° intervals -->
+    <!-- Node 1: TMDD (top) -->
+    <line x1="400" y1="196" x2="400" y2="110" stroke="#c9a84c" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+    <rect x="330" y="40" width="140" height="65" rx="6" fill="rgba(201,168,76,0.12)" stroke="#c9a84c" stroke-width="1.5"/>
+    <text x="400" y="62" text-anchor="middle" fill="#c9a84c" font-family="Cormorant Garamond" font-size="13" font-weight="700">TMDD 수용체</text>
+    <text x="400" y="78" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="9">dR/dt = kin − kout·R</text>
+    <text x="400" y="94" text-anchor="middle" fill="#8a8070" font-family="Noto Sans KR" font-size="9">합성↔이화 항상성</text>
+    <!-- Node 2: Pharmacology (top-right) -->
+    <line x1="453" y1="217" x2="570" y2="130" stroke="#c9a84c" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+    <rect x="540" y="70" width="140" height="65" rx="6" fill="rgba(64,152,232,0.12)" stroke="#4098e8" stroke-width="1.5"/>
+    <text x="610" y="92" text-anchor="middle" fill="#4098e8" font-family="Cormorant Garamond" font-size="13" font-weight="700">간접 PD 모델</text>
+    <text x="610" y="108" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="9">dR/dt = kin·I(C)−kout·R</text>
+    <text x="610" y="124" text-anchor="middle" fill="#8a8070" font-family="Noto Sans KR" font-size="9">약물이 kin 조절</text>
+    <!-- Node 3: Ecology (bottom-right) -->
+    <line x1="455" y1="308" x2="575" y2="380" stroke="#c9a84c" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+    <rect x="545" y="355" width="140" height="65" rx="6" fill="rgba(126,200,160,0.12)" stroke="#7ec8a0" stroke-width="1.5"/>
+    <text x="615" y="377" text-anchor="middle" fill="#7ec8a0" font-family="Cormorant Garamond" font-size="13" font-weight="700">생태학 (개체군)</text>
+    <text x="615" y="393" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="9">dN/dt = r − d·N</text>
+    <text x="615" y="409" text-anchor="middle" fill="#8a8070" font-family="Noto Sans KR" font-size="9">출생률↔밀도의존 사망</text>
+    <!-- Node 4: Enzyme induction (bottom) -->
+    <line x1="400" y1="324" x2="400" y2="400" stroke="#c9a84c" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+    <rect x="310" y="400" width="180" height="65" rx="6" fill="rgba(192,57,43,0.12)" stroke="#c0392b" stroke-width="1.5"/>
+    <text x="400" y="422" text-anchor="middle" fill="#c0392b" font-family="Cormorant Garamond" font-size="13" font-weight="700">효소 유도 (CYP)</text>
+    <text x="400" y="438" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="9">dE/dt = kin·H(C)−kout·E</text>
+    <text x="400" y="454" text-anchor="middle" fill="#8a8070" font-family="Noto Sans KR" font-size="9">약물 노출→합성율 자극</text>
+    <!-- Node 5: RC circuit (bottom-left) -->
+    <line x1="347" y1="308" x2="220" y2="390" stroke="#c9a84c" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+    <rect x="115" y="360" width="140" height="65" rx="6" fill="rgba(201,168,76,0.10)" stroke="#c9a84c" stroke-width="1.2"/>
+    <text x="185" y="382" text-anchor="middle" fill="#c9a84c" font-family="Cormorant Garamond" font-size="13" font-weight="700">RC 회로</text>
+    <text x="185" y="398" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="9">C·dV/dt = I − V/R</text>
+    <text x="185" y="414" text-anchor="middle" fill="#8a8070" font-family="Noto Sans KR" font-size="9">일정 전류↔저항 방전</text>
+    <!-- Node 6: IgG turnover (top-left) -->
+    <line x1="347" y1="215" x2="220" y2="140" stroke="#c9a84c" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+    <rect x="110" y="75" width="145" height="65" rx="6" fill="rgba(64,152,232,0.10)" stroke="#4098e8" stroke-width="1.2"/>
+    <text x="182" y="97" text-anchor="middle" fill="#4098e8" font-family="Cormorant Garamond" font-size="13" font-weight="700">IgG Turnover</text>
+    <text x="182" y="113" text-anchor="middle" fill="#ede8df" font-family="IBM Plex Mono" font-size="9">dIgG/dt=kin−kout·IgG</text>
+    <text x="182" y="129" text-anchor="middle" fill="#8a8070" font-family="Noto Sans KR" font-size="9">합성↔FcRn 의존 이화</text>
+  </svg>
+
+  <!-- Layer 2: Structural Alignment Matrix -->
+  <div class="part-label">Layer 2 — 구조 정렬 행렬</div>
+  <table class="data-table">
+    <tr><th>도메인</th><th>상태변수</th><th>Zero-order 입력</th><th>First-order 손실</th><th>정상상태</th></tr>
+    <tr><td>TMDD 수용체</td><td>$R$ (mg/L)</td><td>$k_{in}$ = 0.108 mg/(L·h)</td><td>$k_{out}$ = 0.009 h⁻¹</td><td>$R_0$ = 12 mg/L</td></tr>
+    <tr><td>IgG Turnover</td><td>$A_{IgG}$ (mg/kg)</td><td>합성율 33 mg/kg/일</td><td>$k_{out}$ = 6.7%/일</td><td>혈청 9.5–12.5 mg/mL</td></tr>
+    <tr><td>간접 PD (Emax)</td><td>$R$ (효과)</td><td>$k_{in}$ (기저 합성)</td><td>$k_{out}$ (기저 이화)</td><td>$R_0 = k_{in}/k_{out}$</td></tr>
+    <tr><td>RC 회로</td><td>$V$ (전압)</td><td>$I/C$ (일정 전류)</td><td>$1/(RC)$ (방전)</td><td>$V_{ss} = I \cdot R$</td></tr>
+    <tr><td>생태학 개체군</td><td>$N$ (개체수)</td><td>$r$ (출생률)</td><td>$d$ (밀도의존 사망)</td><td>$N^* = r/d$</td></tr>
+  </table>
+
+  <!-- Layer 3: normCanvas -->
+  <div class="part-label">Layer 3 — 정규화 수렴 오버레이 (인터랙티브)</div>
+  <div class="norm-wrap">
+    <div class="btn-row">
+      <button class="btn active" id="normRawBtn" onclick="setNormMode('raw')">원본 스케일</button>
+      <button class="btn" id="normNormBtn" onclick="setNormMode('norm')">정규화 (t½ 기준)</button>
+    </div>
+    <canvas id="normCanvas" style="width:100%;height:240px;display:block;"></canvas>
+    <p style="font-size:.78em;color:var(--muted);margin-top:8px;">"정규화"를 클릭하면 IgG·IgA·IgE·IgX의 반감기가 모두 다르지만, $t/t_{1/2}$로 정규화 시 동일한 지수 함수로 수렴함을 확인할 수 있습니다.</p>
+  </div>
+
+  <!-- Layer 4: Transfer cards -->
+  <div class="part-label">Layer 4 — 예측 전이 카드</div>
+  <div class="transfer-card">
+    <div class="transfer-header" onclick="toggleTransfer(this)">
+      <span class="transfer-q">🔄 전이 질문 1: 생태학 → TMDD — 포식자 밀도가 높으면 먹잇감이 더 빨리 사라진다는 것을 알고 있다면, $R_0$가 높은 환자에서 mAb CL이 왜 더 높은지 예측할 수 있는가?</span>
+      <span style="color:var(--muted);">▼</span>
+    </div>
+    <div class="transfer-body">
+      <div class="transfer-step"><strong>① 출발 도메인:</strong> 생태학에서 포식자(predator, $P$) 밀도가 높을수록 먹잇감(prey, $N$)의 제거 속도가 빨라진다. 제거 속도 = $\alpha \cdot N \cdot P$ (2차 반응).</div>
+      <div class="transfer-step"><strong>② 공통 수학 구조:</strong> TMDD ODE에서 $-k_{on} \cdot C_L \cdot R$ 항도 동일한 2차 구조. 리간드($C_L$) = 먹잇감, 수용체($R$) = 포식자.</div>
+      <div class="transfer-step"><strong>③ 대응 현상 도출:</strong> $R_0$(수용체 기저 농도)가 높은 환자(예: 중증 염증, 고종양 부하)에서 mAb의 TMDD 매개 청소율 $CL_{TMDD} = k_{on} \cdot R_0 \cdot V_c$이 비례하여 증가 → 같은 용량에서 혈중 농도가 낮고 효과 부족 위험 증가.</div>
+    </div>
+  </div>
+  <div class="transfer-card">
+    <div class="transfer-header" onclick="toggleTransfer(this)">
+      <span class="transfer-q">🔄 전이 질문 2: RC 회로 → FcRn 포화 — 콘덴서에 전류를 너무 많이 흘리면 전압이 포화되듯이, 혈청 IgG 농도가 높을 때 FcRn 보호가 왜 약해지는가?</span>
+      <span style="color:var(--muted);">▼</span>
+    </div>
+    <div class="transfer-body">
+      <div class="transfer-step"><strong>① 출발 도메인:</strong> RC 회로에서 콘덴서 용량(C)이 한계에 달하면 추가 전류가 저장되지 않고 방전 손실이 증가한다 (즉, 더 높은 전압에서 $1/(RC)$ 방전 속도 불변).</div>
+      <div class="transfer-step"><strong>② 공통 수학 구조:</strong> FcRn도 결합 수용량이 한계 — 혈청 IgG ~30 mg/mL에서 FcRn이 포화되면 추가 IgG는 리소좀 분해 경로로 유입 → $k_{out}$이 증가 → t½ 단축 (Gabrielsson §2.6.7, Figure 2.84).</div>
+      <div class="transfer-step"><strong>③ 대응 현상 도출:</strong> IVIG 고용량 투여 시 내인성 IgG + 투여 mAb가 FcRn을 경쟁적으로 포화 → mAb의 $k_{out}$ 증가 → t½ 단축 → 약효 감소. 이것이 IVIG-mAb PK 상호작용의 기전이다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- §4 SIMULATOR -->
+<section class="section" id="s4">
+  <div class="section-tag">§4 · V5.1</div>
+  <h2 class="section-title">인터랙티브 TMDD 시뮬레이터</h2>
+  <p style="font-size:.88em;color:var(--muted);margin-bottom:16px;">PK27 cynomolgus monkey mAb 데이터 기반. RK4 수치적분. V5.1 그래프 팽창 버그 4종 수정 완료.</p>
+
+  <!-- Main TMDD Simulator -->
+  <div class="sim-container">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <h3 style="font-family:'IBM Plex Mono';font-size:.9em;color:var(--accent);">TMDD 4상 패턴 시뮬레이터</h3>
+      <div class="btn-row" style="margin:0;">
+        <button class="btn active" id="btnLog" onclick="toggleScale()">Log 스케일</button>
+        <button class="btn" id="btnPhaseA" onclick="highlightPhase('A')" style="border-color:#e87040;color:#e87040;">Phase A</button>
+        <button class="btn" id="btnPhaseB" onclick="highlightPhase('B')" style="border-color:#c9a84c;color:#c9a84c;">Phase B</button>
+        <button class="btn" id="btnPhaseD" onclick="highlightPhase('D')" style="border-color:#4098e8;color:#4098e8;">Phase D</button>
+        <button class="btn" id="btnMM" onclick="toggleMM()">MM 오버레이</button>
+        <button class="btn" onclick="lockRef()">🔒 기준선 저장</button>
+        <button class="btn" onclick="clearRef()" style="color:var(--muted);">초기화</button>
+      </div>
+    </div>
+
+    <div id="warnBanner" class="warn-banner"></div>
+
+    <div class="canvas-wrap">
+      <canvas id="simCanvas"></canvas>
+    </div>
+    <div class="cursor-label" id="cursorLabel">마우스를 그래프 위로 이동하면 농도·시간 정보가 표시됩니다.</div>
+
+    <!-- Derived panel -->
+    <div class="derived-panel">
+      <div class="derived-item">
+        <div class="d-label">$K_m$ (TMDD)</div>
+        <div class="d-value" id="dKm">0.042 mg/L</div>
+        <div class="d-delta" id="dKmD">—</div>
+      </div>
+      <div class="derived-item">
+        <div class="d-label">$K_d$ (친화도)</div>
+        <div class="d-value" id="dKd">0.010 mg/L</div>
+        <div class="d-delta" id="dKdD">—</div>
+      </div>
+      <div class="derived-item">
+        <div class="d-label">$R_0$ (수용체)</div>
+        <div class="d-value" id="dR0">12.0 mg/L</div>
+        <div class="d-delta" id="dR0D">—</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="sim-controls">
+      <div>
+        <div class="slider-group">
+          <div class="slider-label">$k_{on}$ (결합 속도) <span id="lKon">0.096</span> L/(mg·h)</div>
+          <input type="range" id="slKon" min="0.01" max="0.5" step="0.001" value="0.096">
+        </div>
+        <div class="slider-group" style="margin-top:10px;">
+          <div class="slider-label">$k_{off}$ (해리 속도) <span id="lKoff">0.001</span> h⁻¹</div>
+          <input type="range" id="slKoff" min="0.0001" max="0.02" step="0.0001" value="0.001">
+        </div>
+        <div class="slider-group" style="margin-top:10px;">
+          <div class="slider-label">$k_{e(RL)}$ (내재화) <span id="lKeRL">0.003</span> h⁻¹</div>
+          <input type="range" id="slKeRL" min="0.0001" max="0.05" step="0.0001" value="0.003">
+        </div>
+      </div>
+      <div>
+        <div class="slider-group">
+          <div class="slider-label">$R_0$ (수용체 기저값) <span id="lR0">12.0</span> mg/L</div>
+          <input type="range" id="slR0" min="1" max="50" step="0.5" value="12">
+        </div>
+        <div class="slider-group" style="margin-top:10px;">
+          <div class="slider-label">$k_{out}$ (수용체 이화) <span id="lKout">0.009</span> h⁻¹</div>
+          <input type="range" id="slKout" min="0.001" max="0.1" step="0.001" value="0.009">
+        </div>
+        <div style="margin-top:12px;">
+          <div class="d-label" style="margin-bottom:6px;">용량 코호트 표시</div>
+          <div class="dose-buttons">
+            <button class="btn active" id="d1" onclick="toggleDose(0)">1.5 mg/kg</button>
+            <button class="btn active" id="d2" onclick="toggleDose(1)">5 mg/kg</button>
+            <button class="btn active" id="d3" onclick="toggleDose(2)">15 mg/kg</button>
+            <button class="btn active" id="d4" onclick="toggleDose(3)">45 mg/kg</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Missions -->
+    <div class="mission-box">
+      <h4>🎯 미션 1: Phase D 관찰</h4>
+      <p style="font-size:.85em;">$R_0$를 24 mg/L로 높이고 $k_{e(RL)}$을 0.01로 증가시킨 후, 저용량(1.5 mg/kg)의 말단부 기울기가 어떻게 변하는지 확인하라. Phase D 기울기 = $k_{e(RL)}$ 임을 검증하라.</p>
+    </div>
+    <div class="mission-box">
+      <h4>🎯 미션 2: $K_m$ vs $K_d$ 확인</h4>
+      <p style="font-size:.85em;">$k_{off}$를 0.001에서 0.01로 10배 증가시키면 $K_d$는 10배 증가하지만, $K_m$은 얼마나 증가하는가? Delta Indicator를 이용해 확인하고 수식으로 설명하라.</p>
+    </div>
+  </div>
+
+  <!-- Low-Dose Cliff Simulator (adapted from R Shiny) -->
+  <div class="sim-container" style="margin-top:32px;">
+    <h3 style="font-family:'IBM Plex Mono';font-size:.9em;color:var(--danger);margin-bottom:12px;">⚠ 저용량 절벽(Low-Dose Cliff) 분석 — MM 근사의 구조적 실패 시각화</h3>
+    <p style="font-size:.85em;color:var(--muted);margin-bottom:12px;">같은 데이터에 TMDD 풀 모델 vs MM 근사 모델을 피팅했을 때의 차이. 저용량에서 MM 모델의 CWRES가 급격히 악화됨을 확인.</p>
+
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+      <div class="slider-group" style="flex:1;min-width:200px;">
+        <div class="slider-label">선택 용량: <span id="lCliffDose">7</span> mg/kg</div>
+        <input type="range" id="slCliffDose" min="1" max="45" step="1" value="7">
+      </div>
+      <div id="cliffStatus" style="font-family:'IBM Plex Mono';font-size:.8em;color:var(--danger);font-weight:700;">저용량: Low-Dose Cliff 발생</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div class="d-label" style="margin-bottom:4px;">농도-시간 (Log-선형 스케일)</div>
+        <div class="canvas-wrap-sm"><canvas id="cliffCanvas"></canvas></div>
+      </div>
+      <div>
+        <div class="d-label" style="margin-bottom:4px;">최저 농도 시점 CWRES 비교</div>
+        <div class="canvas-wrap-sm"><canvas id="cwresCanvas"></canvas></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:10px;font-size:.8em;flex-wrap:wrap;">
+      <span><span style="color:#2c8a5a;">■</span> 실제 TMDD 모델 (참값)</span>
+      <span><span style="color:#c0392b;">■</span> MM 근사 모델 (오류)</span>
+      <span style="color:var(--muted);">| 실제 $K_m$ = 0.042 mg/L, MM 추정 $K_m$ = 3.7 mg/L</span>
+    </div>
+  </div>
+</section>
+
+<!-- §5 CONFUSION PAIRS -->
+<section class="section" id="s5">
+  <div class="section-tag">§5</div>
+  <h2 class="section-title">혼동쌍 해부</h2>
+
+  <!-- PAIR 1: Km vs Kd — Critical Blow -->
+  <div class="card" id="p1">
+    <div class="card-header">
+      <span class="card-num">혼동쌍 1</span>
+      <span class="card-title" style="color:var(--danger);">$K_m$ vs $K_d$ ← ⚠ Critical Blow</span>
+    </div>
+    <table class="pair-table">
+      <tr><th>비교 차원</th><th>$K_m$ (MM/QSS 파라미터)</th><th>$K_d$ (친화도 상수)</th></tr>
+      <tr class="dim-row"><td>표면적 유사성</td><td colspan="2">둘 다 "리간드-수용체 결합의 특성 농도"로 불림</td></tr>
+      <tr><td>수식</td><td>$K_m = (k_{off} + k_{e(RL)})/k_{on}$</td><td>$K_d = k_{off}/k_{on}$</td></tr>
+      <tr><td>포함 항</td><td>해리($k_{off}$) <strong>+</strong> 내재화($k_{e(RL)}$)</td><td>해리($k_{off}$)만</td></tr>
+      <tr><td>크기 관계</td><td colspan="2">항상 $K_m \geq K_d$ (수학적 필연, $k_{e(RL)} \geq 0$)</td></tr>
+      <tr><td>측정 방법</td><td>TMDD 피팅으로만 추정</td><td>in vitro SPR, ITC로 직접 측정</td></tr>
+      <tr><td>PK27 실제값</td><td>0.042 mg/L</td><td>0.010 mg/L (4.2배 차이)</td></tr>
+      <tr><td>MM 피팅 오차</td><td><strong style="color:var(--danger);">3.7 mg/L — 88배 과대 추정</strong></td><td>—</td></tr>
+      <tr class="hook-row"><td>⚡ 기억 고리</td><td colspan="2">"$K_m$은 $K_d$에 내재화 세금($k_{e(RL)}/k_{on}$)이 붙은 것 — 복합체가 리소좀으로 비가역 소실되는 속도까지 포화 농도에 추가해야 전체 청소 능력이 된다."</td></tr>
+      <tr class="crit-row"><td>치명적 타격</td><td colspan="2">임상 TMDD 모델에서 in vitro $K_d$를 MM $K_m$과 동일시하고 NDA 임상약리 섹션에 "in vivo MM constant가 in vitro binding affinity와 일치한다"고 기술하면 — FDA 심사관은 "$K_m$이 $K_d$보다 왜 수십-수백 배 큰지" mechanistic justification을 요구하는 Deficiency Letter를 발송한다.</td></tr>
+    </table>
+  </div>
+
+  <!-- PAIR 2: Phase B vs Phase D -->
+  <div class="card" id="p2">
+    <div class="card-header">
+      <span class="card-num">혼동쌍 2</span>
+      <span class="card-title">Phase B vs Phase D — 둘 다 semi-log 직선이지만 기전이 다르다</span>
+    </div>
+    <table class="pair-table">
+      <tr><th>비교 차원</th><th>Phase B (표적 포화 구간)</th><th>Phase D (TMDD 지배 말단)</th></tr>
+      <tr class="dim-row"><td>표면적 유사성</td><td colspan="2">둘 다 semi-log 스케일에서 직선으로 보임</td></tr>
+      <tr><td>지배 방정식</td><td>$-dC_L/dt \approx (CL_L/V_c) \cdot C_L$</td><td>$-dC_L/dt \approx k_{e(RL)} \cdot C_L$</td></tr>
+      <tr><td>발생 농도</td><td>고농도 ($C_L \gg R_0$)</td><td>저농도 ($C_L \ll K_m$)</td></tr>
+      <tr><td>기울기 의미</td><td>$= CL_L/V_c$ (비특이적 청소율)</td><td>$= k_{e(RL)}$ (복합체 내재화 속도)</td></tr>
+      <tr><td>용량 위치</td><td>고용량 코호트에서 발생</td><td>저용량 코호트에서 조기 출현</td></tr>
+      <tr><td>임상 오류</td><td>—</td><td>Phase D를 Phase B로 오해 → $k_{e(RL)}$을 $CL_L/V_c$로 잘못 해석, CL 과대 추정</td></tr>
+      <tr class="hook-row"><td>⚡ 기억 고리</td><td colspan="2">"B는 '표적이 배불러서 약이 비특이적 배수구로만 빠지는' 구간. D는 '표적이 다시 굶어서 약을 붙잡아 삼키는' 구간 — 배수구가 아니라 수용체가 지배한다."</td></tr>
+    </table>
+  </div>
+
+  <!-- PAIR 3: CL_L vs CL_TMDD -->
+  <div class="card" id="p3">
+    <div class="card-header">
+      <span class="card-num">혼동쌍 3</span>
+      <span class="card-title">비특이적 $CL_L$ vs TMDD 매개 $CL_{TMDD}$ — Total CL의 농도 의존성</span>
+    </div>
+    <table class="pair-table">
+      <tr><th>비교 차원</th><th>비특이적 CL ($CL_L$)</th><th>TMDD 매개 CL ($CL_{TMDD}$)</th></tr>
+      <tr class="dim-row"><td>표면적 유사성</td><td colspan="2">둘 다 약물 소실에 기여, 합산이 $CL_{total}$</td></tr>
+      <tr><td>농도 의존성</td><td>농도 독립 (상수)</td><td>고농도에서 포화, 저농도에서 최대 활성</td></tr>
+      <tr><td>$R_0$ 영향</td><td>없음</td><td>$R_0$ 클수록 $CL_{TMDD}$ 증가</td></tr>
+      <tr><td>질환 영향</td><td>상대적으로 안정</td><td>염증·종양 시 $R_0$↑ → $CL_{TMDD}$↑</td></tr>
+      <tr><td>PopPK 공변량</td><td>체중, FcRn polymorphism</td><td>질환 중증도, 염증 마커(IL-6, CRP)</td></tr>
+      <tr><td>메커니즘</td><td>FcRn 재순환 이후 잔여 이화, 망내피계</td><td>$k_{on} \cdot C_L \cdot R$ 경로 → $k_{e(RL)}$</td></tr>
+      <tr class="hook-row"><td>⚡ 기억 고리</td><td colspan="2">"비특이적 CL은 고정 크기 배수구 — 농도와 무관. TMDD CL은 굶주림 물고기(수용체)가 먹는 속도 — 물고기가 많고 배고플수록 빠르고, 물이 많아(고농도) 배부르면 느려진다."</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- §6 SCENARIOS -->
+<section class="section" id="s6">
+  <div class="section-tag">§6</div>
+  <h2 class="section-title">실용 시나리오 &amp; 진단 병리</h2>
+
+  <div class="scenario-box">
+    <div class="scenario-tag">Scenario 1 · Phase 1 FIH 설계</div>
+    <h3 style="font-family:'Cormorant Garamond';font-size:1.3em;margin-bottom:12px;">항 IL-6R mAb (가상) · MAB-IL6-001 FIH</h3>
+    <p style="font-size:.88em;margin-bottom:12px;">In vitro SPR: $K_d = 0.15$ nM. 혈중 soluble IL-6R ($sIL-6R$, $R_0$) = 50–200 ng/mL (4.5–18 nmol/L). FIH MABEL 용량 결정.</p>
+    <div class="info-box">
+      <p style="font-size:.85em;"><strong>Target Occupancy 계산 (QE 근사):</strong></p>
+      <p style="font-size:.9em;margin-top:6px;">$TO \approx C_L/(C_L + K_d)$ → TO = 10% 달성 농도 = $K_d \times 10/90 \approx 0.017$ nM</p>
+      <p style="font-size:.85em;margin-top:6px;">Vc = 0.05 L/kg → 0.017 nmol/L × (MW = 150,000 g/mol) = <strong>2.55 µg/L = 0.0026 µg/mL</strong></p>
+      <p style="font-size:.85em;margin-top:4px;">FIH 시작 용량: $C_{max}$ &lt; 0.003 µg/mL를 목표로 설계 → 0.01 mg/kg 코호트 시작</p>
+    </div>
+    <p style="font-size:.83em;color:var(--danger);margin-top:8px;"><strong>위험:</strong> MM 피팅 $K_m = 3.7$ mg/L를 $K_d$로 오인하면 MABEL이 30,000배 과대 추정 → 심각한 과잉 투여 위험.</p>
+
+    <div class="part-label" style="margin-top:20px;">NONMEM 제어 구문 — TMDD 풀 모델</div>
+    <div class="code-block"><span class="comment">; I-08 TMDD Full Model — PK27 구조 기반</span>
+<span class="comment">; cynomolgus monkey mAb, L+R+RL 동시 피팅</span>
+$PROB TMDD Full Model MAB-IL6-001
+
+$DATA tmdd_data.csv IGNORE=@
+$INPUT ID TIME DV MDV EVID CMT DOSE
+
+$SUBROUTINE ADVAN13 TOL=9   <span class="comment">; Stiff ODE solver 필수</span>
+
+$MODEL
+  NCOMPARTMENTS=4  <span class="comment">; CMT1=CL, CMT2=Ct, CMT3=R, CMT4=RL</span>
+
+$PK
+  KON  = THETA(1)*EXP(ETA(1))  <span class="comment">; 2차 결합속도 L/(mg*h)</span>
+  KOFF = THETA(2)               <span class="comment">; 해리속도 h-1</span>
+  KERL = THETA(3)               <span class="comment">; 복합체 내재화 h-1</span>
+  KOUT = THETA(4)               <span class="comment">; 수용체 이화 h-1</span>
+  R0   = THETA(5)*EXP(ETA(2))  <span class="comment">; 수용체 기저값 mg/L — IIV 필수</span>
+  KIN  = KOUT*R0                <span class="comment">; 수용체 합성 (정상상태 관계)</span>
+  CLL  = THETA(6)*EXP(ETA(3))  <span class="comment">; 비특이적 CL L/(h*kg)</span>
+  VC   = THETA(7)               <span class="comment">; 중심 부피 L/kg — FIX 고려</span>
+  CLD  = THETA(8)               <span class="comment">; 분포 CL L/(h*kg)</span>
+  VT   = THETA(9)               <span class="comment">; 조직 부피 L/kg</span>
+  KELV = CLL/VC                 <span class="comment">; 소실 속도상수 h-1</span>
+  CLDV = CLD/VC
+  CLDT = CLD/VT
+
+$DES
+  CL_C = A(1)/VC               <span class="comment">; 리간드 농도 중심구획</span>
+  CL_T = A(2)/VT               <span class="comment">; 리간드 농도 조직구획</span>
+
+  DADT(1) = -KELV*A(1) - CLDV*(A(1)-A(2)*VC/VT) - KON*CL_C*A(3) + KOFF*A(4)
+  DADT(2) = CLDT*(A(1)*VT/VC - A(2))
+  DADT(3) = KIN - KOUT*A(3) - KON*CL_C*A(3) + KOFF*A(4)
+  DADT(4) = KON*CL_C*A(3) - KOFF*A(4) - KERL*A(4)
+
+$INIT
+  A_0(3) = R0   <span class="comment">; 수용체 초기값 = 정상상태</span>
+
+$THETA
+  (0, 0.096)    <span class="comment">; KON — PK27 초기값</span>
+  (0, 0.001)    <span class="comment">; KOFF</span>
+  (0, 0.003)    <span class="comment">; KERL</span>
+  (0, 0.009)    <span class="comment">; KOUT</span>
+  (0, 12)       <span class="comment">; R0</span>
+  (0, 0.001)    <span class="comment">; CLL — NCA AUC로 초기 추정</span>
+  0.05 FIX      <span class="comment">; VC — 고분자 MW 고려 고정</span>
+  (0, 0.003)    <span class="comment">; CLD</span>
+  (0, 0.101)    <span class="comment">; VT</span>
+
+$OMEGA
+  0.09  <span class="comment">; IIV KON</span>
+  0.25  <span class="comment">; IIV R0 — 질환 심각도 반영, 큰 IIV 예상</span>
+  0.09  <span class="comment">; IIV CLL</span>
+
+$SIGMA
+  0.04  <span class="comment">; proportional error</span>
+  0.01  <span class="comment">; additive error</span>
+
+$ERROR
+  IPRED = LOG(A(1)/VC + 1E-10)  <span class="comment">; Log-transformed DV</span>
+  W     = SQRT(SIGMA(1,1))
+  IRES  = DV - IPRED
+  IWRES = IRES/W
+
+$ESTIMATION METHOD=1 INTER MAXEVAL=9999 NOABORT PRINT=5
+$COVARIANCE UNCONDITIONAL</div>
+  </div>
+
+  <div class="scenario-box">
+    <div class="scenario-tag">Scenario 2 · PopPK 공변량 분석</div>
+    <h3 style="font-family:'Cormorant Garamond';font-size:1.3em;margin-bottom:12px;">UK-279,276 — 환자군 PK 차이의 기전 해석</h3>
+    <p style="font-size:.88em;margin-bottom:12px;">UK-279,276 (MW 41 kDa, CD11b 길항제): 뇌졸중 환자에서 건강인보다 더 강한 비선형성과 빠른 소실 관찰. $R_0$ 공변량 분석 설계.</p>
+    <div class="info-box">
+      <p style="font-size:.85em;"><strong>생물학적 기전:</strong> 뇌졸중·외상 → 순환 호중구 급증 → CD11b 발현 증가 → $R_0$↑ → $CL_{TMDD} = k_{on} \cdot R_0 \cdot V_c$ 증가 → $CL_{total}$↑</p>
+      <p style="font-size:.85em;margin-top:8px;"><strong>FDA 임상약리 섹션 언어:</strong> "The observed increase in total clearance in stroke patients relative to healthy volunteers was mechanistically explained by target-mediated drug disposition (TMDD). Disease-associated elevation of circulating neutrophil-bound CD11b expression (target baseline concentration, $R_0$) was identified as a significant covariate on $CL_{TMDD}$ ($p &lt; 0.001$), accounting for 68% of the inter-group PK difference. Non-specific linear clearance ($CL_L$) was not significantly affected by disease status."</p>
+    </div>
+  </div>
+
+  <!-- Diagnostic Pathology -->
+  <div class="part-label" style="margin-top:24px;">진단 병리 — GOF 시그니처</div>
+
+  <div class="diagnostic-sig">
+    <div class="sig-name">시그니처 1: "Phase D 낙차 오인 패턴 (Phase D Underestimation Sign)"</div>
+    <p><strong>GOF 플롯 패턴:</strong> MM 모델 피팅 후 저용량 코호트의 말단 시점(t &gt; 300 h)에서 CWRES가 일관적으로 $&lt; -2$. 고용량 코호트는 ±2 이내로 양호.</p>
+    <p style="margin-top:6px;"><strong>기계론적 원인:</strong> MM 모델의 저농도 극한 기울기 = $V_{max}/K_m$이지만, 실제 TMDD Phase D 기울기 = $k_{e(RL)}$. 두 값이 다를 때 MM이 말단을 과대 예측하여 음성 CWRES 발생.</p>
+    <p style="margin-top:6px;"><strong>해결 방향:</strong> TMDD 풀 모델로 전환. 표적(R) 데이터 동시 피팅. $k_{off}$·$k_{e(RL)}$ 개별 추정.</p>
+  </div>
+
+  <div class="diagnostic-sig">
+    <div class="sig-name">시그니처 2: "ADA 후기 가속 패턴 (Late Phase Acceleration Sign)"</div>
+    <p><strong>GOF 플롯 패턴:</strong> TMDD 풀 모델 피팅 후 일부 환자군(ADA 양성)에서 특정 시점 이후 CWRES가 급격히 음성 편향. $\eta_{CL}$이 해당 환자군에서만 극단적 양수.</p>
+    <p style="margin-top:6px;"><strong>기계론적 원인:</strong> ADA(항약물항체) 형성 → 면역복합체 → 식세포 내포 → $CL_{total}$ 폭증. TMDD Phase D와 달리 특정 시점 이후에 갑자기 발생.</p>
+    <p style="margin-top:6px;"><strong>해결 방향:</strong> ADA titer 시계열 측정. ADA를 시간-가변 공변량으로 CL 파라미터에 연결: $CL_i(t) = CL_{pop} \cdot e^{\eta_{CL}} \cdot (1 + \theta_{ADA} \cdot ADA_i(t))$.</p>
+  </div>
+
+  <div class="diagnostic-sig">
+    <div class="sig-name">시그니처 3: "$\eta_{R_0}$ 과대 추정 — 수용체 Baseline 조작 함정"</div>
+    <p><strong>GOF 플롯 패턴:</strong> TMDD 모델에서 $\omega^2_{R_0}$ (IIV of $R_0$)가 &gt;50%로 과대 추정. 채혈 시각과 $\eta_{R_0}$ 간 상관 발견.</p>
+    <p style="margin-top:6px;"><strong>기계론적 원인:</strong> 수용체(R)의 diurnal variation이 있는 계(예: 염증성 사이토카인 수용체)에서 단일 시점 pre-dose R 측정값으로 $R_0$ 고정 시 오전/오후 채혈 환자 간 체계적 편차 발생.</p>
+    <p style="margin-top:6px;"><strong>해결 방향:</strong> $R_0$에 IIV 포함. 채혈 시각(clock time)을 공변량으로 탐색. Pre-dose R 반복 측정 설계.</p>
+  </div>
+</section>
+
+<!-- §7 SELF-TEST -->
+<section class="section" id="s7">
+  <div class="section-tag">§7</div>
+  <h2 class="section-title">자기 테스트 — Active Recall Module</h2>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q1 ★★</strong> [회상] TMDD 수용체·복합체 ODE를 $k_{in}, k_{out}, k_{on}, k_{off}, k_{e(RL)}, C_L$을 모두 포함하여 작성하고, 각 항의 생물학적 의미를 서술하라.</span>
+      <div class="qa-meta"><span class="star-badge">★★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      $$\frac{dR}{dt} = k_{in} - k_{out} \cdot R - k_{on} \cdot C_L \cdot R + k_{off} \cdot C_{RL}$$
+      <ul style="padding-left:18px;font-size:.88em;line-height:2;margin-top:8px;">
+        <li>$+k_{in}$: 수용체 합성 (zero-order) — 세포 발현율</li>
+        <li>$-k_{out} \cdot R$: 수용체 기저 이화 (first-order)</li>
+        <li>$-k_{on} \cdot C_L \cdot R$: 리간드와의 결합으로 인한 수용체 소실 (second-order)</li>
+        <li>$+k_{off} \cdot C_{RL}$: 복합체 해리로 수용체 복귀 (first-order)</li>
+      </ul>
+      $$\frac{dC_{RL}}{dt} = k_{on} \cdot C_L \cdot R - k_{off} \cdot C_{RL} - k_{e(RL)} \cdot C_{RL}$$
+      <ul style="padding-left:18px;font-size:.88em;line-height:2;margin-top:8px;">
+        <li>$+k_{on} \cdot C_L \cdot R$: 2차 결합으로 복합체 형성</li>
+        <li>$-k_{off} \cdot C_{RL}$: 해리로 복합체 소실 (리간드·수용체 복귀)</li>
+        <li>$-k_{e(RL)} \cdot C_{RL}$: 비가역 내재화·리소좀 분해 (약물+수용체 동시 소실)</li>
+      </ul>
+      <div class="next-q">다음 깊이 질문: 정상상태($dR/dt = 0$, 약물 없음)에서 $R_0$를 $k_{in}$·$k_{out}$만으로 표현하면? NONMEM $DES 블록의 A_0(3) 초기조건에 어떻게 반영하는가?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q2 ★★</strong> [회상] $K_m$과 $K_d$의 수식을 쓰고, (1) 왜 항상 $K_m \geq K_d$인지, (2) PK27에서 두 값이 실제로 얼마인지, (3) MM 피팅 추정 $K_m$이 얼마이고 왜 이렇게 달라지는지 서술하라.</span>
+      <div class="qa-meta"><span class="star-badge">★★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      $$K_m = \frac{k_{off} + k_{e(RL)}}{k_{on}}, \quad K_d = \frac{k_{off}}{k_{on}}$$
+      <p>(1) $k_{e(RL)} \geq 0$이므로 수학적 필연으로 $K_m \geq K_d$.</p>
+      <p>(2) PK27: $K_m = (0.001+0.003)/0.096 \approx 0.042$ mg/L, $K_d = 0.001/0.096 \approx 0.010$ mg/L.</p>
+      <p>(3) MM 피팅 추정: $K_m = 3.7$ mg/L (88배 과대). MM 모델이 저용량 Phase D를 구조적으로 재현 못하면서, $K_m$이 부풀어 Phase D를 "흡수"하려 하기 때문.</p>
+      <div class="next-q">다음 깊이 질문: $k_{e(RL)} \rightarrow 0$이 되는 생물학적 상황은? 그때 QE(준평형) 근사가 정당해지는 이유는?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q3 ★</strong> [회상] FcRn이 IgG를 리소좀 분해에서 보호하는 4단계 기전을 쓰고, "FcRn 결합의 pH 의존성"이 왜 필수 요소인지 설명하라.</span>
+      <div class="qa-meta"><span class="star-badge">★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <ol style="padding-left:18px;line-height:2;font-size:.88em;">
+        <li>혈중 IgG → 내피세포/단핵세포 endocytosis → 산성 엔도좀(pH ~6.0)</li>
+        <li>낮은 pH에서 FcRn과 IgG Fc 부위의 고친화도 결합</li>
+        <li>FcRn-IgG 복합체 → 재순환 엔도좀 → 세포 표면 귀환</li>
+        <li>생리적 pH(7.4)에서 친화도 급감 → IgG 혈중 방출, 리소좀 분해 회피</li>
+      </ol>
+      <p style="margin-top:8px;"><strong>pH 의존성이 필수인 이유:</strong> 산성(pH 6)에서 결합해야 내포된 IgG를 "포착"하고, 중성(pH 7.4)에서 해리해야 혈중으로 "방출"되는 포획-방출 사이클이 작동한다. pH 독립적 결합이라면 FcRn이 IgG를 잡고 놓지 않아 재순환이 불가능하다.</p>
+      <div class="next-q">다음 깊이 질문: IVIG 고용량 투여 시 FcRn이 포화되어 mAb의 반감기가 단축되는 이유를 Moderator 모델로 설명하면?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q4 ★</strong> [적용] mAb를 4개 용량(1.5, 5, 15, 45 mg/kg IV bolus)으로 투여한 semi-log 플롯에서 (a) 0–20 h 저용량이 더 가파르게 교차, (b) 20–200 h 평행 직선, (c) 200–500 h 다시 수렴·기울기 변화. 각 구간의 Phase명과 지배 방정식을 서술하라.</span>
+      <div class="qa-meta"><span class="star-badge">★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <p><strong>(a) Phase A:</strong> 지배 $-dC_L/dt \approx k_{on} \cdot C_L \cdot R$. 저용량에서 수용체($R$)가 상대적으로 풍부 → 2차 반응 강하게 작동 → 더 가파른 하강.</p>
+      <p><strong>(b) Phase B:</strong> 지배 $-dC_L/dt \approx CL_L/V_c \cdot C_L$. 표적 포화 → 비특이적 1차 소실 지배 → 4개 용량 평행 직선.</p>
+      <p><strong>(c) Phase C→D:</strong> Phase C(혼합) 후 Phase D 진입. 지배: $-dC_L/dt \approx k_{e(RL)} \cdot C_L$. 저용량이 Phase D에 먼저 진입 → 곡선 수렴.</p>
+      <div class="next-q">다음 깊이 질문: 리간드 데이터만 있을 때 Phase D 기울기에서 $k_{e(RL)}$을 정밀하게 추정할 수 있는가? CV%가 얼마나 예상되는가?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q5 ★</strong> [적용] Anakinra SC 투여 시 CrCl 95→16 mL/min 감소해도 t½가 5.24→7.15 h로 거의 불변이지만, AUC는 10.2→33.1 mg·h/L로 3.2배 증가한다. 이 역설을 flip-flop PK로 설명하라.</span>
+      <div class="qa-meta"><span class="star-badge">★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <p>Anakinra IV t½ = 2.6 h &lt; SC t½ = 5.24 h → flip-flop 확인 (말단 기울기가 흡수에 지배).</p>
+      <p>CrCl 감소 → $k_{el}$ 감소 → 소실이 느려짐 → 그러나 여전히 $k_a &lt; k_{el}$ → 말단 기울기(SC t½)는 $k_a$에 지배 → t½ 변화 작음.</p>
+      <p>AUC = $Dose \cdot F/CL$ → CL 감소에 직접 비례 → AUC 크게 증가.</p>
+      <p>ESRD(CrCl ~2)에서야 $k_{el} &lt; k_a$ → flip-flop 해제 → t½가 9.71 h로 증가.</p>
+      <div class="next-q">다음 깊이 질문: MW &gt;60 kDa mAb에서 신기능이 CL에 거의 영향이 없는 이유를 사구체 여과 관점에서 설명하면?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q6 ★</strong> [적용] 신약 mAb: $k_{on} = 0.08$ nM⁻¹min⁻¹, $k_{off} = 0.0002$ min⁻¹, $R_0 = 3$ nM. 치료 농도: 10–200 nM. MM 근사 적용이 정당한가? 계산을 포함하여 답하라.</span>
+      <div class="qa-meta"><span class="star-badge">★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <p>$K_d = 0.0002/0.08 = 0.0025$ nM. 치료 최저값(10 nM)은 $K_d$의 4,000배. TO ≈ 99.97%. $C_L \gg R_0(3 \text{ nM})$.</p>
+      <p><strong>판단:</strong> 치료 농도 10–200 nM 범위 내에서는 MM 근사가 비교적 정당하다. 단, 투여 후 매우 늦은 시점에 Phase D 구간(CL ≈ $K_d$ 수준)에서는 MM 근사가 실패한다. FIH MABEL 계산 목적이면 TMDD 풀 모델 필요.</p>
+      <div class="next-q">다음 깊이 질문: MM 피팅 추정 $K_m$이 얼마로 예상되는가? $k_{e(RL)}$ 가정에 따라 어떻게 달라지는가?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q7 ★</strong> [적용] UK-279,276 (CD11b 길항제)이 뇌졸중 환자에서 건강인보다 더 빠른 소실을 보였다. TMDD 관점에서 설명하고, PopPK 공변량 탐색 전략을 서술하라.</span>
+      <div class="qa-meta"><span class="star-badge">★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <p>뇌졸중·외상 → 순환 호중구 급증 → CD11b 발현 증가 → $R_0$↑ → TMDD 항($k_{on} \cdot C_L \cdot R$) 증가 → $CL_{TMDD}$↑ → $CL_{total}$↑ → 더 빠른 소실, 더 낮은 농도에서 Phase D 출현.</p>
+      <p>PopPK: NIHSS score, 순환 호중구 수를 $R_0$ 또는 $CL_{TMDD}$의 공변량으로 사전 정의. $CL_L$의 공변량으로 처리하면 기전이 틀린다.</p>
+      <div class="next-q">다음 깊이 질문: 건강인 PK로 FIH 용량 결정 시, 환자에서 과다 또는 과소 투여가 예상되는가? 이유는?</div>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q"><strong>Q8 ★</strong> [회상] PK27에서 리간드만: $k_{off}$ CV%=27%, $k_{e(RL)}$ CV%=27%. L+R+RL 동시 피팅 시: 3%, 2%로 개선. 이것이 Phase 1 FIH 채혈 설계에 주는 메시지는?</span>
+      <div class="qa-meta"><span class="star-badge">★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <p>$k_{off}$와 $k_{e(RL)}$이 $K_m = (k_{off}+k_{e(RL)})/k_{on}$을 통해 confounded → 리간드만으로는 두 파라미터 분리 추정 불가.</p>
+      <p>규제 제출: (1) Phase 1 FIH에서 가용성 표적 농도-시간 측정 의무화, (2) 복합체(RL) assay 개발 권고, (3) 리간드만 측정 시 $k_{off}$·$k_{e(RL)}$의 높은 CV%를 FDA에 투명하게 보고 — Deficiency Letter 예방.</p>
+      <div class="next-q">다음 깊이 질문: ADC에서 RL 농도를 assay하는 것이 특히 중요한 추가 이유는?</div>
+    </div>
+  </div>
+
+  <!-- BOSS DILEMMA -->
+  <div class="boss-dilemma">
+    <div class="qa-header" onclick="toggleQA(this)">
+      <span class="qa-q">⚡ Q9 [보스 딜레마] ★★ | MM 근사 vs TMDD 풀 모델 — Phase 2b 용량 결정 회의</span>
+      <div class="qa-meta"><span class="star-badge">★★</span><span class="qa-toggle">▼</span></div>
+    </div>
+    <div class="qa-body">
+      <div class="info-box" style="margin-bottom:14px;">
+        <p><strong>모델러 A (MM 근사):</strong> Phase 2a 4코호트(1–10 mg/kg)에서 MM 모델 GOF 양호(CWRES ±2 이내). 추정 $K_m = 2.3$ µg/mL. Phase 2b 목표 농도(5–50 µg/mL) 시뮬레이션 충분.</p>
+        <p style="margin-top:8px;"><strong>모델러 B (TMDD 풀 모델):</strong> 최저 용량(1 mg/kg) 말단부에서 CWRES &lt; –2.5. TMDD Phase D 시그니처. 표적(sIL-6R) 데이터 있음. MM $K_m$이 in vitro $K_d$(0.02 µg/mL)의 115배. 중증 환자에서 $R_0$ 3–5배 높아 용량 부족 위험.</p>
+      </div>
+      <p><strong>결정: TMDD 풀 모델 채택. MM 근사를 sensitivity analysis로 보조 제시.</strong></p>
+      <p style="margin-top:10px;"><strong>Trade-off 논리:</strong> MM 근사는 Phase 2a 농도 범위 내에서 GOF가 좋아도, 최저 용량 말단의 CWRES &lt; –2.5는 Phase D 구조적 실패 시그니처다. Phase 2b에서 일부 환자가 투약 간격 말기에 저농도 구간에 진입하면, MM 기반 시뮬레이션이 표적 재탈포화 시점을 과대 추정 → 적절 trough 미달 → 임상 실패. 더 중요하게, 중증 환자의 $R_0$ 3–5배 상승을 MM 모델은 파라미터로 수용 불가 — TMDD 풀 모델만이 $R_0$를 질환 공변량으로 탐색할 수 있다.</p>
+      <div class="code-block" style="margin-top:12px;">"The proposed Phase 2b dose of X mg Q4W was selected using TMDD mechanistic
+modeling with simultaneous regression of free ligand and soluble target
+concentration-time data from Phase 2a. The Michaelis-Menten approximation
+was found structurally inadequate in the low-concentration terminal phase
+(CWRES &lt; -2.5 at t &gt; 1000 h in the 1 mg/kg cohort), consistent with
+re-emergence of target-mediated clearance (Phase D). TMDD simulation
+accounting for disease-associated elevation in target baseline concentration
+(R0, 3-5x increase in severe patients) projects target occupancy &gt;80%
+throughout the dosing interval at the proposed dose."</div>
+      <div class="next-q">다음 깊이 질문: Phase 2b에서 sIL-6R 측정을 포함하지 않기로 결정했다면, $R_0$의 IIV를 어떻게 처리하고 모델 불확실성을 규제 보고서에 어떻게 기술하는가?</div>
+    </div>
+  </div>
+</section>
+
+<!-- §8 META-FRAME -->
+<section class="section" id="s8">
+  <div class="section-tag">§8</div>
+  <h2 class="section-title">메타프레임 &amp; Big Picture</h2>
+
+  <div class="card">
+    <div class="part-label">A. Positioning — 28세션 지식 아키텍처에서의 위치</div>
+    <div class="info-box">
+      <p><strong style="color:var(--muted);">선행 필수:</strong> I-01(CL·V·t½), I-04(2구획 $Cl_d$·$V_t$), I-07(MM 비선형 PK), I-09(Emax)</p>
+      <p><strong style="color:var(--accent);">직접 열어주는 것:</strong> II-04($DES 블록 4-state ODE), II-11(ADVAN13 stiff ODE 피팅), II-08($R_0$·질환 중증도 SCM)</p>
+      <p><strong style="color:var(--info);">의존하는 고급 도메인:</strong> Bispecific mAb PK, ADC PK(payload 방출 포함 확장 TMDD), PBPK-TMDD 통합, 면역 종양학 PK/PD</p>
+    </div>
+
+    <div class="part-label">B. Dependencies — 이 섹션을 대충 넘겼을 때의 실패 모드</div>
+    <div class="fallacy">
+      <p><strong>실패 모드 1: $K_m$·$K_d$ 혼동으로 FIH 용량 오결정.</strong> TMDD를 이해하지 않고 in vitro $K_d$를 MM $K_m$과 동일시하면, FIH 시작 용량의 안전 마진을 수십-수백 배 과대 추정한다. TGN1412(2006년) 사례처럼 MABEL 계산 오류는 치명적 첫 인간 투여 사고로 이어질 수 있다.</p>
+      <p style="margin-top:10px;"><strong>실패 모드 2: 환자-건강인 PK 차이의 기전 설명 불가.</strong> TMDD 없이는 UK-279,276처럼 환자에서 건강인보다 CL이 높은 현상을 "variability"로만 처리하게 된다. FDA 임상약리 심사에서 mechanistic explanation 없이는 반려된다.</p>
+    </div>
+
+    <div class="part-label">C. Professional Moat — 이 섹션 고유의 답</div>
+    <p style="font-size:.88em;margin-bottom:12px;">"NONMEM을 실행하고 GOF를 출력하는 주니어 모델러"와 "동일 작업을 수천 번 반복하는 AI"가 이미 존재한다. TMDD 4개 ODE와 8개 파라미터를 메커니즘 수준에서 내면화한 모델러만이 그 둘 중 어느 것도 복제할 수 없는 세 가지를 갖는다:</p>
+
+    <div class="moat-item">
+      <strong>1. "왜 이 말단부가 갑자기 가파른가"를 데이터를 보는 순간 판별하는 능력.</strong>
+      <p style="font-size:.87em;margin-top:4px;">CWRES 음성 편향이 Phase D인지, ADA 개입인지, 수용체 baseline의 diurnal variation인지를 ODE 구조에서 즉시 추론하는 것은 알고리즘이 아닌 메커니즘 직관의 영역이다.</p>
+    </div>
+    <div class="moat-item">
+      <strong>2. 임상 채혈 설계를 바꾸는 권한.</strong>
+      <p style="font-size:.87em;margin-top:4px;">PK27이 증명하듯, $k_{off}$·$k_{e(RL)}$의 정밀 추정은 복합체(RL) 데이터 없이는 구조적으로 불가능하다. "Phase 1 프로토콜에 RL assay를 추가해야 한다"는 결정은 모델러가 설계 단계에 참여해야만 가능하다.</p>
+    </div>
+    <div class="moat-item">
+      <strong>3. $R_0$를 공변량으로 사전 정의하는 생물학적 가설 설정.</strong>
+      <p style="font-size:.87em;margin-top:4px;">중증 환자에서 $R_0$가 높다는 것을 "발견"하는 것이 아니라, 연구 시작 전 "질환 중증도 지표를 $R_0$의 시간-가변 공변량 후보로 미리 정의"하는 것 — 임상약학 TDM 경험이 이 "환자 개별성의 수학화"를 가능하게 하는 직접 레버리지다.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- end #main -->
+
+<script>
+// =====================================================
+// V5.1 GLOBAL CONSTANTS — NEVER REASSIGN
+// =====================================================
+const X_MAX_H = 600;    // hours
+const DT_H    = 1.0;    // RK4 step, hours
+const LOG_Y_MIN = 0.001;
+const LOG_Y_MAX = 2000;
+const HARD_Y_MAX = 2000;
+
+// PK27 default parameters
+const defaultP = {
+  kon:  0.096,  // L/(mg·h)
+  koff: 0.001,  // h-1
+  keRL: 0.003,  // h-1
+  kout: 0.009,  // h-1
+  R0:   12.0,   // mg/L
+  keLV: 0.02,   // CL_L/Vc h-1
+  CldVc: 0.06,  // Cld/Vc h-1
+  CldVt: 0.0297 // Cld/Vt h-1
+};
+
+const DOSES = [1.5, 5, 15, 45]; // mg/kg
+const Vc = 0.05; // L/kg
+
+const DOSE_COLORS = ['#e87040','#c9a84c','#7ec8a0','#4098e8'];
+const DOSE_LABELS = ['1.5 mg/kg','5 mg/kg','15 mg/kg','45 mg/kg'];
+
+// State
+const state = {
+  p: {...defaultP},
+  logScale: true,
+  showMM: false,
+  showDose: [true,true,true,true],
+  referenceCurves: null,
+  _curves: null,
+  _prevDerived: null,
+  highlightPhase: null
+};
+
+let chartObj = null;
+let phantomCache = null;
+
+// =====================================================
+// TMDD RK4 ODE SYSTEM
+// =====================================================
+function tmddRHS(y, p) {
+  const [CL, Ct, R, RL] = y;
+  const dCL = -p.keLV*CL - p.CldVc*(CL - Ct*Vc/Vc) - p.kon*CL*R + p.koff*RL;
+  // Note: Ct is in mg/L in tissue compartment
+  // dCt/dt = Cld*(CL - Ct)/Vt, but we work in conc directly
+  const dCt = p.CldVt*(CL - Ct);
+  const kin = p.kout * p.R0;
+  const dR  = kin - p.kout*R - p.kon*CL*R + p.koff*RL;
+  const dRL = p.kon*CL*R - p.koff*RL - p.keRL*RL;
+  return [dCL, dCt, dR, dRL];
+}
+
+function rk4Step(y, p, dt) {
+  const k1 = tmddRHS(y, p);
+  const y2 = y.map((v,i)=>v+0.5*dt*k1[i]);
+  const k2 = tmddRHS(y2, p);
+  const y3 = y.map((v,i)=>v+0.5*dt*k2[i]);
+  const k3 = tmddRHS(y3, p);
+  const y4 = y.map((v,i)=>v+dt*k3[i]);
+  const k4 = tmddRHS(y4, p);
+  return y.map((v,i)=>Math.max(v + dt/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]), 0));
+}
+
+function simulateTMDD(dose_mgkg, p) {
+  const C0 = dose_mgkg / Vc; // mg/L
+  let y = [C0, 0, p.R0, 0];
+  const n = Math.floor(X_MAX_H / DT_H) + 1;
+  const ts = [], cs = [];
+  for (let i=0; i<n; i++) {
+    ts.push(i*DT_H);
+    cs.push(y[0]);
+    y = rk4Step(y, p, DT_H);
+  }
+  return {ts, cs};
+}
+
+// MM model for comparison
+function mmRHS_cl(CL, Ct, p) {
+  const Vmax = p.keRL * p.R0;
+  const Km_mm = 3.7; // PK27 MM fitted Km
+  const dCL = -p.keLV*CL - p.CldVc*(CL-Ct) - Vmax*CL/(Km_mm+CL);
+  const dCt = p.CldVt*(CL-Ct);
+  return [dCL, dCt];
+}
+
+function simulateMM(dose_mgkg, p) {
+  const C0 = dose_mgkg / Vc;
+  let CL = C0, Ct = 0;
+  const n = Math.floor(X_MAX_H / DT_H) + 1;
+  const ts = [], cs = [];
+  for (let i=0; i<n; i++) {
+    ts.push(i*DT_H);
+    cs.push(CL);
+    const [dCL, dCt] = mmRHS_cl(CL, Ct, p);
+    CL = Math.max(CL + DT_H*dCL, 0);
+    Ct = Math.max(Ct + DT_H*dCt, 0);
+  }
+  return {ts, cs};
+}
+
+// =====================================================
+// DERIVED PANEL
+// =====================================================
+function calcDerived(p) {
+  const Km = (p.koff + p.keRL) / p.kon;
+  const Kd = p.koff / p.kon;
+  const R0 = p.R0;
+  return {Km, Kd, R0};
+}
+
+function updateDerived() {
+  const d = calcDerived(state.p);
+  const prev = state._prevDerived;
+  function fmt(val, prevVal, id, idD, unit='') {
+    document.getElementById(id).textContent = val.toFixed(3) + (unit?' '+unit:'');
+    if (!prev) { document.getElementById(idD).textContent='—'; return; }
+    const pct = (val-prevVal)/Math.abs(prevVal)*100;
+    const el = document.getElementById(idD);
+    if (Math.abs(pct)<1) { el.className='d-delta delta-nil'; el.textContent='±<1%'; }
+    else if (pct>0) { el.className='d-delta delta-up'; el.textContent=`↑ ${pct.toFixed(1)}%`; }
+    else { el.className='d-delta delta-down'; el.textContent=`↓ ${Math.abs(pct).toFixed(1)}%`; }
+  }
+  fmt(d.Km, prev?.Km, 'dKm', 'dKmD', 'mg/L');
+  fmt(d.Kd, prev?.Kd, 'dKd', 'dKdD', 'mg/L');
+  fmt(d.R0, prev?.R0, 'dR0', 'dR0D', 'mg/L');
+  state._prevDerived = d;
+}
+
+// =====================================================
+// CHART INIT + UPDATE (V5.1 pattern)
+// =====================================================
+function buildDatasets() {
+  // [Scientific Logic]: TMDD Full Model (Mager & Jusko 2001)
+  // 4-state ODE: dCL/dt, dCt/dt, dR/dt, dRL/dt
+  // PK27 cynomolgus monkey mAb parameters
+  const datasets = [];
+
+  if (state.referenceCurves) {
+    state.referenceCurves.forEach((curve, i) => {
+      if (!curve || !state.showDose[i]) return;
+      datasets.push({
+        label: `${DOSE_LABELS[i]} (기준)`,
+        data: curve.ts.map((t,j)=>({x:t, y:curve.cs[j]})),
+        borderColor: DOSE_COLORS[i],
+        borderDash: [4,4],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        tension: 0,
+        fill: false
+      });
+    });
+  }
+
+  if (state._curves) {
+    state._curves.forEach((curve, i) => {
+      if (!state.showDose[i]) return;
+      const isHighlighted = state.highlightPhase !== null;
+      datasets.push({
+        label: DOSE_LABELS[i],
+        data: curve.ts.map((t,j)=>({x:t, y:curve.cs[j]})),
+        borderColor: DOSE_COLORS[i],
+        borderWidth: isHighlighted ? 1 : 2,
+        borderDash: [],
+        pointRadius: 0,
+        tension: 0,
+        fill: false,
+        opacity: isHighlighted ? 0.5 : 1
+      });
+    });
+  }
+
+  if (state.showMM && state._curves) {
+    DOSES.forEach((dose, i) => {
+      if (!state.showDose[i]) return;
+      const mm = simulateMM(dose, state.p);
+      datasets.push({
+        label: `${DOSE_LABELS[i]} MM`,
+        data: mm.ts.map((t,j)=>({x:t, y:mm.cs[j]})),
+        borderColor: DOSE_COLORS[i],
+        borderDash: [6,3],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        tension: 0,
+        fill: false,
+        opacity: 0.7
+      });
+    });
+  }
+
+  return datasets;
+}
+
+// Phase highlight plugin
+const PHASE_PLUGIN = {
+  id: 'phaseHighlight',
+  beforeDraw(chart) {
+    const ph = state.highlightPhase;
+    if (!ph) return;
+    const {ctx, chartArea: {left,right,top,bottom}, scales: {x}} = chart;
+    // Phase regions (approximate h from PK27 45 mg/kg)
+    const regions = {
+      A: [0,  20,  'rgba(232,112,64,0.12)'],
+      B: [20, 180, 'rgba(201,168,76,0.10)'],
+      C: [180,320, 'rgba(126,200,160,0.10)'],
+      D: [320,600, 'rgba(64,152,232,0.10)']
+    };
+    const r = regions[ph];
+    if (!r) return;
+    const x1 = Math.max(left, x.getPixelForValue(r[0]));
+    const x2 = Math.min(right, x.getPixelForValue(r[1]));
+    ctx.save();
+    ctx.fillStyle = r[2];
+    ctx.fillRect(x1, top, x2-x1, bottom-top);
+    ctx.restore();
+  }
+};
+
+function initChart() {
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  Chart.register(PHASE_PLUGIN);
+  chartObj = new Chart(ctx, {
+    type: 'line',
+    data: {datasets: buildDatasets()},
+    options: {
+      animation: {duration: 150},
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+      scales: {
+        x: {
+          type: 'linear', min: 0, max: X_MAX_H,
+          title: {display:true, text:'시간 (h)', color:'#8a8070', font:{size:11}},
+          ticks: {color:'#8a8070', font:{size:10}},
+          grid: {color:'rgba(255,255,255,0.04)'}
+        },
+        y: {
+          type: 'logarithmic', min: LOG_Y_MIN, max: LOG_Y_MAX,
+          title: {display:true, text:'농도 CL (mg/L)', color:'#8a8070', font:{size:11}},
+          ticks: {color:'#8a8070', font:{size:10}},
+          grid: {color:'rgba(255,255,255,0.04)'}
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {color:'#8a8070', font:{size:10}, boxWidth:16}
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)} mg/L @ ${ctx.parsed.x.toFixed(0)} h`
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateChart() {
+  state._curves = DOSES.map(d => simulateTMDD(d, state.p));
+  if (!chartObj) {initChart(); return;}
+  chartObj.data.datasets = buildDatasets();
+  const y = chartObj.options.scales.y;
+  if (state.logScale) {
+    y.type = 'logarithmic'; y.min = LOG_Y_MIN; y.max = LOG_Y_MAX;
+  } else {
+    y.type = 'linear'; y.min = 0; y.max = HARD_Y_MAX;
+  }
+  chartObj.update('none');
+  updateDerived();
+  updateWarn();
+}
+
+function updateWarn() {
+  const p = state.p;
+  const Km = (p.koff+p.keRL)/p.kon;
+  const Kd = p.koff/p.kon;
+  const warns = [];
+  if (Km > 1) warns.push(`⚠ Km=${Km.toFixed(3)} mg/L — MM 근사 영역 진입`);
+  if (p.R0 > 30) warns.push(`⚠ R₀=${p.R0} mg/L — 고표적 부하: CL_TMDD 증가`);
+  const b = document.getElementById('warnBanner');
+  if (warns.length) {b.textContent=warns.join(' | '); b.classList.add('show');}
+  else b.classList.remove('show');
+}
+
+// =====================================================
+// CONTROLS
+// =====================================================
+function setupSliders() {
+  const sliders = [
+    {id:'slKon',  key:'kon',  lbl:'lKon',  dig:4},
+    {id:'slKoff', key:'koff', lbl:'lKoff', dig:4},
+    {id:'slKeRL', key:'keRL', lbl:'lKeRL', dig:4},
+    {id:'slR0',   key:'R0',   lbl:'lR0',   dig:1},
+    {id:'slKout', key:'kout', lbl:'lKout', dig:4}
+  ];
+  sliders.forEach(s => {
+    const el = document.getElementById(s.id);
+    el.addEventListener('input', () => {
+      state.p[s.key] = parseFloat(el.value);
+      document.getElementById(s.lbl).textContent = parseFloat(el.value).toFixed(s.dig);
+      updateChart();
+    });
+  });
+}
+
+function toggleScale() {
+  state.logScale = !state.logScale;
+  const btn = document.getElementById('btnLog');
+  btn.textContent = state.logScale ? 'Log 스케일' : 'Linear 스케일';
+  btn.classList.toggle('active', state.logScale);
+  updateChart();
+}
+
+function toggleMM() {
+  state.showMM = !state.showMM;
+  document.getElementById('btnMM').classList.toggle('active', state.showMM);
+  updateChart();
+}
+
+function highlightPhase(ph) {
+  state.highlightPhase = state.highlightPhase === ph ? null : ph;
+  ['btnPhaseA','btnPhaseB','btnPhaseD'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  if (state.highlightPhase) document.getElementById('btnPhase'+ph).classList.add('active');
+  updateChart();
+}
+
+function toggleDose(i) {
+  state.showDose[i] = !state.showDose[i];
+  document.getElementById('d'+(i+1)).classList.toggle('active', state.showDose[i]);
+  updateChart();
+}
+
+function lockRef() {
+  if (state._curves) state.referenceCurves = state._curves.map(c=>({...c}));
+  updateChart();
+}
+
+function clearRef() {
+  state.referenceCurves = null;
+  state._prevDerived = null;
+  updateChart();
+}
+
+// =====================================================
+// MOUSEMOVE — registered ONCE outside updateChart
+// =====================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('simCanvas');
+  canvas.addEventListener('mousemove', e => {
+    if (!state._curves || !chartObj) return;
+    const rect = canvas.getBoundingClientRect();
+    const xFrac = (e.clientX - rect.left) / rect.width;
+    const t = xFrac * X_MAX_H;
+    const idx = Math.min(Math.max(0,Math.floor(t/DT_H)), state._curves[0].ts.length-2);
+    const vals = state._curves.filter((_,i)=>state.showDose[i])
+                              .map((c,i)=>`${DOSE_LABELS[state.showDose.findIndex((_,j)=>state.showDose[j]&&j>=0)]}: — `);
+    const cVals = DOSES.map((d,i)=>{
+      if(!state.showDose[i]) return '';
+      const v = state._curves[i].cs[idx];
+      return `${DOSE_LABELS[i]}: ${v.toFixed(4)} mg/L`;
+    }).filter(Boolean).join(' | ');
+    document.getElementById('cursorLabel').textContent = `t = ${t.toFixed(0)} h | ${cVals}`;
+  });
+
+  setupSliders();
+  updateChart();
+  setupCliffSim();
+  setupNormCanvas();
+});
+
+// =====================================================
+// QA ACCORDIONS
+// =====================================================
+function toggleQA(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.qa-toggle');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (toggle) toggle.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+// =====================================================
+// TRANSFER CARD ACCORDIONS
+// =====================================================
+function toggleTransfer(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+  const arrow = header.querySelector('span:last-child');
+  if (arrow) arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// =====================================================
+// CLIFF SIMULATOR (adapted from R Shiny)
+// =====================================================
+let cliffChart = null, cwresChart = null;
+
+function setupCliffSim() {
+  const sl = document.getElementById('slCliffDose');
+  sl.addEventListener('input', () => {
+    document.getElementById('lCliffDose').textContent = sl.value;
+    const dose = parseInt(sl.value);
+    const status = document.getElementById('cliffStatus');
+    if (dose < 15) {
+      status.textContent = '저용량: Low-Dose Cliff 발생 ⚠';
+      status.style.color = 'var(--danger)';
+    } else {
+      status.textContent = '고용량: MM 근사와 TMDD 비교적 유사';
+      status.style.color = 'var(--info)';
+    }
+    updateCliff(dose);
+  });
+  updateCliff(7);
+}
+
+function updateCliff(dose) {
+  const p = state.p;
+  const tmddCurve = simulateTMDD(dose, p);
+  const mmCurve   = simulateMM(dose, p);
+
+  // Subsample for display
+  const step = 4;
+  const tData = tmddCurve.ts.filter((_,i)=>i%step===0);
+  const tmddD = tmddCurve.cs.filter((_,i)=>i%step===0);
+  const mmD   = mmCurve.cs.filter((_,i)=>i%step===0);
+
+  if (!cliffChart) {
+    const ctx1 = document.getElementById('cliffCanvas').getContext('2d');
+    cliffChart = new Chart(ctx1, {
+      type:'line',
+      data:{datasets:[
+        {label:'TMDD 풀 모델',data:[],borderColor:'#2c8a5a',borderWidth:2,pointRadius:0,tension:0,fill:false},
+        {label:'MM 근사 모델',data:[],borderColor:'#c0392b',borderWidth:2,borderDash:[5,3],pointRadius:0,tension:0,fill:false}
+      ]},
+      options:{
+        animation:{duration:100},responsive:true,maintainAspectRatio:false,parsing:false,
+        scales:{
+          x:{type:'linear',min:0,max:X_MAX_H,ticks:{color:'#8a8070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},
+             title:{display:true,text:'시간 (h)',color:'#8a8070',font:{size:10}}},
+          y:{type:'logarithmic',min:0.001,max:1000,ticks:{color:'#8a8070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},
+             title:{display:true,text:'농도 (mg/L)',color:'#8a8070',font:{size:10}}}
+        },
+        plugins:{legend:{labels:{color:'#8a8070',font:{size:9},boxWidth:12}}}
+      }
+    });
+  }
+  cliffChart.data.datasets[0].data = tData.map((t,i)=>({x:t,y:tmddD[i]}));
+  cliffChart.data.datasets[1].data = tData.map((t,i)=>({x:t,y:mmD[i]}));
+  cliffChart.update('none');
+
+  // CWRES proxy at trough (last time point)
+  const lastTMDD = tmddCurve.cs[tmddCurve.cs.length-1];
+  const lastMM   = mmCurve.cs[mmCurve.cs.length-1];
+  const cwres_mm = Math.max(-4, Math.min(0, -(lastMM - lastTMDD)/(0.1*lastTMDD+0.001)*1.2));
+  const cwres_tmdd = (Math.random()-0.5)*0.15;
+
+  if (!cwresChart) {
+    const ctx2 = document.getElementById('cwresCanvas').getContext('2d');
+    cwresChart = new Chart(ctx2, {
+      type:'bar',
+      data:{
+        labels:['MM 근사 오류','TMDD 풀 모델'],
+        datasets:[{
+          data:[cwres_mm, cwres_tmdd],
+          backgroundColor:['rgba(192,57,43,0.6)','rgba(44,138,90,0.6)'],
+          borderColor:['#c0392b','#2c8a5a'],
+          borderWidth:1
+        }]
+      },
+      options:{
+        animation:{duration:100},responsive:true,maintainAspectRatio:false,
+        indexAxis:'y',
+        scales:{
+          x:{min:-4,max:1,ticks:{color:'#8a8070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},
+             title:{display:true,text:'CWRES (말단 시점)',color:'#8a8070',font:{size:10}}},
+          y:{ticks:{color:'#8a8070',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}
+        },
+        plugins:{legend:{display:false}}
+      }
+    });
+  }
+  cwresChart.data.datasets[0].data = [cwres_mm, cwres_tmdd];
+  cwresChart.update('none');
+}
+
+// =====================================================
+// NORMALIZATION CANVAS (V5.1 — bugfix applied)
+// =====================================================
+let normW=0, normH=0;
+const normData = [
+  {label:'IgG', t12:552, color:'#c9a84c', A0:10},
+  {label:'IgA', t12:139, color:'#4098e8', A0:6},
+  {label:'IgE', t12:60,  color:'#e87040', A0:2},
+  {label:'IgX', t12:60,  color:'#7ec8a0', A0:4},
+];
+let normMode = 'raw';
+
+function initNormCanvas() {
+  const canvas = document.getElementById('normCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  normW = Math.floor(rect.width * dpr);
+  normH = Math.floor(rect.height * dpr);
+  canvas.width  = normW;
+  canvas.height = normH;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(1,0,0,1,0,0);
+}
+
+function drawNorm() {
+  if (!normW || !normH) return;
+  const canvas = document.getElementById('normCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,normW,normH);
+
+  const pad = {l:40,r:20,t:20,b:30};
+  const W = normW - pad.l - pad.r;
+  const H = normH - pad.t - pad.b;
+
+  // Background grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for (let i=0;i<=5;i++) {
+    const y = pad.t + H - i/5*H;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+W,y); ctx.stroke();
+  }
+
+  const maxT = normMode==='raw' ? 1200 : 6;
+
+  normData.forEach(nd => {
+    ctx.beginPath();
+    ctx.strokeStyle = nd.color;
+    ctx.lineWidth = 2;
+    for (let i=0;i<W;i++) {
+      const tRaw = i/W * maxT;
+      const t = normMode==='norm' ? tRaw : tRaw;
+      const halfT = normMode==='norm' ? 1 : nd.t12;
+      const y = nd.A0 * Math.exp(-Math.log(2)/halfT * t);
+      const maxY = normMode==='norm' ? nd.A0 : 12;
+      const px = pad.l + i;
+      const py = pad.t + H - (y/maxY)*H*0.9;
+      if (i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // Label at start
+    const labelY = pad.t + H - (nd.A0/12)*H*0.9;
+    ctx.fillStyle = nd.color;
+    ctx.font = `${10*(window.devicePixelRatio||1)}px IBM Plex Mono`;
+    ctx.fillText(nd.label, pad.l+4, Math.min(labelY-4, pad.t+H-4));
+  });
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+H); ctx.lineTo(pad.l+W,pad.t+H); ctx.stroke();
+
+  ctx.fillStyle = '#8a8070';
+  ctx.font = `${9*(window.devicePixelRatio||1)}px Noto Sans KR`;
+  ctx.fillText(normMode==='raw' ? '시간 (h)' : '시간 (t/t½)', pad.l+W/2, pad.t+H+20);
+}
+
+function setNormMode(mode) {
+  normMode = mode;
+  document.getElementById('normRawBtn').classList.toggle('active', mode==='raw');
+  document.getElementById('normNormBtn').classList.toggle('active', mode==='norm');
+  drawNorm();
+}
+
+window.addEventListener('resize', () => {
+  initNormCanvas();
+  drawNorm();
+  // chartObj resize handled by Chart.js itself
+});
+
+// =====================================================
+// INTERSECTION OBSERVER for sidebar
+// =====================================================
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, {threshold: 0.2});
+sections.forEach(s => observer.observe(s));
+
+// Init normCanvas after load
+window.addEventListener('load', () => {
+  setTimeout(()=>{initNormCanvas(); drawNorm();}, 100);
+});
+</script>
+</body>
+</html>
