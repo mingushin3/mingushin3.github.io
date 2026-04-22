@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방법론 플레이북 v3 — #13 한국인 PK 공변량 DB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ TOKENS ═══════════ */
+:root {
+  --bg:       #080a0f;
+  --bg-2:     #0d1018;
+  --bg-3:     #131720;
+  --bg-4:     #1a1f2e;
+  --border:   #1e2438;
+  --border-2: #161b28;
+  --text:     #dde3f0;
+  --text-2:   #8b96b8;
+  --text-3:   #505878;
+  --text-4:   #2a3050;
+
+  --gold:     #e8a030;
+  --gold-2:   #f0c060;
+  --gold-bg:  #120e00;
+  --gold-bd:  #2e2000;
+  --gold-glow:rgba(232,160,48,.15);
+
+  --teal:     #0ea5a0;
+  --teal-2:   #2ec8c2;
+  --teal-bg:  #001412;
+  --teal-bd:  #00312e;
+  --teal-glow:rgba(14,165,160,.12);
+
+  --violet:   #7c6af0;
+  --violet-2: #a094f8;
+  --violet-bg:#06050e;
+  --violet-bd:#1a1540;
+  --violet-glow:rgba(124,106,240,.12);
+
+  --red:      #e05050;
+  --red-2:    #f07070;
+  --red-bg:   #110000;
+  --red-bd:   #300808;
+  --red-glow: rgba(224,80,80,.1);
+
+  --sky:      #38bdf8;
+  --sky-bg:   #00111e;
+  --r:6px; --r-sm:4px; --r-lg:14px;
+}
+[data-theme="light"] {
+  --bg:#f0f4f8; --bg-2:#fff; --bg-3:#f7f9fc; --bg-4:#edf0f8;
+  --border:#d4dae8; --border-2:#e4e8f2;
+  --text:#0e1220; --text-2:#3a4265; --text-3:#6b7298; --text-4:#a8aec8;
+  --gold:#a06800; --gold-2:#7a4e00; --gold-bg:#fffaed; --gold-bd:#f0d070; --gold-glow:rgba(160,104,0,.07);
+  --teal:#007a78; --teal-2:#005856; --teal-bg:#edfafa; --teal-bd:#99e0de; --teal-glow:rgba(0,122,120,.06);
+  --violet:#4a3ec0; --violet-2:#3830a0; --violet-bg:#f0effd; --violet-bd:#b8b0f0; --violet-glow:rgba(74,62,192,.06);
+  --red:#c03030; --red-2:#901c1c; --red-bg:#fff0f0; --red-bd:#f0a0a0; --red-glow:rgba(192,48,48,.05);
+  --sky:#0369a1; --sky-bg:#e0f2fe;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:14.5px;}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;font-weight:300;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;overflow-x:hidden;}
+.serif{font-family:'Noto Serif KR',serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.container{max-width:1080px;margin:0 auto;padding:0 1.5rem;}
+.label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);}
+
+/* ═══════════ NAV ═══════════ */
+.sidenav{position:fixed;left:0;top:0;height:100vh;width:210px;background:var(--bg-2);border-right:1px solid var(--border);overflow-y:auto;padding:1.5rem 0;z-index:100;transition:transform .3s;}
+.sidenav-logo{padding:0 1.2rem 1.2rem;border-bottom:1px solid var(--border-2);margin-bottom:1rem;}
+.sidenav-logo .ver{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--gold);letter-spacing:.1em;}
+.sidenav-logo h2{font-size:.85rem;font-weight:600;color:var(--text);line-height:1.3;margin-top:.2rem;}
+.nav-section{padding:.3rem 1.2rem;margin-top:.6rem;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-4);margin-bottom:.3rem;}
+.nav-item{display:block;font-size:.78rem;color:var(--text-3);padding:.25rem .5rem;border-radius:4px;text-decoration:none;transition:all .15s;margin-bottom:1px;}
+.nav-item:hover,.nav-item.active{color:var(--text);background:var(--bg-3);}
+.nav-item.active{border-left:2px solid var(--gold);color:var(--gold);}
+.theme-toggle{position:fixed;top:1rem;right:1rem;z-index:200;background:var(--bg-3);border:1px solid var(--border);border-radius:2rem;padding:.35rem .8rem;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text-2);display:flex;align-items:center;gap:.4rem;transition:all .2s;}
+.theme-toggle:hover{border-color:var(--text-3);}
+.nav-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:201;background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;cursor:pointer;font-size:1rem;}
+
+/* ═══════════ MAIN ═══════════ */
+.main{margin-left:210px;min-height:100vh;}
+
+/* ═══════════ HERO ═══════════ */
+.hero{padding:4rem 0 3rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border-2);}
+.hero::before{content:'';position:absolute;top:-100px;left:-50px;width:700px;height:500px;background:radial-gradient(ellipse at center,var(--gold-glow) 0%,transparent 65%);pointer-events:none;}
+.hero-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;}
+.chip{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:.22rem .65rem;border-radius:2rem;border:1px solid;letter-spacing:.06em;}
+.chip-gold{color:var(--gold);border-color:var(--gold-bd);background:var(--gold-bg);}
+.chip-teal{color:var(--teal);border-color:var(--teal-bd);background:var(--teal-bg);}
+.chip-violet{color:var(--violet);border-color:var(--violet-bd);background:var(--violet-bg);}
+.chip-red{color:var(--red);border-color:var(--red-bd);background:var(--red-bg);}
+.hero h1{font-family:'Noto Serif KR',serif;font-size:clamp(1.6rem,4vw,2.6rem);font-weight:700;line-height:1.2;letter-spacing:-.02em;color:var(--text);margin-bottom:.75rem;}
+.hero h1 em{font-style:normal;color:var(--gold);}
+.hero-sub{font-size:.95rem;color:var(--text-2);max-width:640px;line-height:1.85;margin-bottom:1.5rem;}
+.hero-sub strong{color:var(--text);font-weight:500;}
+.cv-line{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--r);padding:1rem 1.3rem;max-width:740px;}
+.cv-line .cv-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;}
+.cv-line p{font-family:'Noto Serif KR',serif;font-size:.88rem;color:var(--text-2);line-height:1.8;font-style:italic;}
+
+/* ═══════════ SECTIONS ═══════════ */
+section{padding:2.5rem 0;border-bottom:1px solid var(--border-2);}
+.section-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;color:var(--text-4);}
+.section-title{font-size:1.1rem;font-weight:600;color:var(--text);}
+.section-title em{font-style:normal;color:var(--gold);}
+.section-line{flex:1;height:1px;background:var(--border-2);}
+
+/* ═══════════ AUDIT TABLE ═══════════ */
+.audit-table-wrap{overflow-x:auto;margin-bottom:1.5rem;}
+.audit-intro{font-size:.83rem;color:var(--text-3);line-height:1.7;margin-bottom:1rem;padding:.75rem 1rem;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-2);}
+.audit-intro strong{color:var(--text-2);font-weight:500;}
+
+/* ═══════════ TABLES ═══════════ */
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:1rem;}
+th{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border);background:var(--bg-3);}
+td{padding:.5rem .75rem;border-bottom:1px solid var(--border-2);color:var(--text-2);vertical-align:top;line-height:1.65;}
+tr:hover td{background:var(--bg-3);}
+.badge-adopt{color:var(--teal-2);font-family:'JetBrains Mono',monospace;font-size:.65rem;}
+.badge-reject{color:var(--red-2);font-family:'JetBrains Mono',monospace;font-size:.65rem;}
+.badge-partial{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.65rem;}
+.badge-new{color:var(--sky);font-family:'JetBrains Mono',monospace;font-size:.65rem;}
+
+/* ═══════════ CARDS ═══════════ */
+.card{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--r);padding:1.2rem 1.4rem;margin-bottom:.75rem;transition:border-color .2s,box-shadow .2s,transform .2s;}
+.card:hover{transform:translateY(-1px);}
+.card-gold{border-left:2px solid var(--gold);}
+.card-gold:hover{border-color:var(--gold);box-shadow:0 6px 28px var(--gold-glow);}
+.card-teal{border-left:2px solid var(--teal);}
+.card-teal:hover{border-color:var(--teal);box-shadow:0 6px 28px var(--teal-glow);}
+.card-violet{border-left:2px solid var(--violet);}
+.card-violet:hover{border-color:var(--violet);box-shadow:0 6px 28px var(--violet-glow);}
+.card-red{border-left:2px solid var(--red);}
+.card-red:hover{border-color:var(--red);box-shadow:0 6px 28px var(--red-glow);}
+.card-title{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.4rem;}
+.card-body{font-size:.82rem;color:var(--text-3);line-height:1.75;}
+.card-body strong{color:var(--text-2);font-weight:500;}
+.card-body code{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:var(--bg-3);border:1px solid var(--border-2);padding:1px 5px;border-radius:3px;color:var(--teal-2);}
+
+/* ═══════════ PREFLIGHT ═══════════ */
+.preflight{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.4rem;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:2;}
+.preflight .pf-key{color:var(--text-3);}
+.preflight .pf-val{color:var(--teal-2);}
+.preflight .pf-warn{color:var(--gold);}
+.preflight .pf-note{color:var(--violet-2);}
+
+/* ═══════════ GRID ═══════════ */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem;}
+.mini-card{background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r-sm);padding:.85rem 1rem;}
+.mini-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
+.mini-label-gold{color:var(--gold);}
+.mini-label-teal{color:var(--teal);}
+.mini-label-violet{color:var(--violet);}
+.mini-label-red{color:var(--red);}
+.mini-val{font-size:.82rem;color:var(--text-2);line-height:1.65;}
+.mini-val strong{color:var(--text);font-weight:500;}
+
+/* ═══════════ PIVOT TABLE ═══════════ */
+.pivot-row td:first-child{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--red-2);}
+.pivot-row-del td{opacity:.4;text-decoration:line-through;}
+.pivot-row-del td:first-child{color:var(--text-3);}
+
+/* ═══════════ CHECKLIST ═══════════ */
+.checklist{list-style:none;margin:.5rem 0;}
+.checklist li{display:flex;align-items:flex-start;gap:.6rem;font-size:.82rem;color:var(--text-3);padding:.22rem 0;line-height:1.6;}
+.checklist li::before{content:'□';font-family:'JetBrains Mono',monospace;color:var(--text-4);flex-shrink:0;margin-top:1px;}
+.checklist li strong{color:var(--text-2);font-weight:500;}
+.checklist li.warn::before{content:'⚠';color:var(--gold);}
+.checklist li.critical::before{content:'⛔';color:var(--red);}
+
+/* ═══════════ REFUSAL / CLAIM TABLE ═══════════ */
+.claim-yes td:first-child{color:var(--teal-2);}
+.claim-no td:first-child{color:var(--red-2);}
+.claim-shield td:first-child{color:var(--gold);}
+
+/* ═══════════ REBUTTAL ═══════════ */
+.rebuttal{background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.65rem;}
+.rebuttal-q{font-size:.82rem;color:var(--text-2);margin-bottom:.5rem;font-weight:500;}
+.rebuttal-q::before{content:'Q. ';color:var(--red-2);font-family:'JetBrains Mono',monospace;}
+.rebuttal-a{font-size:.82rem;color:var(--text-3);line-height:1.75;}
+.rebuttal-a::before{content:'A. ';color:var(--teal-2);font-family:'JetBrains Mono',monospace;}
+.rebuttal-a strong{color:var(--text-2);font-weight:500;}
+
+/* ═══════════ TIMELINE ═══════════ */
+.timeline{position:relative;padding-left:2.4rem;}
+.timeline::before{content:'';position:absolute;left:.8rem;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--gold),var(--teal),var(--violet));border-radius:2px;}
+.tl-phase{position:relative;margin-bottom:1.5rem;}
+.tl-dot{position:absolute;left:-2.4rem;top:.25rem;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;border:2px solid;z-index:1;}
+.tl-dot-0{background:var(--violet-bg);border-color:var(--violet);color:var(--violet);}
+.tl-dot-1{background:var(--gold-bg);border-color:var(--gold);color:var(--gold);}
+.tl-dot-2{background:var(--teal-bg);border-color:var(--teal);color:var(--teal);}
+.tl-dot-3{background:var(--violet-bg);border-color:var(--violet);color:var(--violet);}
+.tl-dot-star{background:var(--gold-bg);border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 4px var(--gold-glow);}
+.tl-header{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.65rem;}
+.tl-period{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text-3);}
+.tl-title{font-size:.92rem;font-weight:600;color:var(--text);}
+.tl-card{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--r);padding:.9rem 1.1rem;}
+.tl-items{display:flex;flex-direction:column;gap:.25rem;}
+.tl-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.8rem;color:var(--text-3);line-height:1.6;}
+.tl-item::before{content:'→';color:var(--text-4);flex-shrink:0;font-size:.72rem;margin-top:2px;}
+.tl-item.priority::before{content:'★';color:var(--gold);}
+.tl-item.warn::before{content:'⚠';color:var(--red);}
+.tl-item.exit::before{content:'◉';color:var(--teal);}
+.tl-item strong{color:var(--text-2);font-weight:500;}
+
+/* ═══════════ TONIGHT ═══════════ */
+.tonight-card{background:var(--bg-2);border:1px solid var(--gold-bd);border-left:3px solid var(--gold);border-radius:var(--r);padding:1.1rem 1.3rem;margin-bottom:.75rem;box-shadow:0 0 20px var(--gold-glow);}
+.tonight-num{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.35rem;}
+.tonight-title{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.5rem;}
+.tonight-body{font-size:.81rem;color:var(--text-3);line-height:1.75;}
+.tonight-body strong{color:var(--text-2);font-weight:500;}
+.tonight-body code{font-family:'JetBrains Mono',monospace;font-size:.73rem;background:var(--bg-3);border:1px solid var(--border-2);padding:1px 5px;border-radius:3px;color:var(--teal-2);}
+.warn-box{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r-sm);padding:.6rem .9rem;margin:.5rem 0;font-size:.78rem;color:var(--red-2);}
+.warn-box strong{font-weight:600;}
+
+/* ═══════════ LOINC TABLE ═══════════ */
+.loinc-yes{color:var(--teal-2);font-family:'JetBrains Mono',monospace;}
+.loinc-no{color:var(--red-2);font-family:'JetBrains Mono',monospace;}
+.loinc-dash{color:var(--text-4);font-family:'JetBrains Mono',monospace;}
+.track-a{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.7rem;}
+.track-b{color:var(--violet-2);font-family:'JetBrains Mono',monospace;font-size:.7rem;}
+
+/* ═══════════ DIR TREE ═══════════ */
+.dir-tree{background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--r);padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--text-3);line-height:1.85;overflow-x:auto;}
+.dir-tree .dir{color:var(--text-2);}
+.dir-tree .new{color:var(--teal-2);}
+.dir-tree .immut{color:var(--red-2);}
+.dir-tree .comment{color:var(--text-4);}
+
+/* ═══════════ PI MEETING ═══════════ */
+.pi-card{background:var(--bg-3);border:1px solid var(--border-2);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.65rem;}
+.pi-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--violet-2);margin-bottom:.3rem;}
+.pi-val{font-size:.82rem;color:var(--text-2);line-height:1.65;}
+.pi-val strong{color:var(--text);font-weight:500;}
+.quote-block{background:var(--bg-2);border-left:3px solid var(--teal);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:.75rem 1rem;font-size:.81rem;color:var(--text-2);line-height:1.75;font-style:italic;margin:.75rem 0;}
+
+/* ═══════════ FEEDBACK PROMPT ═══════════ */
+.feedback-block{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem;font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--text-2);line-height:1.9;white-space:pre-line;overflow-x:auto;}
+.fb-key{color:var(--gold);}
+.fb-val{color:var(--text-3);}
+
+/* ═══════════ ZENODO TABLE ═══════════ */
+.z-yes td:nth-child(4){color:var(--teal-2);font-family:'JetBrains Mono',monospace;}
+.z-no td:nth-child(4){color:var(--red-2);font-family:'JetBrains Mono',monospace;}
+
+/* ═══════════ METHODS BLOCK ═══════════ */
+.methods-block{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.5rem;font-size:.82rem;color:var(--text-2);line-height:2;margin-bottom:1rem;}
+.methods-block strong{color:var(--text);font-weight:600;}
+
+/* ═══════════ KNOWLEDGE GAP ═══════════ */
+.kg-p0{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+.kg-p1{color:var(--teal-2);font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+.kg-post{color:var(--text-4);font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+
+/* ═══════════ TAG BADGES ═══════════ */
+.tl-tag{font-family:'JetBrains Mono',monospace;font-size:.63rem;padding:.1rem .45rem;border-radius:2rem;border:1px solid;display:inline-block;margin-right:.25rem;}
+.tl-tag-shiftleft{color:var(--gold);border-color:var(--gold-bd);background:var(--gold-bg);}
+.tl-tag-deep{color:var(--red-2);border-color:var(--red-bd);background:var(--red-bg);}
+.tl-tag-low{color:var(--teal-2);border-color:var(--teal-bd);background:var(--teal-bg);}
+.tl-tag-wait{color:var(--text-3);border-color:var(--border);background:var(--bg-3);}
+
+/* ═══════════ DIVIDER ═══════════ */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:1.5rem 0;}
+
+/* ═══════════ PHASE TABLE ═══════════ */
+.phase-table th:nth-child(1){width:6%;}
+.phase-table th:nth-child(2){width:22%;}
+.phase-table th:nth-child(3){width:28%;}
+.phase-table th:nth-child(4){width:22%;}
+.phase-table th:nth-child(5){width:22%;}
+.phase-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:.72rem;}
+
+/* ═══════════ FOOTER ═══════════ */
+footer{border-top:1px solid var(--border-2);padding:1.5rem 0;}
+.ft{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.ft span{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-4);}
+
+/* ═══════════ ANIMATIONS ═══════════ */
+.fade-in{opacity:0;transform:translateY(12px);}
+.fade-in.visible{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease;}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:860px){
+  .sidenav{transform:translateX(-100%);}.sidenav.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .nav-toggle{display:block;}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .phase-table{font-size:.72rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDENAV -->
+<nav class="sidenav" id="sidenav">
+  <div class="sidenav-logo">
+    <div class="ver">v3 · 2026.04 · html-ready</div>
+    <h2>#13 한국인 PK 공변량 DB<br>방법론 플레이북</h2>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">개요</div>
+    <a class="nav-item" href="#hero">헌장 & 핵심</a>
+    <a class="nav-item" href="#audit">v3 검토 요약</a>
+    <a class="nav-item" href="#preflight">Pre-Flight</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">설계</div>
+    <a class="nav-item" href="#s0">섹션 0 | 프로젝트 헌장</a>
+    <a class="nav-item" href="#s1">섹션 1 | 인식론적 방어선</a>
+    <a class="nav-item" href="#s2">섹션 2 | Methods-First</a>
+    <a class="nav-item" href="#s3">섹션 3 | 역설계 요건</a>
+    <a class="nav-item" href="#s4">섹션 4 | 수공업 기준서</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">실행</div>
+    <a class="nav-item" href="#s5">섹션 5 | 타임라인</a>
+    <a class="nav-item" href="#tonight">오늘 밤 3가지</a>
+    <a class="nav-item" href="#s6">섹션 6 | PI 커뮤니케이션</a>
+    <a class="nav-item" href="#s7">섹션 7 | 피드백 프롬프트</a>
+  </div>
+</nav>
+
+<button class="nav-toggle" id="navToggle">☰</button>
+<button class="theme-toggle" onclick="toggleTheme()"><span id="themeIcon">☀</span> <span id="themeTxt">라이트</span></button>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ═══ HERO ═══ -->
+<section id="hero" class="hero">
+<div class="container">
+  <div class="hero-chips">
+    <span class="chip chip-gold">v3 · 2026.04</span>
+    <span class="chip chip-teal">TYPE_D (B+C)</span>
+    <span class="chip chip-violet">Data Moat · Compounding 10/10</span>
+    <span class="chip chip-red">html-ready</span>
+  </div>
+  <h1 class="serif fade-in">한국인 PK 공변량 데이터베이스<br><em>포트폴리오 전체를 먹여 살리는 인프라 레이어</em></h1>
+  <p class="hero-sub fade-in">계량약리학(Pharmacometrics)을 통해 서양인 중심 모델링의 구조적 편향을 교정하고, 한국인·아시아인 정밀 투약(Precision Dosing)의 기틀을 마련한다. 포트폴리오 내 <strong>6개 프로젝트(ADC·ECMO·MIPD·소아·CKD·임산부)</strong>의 공통 기반이자 <strong>글로벌 계량약리학 커뮤니티에 제공하는 Informative Prior</strong>.</p>
+  <div class="cv-line fade-in">
+    <div class="cv-label">완성 시 CV에 추가되는 대체 불가 한 줄</div>
+    <p>"Three-axis Evidence and Gap Map of covariate reporting in Korean PopPK literature and construction of a Dual-Track Korean PK covariate reference database — a modeling-ready Informative Prior (marginal distributions + variance-covariance matrix) for Asian subpopulations in ADC, MIPD, and critical care pharmacometrics" — CPT:PSP</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══ AUDIT ═══ -->
+<section id="audit">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">v3 비판적 검토</span>
+    <span class="section-title">채택·기각·보완 근거 전체 공개</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="audit-intro"><strong>검토 원칙:</strong> 보수적·비판적 관점에서 타당성이 명확하게 입증된 항목만 채택. 범위 초과 또는 방법론 한계가 있는 항목은 조건부 채택 또는 기각. 자체 감사(실행 오류 사전 차단)를 별도 항목으로 처리.</div>
+  <div class="audit-table-wrap">
+  <table>
+    <thead><tr><th>출처</th><th>핵심 주장</th><th>판정</th><th>v3 반영</th></tr></thead>
+    <tbody>
+      <tr><td>문서 9</td><td>KNHANES eGFR 파생에 연령·성별 변수 미신청 = 치명적 실행 오류</td><td><span class="badge-adopt">✅ 즉시 채택</span></td><td>신청 변수 목록 + 오늘 밤 3가지 1번 긴급 수정</td></tr>
+      <tr><td>문서 7·9</td><td>공분산 행렬(VCOV) 없이는 진정한 Informative Prior 불가</td><td><span class="badge-adopt">✅ 채택</span></td><td>KoreanPKCov_VCOV_v001.csv 산출물 추가. svyvar() 활용</td></tr>
+      <tr><td>문서 7·9</td><td>EGM 추출 양식에 취약 집단(소아/노인/중환자) 축 추가</td><td><span class="badge-adopt">✅ 채택 (비용 낮음)</span></td><td>컬럼 1개 추가. 주 EGM은 2D 유지, 취약 집단은 보조 분석</td></tr>
+      <tr><td>문서 7</td><td>IRB 신청서에 Zenodo 공개 범위 사전 명시 필수</td><td><span class="badge-adopt">✅ 채택</span></td><td>구체적 문구 + Track별 공개 범위 구분 표 추가</td></tr>
+      <tr><td>문서 7</td><td>Track B EMR PGx 선택 편향을 KARE/PharmGKB와 벤치마킹</td><td><span class="badge-adopt">✅ 채택</span></td><td>Discussion 계획에 비교표 추가</td></tr>
+      <tr><td>문서 9</td><td>Track B n&lt;50 시 합성 유전형(Synthetic PGx) Plan C</td><td><span class="badge-partial">⚠️ 부분 채택·용어 수정</span></td><td>"Synthetic" 삭제 → "Literature-derived allele frequency reference"로 재명명. 방법론 한계 명시 조건부</td></tr>
+      <tr><td>자체 감사</td><td>eGFR 계산 공식 선택 사전 미결정</td><td><span class="badge-new">✅ 신규</span></td><td>CKD-EPI 2021(인종 계수 제거)을 기본값으로 사전 확정</td></tr>
+      <tr><td>자체 감사</td><td>문헌 20편 선정 기준의 방어 논리 부재 — 임의적 숫자</td><td><span class="badge-new">✅ 신규</span></td><td>약물 카테고리별 층화 5편 × 4 = 20편으로 재설계</td></tr>
+      <tr><td>자체 감사</td><td>Zenodo 공개 시 Track A/B 공개 범위 미구분</td><td><span class="badge-new">✅ 신규</span></td><td>Track별 공개 가능/불가 항목 표로 명시</td></tr>
+      <tr><td>자체 감사</td><td>mrgsolve vs NONMEM 선택 근거 불명확</td><td><span class="badge-new">✅ 신규</span></td><td>mrgsolve 선택 근거 명시 (재현성 공개·R 통합)</td></tr>
+      <tr><td>문서 7·9</td><td>R 패키지 + CI 자동갱신 Living DB</td><td><span class="badge-reject">❌ 기각 유지</span></td><td>PhD 산출물 범위 초과. 포스트닥 청사진 유지</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PREFLIGHT ═══ -->
+<section id="preflight">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">Pre-Flight</span>
+    <span class="section-title">LLM 자체 인지 셋업 선언</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="preflight">
+    <div><span class="pf-key">[Pre-Flight Declaration — v3]</span></div>
+    <div><span class="pf-key">PROJECT_TYPE         </span><span class="pf-val">TYPE_D (B+C) — EGM 기반 체계적 문헌 분석 + Dual-Track 공변량 DB 구축</span></div>
+    <div><span class="pf-key">수학적 사전 검증      </span><span class="pf-val">X (TYPE_A 비해당)</span></div>
+    <div><span class="pf-key">타겟 산출물           </span><span class="pf-val">EGM 3축 매트릭스 + Track A 주변 분포 + VCOV 행렬 + Track B PGx + SSE ECMO Figure</span></div>
+    <div><span class="pf-key">Phase 0 완료 조건     </span><span class="pf-val">KNHANES 6종+연령·성별 추출 성공 + EMR PGx 조사 완료 + DB 스키마 v0.1 생성</span></div>
+    <div><span class="pf-warn">⚠ [v3 치명적 수정]   </span><span class="pf-warn">KNHANES 신청 변수에 연령·성별 미포함 시 eGFR(CKD-EPI 2021) 파생 불가 → 재신청 필요</span></div>
+    <div><span class="pf-key">KNHANES PGx 상태      </span><span class="pf-val">미수록 확인된 사실 → Dual-Track이 1차 아키텍처 (Plan B 아님)</span></div>
+    <div><span class="pf-key">최고 불확실성 영역     </span><span class="pf-val">TYPE_C — EMR PGx 보유 환자 n 추정치 (기관별 상이)</span></div>
+    <div><span class="pf-note">목적 함수 키워드       </span><span class="pf-note">Korean covariate harmonization | Informative Prior (주변+VCOV) | FDA 2022 PopPK | Portfolio ×10</span></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SECTION 0 ═══ -->
+<section id="s0">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 0</span>
+    <span class="section-title">프로젝트 <em>헌장</em></span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">완료의 정의 — Definition of Done v3</div>
+  <table style="margin-bottom:1.25rem;">
+    <thead><tr><th>#</th><th>측정 가능한 산출물</th><th>v3 변경</th></tr></thead>
+    <tbody>
+      <tr><td class="mono" style="color:var(--gold)">1</td><td>EGM 3축(공변량 유형 × 배설경로 × 취약 집단) 기반 국내 PopPK 논문 ≥20편(카테고리별 층화 5×4) → EGM 히트맵 + PRISMA 2020</td><td>취약 집단 축 추가. 층화 20편</td></tr>
+      <tr><td class="mono" style="color:var(--gold)">2</td><td><strong>Track A 주변 분포:</strong> KNHANES 2019–2023, 6종 공변량, 가중 median·2.5%·97.5%·가중n, LOINC 코드 병기</td><td>—</td></tr>
+      <tr><td class="mono" style="color:var(--gold)">3</td><td><strong>Track A VCOV:</strong> 6종 연속형 공변량 간 가중 공분산 행렬 6×6 (KoreanPKCov_VCOV_v001.csv)</td><td>v3 신규 — Informative Prior 완성에 필수</td></tr>
+      <tr><td class="mono" style="color:var(--violet-2)">4</td><td><strong>Track B:</strong> 병원 EMR IRB 후향 코호트 → SLCO1B1·CYP3A5 빈도 + KARE/PharmGKB 벤치마킹 표</td><td>v3: 선택 편향 정량화 추가</td></tr>
+      <tr><td class="mono" style="color:var(--teal)">5</td><td>DB 스키마 v1.0 + 데이터 사전(LOINC 포함) → Zenodo DOI (Track별 공개 범위 준수)</td><td>Track별 구분 명시</td></tr>
+      <tr><td class="mono" style="color:var(--teal)">6</td><td>ECMO SSE 파일럿 — mrgsolve 기반 가상 코호트 N=1,000 → CL 밀도 플롯 + PTA 도표</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid-2" style="margin-bottom:1rem;">
+    <div class="card card-red">
+      <div class="card-title">단일 최대 리스크 (v3 재정의)</div>
+      <div class="card-body">병원 EMR 내 스타틴·타크로리무스 처방 전 PGx 검사 시행 환자 수 부족(n&lt;50) → Track B 신뢰도 붕괴 → 유전약리학 레이어 약화.<br><strong>단, Plan C(Literature-derived)로 레이어 자체는 보존 가능. 리스크 심각도 감소.</strong></div>
+    </div>
+    <div class="card card-teal">
+      <div class="card-title">포기 선언 — Out-of-Scope v3</div>
+      <div class="card-body">
+        전향적 PK 채혈 직접 수집 · 외국인 코호트 병렬 구축 · NBK KoreanChip 신청(포스트닥 이관) · 전면 OMOP CDM 전환 · R 패키지 CI 자동갱신 Living DB(포스트닥 Future Direction) · <strong>Zenodo에 Track B EMR 원시 데이터 업로드(IRB 위반)</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">Pivot Trigger — 무효화 조건 v3</div>
+  <table>
+    <thead><tr><th>무효화 조건</th><th>판단 기준</th><th>발동 시 대응 행동</th></tr></thead>
+    <tbody>
+      <tr class="pivot-row-del"><td>~~KNHANES PGx 미수록~~</td><td>확인된 사실</td><td>이미 발동 완료. Dual-Track 1차 아키텍처로 진행.</td></tr>
+      <tr class="pivot-row"><td>KNHANES 연령·성별 미신청</td><td>신청 전 목록 미확인</td><td>즉시 수정 재제출. MDIS 담당자 연락.</td></tr>
+      <tr class="pivot-row"><td>Track B EMR PGx n&lt;50</td><td>IRB 승인 후 추출 시</td><td><strong>Plan C 발동</strong>: KARE/PharmGKB Literature-derived 빈도로 대체. Discussion "preliminary reference" 명시.</td></tr>
+      <tr class="pivot-row"><td>문헌 공변량 다양성 빈곤</td><td>EGM 후 신기능 외 공통 &lt;4종</td><td>논조 전환: "한국 PopPK 방법론 하향 평준화 비판". B-Type 단독 투고 유지.</td></tr>
+      <tr class="pivot-row"><td>EMR IRB 60일 초과</td><td>접수 후 60일 내 미승인</td><td>수동 대기 금지. IRB 위원 직접 면담 or 프로토콜 수정. 60일 = 설계 결함 신호.</td></tr>
+      <tr class="pivot-row"><td>유사 한국인 공변량 DB 기출판</td><td>동일 목적 논문 ≥2편</td><td>ADC 특이적 공변량(FcRn·알부민·항체 생성능) + ECMO 특화 조합으로 범위 특화.</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ═══ SECTION 1 ═══ -->
+<section id="s1">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 1</span>
+    <span class="section-title">인식론적 <em>방어선 설계</em></span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:1.2rem;">
+    <div class="card card-teal">
+      <div class="card-title">목적 함수 — TYPE_B (EGM 분석)</div>
+      <div class="card-body">2015–2025년 국내 한국인 대상 PopPK 연구를 <strong>4개 약물 카테고리별 층화</strong>(항생제·면역억제제·항암제·심혈관계 각 5편)로 선정하여, 공변량 유형 × 배설경로 × <strong>취약 집단</strong>의 3축 EGM 매트릭스를 구축하고, 공변량 선택 방법론과 누락 패턴의 연관성 및 아시아인 PopPK 모델의 구조적 편향(Structural Bias)을 논증한다.</div>
+    </div>
+    <div class="card card-gold">
+      <div class="card-title">목적 함수 — TYPE_C (DB 구축)</div>
+      <div class="card-body">KNHANES 기반 Track A(<strong>주변 분포 + VCOV 행렬</strong>)와 EMR 기반 Track B(PGx)의 Dual-Track 아키텍처로, ADC·MIPD·소아·CKD·임산부·ECMO 모델링에 plug-in 가능한 표준화 한국인 공변량 참조 DB를 구축한다. FDA 2022 PopPK Guidance(FDA-2019-D-0889) 요건을 충족하는 <strong>완전한 Informative Prior</strong>로 기능한다.</div>
+    </div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">주장 가능·불가 범위</div>
+  <table style="margin-bottom:1.25rem;">
+    <thead><tr><th>구분</th><th>내용</th><th>근거·통제 방안</th></tr></thead>
+    <tbody>
+      <tr class="claim-yes"><td>✅ 가능</td><td>EGM 3축 기반 공변량 보고 갭 — 배설경로·취약 집단별 구조적 편향 패턴</td><td>PRISMA 2020 + EGM 3축 + Cohen's κ ≥0.6 + 카테고리 층화</td></tr>
+      <tr class="claim-yes"><td>✅ 가능</td><td>KNHANES 기반 한국인 모집단 대표 분포 (주변 분포 + VCOV)</td><td>복합표본 가중치, 95% CI, LOINC 코드, CKD-EPI 2021 명시</td></tr>
+      <tr class="claim-yes"><td>✅ 가능</td><td>EMR PGx 기반 SLCO1B1·CYP3A5 임상 분포 (n 명시 + KARE/PharmGKB 벤치마킹)</td><td>IRB 승인, 선택 편향 범위 명시, 비교표</td></tr>
+      <tr class="claim-yes"><td>✅ 가능</td><td>SSE 기반 서양인 vs. 한국인 공변량(VCOV 포함) CL 분포 이동·PTA 차이 정량화</td><td>mrgsolve, N=1,000, 공변량 출처 명시</td></tr>
+      <tr class="claim-yes"><td>✅ 가능 (Plan C)</td><td>Literature-derived 한국인 PGx 빈도 (n&lt;50 시)</td><td>CYP3A5*3 ~70%, SLCO1B1 ~15% — CPIC+PharmGKB. "예비 참조값" 한계 명시</td></tr>
+      <tr class="claim-no"><td>❌ 불가</td><td>KNHANES로 개별 약물 PK 파라미터 직접 추정</td><td>PK 농도 데이터 미포함</td></tr>
+      <tr class="claim-no"><td>❌ 불가</td><td>EMR PGx가 일반 한국인 모집단을 대표한다</td><td>처방 전 검사군 선택 편향 → Discussion 명시</td></tr>
+      <tr class="claim-no"><td>❌ 불가</td><td>한국인 공변량이 치료 결과를 인과적으로 결정</td><td>관찰 연구 한계</td></tr>
+      <tr class="claim-shield"><td>🛡️ 한계 통제</td><td>Track A VCOV는 Track B PGx와의 공분산 미포함</td><td>KNHANES·EMR 이원화 구조상 결합 VCOV 불가 → Discussion 명시</td></tr>
+    </tbody>
+  </table>
+
+  <div class="label" style="margin-bottom:.6rem">심사위원 반론 및 방어 스크립트 v3</div>
+  <div class="rebuttal"><div class="rebuttal-q">KNHANES에는 PK 데이터가 없는데 PK 공변량 DB라는 명칭이 적절한가?</div><div class="rebuttal-a">본 DB가 제공하는 것은 PK 값(CL, Vd)이 아니라 PopPK 모델의 개인화 예측 단계에 입력되는 <strong>공변량의 분포(주변 분포 + VCOV 행렬)</strong>입니다. ECMO SSE 파일럿에서 서양인 vs. 한국인 공분산 행렬 대입 시 CL 분포 이동과 PTA 차이를 직접 정량화함으로써 규제적 정당성을 증명합니다.</div></div>
+  <div class="rebuttal"><div class="rebuttal-q">주변 분포만 있으면 충분하지 않은가? 공분산 행렬이 왜 필요한가?</div><div class="rebuttal-a">체중과 eGFR은 한국인에서 양의 상관관계를 갖습니다(비만할수록 CKD 위험). 공분산 무시 시 임상적으로 불가능한 조합을 가진 가상 환자가 생성되어 SSE에 <strong>체계적 편향</strong>을 유발합니다. 공분산 행렬 포함이 FDA 2022 Guidance 요건 충족의 핵심입니다.</div></div>
+  <div class="rebuttal"><div class="rebuttal-q">PharmGKB, CPIC 등 기존 글로벌 DB와 차별점은?</div><div class="rebuttal-a">PharmGKB·CPIC는 유전형-약물반응 매핑 중심이며, ADC 4분석물 클리어런스 보정·ECMO 체성분 공변량·소아 β-lactam fT>MIC 입력에 특화된 <strong>한국인 공변량 조합과 공분산 구조</strong>는 어느 기존 DB에도 존재하지 않습니다.</div></div>
+  <div class="rebuttal"><div class="rebuttal-q">KARE 코호트를 쓰면 더 완전한 유전형 데이터를 확보할 수 있지 않은가?</div><div class="rebuttal-a">KARE 코호트는 NBK 분양 심의위원회 승인이 필요하며 심의 기간이 36개월 PhD 타임박스 내에서 통제 불가합니다. EMR Track B는 IRB 후향 승인만으로 접근 가능하며, Discussion에서 Track B 결과를 KARE·PharmGKB 참조 빈도와 <strong>명시적으로 비교하여 선택 편향을 정직하게 정량화</strong>합니다.</div></div>
+  <div class="rebuttal"><div class="rebuttal-q">20편의 문헌 분석이 대표성을 갖는가?</div><div class="rebuttal-a">본 연구는 단순 편의 표본이 아니라 항생제·면역억제제·항암제·심혈관계 <strong>4개 카테고리에서 각 5편을 층화 선정</strong>하였습니다. 이 설계는 특정 약물군의 과대 대표를 방지하고 배설경로별 공변량 보고 패턴의 체계적 비교를 가능하게 합니다.</div></div>
+  <div class="rebuttal"><div class="rebuttal-q">공변량 갭이 적다면 DB 구축의 필요성이 약해지지 않는가?</div><div class="rebuttal-a">갭이 적다는 EGM 결과 자체가 한국 PopPK 연구의 <strong>방법론적 하향 평준화를 실증하는 비판적 근거</strong>가 됩니다. 논조는 '데이터 부재'에서 '체계적 방법론 빈곤 비판'으로 전환되며, 그 빈곤을 해결하는 첫 인프라로 본 DB의 필요성이 역설적으로 강화됩니다.</div></div>
+</div>
+</section>
+
+<!-- ═══ SECTION 2 ═══ -->
+<section id="s2">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 2</span>
+    <span class="section-title">Methods-First 초안 <em>(선 집필, 후 실행)</em></span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">CPT:PSP Database 논문 형식 요건</div>
+  <table style="margin-bottom:1.25rem;">
+    <thead><tr><th>요건 항목</th><th>기준</th><th>v3 비고</th></tr></thead>
+    <tbody>
+      <tr><td>초록</td><td>150단어 이내</td><td>구조화 초록 불필요</td></tr>
+      <tr><td>본문</td><td>4,000단어 이내</td><td>초록·참고문헌·표·그림 제외</td></tr>
+      <tr><td>참고문헌</td><td>≤50개</td><td>—</td></tr>
+      <tr><td>표 + 그림 합산</td><td>≤7개</td><td>EGM 히트맵(1)+VCOV 히트맵(1)+밀도 플롯(1)+PTA 도표(1)+PGx 벤치마킹 표(1) = 5개 → 여유 2개</td></tr>
+      <tr><td>필수 섹션 구조</td><td>Introduction → Construction and Content → <strong>Utility</strong> → Discussion → Summary → Study Highlights</td><td>"Results" 섹션 없음. Utility가 핵심.</td></tr>
+      <tr><td>데이터 접근성</td><td>Zenodo URL + DOI 논문 내 명시</td><td>Track별 공개 범위 표 첨부</td></tr>
+      <tr><td>재현성</td><td>추출 로직·파생 공식·결측치 처리·VCOV 산출 스크립트 완전 기술</td><td>R 스크립트 공개 필수</td></tr>
+    </tbody>
+  </table>
+
+  <div class="label" style="margin-bottom:.6rem">Zenodo 공개 범위 — Track별 구분표 v3</div>
+  <table style="margin-bottom:1rem;" class="">
+    <thead><tr><th>항목</th><th>Track A (KNHANES)</th><th>Track B (EMR PGx)</th><th>공개 가능</th></tr></thead>
+    <tbody>
+      <tr class="z-no"><td>원시 데이터</td><td>미포함 (KNHANES 재배포 금지)</td><td>미포함 (IRB 규정)</td><td>❌</td></tr>
+      <tr class="z-yes"><td>추출 R 스크립트</td><td>extract_trackA_v001.R</td><td>extract_trackB_v001.R</td><td>✅</td></tr>
+      <tr class="z-yes"><td>주변 분포 요약 통계</td><td>KoreanPKCov_v001.csv</td><td>PGx_freq_trackB_v001.csv</td><td>✅ (집계)</td></tr>
+      <tr class="z-yes"><td><strong>공분산 행렬 (v3 신규)</strong></td><td>KoreanPKCov_VCOV_v001.csv</td><td>해당 없음</td><td>✅</td></tr>
+      <tr class="z-yes"><td>SSE 시뮬레이션 스크립트</td><td>sse_ecmo_v001.R</td><td>—</td><td>✅</td></tr>
+      <tr class="z-yes"><td>데이터 사전</td><td>schema_v001.md</td><td>—</td><td>✅</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card card-red" style="margin-bottom:1.2rem;">
+    <div class="card-title">⚠ IRB 신청서 필수 문구 (v3 신규 — 사전 승인 없이 Zenodo 공개 시 IRB 위반)</div>
+    <div class="card-body">"연구 결과로 산출된 통계적으로 요약 및 집계된(Aggregated) 유전자 빈도 및 공분산 데이터는 개인 식별이 불가능한 2차 가공 비식별화 자료로서, 학술 논문의 재현성 검증을 위해 국제 공공 데이터베이스(Zenodo)에 CC-BY 4.0 라이선스로 공개함. 단, EMR에서 추출된 원시 데이터 및 개인 식별 가능한 정보는 원내 보관 전용으로 외부 공개하지 않음."<br><strong>→ IRB 신청서 '데이터 활용 및 관리 계획' 항목에 투고 전 삽입.</strong></div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">Methods 핵심 문단 초안 v3 (데이터 수집 전 완성 필수)</div>
+  <div class="methods-block">
+    본 연구는 두 단계로 구성되었다. <strong>1단계(EGM 기반 체계적 문헌 분석):</strong> 2015년 1월–2025년 12월 출판된 한국인 환자 대상 PopPK 연구를 PubMed·RISS·KoreaMed에서 체계적으로 검색하였다(검색식: ("population pharmacokinetics"[MeSH] OR "PopPK" OR "nonlinear mixed effects model") AND ("Korean" OR "South Korea") AND ("2015/01/01"[PDAT]:"2025/12/31"[PDAT])). 포함 기준: ① 한국인 환자 ≥50%, ② 공변량 탐색 명시, ③ 2015년 이후 출판. 제외 기준: ① 건강인 단독, ② 공변량 탐색 미보고, ③ 총설. 포함 논문은 항생제·면역억제제·항암제·심혈관계 <strong>4개 약물 카테고리에서 각 5편(총 20편)을 층화 선정</strong>하여 특정 약물의 과대 대표를 방지하였다. 공변량 유형(신기능R·간기능L·유전형G·체성분B·인구학적D) × 약물 배설경로(신장/간/다중) × 대상 취약 집단(소아/노인/중환자/임산부/성인)의 3축 EGM 매트릭스와 공변량 선택 방법론(SCM/FREM/Lasso/기타)을 표준화 추출 양식으로 2인 독립 추출하였다. Cohen's κ를 보고하였으며, PRISMA 2020 체크리스트에 따라 보고하였다.<br><br>
+    <strong>2단계(공변량 DB 구축 — Dual-Track):</strong> Track A: KNHANES 2019–2023 원시 데이터(MDIS)에서 6종 공변량 및 eGFR(<strong>CKD-EPI 2021 공식 적용</strong>, 연령·성별 포함)을 복합표본 가중치 하에 추출하였다(R v4.3.x, survey v4.4). LOINC 코드를 병기하였다. <strong>6종 연속형 공변량 간 가중 공분산 행렬(6×6)을 산출</strong>하여 Informative Prior로의 직접 적용을 가능하게 하였다. Track B: IRB 후향 승인 하에 스타틴 또는 타크로리무스 처방 전 SLCO1B1·CYP3A5 유전형 검사를 시행한 환자의 EMR 데이터에서 대립유전자 빈도를 추출하였으며, 선택 편향 검토를 위해 KARE 코호트 및 PharmGKB 한국인 참조 빈도와 병렬 비교하였다. Track B n&lt;50 시에는 문헌 기반 한국인 대립유전자 빈도(CYP3A5*3 ~70%, SLCO1B1 c.521T>C ~15%; CPIC·PharmGKB)를 보조 참조값으로 활용하였다.<br><br>
+    <strong>임상적 효용 검증(Utility):</strong> mrgsolve(v1.4+)를 활용하여 서양인 공변량 참조값 기반 vs. Track A 공분산 행렬 기반 가상 코호트(N=1,000)를 각각 생성(SSE)하고, ECMO 환경에서의 voriconazole 또는 Piperacillin 청소율 분포 이동과 PTA 차이를 정량화하였다. <strong>mrgsolve를 NONMEM 대신 선택한 이유는 Zenodo 재현성 공개 요건(오픈소스, R 통합, 스크립트 완전 공개)을 충족하기 위함이다.</strong>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">역방향 실행 체크리스트 v3</div>
+  <ul class="checklist">
+    <li>PubMed 검색식 확정 및 저장 (검색일·건수 기록)</li>
+    <li>RISS + KoreaMed 계정 생성</li>
+    <li>Rayyan 프로젝트 생성 + 2차 검토자 초대</li>
+    <li><strong>EGM 추출 양식 4축 컬럼 설계:</strong> 약물 배설경로·공변량 선택 방법론·취약 집단·카테고리 층화 코드 포함</li>
+    <li class="critical"><strong>[v3 치명적] KNHANES 신청 변수에 연령(DM_AGE) + 성별(sex) 포함 여부 제출 전 최종 확인</strong></li>
+    <li>KNHANES 코드북 사전 검토 (6종 + 연령·성별 변수명·단위 확인)</li>
+    <li>KNHANES 원시 데이터 신청서 제출 (mdis.kdca.go.kr)</li>
+    <li><strong>IRB 신청서 초안: Zenodo 공개 범위 명시 문구 삽입 + EMR PGx 항목 포함</strong></li>
+    <li>EMR PGx 가능성 사전 조사 완료 (임상정보팀 비공식 문의)</li>
+    <li>R v4.3+ + survey v4.4 + haven + tidyverse + labelled + mrgsolve v1.4+ 설치 및 테스트</li>
+    <li><strong>DB 스키마 v0.1 — 변수명·타입·단위·LOINC코드·출처 5컬럼 + VCOV 행렬 구조 초안</strong></li>
+    <li>CKD-EPI 2021 공식 R 구현 코드 초안 작성 (연령·성별 계수 포함)</li>
+    <li>CPT:PSP Database 논문 형식 체크리스트 인쇄 + Phase 3 원고 작성 시 대조 준비</li>
+  </ul>
+</div>
+</section>
+
+<!-- ═══ SECTION 3 ═══ -->
+<section id="s3">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 3</span>
+    <span class="section-title">역설계 요건 및 <em>지식 공백</em></span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:1rem;">
+    <div>
+      <div class="label" style="margin-bottom:.5rem">TYPE_B 체크리스트 v3</div>
+      <ul class="checklist">
+        <li><strong>핵심 논증:</strong> "국내 PopPK 연구는 신기능 외 공변량을 체계적으로 누락하며, 특히 소아·중환자 등 취약 집단에서 그 공백이 집중된다. 이 누락은 공변량 선택 방법론의 한계와 결합되어 아시아인 모델의 편향을 심화한다"</li>
+        <li><strong>필수 규제 문서:</strong> FDA PopPK Guidance (2022, FDA-2019-D-0889), EMA CHMP/EWP/185990/06, ICH E5, CPIC (SLCO1B1·CYP3A5)</li>
+        <li><strong>[v3] EGM 3축:</strong> 공변량 유형(R/L/G/B/D) × 배설경로(신장/간/다중) × 취약 집단(P/E/C/M/A) + 방법론(SCM/FREM/Lasso/기타)</li>
+        <li><strong>[v3] 층화 선정:</strong> 항생제 5편·면역억제제 5편·항암제 5편·심혈관계 5편 = 20편</li>
+        <li>타겟 저널 1순위: CPT:PSP Database 형식</li>
+        <li>타겟 저널 2순위: J Clin Pharmacol, Eur J Clin Pharmacol</li>
+        <li class="warn"><strong>탐색 종료 규칙:</strong> 4카테고리 각 5편 확보 시 즉시 종료. 카테고리별 착수 후 24시간 경과 시 확보된 논문으로 진행.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:.5rem">TYPE_C 체크리스트 v3</div>
+      <ul class="checklist">
+        <li><strong>[v3] Dual-Track:</strong> Track A(주변 분포 + VCOV) + Track B(PGx + 벤치마킹) + Plan C(Literature-derived, Track B 실패 시)</li>
+        <li><strong>[v3] I/O 사양:</strong> KoreanPKCov_v001.csv (9컬럼) + <strong>KoreanPKCov_VCOV_v001.csv (6×6)</strong> + PGx_freq_trackB_v001.csv</li>
+        <li><strong>[v3] CKD-EPI 2021 사전 확정:</strong> eGFR = 142 × min(SCr/κ,1)^α × max(SCr/κ,1)^-1.200 × 0.9938^Age (인종 계수 미포함)</li>
+        <li><strong>[v3] mrgsolve 선택 근거:</strong> 오픈소스·R 통합·Zenodo 재현성 요건 충족. NONMEM 불필요.</li>
+        <li>필수 라이브러리: R v4.3+, survey v4.4, haven, tidyverse, labelled, mrgsolve v1.4+</li>
+        <li class="warn"><strong>탐색 종료 규칙:</strong> 핵심 라이브러리 5종 평가 24시간 초과 금지.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">Knowledge Gap & Learning Sequence v3</div>
+  <table>
+    <thead><tr><th>지식 공백 항목</th><th>학습 소스</th><th>시퀀스</th></tr></thead>
+    <tbody>
+      <tr><td>KNHANES 복합표본 설계 + survey 가중치</td><td>CRAN survey vignette + 질병관리청 KNHANES 분석 지침서</td><td><span class="kg-p0">Phase 0 전 필수</span></td></tr>
+      <tr><td><strong>[v3] CKD-EPI 2021 R 구현</strong></td><td>Levey 2021 NEJM + ckepir R 패키지 문서</td><td><span class="kg-p0">Phase 0 전 필수</span></td></tr>
+      <tr><td>KNHANES 코드북 — 연령·성별·6종 변수 확인</td><td>KNHANES 2019–2023 코드북 PDF</td><td><span class="kg-p0">Phase 0 전 필수</span></td></tr>
+      <tr><td>SAS7BDAT 파일 R 읽기 (haven)</td><td>haven 패키지 공식 문서</td><td><span class="kg-p0">Phase 0 전 필수</span></td></tr>
+      <tr><td>PRISMA 2020 + EGM 3축 코드북 설계</td><td>prisma-statement.org + Jonsson & Karlsson 1998</td><td><span class="kg-p0">Phase 0 전 필수</span></td></tr>
+      <tr><td><strong>[v3] survey 패키지 공분산 추정</strong></td><td>svyCovMatrix() 또는 svyvar() + 설계 가중치 적용법</td><td><span class="kg-p1">Phase 1 전 필수</span></td></tr>
+      <tr><td>mrgsolve SSE 기본 워크플로우</td><td>metrumresearchgroup/mrgsolve GitHub vignette</td><td><span class="kg-p1">Phase 1 전 필수</span></td></tr>
+      <tr><td>SLCO1B1·CYP3A5 임상 유전약리학</td><td>CPIC(cpicpgx.org) + PharmGKB Korean population tag</td><td><span class="kg-p1">Phase 1 전 필수</span></td></tr>
+      <tr><td><strong>[v3] KARE/PharmGKB 한국인 PGx 참조 빈도</strong></td><td>KARE 기출판 논문 + PharmGKB Korean tag</td><td><span class="kg-p1">Phase 1 전 필수</span></td></tr>
+      <tr><td>병원 EMR PGx 데이터 추출 구조</td><td>소속 기관 임상정보팀 인터뷰</td><td><span class="kg-p0">Phase 0 병행</span></td></tr>
+      <tr><td>OMOP CDM v5.4 공변량 컨셉</td><td>OHDSI Book of OHDSI</td><td><span class="kg-p1">Phase 1 이후 심화</span></td></tr>
+      <tr><td>Zenodo DOI + FAIR 원칙</td><td>zenodo.org 가이드</td><td><span class="kg-p1">Phase 2 후반부</span></td></tr>
+      <tr><td>NBK/KARE 코호트 분양 절차</td><td>국립중앙인체자원은행 HuBIS_Desk</td><td><span class="kg-post">포스트닥 이후</span></td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ═══ SECTION 4 ═══ -->
+<section id="s4">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 4</span>
+    <span class="section-title">수공업 기준서 + <em>로그·디렉토리 설계</em></span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="label" style="margin-bottom:.6rem">수동 작업 명시적 기준 v3</div>
+  <table style="margin-bottom:1.25rem;">
+    <thead><tr><th>수동 작업</th><th>판단 기준</th><th>예외 처리 방침</th></tr></thead>
+    <tbody>
+      <tr><td>문헌 포함/제외 판정</td><td>포함 기준 ①②③ 모두 충족 시만 포함</td><td>경계 사례 → "보류" 시트 + 2차 검토자 최종 판정</td></tr>
+      <tr><td><strong>[v3] 카테고리 층화 선정</strong></td><td>4개 카테고리 각 5편 쿼터. 쿼터 초과 시 가장 최신 논문 우선</td><td>특정 카테고리 5편 미달 시 → 해당 카테고리 전수 포함 후 EGM 결과에 명시</td></tr>
+      <tr><td>EGM 3축 분류</td><td>공변량 유형(R/L/G/B/D) × 배설경로 × 취약 집단(P/E/C/M/A)</td><td>복합 시 우선 범주 통합 + 비고란 기록</td></tr>
+      <tr><td>공변량 선택 방법론 코드</td><td>SCM/FREM/Lasso/기타 4범주</td><td>명시 없는 경우 → Methods 기반 추론 + 의사결정 로그</td></tr>
+      <tr><td>KNHANES 변수 매핑</td><td>스키마 컬럼명 × 코드북 변수명 × LOINC 코드 3중 매핑</td><td>직접 매핑 불가 시 파생 공식 + 의사결정 로그 필수</td></tr>
+      <tr><td><strong>[v3] eGFR 산출 공식</strong></td><td>CKD-EPI 2021. SCr·연령·성별 3변수 모두 필요</td><td>3변수 중 하나라도 결측 시 해당 관측치 "missing" + 결측 비율 보고</td></tr>
+      <tr><td><strong>[v3] VCOV 행렬 산출</strong></td><td>6종 연속형 공변량에 한정. 유전형(범주형) 제외</td><td>음수 분산 발생 시 → "unstable" 플래그 후 PI 보고</td></tr>
+      <tr><td>EMR PGx 결과 분류</td><td>WT/HET/HOM 3분류</td><td>결과지 불명확 시 원본 보관 + 의사결정 로그</td></tr>
+      <tr><td>2인 추출자 불일치</td><td>Cohen's κ &lt; 0.6 시 합의 미팅</td><td>κ ≥ 0.6이면 단독 진행 (κ 값 Methods 보고)</td></tr>
+      <tr><td>단위 표준화</td><td>SI 단위 우선, 변환 계수 소수점 4자리</td><td>미해결 시 "unit_uncertain" 플래그</td></tr>
+    </tbody>
+  </table>
+
+  <div class="label" style="margin-bottom:.6rem">핵심 변수 LOINC 코드 참조표 v3 확정</div>
+  <table style="margin-bottom:1.25rem;">
+    <thead><tr><th>변수명</th><th>KNHANES 코드</th><th>LOINC</th><th>단위 (SI)</th><th>VCOV</th><th>Track</th></tr></thead>
+    <tbody>
+      <tr><td><strong>연령 (eGFR 파생용)</strong></td><td class="mono" style="font-size:.72rem">DM_AGE</td><td class="mono" style="font-size:.72rem">30525-0</td><td>year</td><td><span class="loinc-dash">—</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td><strong>성별 (eGFR 파생용)</strong></td><td class="mono" style="font-size:.72rem">sex</td><td class="mono" style="font-size:.72rem">76689-9</td><td>M/F</td><td><span class="loinc-dash">—</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>체중</td><td class="mono" style="font-size:.72rem">HE_wt</td><td class="mono" style="font-size:.72rem">29463-7</td><td>kg</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>BMI</td><td class="mono" style="font-size:.72rem">HE_BMI</td><td class="mono" style="font-size:.72rem">39156-5</td><td>kg/m²</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>체지방률</td><td class="mono" style="font-size:.72rem">BPCT_D01</td><td class="mono" style="font-size:.72rem">41982-0</td><td>%</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>혈청 크레아티닌 (SCr)</td><td class="mono" style="font-size:.72rem">HE_Creat</td><td class="mono" style="font-size:.72rem">2160-0</td><td>µmol/L (×88.4)</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>eGFR (CKD-EPI 2021)</td><td class="mono" style="font-size:.72rem">파생</td><td class="mono" style="font-size:.72rem">98979-8</td><td>mL/min/1.73m²</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>ALT</td><td class="mono" style="font-size:.72rem">HE_ALT</td><td class="mono" style="font-size:.72rem">1742-6</td><td>U/L</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>총빌리루빈</td><td class="mono" style="font-size:.72rem">HE_TBil</td><td class="mono" style="font-size:.72rem">1975-2</td><td>µmol/L (×17.1)</td><td><span class="loinc-yes">✅</span></td><td><span class="track-a">A</span></td></tr>
+      <tr><td>SLCO1B1 rs4149056</td><td class="mono" style="font-size:.72rem">EMR 의존</td><td class="mono" style="font-size:.72rem">PA166128738</td><td>WT/HET/HOM</td><td><span class="loinc-no">❌ 범주형</span></td><td><span class="track-b">B</span></td></tr>
+      <tr><td>CYP3A5 *3 rs776746</td><td class="mono" style="font-size:.72rem">EMR 의존</td><td class="mono" style="font-size:.72rem">PA166128871</td><td>WT/HET/HOM</td><td><span class="loinc-no">❌ 범주형</span></td><td><span class="track-b">B</span></td></tr>
+    </tbody>
+  </table>
+  <div class="card card-teal" style="margin-bottom:1.2rem;"><div class="card-body">⚠ <strong>연령·성별은 Zenodo 배포 파일에서 제거.</strong> eGFR 파생 후 분석 환경 내에서만 사용. 개인 식별 위험 변수.</div></div>
+
+  <div class="label" style="margin-bottom:.6rem">디렉토리 구조 v3</div>
+  <div class="dir-tree">
+<span class="dir">PKCov_KR_DataMoat/</span>
+├── <span class="dir">00_raw/</span>
+│   ├── <span class="dir">literature/</span>          <span class="comment"># 원본 PDF (수정·삭제 절대 금지)</span>
+│   ├── <span class="dir">knhanes/</span>             <span class="comment"># 원시 .sas7bdat (수정 금지, 복사본만 사용)</span>
+│   └── <span class="dir">emr_pgx/</span>             <span class="comment"># EMR PGx 추출 원본 (IRB 승인 범위 내)</span>
+├── <span class="dir">01_screening/</span>
+│   ├── YYYYMMDD_pubmed_results.csv
+│   ├── <span class="new">YYYYMMDD_egm_codebook_v001.md</span>  <span class="comment"># [v3] 3축+방법론 코드 정의</span>
+│   ├── <span class="new">YYYYMMDD_stratum_plan_v001.md</span>  <span class="comment"># [v3] 4카테고리 층화 계획</span>
+│   └── YYYYMMDD_prisma_flow.png
+├── <span class="dir">02_extraction/</span>
+│   ├── <span class="new">YYYYMMDD_egm_matrix_v001.csv</span>   <span class="comment"># [v3] 3축+방법론 컬럼</span>
+│   ├── YYYYMMDD_egm_heatmap_3axis_v001.png
+│   └── archive/
+├── <span class="dir">03_knhanes/</span>
+│   ├── <span class="new">YYYYMMDD_ckdepi2021_v001.R</span>    <span class="comment"># [v3] CKD-EPI 2021 파생 스크립트</span>
+│   ├── YYYYMMDD_extract_v001.R
+│   ├── YYYYMMDD_covariate_ref_trackA_v001.csv
+│   ├── <span class="new">YYYYMMDD_VCOV_trackA_v001.csv</span>  <span class="comment"># [v3] 6×6 공분산 행렬</span>
+│   └── archive/
+├── <span class="new dir">03b_emr_pgx/</span>               <span class="comment"># [v3] Track B 전용</span>
+│   ├── YYYYMMDD_pgx_extract_v001.R
+│   ├── YYYYMMDD_pgx_freq_trackB_v001.csv
+│   ├── <span class="new">YYYYMMDD_pgx_benchmark_v001.csv</span> <span class="comment"># [v3] KARE/PharmGKB 비교표</span>
+│   └── archive/
+├── <span class="new dir">03c_planc_pgx/</span>             <span class="comment"># [v3] Plan C 전용 (Track B 실패 시)</span>
+│   ├── YYYYMMDD_litderived_pgx_v001.md
+│   └── YYYYMMDD_litderived_pgx_v001.csv
+├── <span class="dir">04_db/</span>
+│   ├── schema_v001.md
+│   ├── KoreanPKCov_v001.rds
+│   ├── KoreanPKCov_v001.csv
+│   ├── <span class="new">KoreanPKCov_VCOV_v001.csv</span>      <span class="comment"># [v3] 공분산 행렬</span>
+│   └── archive/
+├── <span class="new dir">05_sse_utility/</span>
+│   ├── YYYYMMDD_sse_ecmo_v001.R       <span class="comment"># mrgsolve + VCOV 기반</span>
+│   ├── YYYYMMDD_density_plot_v001.png
+│   └── YYYYMMDD_pta_plot_v001.png
+├── <span class="dir">05_manuscript/</span>
+│   ├── YYYYMMDD_intro_v001.docx
+│   ├── <span class="new">YYYYMMDD_construction_content_v001.docx</span>
+│   ├── <span class="new">YYYYMMDD_utility_v001.docx</span>     <span class="comment"># CPT:PSP 섹션명</span>
+│   └── archive/
+└── <span class="dir">06_logs/</span>
+    ├── work_log.md
+    └── decision_log.md
+  </div>
+</div>
+</section>
+
+<!-- ═══ SECTION 5 ═══ -->
+<section id="s5">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 5</span>
+    <span class="section-title">인지적 의존성 그래프 + <em>단계별 실행 타임라인 v3</em></span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:1.25rem;">
+    <div class="mini-card"><div class="mini-label mini-label-gold">🚀 Shift-Left</div><div class="mini-val">Day 1 즉시 시작. 가장 오래 걸리는 병목. 지연 시 전체 Phase 연쇄 지연.</div></div>
+    <div class="mini-card"><div class="mini-label mini-label-red">🔴 Deep-Work</div><div class="mini-val">고도 집중 필요. 방해 금지 블록. 이전 Low-Cognitive 산출물 필수 선행.</div></div>
+    <div class="mini-card"><div class="mini-label mini-label-teal">🟢 Low-Cognitive</div><div class="mini-val">뇌 0% 단순 반복. 피곤할 때·자투리 시간. 결과물이 다음 Deep Work 선행 조건.</div></div>
+  </div>
+  <div class="card card-teal" style="margin-bottom:1.5rem;"><div class="card-body">타임박스 초과 → 즉각 중단 + PI 미팅 안건 이관 또는 Pivot Trigger 점검.</div></div>
+
+  <!-- PHASE 0 -->
+  <div class="timeline">
+    <div class="tl-phase">
+      <div class="tl-dot tl-dot-0">P0</div>
+      <div class="tl-header">
+        <span class="tl-period">Phase 0 — Tracer Bullet</span>
+        <span class="tl-title">End-to-End 초소형 파일럿 · <strong style="color:var(--red-2)">강제 관문 — 미완료 시 Phase 1 착수 절대 금지</strong></span>
+      </div>
+      <div class="tl-card">
+        <div class="card-body" style="margin-bottom:.75rem;"><strong>샘플: tacrolimus + eGFR(CKD-EPI 2021) + 취약 집단(성인 신장이식)</strong><br>vancomycin → tacrolimus로 변경 이유: 간배설·CYP3A5 유전형 의존·성인+소아 양면 → EGM 3축 및 Track B PGx 연계 검증에 최적의 Median 복잡도. CYP3A5 검사 프로토콜이 가장 일반화된 약물로 Track B 가능성 조사에도 직결.</div>
+        <div class="label" style="margin-bottom:.4rem">완료 조건 체크리스트</div>
+        <ul class="checklist">
+          <li>KNHANES 코드북 — 연령·성별·6종 변수 코드명 모두 확인</li>
+          <li class="critical">KNHANES 신청서 — <strong>연령·성별 포함 확인 후</strong> mdis.kdca.go.kr 제출</li>
+          <li>R 교육용 샘플 haven::read_sas() 로드 성공</li>
+          <li>CKD-EPI 2021 R 스크립트 실행 + eGFR 산출 확인</li>
+          <li><strong>[v3 신규] VCOV 파일럿:</strong> 교육용 샘플에서 체중·SCr 2×2 공분산 행렬 산출 성공</li>
+          <li>EMR PGx 가능성 조사 완료 + Track B 진행 여부 결정</li>
+          <li>IRB 신청서 초안 — Zenodo 공개 범위 문구 삽입 확인</li>
+          <li>tacrolimus PopPK 논문 1편 EGM 3축 파일럿 완성</li>
+          <li>DB 스키마 v0.1 — LOINC코드·VCOV 구조 초안</li>
+          <li>디렉토리 구조 PKCov_KR_DataMoat/ 로컬 생성 완료</li>
+        </ul>
+        <div class="warn-box" style="margin-top:.75rem;"><strong>강제 타임박스: 2주 이내. 초과 시 PI 보고 + Pivot Trigger 전면 점검.</strong></div>
+        <div class="label" style="margin:.75rem 0 .4rem">Phase 0 실패 기준</div>
+        <table style="margin-bottom:0;">
+          <thead><tr><th>실패 조건</th><th>대응 행동</th></tr></thead>
+          <tbody>
+            <tr><td><strong>KNHANES 연령·성별 누락 후 제출</strong></td><td>MDIS 담당자 즉시 연락하여 수정 신청</td></tr>
+            <tr><td>eGFR CKD-EPI 2021 결측 과다 (&gt;20%)</td><td>결측 분포 분석 후 PI 보고. MDRD 병용 검토</td></tr>
+            <tr><td>VCOV 음수 분산 파일럿에서 발생</td><td>"unstable" 플래그 → Phase 1 전체 샘플 재확인</td></tr>
+            <tr><td>EMR PGx n≈0 확인</td><td>Plan C 즉시 발동. 03c_planc_pgx/ 생성 후 문헌 빈도 수집</td></tr>
+            <tr><td>tacrolimus EGM 취약 집단 분류 불가</td><td>"미보고(NR)" 코딩 후 진행 — NR 자체가 EGM 갭 데이터</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="tl-phase">
+      <div class="tl-dot tl-dot-1">P1</div>
+      <div class="tl-header">
+        <span class="tl-period">Phase 1 | T+0~2개월</span>
+        <span class="tl-title">EGM 완성 + KNHANES 신청·수령 + IRB Track B 착수</span>
+      </div>
+      <div class="tl-card">
+        <table class="phase-table">
+          <thead><tr><th>태그</th><th>작업명</th><th>완료 조건(DoD)</th><th>선행 조건</th><th>강제 타임박스</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tl-tag tl-tag-shiftleft">🚀</span></td><td><strong>KNHANES 신청서 제출</strong></td><td>접수 확인 이메일. 연령·성별 포함 확인</td><td>Phase 0 완료</td><td><strong>Day 1 즉시</strong></td></tr>
+            <tr><td><span class="tl-tag tl-tag-shiftleft">🚀</span></td><td><strong>IRB 신청서 제출</strong></td><td>포털 업로드. Zenodo 문구. 동의 면제 신속심사 명기</td><td>Phase 0 EMR 조사 + Methods 초안</td><td>Phase 0 완료 후 1주 이내</td></tr>
+            <tr><td><span class="tl-tag tl-tag-wait">⏳</span></td><td>KNHANES 수령 대기</td><td>4–6주 외부 처리</td><td>신청 완료</td><td>병렬 작업 배치</td></tr>
+            <tr><td><span class="tl-tag tl-tag-wait">⏳</span></td><td>IRB 승인 대기</td><td>60일 Pivot Trigger. 30일 미회신 시 담당자 직접 연락</td><td>신청 완료</td><td>최대 60일</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>4카테고리 층화 검색 + 1차 선별</td><td>항생제5·면역5·항암5·심혈관5 = 20편. PRISMA 플로우</td><td>Phase 0 완료</td><td>1주 (Deep Work 3×2h)</td></tr>
+            <tr><td><span class="tl-tag tl-tag-low">🟢</span></td><td>Rayyan 중복 제거 + 스크리닝</td><td>카테고리별 선별 목록 확정</td><td>검색 결과 CSV</td><td>자투리 시간</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>전문 EGM 3축 추출 (20편)</td><td>egm_matrix_v001.csv 완성. Cohen's κ 기록</td><td>전문 확보</td><td>2주 (편당 25–35분)</td></tr>
+            <tr><td><span class="tl-tag tl-tag-low">🟢</span></td><td>EGM 히트맵 시각화</td><td>2D 주 히트맵(공변량×배설경로) + 취약 집단 보조 그래프</td><td>추출 CSV 완성</td><td>반일</td></tr>
+            <tr><td><span class="tl-tag tl-tag-low">🟢</span></td><td>KNHANES 코드북 변수 목록화 + LOINC 매핑</td><td>연령·성별·6종 변수 코드·LOINC Excel 완성</td><td>코드북 PDF</td><td>자투리 2–3시간</td></tr>
+            <tr><td><span class="tl-tag tl-tag-low">🟢</span></td><td>mrgsolve SSE + VCOV 튜토리얼</td><td>population simulation + 공분산 입력 예제 1개 실행</td><td>mrgsolve 설치</td><td>Phase 1 후반 자투리</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>Plan C 준비 (Track B n&lt;50 대비)</td><td>CPIC+PharmGKB Korean tag에서 CYP3A5*3·SLCO1B1 빈도 + 출처 문서화</td><td>Phase 0 EMR 결과</td><td>반일 (병렬 가능)</td></tr>
+          </tbody>
+        </table>
+        <div class="card card-teal" style="margin-top:.75rem;padding:.7rem 1rem;"><div class="card-body"><strong>Phase 1 게이트 산출물:</strong> EGM 매트릭스 CSV + 히트맵 + IRB·KNHANES 신청 완료 증빙 + Plan C 빈도 문서</div></div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="tl-phase">
+      <div class="tl-dot tl-dot-2">P2</div>
+      <div class="tl-header">
+        <span class="tl-period">Phase 2 | T+2~5개월</span>
+        <span class="tl-title">Dual-Track DB 구축 + VCOV + SSE ECMO 파일럿</span>
+      </div>
+      <div class="tl-card">
+        <table class="phase-table">
+          <thead><tr><th>태그</th><th>작업명</th><th>완료 조건(DoD)</th><th>선행 조건</th><th>타임박스</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>Track A: KNHANES 복합표본 분석 + eGFR 파생</td><td>6종+eGFR 가중 주변 분포. CKD-EPI 2021. 결측 비율 보고. 100% 재현 가능</td><td>KNHANES 수령</td><td>1주</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td><strong>[v3] Track A: VCOV 행렬 산출</strong></td><td>6×6 가중 공분산 행렬. 음수 분산 플래그. VCOV_v001.csv 완성</td><td>주변 분포 완성</td><td>반일</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>Track B: EMR PGx 추출 + 벤치마킹</td><td>SLCO1B1·CYP3A5 빈도표. n 명시. KARE/PharmGKB 비교표</td><td>IRB 승인</td><td>2주</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>[v3] Plan C 적용 (n&lt;50 시 조건부)</td><td>Literature-derived 빈도 03c_planc_pgx/에 저장. SSE 대체 입력값 준비</td><td>Plan C 문서+Trigger</td><td>반일</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>DB v1.0 통합 표준화</td><td>KoreanPKCov_v001.rds+.csv+VCOV_v001.csv. SI단위·LOINC·버전·출처</td><td>Track A+B(or C)</td><td>1주</td></tr>
+            <tr><td><span class="tl-tag tl-tag-low">🟢</span></td><td>데이터 사전(Data Dictionary) 완성</td><td>schema_v001.md — 변수정의·단위·LOINC·파생공식·VCOV 구조</td><td>DB v1.0 완성</td><td>반일</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>ECMO SSE — VCOV 기반 밀도 플롯 + PTA 도표</td><td>mrgsolve: 서양인(독립가정) vs. 한국인(VCOV 행렬) N=1,000. CL 밀도 플롯 + PTA 도표. 완전 재현 가능</td><td>DB v1.0+VCOV+mrgsolve</td><td>2주</td></tr>
+            <tr><td><span class="tl-tag tl-tag-deep">🔴</span></td><td>EGM+DB+SSE 통합 결과 해석 초안</td><td>CPT:PSP Construction and Content + Utility 섹션 초안. 4,000단어 내. PGx 벤치마킹 표 포함</td><td>위 전체</td><td>1주</td></tr>
+          </tbody>
+        </table>
+        <div class="card card-gold" style="margin-top:.75rem;padding:.7rem 1rem;"><div class="card-body"><strong>Phase 2 게이트 산출물:</strong> DB v1.0 + VCOV 행렬 + SSE 밀도 플롯 + PTA 도표 + PGx 벤치마킹 표</div></div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="tl-phase">
+      <div class="tl-dot tl-dot-3">P3</div>
+      <div class="tl-header">
+        <span class="tl-period">Phase 3 | T+5~8개월</span>
+        <span class="tl-title">논문 작성 + 투고 + DB 공개</span>
+      </div>
+      <div class="tl-card">
+        <div class="tl-items">
+          <div class="tl-item priority"><strong>Introduction + Construction and Content 완성</strong> — CPT:PSP 4,000단어·7 Figure 이내. PRISMA + 층화 근거 명시 | 1주</div>
+          <div class="tl-item priority"><strong>Utility + Discussion + Study Highlights 완성</strong> — SSE 결과 + PGx 벤치마킹 + 한계 통제(Track A/B 공분산 분리 문제) 명시. CPIC·FDA 2022 인용 | 1주</div>
+          <div class="tl-item warn">PI 리뷰 + 수정 — 피드백 반영 완료 | 2주 (외부 대기)</div>
+          <div class="tl-item exit"><strong>투고 + Zenodo DB 동시 공개</strong> — CPT:PSP 접수 확인 + Zenodo DOI 발급. Track별 공개 범위 표 README 포함 | Phase 3 시작 당일</div>
+        </div>
+        <div class="label" style="margin:.75rem 0 .4rem">Zenodo 공개 체크리스트 v3</div>
+        <ul class="checklist">
+          <li>KoreanPKCov_v001.csv (주변 분포)</li>
+          <li class="critical"><strong>KoreanPKCov_VCOV_v001.csv (6×6 공분산 행렬) — v3 신규, 핵심</strong></li>
+          <li>schema_v001.md (LOINC + VCOV 구조 포함)</li>
+          <li>extract_trackA_v001.R + ckdepi2021_v001.R</li>
+          <li>extract_trackB_v001.R (or planc_litderived_v001.md)</li>
+          <li>sse_ecmo_v001.R (mrgsolve 재현 스크립트)</li>
+          <li>README.md (Track별 공개 범위 표 포함, CC-BY 4.0)</li>
+          <li>IRB 승인 번호 + 윤리 선언 + Zenodo 공개 IRB 사전 승인 문서 참조</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TONIGHT -->
+  <div id="tonight" class="divider"></div>
+  <div class="label" style="margin-bottom:1rem">▶ 오늘 밤 반드시 할 3가지 v3</div>
+
+  <div class="tonight-card">
+    <div class="tonight-num">🚀 01 — KNHANES 원시 데이터 신청 [v3 치명적 수정 포함]</div>
+    <div class="tonight-title">Day 1 Shift-Left — 오늘 밤 신청하지 않으면 Phase 2 전체 2개월 지연</div>
+    <div class="tonight-body">
+      URL: <strong>https://mdis.kdca.go.kr</strong> → 학술연구 목적 자료 신청<br><br>
+      <strong>신청 변수 최종 목록 (v3 수정):</strong><br>
+      · <strong>연령: DM_AGE</strong> (또는 해당 사이클 코드북 확인)<br>
+      · <strong>성별: sex</strong> (또는 해당 코드 확인)<br>
+      · <code>HE_wt</code>, <code>HE_BMI</code>, <code>BPCT_D01</code>, <code>HE_Creat</code>, <code>HE_GFR</code>(파생/원본), <code>HE_ALT</code>, <code>HE_TBil</code><br><br>
+      <div class="warn-box"><strong>⛔ 연령·성별 없이 제출 시 eGFR 파생 불가 → 수령 후 전면 재신청 필요. 오늘 밤 신청 전 목록 반드시 확인.</strong></div>
+      <div class="warn-box">⚠ PGx 변수는 신청 목록에서 제외 (MDIS 미수록, 신청해도 반려).</div>
+      필요 서류: 재학/재직 증명서(스캔) + 연구 목적 1페이지 (Zenodo 공개 계획 포함)<br>
+      완료 확인: 접수 이메일 → <code>06_logs/decision_log.md</code>에 신청일자·변수 목록 기록
+    </div>
+  </div>
+
+  <div class="tonight-card">
+    <div class="tonight-num">🚀 02 — EMR PGx 가능성 조사 + IRB Zenodo 문구 삽입 [v3 신규 Shift-Left]</div>
+    <div class="tonight-title">Track B 또는 Plan C 경로 오늘 밤 결정 — 내일 IRB 제출 준비</div>
+    <div class="tonight-body">
+      소속 기관 임상정보팀/진단검사의학과에 비공식 문의:<br>
+      <strong>"타크로리무스 또는 스타틴 처방 전 SLCO1B1·CYP3A5 검사 프로토콜이 있는가? 연간 해당 환자 수는 몇 명 수준인가?"</strong><br><br>
+      <strong>n≥50 확인 시</strong> → IRB 신청서 Track B 항목 추가. 아래 Zenodo 문구 삽입 후 내일 IRB 포털 업로드 준비<br>
+      <strong>n&lt;50 또는 프로토콜 없음</strong> → Plan C 즉시 발동. <code>03c_planc_pgx/</code> 폴더 생성 후 CPIC(cpicpgx.org) + PharmGKB Korean tag에서 CYP3A5*3·SLCO1B1 빈도 수집 착수 (30분)<br><br>
+      <strong>IRB 신청서 '데이터 활용 및 관리 계획' 항목에 삽입:</strong><br>
+      <div class="warn-box">"연구 결과로 산출된 집계된 유전자 빈도 및 공분산 데이터는 2차 가공 비식별화 자료로서 Zenodo에 CC-BY 4.0으로 공개함. EMR 원시 데이터 및 개인 식별 가능 정보는 원내 보관 전용으로 외부 공개하지 않음."</div>
+      소요 시간: 문의 10분 + IRB 문구 삽입 20분
+    </div>
+  </div>
+
+  <div class="tonight-card" style="border-color:var(--teal-bd);box-shadow:0 0 20px var(--teal-glow);">
+    <div class="tonight-num" style="color:var(--teal)">🟢 03 — Rayyan 계정 생성 + EGM 4축 추출 양식 설계 (뇌 0%)</div>
+    <div class="tonight-title">Low-Cognitive — 피곤해도 가능 · 소요 시간 40–50분</div>
+    <div class="tonight-body">
+      URL: <strong>https://rayyan.ai</strong> → 무료 계정 생성 → 프로젝트명 <code>PKCov_KR_EGM_2025</code><br><br>
+      Google Sheets 추출 양식 초안 컬럼 구성 (v3 최종):<br>
+      <strong>논문ID · 제1저자 · 연도 · 저널 · 카테고리(항생제/면역/항암/심혈관) · 약물명 · 약물 배설경로(신장/간/다중) · 공변량 유형(R/L/G/B/D) · 취약 집단(P/E/C/M/A/NR) · 공변량 선택 방법론(SCM/FREM/Lasso/기타) · 소프트웨어 · 표본수 · 비고</strong><br><br>
+      PubMed 검색식: <code>("population pharmacokinetics"[MeSH] OR "PopPK" OR "nonlinear mixed effects model") AND ("Korean" OR "South Korea") AND ("2015/01/01"[PDAT]:"2025/12/31"[PDAT])</code><br>
+      검색 실행 → 결과 건수 메모 → Rayyan export
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SECTION 6 ═══ -->
+<section id="s6">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 6</span>
+    <span class="section-title">Phase-Gate <em>PI 커뮤니케이션 전략 v3</em></span>
+    <div class="section-line"></div>
+  </div>
+  <div class="card card-teal" style="margin-bottom:1rem;"><div class="card-body"><strong>원칙:</strong> 미팅에 가져가는 것은 "질문"이 아니라 <strong>"선택지 + 권고안 + 근거"</strong>다. 불확실한 상태에서 PI 판단 요청 금지.</div></div>
+
+  <div class="label" style="margin-bottom:.6rem">Phase 0 → Phase 1 Gate 미팅 v3</div>
+  <table style="margin-bottom:.75rem;">
+    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td class="pi-label">미팅 시점 조건</td><td>Phase 0 완료 — DB 스키마 v0.1 + VCOV 파일럿 + tacrolimus EGM + EMR PGx 조사 결과 + Plan C 준비 상태</td></tr>
+      <tr><td class="pi-label">1페이지 안건</td><td>"한국인 PK 공변량 DB: Dual-Track + VCOV 아키텍처 확정 및 IRB 공동신청 요청"</td></tr>
+      <tr><td class="pi-label">A안</td><td>Track B n≥50: KNHANES + EMR Dual-Track. VCOV + PGx 유전약리학 레이어 포함</td></tr>
+      <tr><td class="pi-label">B안 (Plan C)</td><td>Track B n&lt;50: Track A(VCOV 포함) + Plan C(Literature-derived PGx). 방법론 한계 명시</td></tr>
+      <tr><td class="pi-label">권고안 + 이유</td><td>EMR 조사 결과를 미팅 당일 데이터로 제시. 현장에서 결정.</td></tr>
+      <tr><td class="pi-label">기대 의사결정</td><td>IRB 공동신청자 이름 추가 승인</td></tr>
+      <tr><td class="pi-label">Pivot Trigger 보고</td><td>EMR n 추정치·IRB 60일 Pivot·VCOV 불안정 항목 모니터링 중</td></tr>
+    </tbody>
+  </table>
+  <div class="quote-block">"교수님, Phase 0 파일럿 완성되었습니다. DB 스키마(VCOV 구조 포함)·tacrolimus EGM 파일럿·EMR PGx 조사 결과 세 가지를 준비했습니다. EMR [n 결과]에 따라 A안(Dual-Track) 또는 B안(Track A + Plan C)을 제안드립니다. 두 경우 모두 Zenodo 공개 요건을 충족하는 VCOV 행렬을 산출합니다. IRB 동의 면제 신속심사로 60일 내 승인 예상입니다. 공동신청자로 이름을 올려주실 수 있으신지요?"</div>
+
+  <div class="label" style="margin-bottom:.6rem">Phase 1 → Phase 2 Gate 미팅 v3</div>
+  <table>
+    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td class="pi-label">미팅 시점 조건</td><td>EGM 히트맵 + KNHANES 수령 + IRB 승인 후</td></tr>
+      <tr><td class="pi-label">1페이지 안건</td><td>"EGM 결과 보고 + DB Phase 2 (VCOV 포함 Dual-Track) 착수 확정"</td></tr>
+      <tr><td class="pi-label">A안</td><td>EGM 공변량 5종 이상 + 취약 집단 갭 명확: Dual-Track + VCOV 통합 논문 (CPT:PSP Database 형식)</td></tr>
+      <tr><td class="pi-label">B안</td><td>EGM 공변량 &lt;4종: 방법론 하향 평준화 비판 논문 단독 투고 + DB Phase 분리</td></tr>
+      <tr><td class="pi-label">권고안 + 이유</td><td>EGM 결과 데이터 제시 후 현장에서 결정.</td></tr>
+      <tr><td class="pi-label">기대 의사결정</td><td>Phase 2 착수 방향 승인</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ═══ SECTION 7 ═══ -->
+<section id="s7">
+<div class="container">
+  <div class="section-head">
+    <span class="label section-num">섹션 7</span>
+    <span class="section-title">Next-Step <em>피드백 프롬프트 v3</em></span>
+    <div class="section-line"></div>
+  </div>
+  <div class="card card-violet" style="margin-bottom:.75rem;"><div class="card-body">Phase 0 또는 오늘 밤 할 3가지 완료 후, 아래 프롬프트를 복사하여 새 채팅창에 붙여넣어 다음 Phase 지시를 받는다.</div></div>
+
+  <div class="feedback-block">
+<span class="fb-key">[결과 보고 프롬프트 v3 — 복사+붙여넣기용]</span>
+<span class="fb-val">프로젝트: #13 한국인 PK 공변량 데이터베이스 — Data Moat v3</span>
+<span class="fb-val">Phase: Phase 0 / 오늘 밤 할 3가지</span>
+
+<span class="fb-key">1. [KNHANES 신청 — Shift-Left] 결과:</span> <span class="fb-val">(완료 / 부분 완료 / 실패)</span>
+<span class="fb-val">   - 신청 변수 목록에 연령·성별 포함 여부: (포함 / 누락)</span>
+<span class="fb-val">   - 신청 접수 번호:</span>
+<span class="fb-val">   - 특이사항:</span>
+
+<span class="fb-key">2. [EMR PGx 조사 + IRB Zenodo 문구 삽입 — Shift-Left] 결과:</span> <span class="fb-val">(완료 / 부분 완료 / 실패)</span>
+<span class="fb-val">   - PGx 검사 프로토콜 존재: (있음 / 없음 / 확인 중)</span>
+<span class="fb-val">   - 추정 연간 n≈___</span>
+<span class="fb-val">   - 실행 판정: (A안 Dual-Track / B안 Plan C / 추가 확인 필요)</span>
+<span class="fb-val">   - IRB 신청서 Zenodo 문구 삽입 완료: (예 / 아니오)</span>
+<span class="fb-val">   - Plan C 착수 여부 (n&lt;50 시): (착수 / 미착수)</span>
+
+<span class="fb-key">3. [Rayyan + EGM 4축 추출 양식 — Low-Cognitive] 결과:</span> <span class="fb-val">(완료 / 부분 완료 / 실패)</span>
+<span class="fb-val">   - PubMed 검색식 최종본:</span>
+<span class="fb-val">   - 결과 건수 (PubMed / RISS / KoreaMed):</span>
+<span class="fb-val">   - 4축 컬럼(카테고리·배설경로·취약 집단·방법론) 양식 완성:</span>
+<span class="fb-val">   - Rayyan 생성 완료:</span>
+
+<span class="fb-key">발견된 신규 지식 공백:</span> <span class="fb-val">(있음 / 없음)</span>
+<span class="fb-val">  - 내용:</span>
+
+<span class="fb-key">Pivot Trigger 이상 신호:</span> <span class="fb-val">(있음 / 없음)</span>
+<span class="fb-val">  - KNHANES 연령·성별 변수 누락 여부:</span>
+<span class="fb-val">  - EMR PGx n&lt;50:</span>
+<span class="fb-val">  - VCOV 파일럿 불안정 항목:</span>
+<span class="fb-val">  - IRB 신청 장벽:</span>
+
+<span class="fb-key">Phase 0 완료 조건 달성 항목:</span>
+<span class="fb-val">  [ ] KNHANES 코드북 연령·성별·6종 변수 확인</span>
+<span class="fb-val">  [ ] KNHANES 신청 완료 (연령·성별 포함)</span>
+<span class="fb-val">  [ ] CKD-EPI 2021 R 스크립트 파일럿 실행 성공</span>
+<span class="fb-val">  [ ] VCOV 2×2 파일럿 실행 성공</span>
+<span class="fb-val">  [ ] EMR PGx 가능성 조사 완료 (Track B/Plan C 결정)</span>
+<span class="fb-val">  [ ] IRB 신청서 Zenodo 문구 삽입 확인</span>
+<span class="fb-val">  [ ] tacrolimus 논문 1편 EGM 4축 파일럿 추출</span>
+<span class="fb-val">  [ ] DB 스키마 v0.1 (LOINC + VCOV 구조) 생성</span>
+<span class="fb-val">  [ ] 디렉토리 구조 로컬 생성</span>
+
+<span class="fb-key">다음 지시 사항을 주십시오.</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+<div class="container">
+  <div class="ft">
+    <span>PIPET-Lab · #13 한국인 PK 공변량 DB 방법론 플레이북 v3 · 2026.04</span>
+    <span>계량약리학을 통해 "한 명이라도 더" — Data Moat · Compounding 10/10</span>
+    <span>C-260422-184500-5QZ</span>
+  </div>
+</div>
+</footer>
+
+</div><!-- end .main -->
+
+<script>
+// Theme
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('themeIcon').textContent=dark?'☾':'☀';
+  document.getElementById('themeTxt').textContent=dark?'다크':'라이트';
+}
+
+// Nav toggle (mobile)
+document.getElementById('navToggle').addEventListener('click',()=>{
+  document.getElementById('sidenav').classList.toggle('open');
+});
+
+// Active nav
+const sections=document.querySelectorAll('section[id],div[id="tonight"]');
+const navItems=document.querySelectorAll('.nav-item');
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navItems.forEach(n=>n.classList.remove('active'));
+      const active=document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if(active)active.classList.add('active');
+    }
+  });
+},{threshold:0.2,rootMargin:'-80px 0px -60% 0px'});
+sections.forEach(s=>observer.observe(s));
+
+// Scroll reveal
+const reveals=document.querySelectorAll('.fade-in');
+const rio=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'),i*60);
+      rio.unobserve(e.target);
+    }
+  });
+},{threshold:0.05});
+reveals.forEach(r=>rio.observe(r));
+</script>
+</body>
+</html>
