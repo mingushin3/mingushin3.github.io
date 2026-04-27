@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>T.E.A. Loop Playbook v2.3 · Nonlinear Route Optimizer</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg:#fbfaf7; --surface:#ffffff; --surface-2:#f1efe8; --surface-3:#f8f6ef;
+    --ink:#191814; --muted:#66635a; --faint:#938f84;
+    --line:rgba(20,18,14,.12); --line-strong:rgba(20,18,14,.25);
+    --blue:#2b74d6; --green:#25a77b; --purple:#7467d8; --amber:#d98a19; --rose:#c94b72;
+    --shadow:0 18px 50px rgba(28,25,17,.08);
+    --radius:18px; --radius-sm:12px;
+    --font:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {--bg:#171715;--surface:#20201d;--surface-2:#2a2926;--surface-3:#24231f;--ink:#ece9df;--muted:#bcb6a8;--faint:#8d877b;--line:rgba(255,255,255,.11);--line-strong:rgba(255,255,255,.23);--shadow:0 18px 50px rgba(0,0,0,.24);}
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--font);background:radial-gradient(circle at 20% 0%,rgba(43,116,214,.08),transparent 28rem),var(--bg);color:var(--ink);line-height:1.58}
+  .wrap{max-width:1180px;margin:0 auto;padding:34px 20px 56px}
+  header{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:stretch;margin-bottom:18px}
+  .hero,.panel{background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .hero{padding:28px}.side{padding:22px;display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:800;margin-bottom:10px}
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--blue);display:inline-block}
+  h1{margin:0 0 10px;font-size:clamp(28px,4.5vw,50px);line-height:1.05;letter-spacing:-.04em}
+  h2{margin:0 0 12px;font-size:21px;letter-spacing:-.02em} h3{margin:0 0 10px;font-size:15px}
+  .subtitle{margin:0;color:var(--muted);font-size:16px;max-width:70ch}
+  .thesis{margin-top:20px;padding:16px 18px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);font-size:15px}
+  .v2-badge{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:800;background:color-mix(in srgb,var(--blue) 15%,transparent);color:var(--blue);border:1px solid color-mix(in srgb,var(--blue) 30%,transparent);margin-left:8px;vertical-align:middle}
+  .verdict{display:grid;gap:10px}.verdict strong{font-size:15px}.score{display:flex;align-items:end;gap:8px}.score .num{font-size:38px;line-height:1;letter-spacing:-.05em;font-weight:750}.score .den{color:var(--faint);padding-bottom:5px}.mini-list{margin:0;padding-left:18px;color:var(--muted);font-size:13px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px} button,.button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 12px;font:800 12px/1 var(--font);cursor:pointer;transition:.16s ease;text-decoration:none;display:inline-flex;align-items:center;gap:6px} button:hover,.button:hover{border-color:var(--line-strong);transform:translateY(-1px)}.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .grid{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}.map{padding:18px;position:sticky;top:16px}.content{display:grid;gap:18px}.panel{padding:22px}.phase{margin-bottom:16px}.phase-title{font-size:11px;font-weight:800;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px}.step-list{display:grid;gap:8px}
+  .step-card{width:100%;text-align:left;border-radius:14px;padding:12px;background:var(--surface);border:1px solid var(--line);display:grid;gap:4px}.step-card .topline{display:flex;align-items:center;justify-content:space-between;gap:8px}.step-card .num{font:800 12px/1 var(--mono);color:var(--faint)}.step-card .name{font-weight:800;font-size:14px}.step-card .short{font-size:12px;color:var(--muted);line-height:1.4}.step-card.foundation{border-left:4px solid var(--green)}.step-card.design{border-left:4px solid var(--purple)}.step-card.validation{border-left:4px solid var(--amber)}.step-card.execution{border-left:4px solid var(--rose)}.step-card.active{outline:2px solid color-mix(in srgb,var(--blue) 60%,transparent);background:color-mix(in srgb,var(--surface-2) 60%,var(--surface))}
+  .section-kicker{font-size:11px;color:var(--faint);font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}.purpose{color:var(--muted);margin:0}.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}.badge{display:inline-flex;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;background:var(--surface-2);color:var(--muted)}.step-title{margin:6px 0 4px;font-size:clamp(20px,2.5vw,30px);letter-spacing:-.03em;line-height:1.1}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.four{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.box{border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 78%,transparent);border-radius:14px;padding:14px}.box.blue{border-left:4px solid var(--blue)}.box.green{border-left:4px solid var(--green)}.box.purple{border-left:4px solid var(--purple)}.box.amber{border-left:4px solid var(--amber)}.box.rose{border-left:4px solid var(--rose)}
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px}.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12px;font-weight:650}.metric{font:800 22px/1 var(--mono);letter-spacing:-.03em}.metric-label{font-size:12px;color:var(--muted)}
+  ul.clean{margin:0;padding-left:18px;color:var(--muted);font-size:14px}ul.clean li{margin:5px 0}.prompt{background:#11110f;color:#f6f1e5;border-radius:14px;padding:14px;font-family:var(--mono);font-size:12px;white-space:pre-wrap;border:1px solid rgba(255,255,255,.1)}@media (prefers-color-scheme:light){.prompt{background:#1c1b18}}
+  table{width:100%;border-collapse:collapse;font-size:13px;overflow:hidden;border-radius:12px}th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}th{color:var(--faint);font-size:11px;text-transform:uppercase;letter-spacing:.06em}tr:last-child td{border-bottom:0}.loop{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.loop .node{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.node strong{display:block;font-size:13px;margin-bottom:3px}.node span{color:var(--muted);font-size:12px}
+  .checklist{display:grid;gap:8px}.checkitem{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--muted);font-size:13px}input[type="checkbox"]{margin-top:3px;accent-color:var(--blue)}.footnote{color:var(--faint);font-size:12px;margin-top:12px}.template{width:100%;min-height:430px;border-radius:14px;border:1px solid var(--line);padding:14px;font-family:var(--mono);background:var(--surface);color:var(--ink);resize:vertical;font-size:12px;line-height:1.6}.toast{position:fixed;right:18px;bottom:18px;padding:10px 14px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:13px;opacity:0;transform:translateY(8px);transition:.2s ease;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}
+  .route-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface);cursor:pointer;transition:.16s ease}.route-card:hover{border-color:var(--line-strong);transform:translateY(-1px)}.route-card.active{outline:2px solid color-mix(in srgb,var(--blue) 60%,transparent);background:var(--surface-2)}.bar{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}.bar span{display:block;height:100%;background:var(--blue);border-radius:99px}.principle{border-left:4px solid var(--blue)}.contract{border-left:4px solid var(--green)}.warning{border-left:4px solid var(--rose)}
+  @media(max-width:900px){header,.grid,.two,.three,.four,.loop{grid-template-columns:1fr}.map{position:static}}
+  @media print{body{background:white;color:black}.toolbar,.map,.toast{display:none!important}header,.grid,.two,.three,.four,.loop{display:block}.panel,.hero{box-shadow:none;break-inside:avoid;margin-bottom:14px}.prompt{background:#f3f3f3;color:#111}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <section class="hero">
+      <div class="eyebrow"><span class="dot"></span> T.E.A. Loop v2.3 · Nonlinear Route Optimizer</div>
+      <h1>고효용·고효율 작업 설계 플레이북<span class="v2-badge">v2.3</span></h1>
+      <p class="subtitle">v2.1의 0–10단계 폐쇄루프와 기존 실행 최적화 기능은 유지하고, 실제 활용 시 Full Loop·Fast-Path·Refresh Loop로 비선형 진입할 수 있도록 가중 동선, 3대 레버, Stage Contract 규율, Decision Log 원칙을 함께 패키징한 최적화판.</p>
+      <div class="thesis"><strong>머릿속에 박아둘 한 문장:</strong> Telos를 판정하는 사람의 눈으로 Entelechy를 정의하고, 가장 위험한 가정을 가장 싸게 먼저 깨뜨린 뒤, 실행 중에는 결과가 아닌 신호를 감시하라.</div>
+    </section>
+    <aside class="panel side">
+      <div class="verdict">
+        <strong>v2.3 핵심 업그레이드</strong>
+        <div class="score"><span class="num">Route</span><span class="den">optimized</span></div>
+        <ul class="mini-list">
+          <li>Full Loop / Fast-Path / Refresh Loop 비선형 라우터</li>
+          <li>Skeleton → Stress → Execution 3-Pass 운영 유지</li>
+          <li>Telos·Entelechy·Kill-Test 3대 레버 강조</li>
+          <li>Stage Contract·Decision Log·AI 역할별 활용 패키징</li>
+        </ul>
+      </div>
+      <div class="toolbar">
+        <button class="primary" onclick="document.getElementById('router').scrollIntoView()">최적 모드 보기</button>
+        <button onclick="document.getElementById('detail').scrollIntoView()">단계 보기</button>
+        <button onclick="copyMasterPrompt()">마스터 프롬프트 복사</button>
+        <button onclick="window.print()">인쇄/PDF</button>
+      </div>
+    </aside>
+  </header>
+
+  <main class="grid">
+    <nav class="panel map" aria-label="TEA Loop steps">
+      <div class="section-kicker">Interactive map</div>
+      <div class="phase"><p class="phase-title">Foundation · 목적/완성형</p><div class="step-list" id="foundation"></div></div>
+      <div class="phase"><p class="phase-title">Design · 경로 설계</p><div class="step-list" id="design"></div></div>
+      <div class="phase"><p class="phase-title">Validation · 검증</p><div class="step-list" id="validation"></div></div>
+      <div class="phase" style="margin-bottom:0"><p class="phase-title">Execution · 실행/자산화</p><div class="step-list" id="execution"></div></div>
+    </nav>
+
+    <section class="content">
+      <section class="panel" id="router">
+        <div class="section-kicker">Use route optimizer</div>
+        <h2>먼저 어떤 루프로 진입할 것인가</h2>
+        <p class="purpose">11단계를 항상 0에서 10까지 선형으로 밟을 필요는 없다. 작업의 위험도·익숙함·기존 SOP 유무에 따라 Full Loop, Fast-Path, Refresh Loop 중 하나로 진입하고, 그 동선에만 가중을 둔다.</p>
+        <div class="three" id="modeCards" style="margin-top:14px"></div>
+        <div class="box blue" id="modeDetail" style="margin-top:14px"></div>
+      </section>
+
+      <section class="panel principle">
+        <div class="section-kicker">Operating principles</div>
+        <h2>머릿속에 박아둘 원칙 8개</h2>
+        <div class="three">
+          <div class="box"><h3>1. 결정 압축</h3><p class="purpose">단계별 장문 작성이 아니라 결정·증거·다음 행동만 남긴다.</p></div>
+          <div class="box"><h3>2. 판정자 시선</h3><p class="purpose">Telos는 산출물이 아니라 평가자·수혜자의 판단·행동·상태 변화를 말해야 한다.</p></div>
+          <div class="box"><h3>3. Evidence 우선</h3><p class="purpose">Entelechy에서 “좋다·충분하다·명확하다”는 관찰 가능한 증거 문장으로 바꾼다.</p></div>
+          <div class="box"><h3>4. 가장 싼 파괴</h3><p class="purpose">Kill-Test는 가장 위험한 가정을 가장 싸게 깨보는 장치다.</p></div>
+          <div class="box"><h3>5. 비선형 진입</h3><p class="purpose">항상 0→10이 아니다. 익숙한 작업은 Fast-Path, SOP가 있으면 Refresh Loop로 진입한다.</p></div>
+          <div class="box"><h3>6. AI는 역할 분리</h3><p class="purpose">동의를 구하지 말고 Architect, Craftsman, Red Team, Judge, Monitor로 명확히 지시한다.</p></div>
+          <div class="box"><h3>7. 신호 감시</h3><p class="purpose">실행 중에는 최종 결과가 아니라 20/40/60/80/90% 선행 신호를 본다.</p></div>
+          <div class="box"><h3>8. 하지 않은 이유 저장</h3><p class="purpose">Decision Log의 핵심은 “무엇을 하지 않았고 왜 하지 않았는가”다.</p></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Three leverage points</div>
+        <h2>세 개의 레버: 여기서 80%가 결정된다</h2>
+        <div class="three">
+          <div class="box green"><h3>레버 1 · Telos의 질</h3><p class="purpose">처음 보는 사람이 “성공 후 누가 어떤 의사결정을 다르게 내리는가”를 즉시 이해해야 한다. “좋은 결과물”이라는 표현이 남아 있으면 재작성한다.</p><div class="prompt" style="margin-top:10px">검증 질문: 이 Telos가 달성되면 평가자는 무엇을 다르게 결정하는가?</div></div>
+          <div class="box purple"><h3>레버 2 · Entelechy의 구체성</h3><p class="purpose">Evidence Requirement가 핵심이다. 추상어를 제거하고 “누가, 몇 분 안에, 무엇을 확인할 수 있는가” 형태의 Rubric으로 바꾼다.</p><div class="prompt" style="margin-top:10px">검증 질문: 지금 산출물이 MVS를 넘었는가, High-Quality에 접근 중인가?</div></div>
+          <div class="box amber"><h3>레버 3 · Kill-Test의 설계</h3><p class="purpose">가장 위험한 가정을 먼저 찾고, 틀렸을 때 어느 단계로 돌아갈지 정한 다음 테스트한다. 결과보다 행동 규칙이 먼저다.</p><div class="prompt" style="margin-top:10px">검증 질문: 이 테스트가 실패하면 Step 1·3·5 중 어디로 돌아갈 것인가?</div></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">3-Pass operating system</div>
+        <h2>한 번에 완벽하게 채우지 말고 3번 통과한다</h2>
+        <div class="three" id="passCards"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">AI leverage pattern</div>
+        <h2>AI는 단계마다 다른 역할로 써야 한다</h2>
+        <table>
+          <thead><tr><th>단계</th><th>AI 역할</th><th>최적 지시</th><th>금지 패턴</th></tr></thead>
+          <tbody>
+            <tr><td>Step 0–1</td><td><strong>Telos Attacker</strong></td><td>“이 Telos가 산출물 중심인지 판단 변화 중심인지 비판하라.”</td><td>“목표 설정을 도와줘.”</td></tr>
+            <tr><td>Step 4</td><td><strong>Context-bound Craftsman</strong></td><td>“이 도메인의 평가자가 가장 먼저 보는 순서를 초보자와 비교해 추출하라.”</td><td>“전문가처럼 해줘.”</td></tr>
+            <tr><td>Step 6</td><td><strong>Hostile Reviewer</strong></td><td>“도움이 되려 하지 말고, 기각 이유를 찾아라.”</td><td>“더 개선할 점 있어?”</td></tr>
+            <tr><td>Step 8</td><td><strong>Signal Monitor</strong></td><td>“현재 40% 지점 산출물의 위험 신호와 발동할 Step 5 분기를 판정하라.”</td><td>“계속 작성해줘.”</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Weighted attention budget</div>
+        <h2>가중 배분표: 어떤 루프에서 어디에 힘을 써야 하는가</h2>
+        <table>
+          <thead><tr><th>진입 루프</th><th>목적/Telos</th><th>품질/Entelechy</th><th>위험/Kill-Test</th><th>실행/Signal</th><th>자산화</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Full Loop</strong></td><td>15%</td><td>20%</td><td>25%</td><td>25%</td><td>15%</td></tr>
+            <tr><td><strong>Fast-Path</strong></td><td>25%</td><td>20%</td><td>35%</td><td>20%</td><td>0–5%</td></tr>
+            <tr><td><strong>Refresh Loop</strong></td><td>20%</td><td>25%</td><td>20%</td><td>20%</td><td>15%</td></tr>
+          </tbody>
+        </table>
+        <p class="footnote">가중은 문서 분량이 아니라 집중 자원 배분을 의미한다. 애매하면 Fast-Path로 핵심 가정부터 깨보고, 리스크가 크면 Full Loop로 확장한다.</p>
+      </section>
+
+      <section class="panel" id="detail"></section>
+
+      <section class="panel contract">
+        <div class="section-kicker">Stage contract</div>
+        <h2>모든 단계의 공통 출력 계약: 단계 통과가 아니라 결정을 남긴다</h2>
+        <p class="purpose">각 단계 마지막에는 아래 세 줄을 강제로 작성한다. 이 세 줄이 없으면 단계는 체크박스로 퇴행하고, 피드백 루프가 작동하지 않는다.</p>
+        <div class="three" style="margin-top:14px">
+          <div class="box"><h3>1. 결정</h3><p class="purpose">해당 단계에서 무엇을 확정했는지 1–3문장으로 남긴다.</p></div>
+          <div class="box"><h3>2. 증거</h3><p class="purpose">결정의 근거, 남은 불확실성, 틀릴 경우의 신호를 함께 기록한다.</p></div>
+          <div class="box"><h3>3. 다음 행동</h3><p class="purpose">다음 단계로 넘길 산출물과 되돌아갈 조건을 명시한다.</p></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Feedback architecture</div>
+        <h2>선형 절차가 아니라 폐쇄루프 시스템</h2>
+        <div class="loop">
+          <div class="node"><strong>Red Team 실패</strong><span>Step 1–2로 돌아가 Telos와 Entelechy를 재정의</span></div>
+          <div class="node"><strong>Kill-Test 실패</strong><span>Step 3·5로 돌아가 범위와 경로를 재설계</span></div>
+          <div class="node"><strong>실행 중 이탈</strong><span>Step 5의 if–then 분기 또는 범위 축소 발동</span></div>
+          <div class="node"><strong>회고 결과</strong><span>Telos·Entelechy·알고리즘·게이트를 v+1로 갱신</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Decision gates</div>
+        <h2>Go / Caution / Pivot / No-Go 판정표</h2>
+        <table>
+          <thead><tr><th>판정</th><th>조건</th><th>행동</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Go</strong></td><td>핵심 가정 작동, fatal flaw 없음, critical path 통제 가능</td><td>Step 8 실행 운영으로 진입</td></tr>
+            <tr><td><strong>Caution</strong></td><td>Telos는 유효하나 시간·자료·협업 제약이 빡빡함</td><td>Scope 축소, Non-goals 강화, 선행 지표 촘촘히 설정</td></tr>
+            <tr><td><strong>Pivot</strong></td><td>목적은 유효하지만 방법론·데이터·동선이 맞지 않음</td><td>Step 3·5 재설계 후 Kill-Test 재실행</td></tr>
+            <tr><td><strong>No-Go</strong></td><td>핵심 가정 붕괴, hard constraint 극복 불가, Telos-현실 불일치</td><td>중단 또는 Telos 재정의</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel warning">
+        <div class="section-kicker">Anti-overvalidation rules</div>
+        <h2>과검증 방지 규칙</h2>
+        <table>
+          <thead><tr><th>상황</th><th>규칙</th></tr></thead>
+          <tbody>
+            <tr><td>작은 작업</td><td>Red Team 1회만. 마지막에 과잉 설명·누락·모호함만 확인한다.</td></tr>
+            <tr><td>중간 작업</td><td>Red Team 2회 + Kill-Test. Minor issue가 반복되면 종료한다.</td></tr>
+            <tr><td>큰 작업</td><td>Red Team 2–3회 + 외부 검토 1회. 모든 Major 이상은 Decision Log에 남긴다.</td></tr>
+            <tr><td>새 아이디어가 계속 나옴</td><td>Non-goals에 넣고 차단한다.</td></tr>
+            <tr><td>복잡도만 증가</td><td>Finalization으로 이동한다.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Decision Log discipline</div>
+        <h2>복리 축적의 핵심: 하지 않기로 한 이유를 저장한다</h2>
+        <div class="two">
+          <div class="box green"><h3>가치 있는 기록</h3><p class="purpose">“A를 하지 않기로 했다. 왜냐하면 A는 Telos가 요구하는 변화를 만들지 못하기 때문이다.” 이 기록은 다음 유사 작업에서 동일한 미혹을 즉시 차단한다.</p></div>
+          <div class="box rose"><h3>위험한 기록</h3><p class="purpose">“B가 효과적이었다.” 맥락 없이 이식하면 잘못된 패턴을 고착할 수 있다. 효과 기록에는 항상 적용 조건과 기각 조건을 붙인다.</p></div>
+        </div>
+        <div class="prompt" style="margin-top:14px">회고 질문: 이 작업을 내일 다시 해야 한다면, 무엇을 먼저 하고 무엇을 생략할 것인가?</div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">One-page control sheet</div>
+        <h2>실전 실행판: 1페이지 컨트롤 시트</h2>
+        <textarea class="template" id="controlSheet">[TEA v2.3 1-Page Control Sheet]
+
+0. 진입 루프:
+   - Full Loop / Fast-Path / Refresh Loop:
+   - 선택 이유:
+
+1. 작업명:
+2. 마감:
+3. 핵심 평가자/수혜자:
+
+4. Telos:
+   - 이 작업은 누구의 어떤 판단/행동/상태를 바꾸는가?
+   - 평가자에게 물었을 때 “무엇을 다르게 결정할지” 즉답 가능한가?
+
+5. Entelechy Rubric:
+   - MVS:
+   - High-Quality:
+   - Fatal Failure:
+   - Evidence Requirement:
+
+6. 3대 레버:
+   - Telos 질:
+   - Entelechy 구체성:
+   - Kill-Test 설계:
+
+7. Non-goals / Anti-Telos:
+   - 이번에 하지 않을 것:
+   - 하지 않는 이유:
+
+8. Critical Path:
+   - 최종 산출물 ← 중간 산출물 ← 오늘 할 일
+
+9. 가장 위험한 가정:
+10. Kill-Test:
+    - 실패 시 되돌아갈 단계:
+    - 24h:
+    - 72h:
+
+11. Red Team 결과:
+    - Fatal:
+    - Major:
+    - False alarm / Scope creep:
+    - 기각한 지적과 이유:
+
+12. 실행 신호:
+    - 20%:
+    - 40%:
+    - 60%:
+    - 80%:
+    - 90%:
+    - 발동할 Step 5 분기:
+
+13. 최종 자산:
+    - SOP:
+    - Prompt:
+    - Decision Log:
+    - 다음번에 먼저 할 것 / 생략할 것:</textarea>
+        <div class="toolbar"><button onclick="copyControlSheet()">컨트롤 시트 복사</button></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Completion checklist</div>
+        <h2>완성본 확정 전 체크리스트</h2>
+        <div class="checklist" id="checklist"></div>
+        <p class="footnote">10개 이상 → 실행 가능한 플레이북. 13개 이상 → 고품질 운영 자산. 15개 모두 → 완성본 확정 가능.</p>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Reusable full template</div>
+        <h2>Full Mode 입력 템플릿</h2>
+        <textarea class="template" id="templateText">[0] Context Audit
+- 작업명:
+- 지금 해야 하는 이유:
+- 핵심 평가자/수혜자/의사결정자:
+- Hard constraints:
+- Soft constraints:
+- Hidden constraints:
+- External dependencies:
+- Unknown but critical information:
+
+[1] Telos Lock
+- 본질 목적:
+- 결과물이 만들어야 하는 변화:
+- Telos 후보 3개:
+- 최종 Telos:
+- 암묵적 가정:
+
+[2] Entelechy Specification
+- Minimum Viable Success:
+- High-Quality Success:
+- Fatal Failure:
+- Quality Gate:
+- Evidence Requirement:
+- Rubric v1:
+
+[3] Value–Risk–Constraint Map
+- 핵심 가치 레버:
+- 낮은 효용/높은 비용 작업:
+- 주요 리스크:
+- Assumption Map:
+- Non-goals / Anti-Telos:
+- Kill / Pivot Criteria:
+
+[4] Master Algorithm Extraction
+- 장인의 첫 판단:
+- 6단계 장인 알고리즘:
+- 생략 기준:
+- AI/도구 위임 기준:
+- 인간 직접 판단 영역:
+- 80점 vs 95점 구분 기준:
+
+[5] Backward + Forward Architecture
+- 최종 산출물:
+- 역방향 마일스톤:
+- Critical Path:
+- Non-critical tasks:
+- 정방향 병목:
+- if–then 분기:
+- 분기별 Telos 유지 여부:
+
+[6] AI Red Teaming
+- Actor Draft:
+- Critic findings:
+- Red Team failure scenarios:
+- Fatal flaws:
+- Major weaknesses:
+- Minor issues:
+- False alarms:
+- Scope creep 항목:
+- Judge 반영/기각/보류 결정:
+
+[7] Kill-Test / Pilot Gate
+- 가장 위험한 핵심 가정:
+- 24h 테스트 항목:
+- 72h 테스트 항목:
+- 측정 지표:
+- 성공/실패 기준:
+- Go / Caution / Pivot / No-Go 판정:
+
+[8] Execution Protocol + Leading Indicators
+- Work Packets:
+- AI Review Cadence:
+- 20/40/60/80/90% 정상·위험·개입:
+- 발동할 Step 5 분기:
+
+[9] Finalization + Assetization
+- 최종 산출물:
+- Final QA Checklist:
+- SOP:
+- Prompt Library:
+- Decision Log:
+- Reusable Template:
+
+[10] Retrospective Update Loop
+- 틀린 가정:
+- 유효했던 알고리즘:
+- 과했던/부족했던 검증:
+- 다음번에 더 빨리/더 적게/먼저/하지 않을 것:
+- Playbook v+1:</textarea>
+        <div class="toolbar"><button onclick="copyTemplate()">Full 템플릿 복사</button></div>
+      </section>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast">복사되었습니다</div>
+
+<script>
+const steps = [
+  {n:0,phase:'지형 감사',title:'Context Audit',short:'현실 지형·청중·제약 확인',purpose:'Telos를 정의하기 전에 작업이 놓인 현실 지형을 먼저 읽는다. 목적의 아름다움보다 먼저, 그 목적이 실제로 작동할 지형·권한·자료·시간·청중의 평가 기준을 고정한다.',inputs:['작업 설명','마감/시간 예산','자료·도구','평가자/수혜자'],questions:['이 작업은 왜 지금 해야 하는가?','수혜자·평가자·의사결정자는 누구인가?','hard/soft/hidden constraint는 무엇인가?','외부 의존성과 승인 병목은 무엇인가?','지금 모르면 뒤에서 치명적인 정보는 무엇인가?'],outputs:['Context Map','Stakeholder Map','Constraint Table','Open Questions'],prompt:'너는 냉정한 프로젝트 감사자다. 아래 작업의 현실 지형을 감사하라. 평가자/수혜자/의사결정자, hard constraint, soft constraint, hidden constraint, external dependency, unknown but critical information을 표로 정리하고 Step 1 진행 여부를 Go/Caution/Hold로 판정하라.',gate:'핵심 평가자, 비협상 제약, 외부 의존성, 미확인 중요 정보가 1페이지 안에 정리되면 통과.',feedback:'미확인 중요 정보가 Telos를 바꿀 수준이면 Step 1로 넘어가지 말고 자료·권한·일정 확인을 먼저 수행한다.',group:'foundation'},
+  {n:1,phase:'목적 고정',title:'Telos Lock',short:'본질 목적·변화·가정 명시',purpose:'무엇을 만들 것인지가 아니라 왜 이 작업이 존재해야 하는지 고정한다. 산출물 중심 목표를 판단·행동·상태 변화 중심 문장으로 번역한다.',inputs:['Context Map','Stakeholder Map','Constraint Table'],questions:['본질 목적은 무엇인가?','누구의 어떤 판단·행동·상태가 바뀌어야 하는가?','성공했을 때 어떤 의사결정이 바뀌는가?','이 Telos의 암묵적 가정은 무엇인가?','실패하면 어떤 가치가 실현되지 못하는가?'],outputs:['Telos Statement','Audience Impact','Success Transformation','Assumption Register'],prompt:'표면적 목표와 본질적 Telos를 분리하라. 산출물 중심 문장을 판단/행동/상태 변화 중심으로 다시 쓰고 Telos 후보 3개를 제시하라. 평가자 설득력, 현실 제약 적합성, Entelechy 명세 가능성으로 채점해 최종 Telos 1개를 선택하고 암묵적 가정 3–5개를 작성하라.',gate:'Telos가 “무엇을 만든다”가 아니라 “누구의 어떤 판단/행동/상태를 바꾼다”로 표현되면 통과.',feedback:'Telos가 모호하면 Step 2로 가지 말고 평가자 관점 변화 문장으로 다시 쓴다.',group:'foundation',extra:'telos'},
+  {n:2,phase:'완성형 명세',title:'Entelechy Specification',short:'Telos를 품질 조건으로 번역',purpose:'Telos가 완전히 구현된 상태를 관찰 가능한 품질 조건으로 명세한다.',inputs:['Telos Statement','Audience Impact','Assumption Register'],questions:['제대로 완성되었다는 조건은?','MVS와 High-Quality Success는?','무엇이 깨지면 전체 실패인가?','각 품질 조건의 증거는?','평가자가 판정할 만큼 구체적인가?'],outputs:['Definition of Done','Quality Gate','Failure Definition','Evidence Checklist','Rubric v1'],prompt:'다음 Telos가 실제 구현되었다고 판단할 수 있는 Entelechy Specification을 작성하라. MVS, High-Quality Success, Fatal Failure, Quality Gate, Evidence Requirement 5개 레이어로 구분하고, 추상어는 관찰 가능한 기준으로 바꾸어라.',gate:'5개 레이어가 모두 분리되어 있으면 통과.',feedback:'조건이 추상적이면 문서·데이터·표·검토자 반응으로 확인 가능한 증거 문장으로 바꾼다.',group:'foundation',extra:'entelechy'},
+  {n:3,phase:'가치·위험 분해',title:'Value–Risk–Constraint Map',short:'효용·위험·Non-goals·Kill 기준',purpose:'모든 일을 열심히 하지 않는다. 효용이 큰 곳에 자원을 집중하고 실패 가능성이 큰 곳을 먼저 검증한다.',inputs:['Definition of Done','Assumption Register','Constraint Table'],questions:['효용은 어디서 발생하는가?','20% 노력으로 80% 효과를 만드는 레버는?','낮은 효용/높은 비용 작업은?','가장 위험한 가정·병목은?','중단·축소·전환 기준은?','이번에 하지 않을 것은?'],outputs:['Value Map','Risk Map','Assumption Map','Non-goals','Kill/Pivot Criteria'],prompt:'Telos와 Entelechy를 기준으로 Value–Risk–Constraint Map을 작성하라. 가치 레버, 낮은 효용/높은 비용 작업, Fatal/Major/Minor 리스크, Assumption Map, Non-goals/Anti-Telos, Kill/Pivot Criteria를 표로 제시하라.',gate:'핵심 가치 레버, 병목, Non-goals, Kill/Pivot 기준이 모두 있으면 통과.',feedback:'범위가 커지면 새 아이디어를 추가하지 말고 Non-goals부터 적용한다.',group:'design',extra:'maps'},
+  {n:4,phase:'장인 알고리즘',title:'Master Algorithm Extraction',short:'최고 전문가의 판단 순서 역공학',purpose:'장인 페르소나를 역할극이 아니라 재현 가능한 의사결정 알고리즘으로 추출한다.',inputs:['Telos','Quality Gate','Value–Risk Map'],questions:['장인은 무엇을 먼저 보는가?','초보자와 순서 차이는?','무엇을 절대 하지 않는가?','무엇을 AI/도구에 위임하는가?','80점과 95점을 어떻게 구분하는가?','언제 멈추고 더 파고드는가?'],outputs:['Master Workflow','6-Step Expert Algorithm','Delegation Rules','Craft Checklist','80/95 Distinction'],prompt:'너는 이 분야의 세계적 장인이다. 초보자 방식과 장인 방식을 비교하고, 장인의 첫 판단, 6단계 알고리즘, 절대 하지 않는 일, AI/도구 위임 기준, 인간 직접 판단 영역, 80점과 95점의 차이를 추출하라.',gate:'인물 묘사가 아니라 재현 가능한 알고리즘으로 변환되면 통과.',feedback:'“전문가처럼 꼼꼼히” 수준이면 순서·생략·위임·품질 구분 기준으로 재작성한다.',group:'design'},
+  {n:5,phase:'경로 설계',title:'Backward + Forward Architecture',short:'역산·정방향 검증·분기',purpose:'최종 산출물에서 역산하고 오늘부터 실행할 때의 병목을 정방향으로 검증한다.',inputs:['Master Workflow','Value–Risk Map','Constraint Table'],questions:['최종 산출물에서 거꾸로 필요한 것은?','Critical Path는?','오늘부터 막히는 병목은?','외부 의존성과 검토 타이밍은?','if–then 분기는?','분기 후 Telos는 유지되는가?'],outputs:['Milestone Ladder','Critical Path','Forward Feasibility','Contingency Map','Execution Sequence'],prompt:'최종 산출물에서 역방향 마일스톤을 설계하고 오늘부터 정방향 병목을 검증하라. Critical Path와 non-critical task를 분리하고 최소 5개 if–then contingency branch를 작성하라. 각 분기의 Telos 유지 여부와 Entelechy 손상 정도를 평가하라.',gate:'Backward Pass, Forward Pass, Critical Path, if–then 분기가 모두 있으면 통과.',feedback:'선형 일정표에 머물면 실패다. 병목·분기·축소 기준을 추가한다.',group:'design'},
+  {n:6,phase:'AI 검증',title:'AI Actor–Critic–Judge Red Teaming',short:'역할 분리로 공격·판정·패치',purpose:'AI 검증을 많이 물어보기가 아니라 Actor–Critic–Red Team–Judge–Editor 역할 분리로 운영한다.',inputs:['Execution Sequence','Quality Gate','Contingency Map'],questions:['초안은 Telos와 Entelechy를 구현하는가?','논리 결함·과장·누락은?','실패 시나리오는 어떤 가정을 공격하는가?','무엇을 반영·기각·보류할 것인가?','검토가 품질을 높이는가 복잡도만 늘리는가?'],outputs:['Actor Draft','Red Team Report','Severity Table','Patch Log','Decision Table'],prompt:'Actor–Critic–Red Team–Judge–Editor 5역할로 검증하라. 지적사항을 Fatal/Major/Minor/False alarm/Scope creep으로 분류하고, Judge가 반영·기각·보류를 결정하라. Editor는 Telos와 Non-goals를 훼손하지 않는 범위에서 명료성을 높여라.',gate:'모든 Major 이상 항목에 반영/기각 이유가 기록되어 있으면 통과.',feedback:'Critic 지적을 전부 반영하지 않는다. Scope creep과 false alarm은 기각하고 이유를 남긴다.',group:'validation',extra:'redteam'},
+  {n:7,phase:'현실 검증',title:'Kill-Test / Pilot Gate',short:'24–72시간 소규모 실행 검증',purpose:'가장 위험한 가정과 병목을 작게 테스트해 Go/Caution/Pivot/No-Go를 판정한다.',inputs:['Risk Map','Assumption Register','Critical Path','Red Team Report'],questions:['가장 위험한 가정은?','24시간 안에 검증 가능한 테스트는?','72시간 안에 만들 수 있는 미니 산출물은?','어떤 결과가 Go/Caution/Pivot/No-Go인가?','결과가 Step 3·5를 어떻게 바꾸는가?'],outputs:['24h Plan','72h Plan','Pilot Result','Decision','Scope Adjustment'],prompt:'핵심 가정과 병목을 24–72시간 안에 검증할 Kill-Test를 설계하라. 24h 테스트 5개와 72h 테스트 5개를 제시하고 각 테스트의 측정 지표, 성공 기준, 실패 기준, 다음 행동을 정의하라.',gate:'핵심 가정이 실제 작은 실행으로 검증되고 판정 기준이 사전에 있으면 통과.',feedback:'No-Go는 실패가 아니라 낭비 방지다. Pivot은 Telos는 유지하되 방법론·데이터·동선을 바꾸는 신호다.',group:'validation'},
+  {n:8,phase:'실행 운영',title:'Execution Protocol + Leading Indicators',short:'작업 패킷·선행 지표·개입 규칙',purpose:'Actualization 단계다. 최종 결과물을 기다리지 않고 작업 패킷·선행 지표·개입 규칙으로 이탈을 조기 감지한다.',inputs:['Decision','Execution Sequence','Contingency Map'],questions:['작업을 어떤 패킷으로 쪼갤 것인가?','20/40/60/80/90% 정상·위험 신호는?','어떤 지표가 나빠지면 개입할 것인가?','개입은 범위 축소/분기/재정의 중 무엇인가?','AI는 어떤 주기로 무엇을 검토할 것인가?'],outputs:['Work Packet Board','Leading Indicator Table','Dashboard','Intervention Rules','AI Review Cadence'],prompt:'플레이북을 실제 실행 운영 프로토콜로 변환하라. Work Packet, 완료 조건, 의존성, 20/40/60/80/90% 정상 신호·위험 신호·개입 조치를 표로 작성하고 위험 신호가 발생하면 Step 5의 어떤 분기를 발동할지 연결하라.',gate:'작업 패킷, 선행 지표, 위험 신호, 개입 조치, AI 검토 주기가 모두 있으면 통과.',feedback:'자료 수집만 계속되고 산출물 초안이 없으면 즉시 범위 축소 또는 Kill-Test 재수행으로 되돌린다.',group:'execution',extra:'monitor'},
+  {n:9,phase:'완성·자산화',title:'Finalization + Assetization',short:'최종 산출물·SOP·프롬프트·로그',purpose:'최종 산출물과 재사용 가능한 SOP를 동시에 확정한다.',inputs:['Final Draft','Progress Dashboard','Patch Log','Decision Log'],questions:['최종 산출물은 제출 가능한가?','Quality Gate를 통과했는가?','효과적이었던 프롬프트와 판단 기준은?','기각한 아이디어와 이유는?','다음 작업에 재사용할 템플릿은?'],outputs:['Final Deliverable','Final QA','SOP','Prompt Library','Decision Log','Reusable Template'],prompt:'최종 산출물을 확정하면서 재사용 가능한 자산으로 변환하라. Final QA로 Telos와 Entelechy 통과 여부를 점검하고, 효과적 프롬프트, 체크리스트, 판단 기준, 실패 방지 장치, 기각한 아이디어와 이유를 SOP/Prompt Library/Decision Log로 정리하라.',gate:'최종 산출물과 SOP/Prompt/Checklist/Decision Log가 모두 있으면 통과.',feedback:'산출물만 있고 Decision Log와 템플릿이 없으면 지식 복리가 발생하지 않는다.',group:'execution'},
+  {n:10,phase:'회고 갱신',title:'Retrospective Update Loop',short:'Telos·가정·게이트 v+1 갱신',purpose:'플레이북 자체를 업데이트한다. 정적 문서가 아니라 누적되는 작업 운영체계로 만든다.',inputs:['Final Deliverable','SOP','Decision Log','Pilot Result','Metrics'],questions:['처음 Telos는 맞았는가?','Entelechy는 과하거나 부족했는가?','어떤 가정이 틀렸는가?','유효했던 장인 알고리즘은?','AI Red Teaming은 과검증이었는가?','다음에는 무엇을 더 빨리/적게/먼저/하지 않을 것인가?'],outputs:['Updated Telos','Revised Assumptions','Updated Gates','Algorithm Patch','Playbook v+1'],prompt:'이번 실행을 회고하여 Playbook v+1로 갱신하라. 틀린 가정, 과하거나 부족했던 Entelechy, 유효했던 장인 알고리즘, AI 검증 과잉/부족, 다음번 자동화·생략·선행 항목을 정리하고 6개 피드백 화살표로 수정안을 작성하라.',gate:'다음 버전에서 바꿀 규칙이 최소 1개 이상 기록되고 이유가 Decision Log에 남으면 통과.',feedback:'회고가 추상적이면 다음번에는 무엇을 더 빨리/더 적게/먼저/하지 않을 것인가 형식으로 재작성한다.',group:'execution'}
+];
+const checklistItems = [
+  'Context Audit에서 hard/soft/hidden constraint와 external dependency를 분리했다.',
+  'Telos가 산출물 중심이 아니라 판단·행동·상태 변화 중심으로 작성되었다.',
+  'Telos를 성립시키는 암묵적 가정이 Assumption Register로 명시되었다.',
+  'Entelechy가 MVS / High-Quality / Fatal Failure / Quality Gate / Evidence Requirement로 분리되었다.',
+  'Non-goals와 Anti-Telos가 명시되어 Scope Creep을 차단한다.',
+  '장인 페르소나가 추상적 인물이 아니라 6단계 의사결정 알고리즘으로 변환되었다.',
+  'Backward Pass와 Forward Pass를 모두 수행했다.',
+  'Critical Path와 if–then contingency branch가 최소 5개 설계되었다.',
+  'AI Red Teaming 결과를 Fatal/Major/Minor/False alarm/Scope creep으로 분류했다.',
+  'Judge가 모든 Major 이상 지적의 반영/기각/보류 이유를 기록했다.',
+  '24–72시간 Kill-Test와 Go/Caution/Pivot/No-Go 기준이 정의되어 있다.',
+  '실행 단계가 Work Packet과 Leading Indicator로 운영된다.',
+  '20/40/60/80/90% 지점별 정상 신호·위험 신호·개입 조치가 있다.',
+  '최종 산출물 외에 SOP/Prompt Library/Checklist/Decision Log가 남는다.',
+  '회고 결과가 Telos·Entelechy·Algorithm·Red Team·Kill-Test·Monitor에 반영된다.'
+];
+const modes = [
+  {id:'fullLoop',title:'Full Loop',time:'고위험·고복잡·처음 하는 유형',use:'연구과제, 논문 투고, IRB/프로토콜, 학위 프로젝트, 대형 분석 파이프라인처럼 실패 비용이 큰 작업',route:'0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10',weights:[15,20,25,25,15],rule:'전체 루프를 돌리되 모든 단계는 결정/증거/다음 행동으로 압축한다. Assumption Register, Quality Gate, Kill-Test, Decision Log, SOP까지 남긴다.',prompt:'아래 작업에 대해 Full Loop로 T.E.A. v2.3을 적용하라. Step 0–10 전체를 수행하되 각 단계는 결정/증거/다음 행동으로 압축하라. Telos는 판단·행동·상태 변화 중심으로 쓰고, Entelechy는 Evidence Requirement와 Rubric으로 명세하라. Fatal/Major/Minor/False alarm/Scope creep 분류, Kill-Test, Work Packet, 20/40/60/80/90% 선행 신호, Final QA, SOP, Decision Log, Retrospective v+1까지 작성하라.'},
+  {id:'fastPath',title:'Fast-Path',time:'시간 압박·익숙한 도메인',use:'목적과 품질 조건을 빠르게 잠근 뒤 가장 위험한 가정을 먼저 깨보아 실행 가능성을 판별해야 하는 작업',route:'0 → 1 → 2 → 7(Kill-Test) → 5 → 8',weights:[25,20,35,20,0],rule:'제약·목적·품질 조건이 확정된 순간 Step 7로 점프해 핵심 가정을 먼저 검증한다. 이후 Step 5로 경로를 짜고 Step 8로 실행한다.',prompt:'아래 작업에 대해 Fast-Path로 T.E.A. v2.3을 적용하라. Step 0,1,2를 먼저 결정/증거/다음 행동으로 압축하고, Step 7에서 가장 위험한 가정을 24–72h 안에 검증할 Kill-Test를 설계하라. Kill-Test 결과에 따라 Step 5 Critical Path와 if–then 분기를 짠 뒤 Step 8 Work Packet과 선행 신호를 제시하라. Step 3–6은 필요한 항목만 보충하라.'},
+  {id:'refreshLoop',title:'Refresh Loop',time:'반복 작업·이전 SOP 존재',use:'기존 Telos, SOP, 템플릿이 있으나 이번 맥락에 맞게 품질 조건과 실행 신호를 갱신해야 하는 작업',route:'기존 Telos 검증 → 2 → 7 → 8 → 10',weights:[20,25,20,20,15],rule:'기존 SOP를 그대로 믿지 않는다. Telos를 재검증하고 Entelechy·Kill-Test·Execution Signal·Retrospective만 갱신한다.',prompt:'아래 반복 작업에 대해 Refresh Loop로 T.E.A. v2.3을 적용하라. 기존 Telos와 SOP가 현재 평가자/제약에 맞는지 먼저 검증하고, Step 2 Entelechy Rubric을 갱신하라. Step 7 Kill-Test로 핵심 가정만 확인하고, Step 8 실행 신호를 설정한 뒤 Step 10에서 다음 SOP 패치를 작성하라. 불필요한 Step 3–6 장문 검토는 생략하라.'}
+];
+const passes = [
+  {title:'Pass 1 · Skeleton',time:'20–30분',steps:'Step 0, 1, 2, 3, 5',goal:'방향 잠금',output:'Telos / Entelechy 최소 조건 / Fatal risk / Critical path / 오늘 할 첫 행동',prompt:'먼저 Skeleton Pass만 수행하라. Step 0,1,2,3,5를 각각 결정/증거/다음 행동 3줄 이내로 제한하고, 최종 출력은 1-page Skeleton으로 작성하라.'},
+  {title:'Pass 2 · Stress',time:'30–60분',steps:'Step 3, 4, 6, 7',goal:'위험 공격',output:'Fatal flaw / Major weakness / False alarm / Scope creep / Kill-Test',prompt:'이제 Stress Pass를 수행하라. Telos를 죽일 수 있는 Fatal/Major risk만 공격하고, 장인의 6단계 알고리즘, Red Team 결과, 24h/72h Kill-Test를 설계하라. Minor/style issue는 제외하라.'},
+  {title:'Pass 3 · Execution',time:'실행 구간',steps:'Step 8, 9, 10',goal:'산출물화',output:'Work Packet / Leading Indicator / Final QA / SOP / Decision Log / v+1',prompt:'이제 Execution Pass를 수행하라. 작업을 Work Packet으로 쪼개고 20/40/60/80/90% 선행 지표, 위험 신호, 개입 규칙, Final QA, SOP, Decision Log, Retrospective v+1을 작성하라.'}
+];
+const groups = {foundation:[], design:[], validation:[], execution:[]}; steps.forEach(s=>groups[s.group].push(s)); let active=0, activeMode='fastPath';
+function esc(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function renderMap(){Object.keys(groups).forEach(group=>{document.getElementById(group).innerHTML=groups[group].map(s=>`<button class="step-card ${s.group}" data-step="${s.n}" onclick="showStep(${s.n})"><span class="topline"><span class="num">Step ${s.n}</span><span class="badge">${esc(s.phase)}</span></span><span class="name">${esc(s.title)}</span><span class="short">${esc(s.short)}</span></button>`).join('');});}
+function extraBlock(s){if(s.extra==='telos')return `<div class="box" style="margin-top:14px"><h3>Telos 작성 예시</h3><div class="two"><div class="box rose"><strong>✕ 산출물 중심</strong><p class="purpose">좋은 연구 제안서를 쓴다.</p></div><div class="box green"><strong>✓ 판단 변화 중심</strong><p class="purpose">심사자가 연구의 필요성·차별성·실행 가능성·파급력을 이해하고 수행할 가치가 있다고 판단하게 만든다.</p></div></div></div>`; if(s.extra==='entelechy')return `<div class="box" style="margin-top:14px"><h3>Entelechy 5-레이어</h3><table><tbody><tr><td>MVS</td><td>최소 성공</td></tr><tr><td>High-Quality</td><td>탁월 조건</td></tr><tr><td>Fatal Failure</td><td>전체 실패 기준</td></tr><tr><td>Quality Gate</td><td>단계 통과 기준</td></tr><tr><td>Evidence</td><td>성공 주장 근거</td></tr></tbody></table></div>`; if(s.extra==='maps')return `<div class="box" style="margin-top:14px"><h3>5개 필수 지도</h3><table><tbody><tr><td>Value Map</td><td>효용 발생 지점</td></tr><tr><td>Risk Map</td><td>실패 경로</td></tr><tr><td>Assumption Map</td><td>암묵적 전제</td></tr><tr><td>Constraint Map</td><td>현실 제약</td></tr><tr><td>Anti-Telos</td><td>하지 않을 것</td></tr></tbody></table></div>`; if(s.extra==='redteam')return `<div class="box" style="margin-top:14px"><h3>AI 역할 분리</h3><table><tbody><tr><td>Actor</td><td>초안·대안 생성</td></tr><tr><td>Critic</td><td>논리 결함 공격</td></tr><tr><td>Red Team</td><td>실패 시나리오</td></tr><tr><td>Judge</td><td>반영/기각/보류</td></tr><tr><td>Editor</td><td>명료성 개선</td></tr></tbody></table></div>`; if(s.extra==='monitor')return `<div class="box" style="margin-top:14px"><h3>실행 중 이탈 신호</h3><table><thead><tr><th>지점</th><th>정상</th><th>위험</th></tr></thead><tbody><tr><td>20%</td><td>핵심 구조 1페이지</td><td>설명이 계속 길어짐</td></tr><tr><td>40%</td><td>핵심 산출물 초안</td><td>자료 수집만 지속</td></tr><tr><td>60%</td><td>Major flaw 감소</td><td>같은 결함 반복</td></tr><tr><td>80%</td><td>문장·형식 다듬기</td><td>아직 구조 변경 중</td></tr><tr><td>90%</td><td>제출 가능본 존재</td><td>완성본 없음</td></tr></tbody></table></div>`; return '';}
+function showStep(i){active=i;document.querySelectorAll('.step-card').forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.step)===i));const s=steps[i];document.getElementById('detail').innerHTML=`<div class="detail-head"><div><span class="badge">Step ${s.n} · ${esc(s.phase)}</span><h2 class="step-title">${esc(s.title)}</h2><p class="purpose">${esc(s.purpose)}</p></div><button onclick="copyCurrentPrompt()">이 단계 프롬프트 복사</button></div><div class="two"><div class="box"><h3>전단계 입력</h3><div class="pill-row">${s.inputs.map(o=>`<span class="pill">${esc(o)}</span>`).join('')}</div></div><div class="box"><h3>산출물</h3><div class="pill-row">${s.outputs.map(o=>`<span class="pill">${esc(o)}</span>`).join('')}</div></div></div><div class="box" style="margin-top:14px"><h3>핵심 질문</h3><ul class="clean">${s.questions.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></div><div class="box" style="margin-top:14px"><h3>AI 레버리지 프롬프트</h3><div class="prompt">${esc(s.prompt)}</div></div><div class="two" style="margin-top:14px"><div class="box blue"><h3>통과 기준</h3><p class="purpose">${esc(s.gate)}</p></div><div class="box rose"><h3>피드백/분기</h3><p class="purpose">${esc(s.feedback)}</p></div></div>${extraBlock(s)}`;}
+function renderModes(){document.getElementById('modeCards').innerHTML=modes.map(m=>`<div class="route-card ${m.id===activeMode?'active':''}" onclick="showMode('${m.id}')"><div class="badge">${esc(m.time)}</div><h3 style="margin-top:8px">${esc(m.title)}</h3><p class="purpose">${esc(m.use)}</p><div class="pill-row" style="margin-top:10px"><span class="pill">${esc(m.route)}</span></div></div>`).join('');showMode(activeMode,false);}
+function showMode(id,scroll=true){activeMode=id;document.querySelectorAll('.route-card').forEach(c=>c.classList.remove('active'));const m=modes.find(x=>x.id===id);const labels=['목적','위험/경로','검증','실행','자산'];document.getElementById('modeDetail').innerHTML=`<h3>${esc(m.title)} · 추천 동선</h3><p class="purpose"><strong>사용 상황:</strong> ${esc(m.use)}<br><strong>추천 Route:</strong> ${esc(m.route)}<br><strong>운영 규칙:</strong> ${esc(m.rule)}</p><div class="two" style="margin-top:14px"><div><h3>가중 배분</h3>${m.weights.map((w,i)=>`<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>${labels[i]}</span><span>${w}%</span></div><div class="bar"><span style="width:${Math.max(w,3)}%"></span></div></div>`).join('')}</div><div><h3>복사용 프롬프트</h3><div class="prompt">${esc(m.prompt)}</div></div></div><div class="toolbar"><button onclick="copyText(modes.find(x=>x.id==='${id}').prompt)">이 모드 프롬프트 복사</button></div>`;renderModesActive();}
+function renderModesActive(){document.querySelectorAll('.route-card').forEach((c,idx)=>c.classList.toggle('active',modes[idx].id===activeMode));}
+function renderPasses(){document.getElementById('passCards').innerHTML=passes.map(p=>`<div class="box purple"><span class="badge">${esc(p.time)}</span><h3 style="margin-top:8px">${esc(p.title)}</h3><p class="purpose"><strong>목적:</strong> ${esc(p.goal)}<br><strong>단계:</strong> ${esc(p.steps)}<br><strong>산출물:</strong> ${esc(p.output)}</p><div class="toolbar"><button onclick="copyText('${encodeURIComponent(p.prompt)}'.startsWith('%')?decodeURIComponent('${encodeURIComponent(p.prompt)}'):'')">프롬프트 복사</button></div></div>`).join('');}
+function renderChecklist(){document.getElementById('checklist').innerHTML=checklistItems.map((it,idx)=>`<label class="checkitem"><input type="checkbox" /> <span>${idx+1}. ${esc(it)}</span></label>`).join('');}
+function toast(msg='복사되었습니다'){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400);}async function copyText(text){try{await navigator.clipboard.writeText(text);toast();}catch(e){toast('복사 권한이 제한되었습니다');}}
+function copyCurrentPrompt(){copyText(steps[active].prompt)}function copyTemplate(){copyText(document.getElementById('templateText').value)}function copyControlSheet(){copyText(document.getElementById('controlSheet').value)}
+function copyMasterPrompt(){copyText('너는 T.E.A. Loop v2.3 기반의 고효용 작업 설계자다. 먼저 작업을 Full Loop / Fast-Path / Refresh Loop 중 하나로 판정하라. 기본값은 Fast-Path이며, 고위험·처음 하는 작업은 Full Loop, 이전 SOP가 있는 반복 작업은 Refresh Loop로 전환한다. 핵심 원칙: Telos를 판정하는 사람의 눈으로 Entelechy를 정의하고, 가장 위험한 가정을 가장 싸게 먼저 깨뜨린 뒤, 실행 중에는 결과가 아닌 신호를 감시하라. 모든 단계는 결정/증거/다음 행동 형식으로 압축하라. 세 개의 레버를 우선 관리하라: 1) Telos의 질: 산출물이 아니라 판단·행동·상태 변화로 정의한다. 2) Entelechy의 구체성: Evidence Requirement와 Rubric으로 관찰 가능하게 만든다. 3) Kill-Test의 설계: 핵심 가정이 틀릴 때 어느 단계로 돌아갈지 먼저 정한 뒤 24–72h 테스트를 만든다. AI는 Step 0–1에서 Telos Attacker, Step 4에서 Context-bound Craftsman, Step 6에서 Hostile Reviewer, Step 8에서 Signal Monitor로 사용하라. Red Team은 Fatal/Major 중심으로 제한하고, False alarm과 Scope creep은 기각 이유를 Decision Log에 남겨라. 최종 산출물과 함께 SOP, Prompt Library, Non-goals/기각 이유가 포함된 Decision Log, 다음번에 먼저 할 것/생략할 것을 남겨라.');}
+renderMap();renderModes();renderPasses();renderChecklist();showStep(0);
+</script>
+</body>
+</html>
