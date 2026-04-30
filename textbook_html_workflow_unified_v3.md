@@ -65,11 +65,15 @@
 |------|-------------|-----------|
 | **A-Critical** | Clearance, Vd, Hepatic extraction, FOCE/FO, Residual error, IIV, TMDD, Covariate modeling, Nonlinear PK | 0→1→2→3→4→5→6 |
 | **B-Standard** | NONMEM 제어구문, GOF 진단, 시뮬레이션 설정, Compartment model | 0→1→2→4→5 |
-| **C-Fast** | 개요·정의 챕터, 반복 개념, 이미 숙지한 영역 | 0→1→4→5 |
+| **C-Fast-Safe** | 개요·정의 챕터, 반복 개념, 이미 숙지한 영역 | 0→1→**2-lite**→4→5 |
 
 **분기 판단 기준:** A급 = 수식·표·코드·규제 파급력이 모두 있는 핵심 축.  
 B급 = 구현·응용 위주, 개념보다 워크플로우 중심.  
 C급 = 내용보다 정리가 목적.
+
+> ⚠️ **Source Fidelity는 모든 모드에서 유지한다.**  
+> A/B급은 PROMPT 2 (전체 감사), C급은 PROMPT 2-lite (최소 감사).  
+> Phase 2를 완전히 생략하면 수식·수치 오류와 환각이 Content Lock까지 전파되어 HTML 단계에서 수정이 불가능해진다.
 
 ---
 
@@ -192,11 +196,35 @@ Extract explicitly stated key messages from chapter opening, summary, and closin
 Report which appear in Draft v0 and which are absent.
 
 T4. PRIORITY AUDIT TABLE
-Assign final priority to every finding:
+Assign final priority to every finding from T1–T3:
   MUST_FIX   : Error or HIGH-critical omission — mandatory.
   SHOULD_FIX : Important gap — strongly recommended.
   OPTIONAL   : Minor enrichment — editor's discretion.
   REJECT     : Do not incorporate — introduces scope creep or inaccuracy.
+
+T5. COVERAGE AUDIT — 누락 검증
+Enumerate all structural elements in the PDF page range below.
+Then verify which are reflected in Draft v0 and which are absent.
+
+Elements to enumerate:
+  - All section headings (H1–H3 level)
+  - All named equations or numbered formulas
+  - All figures and tables (by caption or label)
+  - Sentences the author repeats in more than one location
+  - All worked examples, case studies, and experimental datasets
+  - Chapter summary, box summaries, and concluding messages
+
+For each element, assign a Step 1 status:
+  INCLUDED_AS_MUST    : present in a MUST-tier concept card.
+  INCLUDED_AS_CONTEXT : present as 1–2 sentence CONTEXT reference.
+  OMITTED_JUSTIFIABLE : absent; omission is justified (duplicates, trivial detail, out of scope).
+  OMITTED_PROBLEMATIC : absent; omission reduces learning quality.
+
+For every OMITTED_PROBLEMATIC item, classify further:
+  MISSING_CRITICAL      : absence breaks conceptual chain.
+  MISSING_EXAMPLE       : author's key worked example or dataset absent.
+  MISSING_AUTHOR_MSG    : author's explicitly stated key message absent.
+  MISSING_BRIDGE        : absence creates unexplained conceptual jump.
 
 === OUTPUT FORMAT ===
 
@@ -216,14 +244,84 @@ Assign final priority to every finding:
 | # | Item | Priority | Rationale |
 |---|------|----------|-----------|
 
+## T5: Coverage Audit
+| PDF Element | Type | PDF Location | Step 1 Status | Omission Verdict | Required Action |
+|-------------|------|-------------|---------------|-----------------|----------------|
+
 === HARD CONSTRAINTS ===
 
 - Do not rewrite any portion of Draft v0.
 - Do not add new explanations, analogies, or examples.
 - If uncertain whether a value appears in PDF, classify RESTORED and flag [확인 필요].
 - Pedagogical simplifications are NOT errors.
+- T5: if the PDF page range contains figures or tables that are not enumerable via text extraction,
+  note them as [그림/표 — 텍스트 추출 불가] and flag for manual review.
 
 Language: Korean for rationale text. English for terms, equations, values.
+```
+
+---
+
+### PROMPT 2-lite — Source Fidelity Lite *(C-Fast-Safe 전용)*
+```
+ROLE: Source Fidelity Auditor — Lite Mode.
+
+This is the minimum accuracy gate for C-Fast-Safe chapters.
+Scope is narrower than full Audit (PROMPT 2); speed is prioritized over exhaustiveness.
+
+INPUTS:
+  [A] Original textbook PDF (attached)
+  [B] Step 1 Draft v0 (attached / pasted)
+
+=== LITE AUDIT TASKS ===
+
+L1. EQUATION & UNIT SPOT-CHECK
+Identify any equation, numerical value, or unit in Draft v0 that differs from the PDF.
+Do not enumerate all equations — flag only visible discrepancies.
+Classify: ERROR | RESTORED | NOT_IN_SOURCE.
+For ERROR: state the PDF original and the correction.
+
+L2. NOT_IN_SOURCE SWEEP
+Identify any claim, figure reference, experimental result, or citation in Draft v0
+that cannot be located in the PDF.
+Classify each as: NOT_IN_SOURCE (hallucination risk) | UNVERIFIABLE (cannot confirm).
+
+L3. KEY AUTHOR MESSAGES — QUICK CHECK
+From the chapter opening statement, any boxed summary, and the closing paragraph:
+State whether the author's primary message is reflected in Draft v0.
+Binary: REFLECTED | ABSENT.
+If ABSENT: state the message and its PDF location.
+
+L4. [확인 필요] FLAG PRESERVATION
+Confirm that all [복원] and [확인 필요] markers in Draft v0 are present.
+If any are absent, flag the location.
+
+=== OUTPUT FORMAT ===
+
+## L1: Equation & Unit Discrepancies
+| Item | Draft v0 | PDF Source | Classification | Fix |
+
+## L2: NOT_IN_SOURCE Items
+| Claim in Draft v0 | Classification | Action |
+
+## L3: Author Key Message Check
+| Message | Reflected? | PDF Location | Action if Absent |
+
+## L4: Flag Preservation
+| Flag in Draft v0 | Status |
+
+## Priority Summary
+  MUST_FIX (any ERROR, NOT_IN_SOURCE, ABSENT key message):
+  OPTIONAL (UNVERIFIABLE — flag only):
+
+=== HARD CONSTRAINTS ===
+
+- Do not rewrite Draft v0.
+- Do not propose content improvements or additions.
+- Do not perform exhaustive equation enumeration — spot-check only.
+- If a value is not clearly wrong, do not flag it. Precision over recall in lite mode.
+
+Language: Korean for rationale. English for terms, equations, values.
 ```
 
 ---
@@ -688,7 +786,9 @@ Phase 6  → QA Report v1.md + Final HTML
 |-------|---------|------|
 | 1 | §2 카드 작성 전 Curation Map 없음 | Phase 1 재실행 |
 | 1 | Big Idea가 "이 개념은 중요하다" 수준 | Big Idea만 재작성 |
-| 2 | 새로운 설명이나 비유가 Audit Report에 포함됨 | Gemini에 재지시: "이미 작성한 설명을 모두 삭제하고 감사표만 남겨라" |
+| 2    | 새로운 설명이나 비유가 Audit Report에 포함됨 | Gemini에 재지시: "이미 작성한 설명을 모두 삭제하고 감사표만 남겨라" |
+| 2    | T5 Coverage Audit에서 OMITTED_PROBLEMATIC 항목이 다수 | Phase 4A에서 ADOPT 여부 재판정 후 반영 |
+| 2-lite | NOT_IN_SOURCE 항목이 발견됨 | Phase 4A에서 해당 항목 DELETE 또는 [교과서 외 해석] 처리 |
 | 3 | Crucible Report에 T4 삭제 목록 없음 | Phase 3 재실행 |
 | 3 | 삽입 문장이 3문장 이상 | 각 삽입문을 1–2문장으로 재압축 |
 | 4A   | Content Lock v1이 Draft v0보다 길다 | Compression Pass 재수행 |
@@ -715,8 +815,9 @@ Phase 6  → QA Report v1.md + Final HTML
 
 ---
 
-*교과서 체화 HTML 워크플로우 Unified v3.1*  
+*교과서 체화 HTML 워크플로우 Unified v3.2*  
 *통합 기반: v1.0 Prompt Suite + v2.0 Master's Lens Design + v3.0 Phase Ordering*  
 *v3.1 패치: Phase 4B → 4B-1(Readability Polish) + 4B-2(Annotation) 분리 적용*  
+*v3.2 패치: Phase 2에 T5 Coverage Audit 추가 / C-Fast → C-Fast-Safe (PROMPT 2-lite 필수 포함)*  
 *핵심 설계 원칙: 기능 분리 → Master's Lens First → Accuracy Before Insight → Editorial Lock → HTML化*  
 *PIPET Lab · Pharmacometrics PhD Program*
