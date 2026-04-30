@@ -33,9 +33,10 @@
                        ↓
 ┌─────────────────────────────────────────────────────┐
 │  PHASE 4 · Content Lock  ← 워크플로우의 중심         │
-│  도구: GPT-5.5 Thinking (동일 세션 2-pass)           │
-│  4A · Integration + Compression → Content Lock v1   │
-│  4B · Pedagogical Micro-pass  → Content Lock v2     │
+│  도구: GPT-5.5 Thinking (동일 세션 3-pass)           │
+│  4A  · Integration + Compression → Content Lock v1  │
+│  4B-1· Readability & Flow Polish  → Content Lock v1.5│
+│  4B-2· Pedagogical Annotation     → Content Lock v2 │
 │  산출: Content Lock v2  (.md)  ← STEP 1 확정본      │
 └──────────────────────┬──────────────────────────────┘
                        ↓
@@ -326,13 +327,14 @@ Language: Korean prose. English for technical terms, NONMEM syntax, equations, d
 
 ---
 
-## PHASE 4. Content Lock (동일 세션, 2-pass)
+## PHASE 4. Content Lock (동일 세션, 3-pass)
 **도구:** GPT-5.5 Thinking  
 **업무 형태:** 파일 첨부 (Deep Research OFF — 내부 통합 판단 작업)  
 **입력:** PDF + Step 1 Draft v0 + Audit Report v1 + Crucible Report v1  
 **산출:** `Content Lock v2` (.md) ← **STEP 1 최종 확정본**
 
-두 프롬프트를 동일 세션에서 순차 실행한다. 세션 전환 없음.
+세 프롬프트를 동일 세션에서 순차 실행한다. 세션 전환 없음.  
+4A → 4B-1 → 4B-2 순서를 반드시 지킨다. 4B-1(문장 가독성) 없이 4B-2(annotation)를 먼저 실행하지 않는다.
 
 ---
 
@@ -413,64 +415,108 @@ Language: Korean prose. English for technical terms, equations, NONMEM code, dru
 
 ---
 
-### PROMPT 4B — Pedagogical Micro-pass *(즉시 이어서 동일 세션)*
+### PROMPT 4B — Readability & Pedagogical Micro-pass *(즉시 이어서 동일 세션, 2-pass)*
 ```
 Content Lock v1 is structurally and factually finalized.
 
-ROLE: Pedagogical Annotator.
-Function: identify points where a PhD-level reader is likely to lose the thread,
-and insert minimal guiding annotation at those points only.
-Non-function: alter facts, restructure content, add new concepts.
+ROLE: Pedagogical Editor + Annotator.
 
-=== ANNOTATION TYPES ===
+Overall function:
+  PASS 1 — Make existing sentences more readable without changing their meaning.
+  PASS 2 — Add minimal annotations only where a PhD reader may still lose the thread.
+
+Non-function (applies to both passes):
+  - Do not add new facts, examples, values, or source citations.
+  - Do not restructure sections or reorder concepts.
+  - Do not weaken technical precision for the sake of simplicity.
+
+=== PASS 1 — READABILITY & FLOW POLISH ===
+
+Review Content Lock v1 sentence by sentence.
+Polish a sentence ONLY when one of the following conditions applies:
+  R1: Technically correct but cognitively dense — one reading is not enough.
+  R2: Causal logic is implicit; the reader must infer the "therefore."
+  R3: Clinical or practical importance is hidden inside the sentence.
+  R4: Stacked noun phrases slow comprehension without adding precision.
+  R5: The reader can parse the words but cannot form a mental image.
+
+Permitted edits:
+  - Split one overly dense sentence into 2 shorter sentences.
+  - Replace abstract phrasing with concrete but equally accurate phrasing.
+  - Make causal logic explicit using connectives: "따라서", "즉", "왜냐하면", "이 때문에".
+  - Move the "why this matters" phrase to appear closer to the concept statement.
+  - Preserve without alteration: all equations, numerical values, source tags,
+    [확인 필요] flags, technical claims, and NONMEM code.
+
+Prohibited edits:
+  - Do not change facts, assumptions, definitions, equations, or conclusions.
+  - Do not add clinical scenarios not present in Content Lock v1.
+  - Do not reduce technical precision.
+  - Do not adopt an exam-prep or childish tone.
+
+Pass 1 output:
+  Step A: Edit log table (locations edited and why).
+  | Location (§ + card) | Edit type (R1–R5) | Before (excerpt) | After (excerpt) |
+
+  Step B: Generate Polished Content Lock v1.5.
+  All markers (<!-- MASTER LENS -->, <!-- TRENCH -->, etc.) carry forward unchanged.
+
+=== PASS 2 — PEDAGOGICAL ANNOTATION ===
+
+Using Polished Content Lock v1.5, identify remaining points where
+a PhD-level reader may still lose the thread after Pass 1.
+Add minimal annotation only at those points.
+
+ANNOTATION TYPES:
 
 TYPE A — FIRST-USE GLOSSES
   Trigger: technical term appearing for the first time that could be misread.
   Format : term(← gloss ≤10 Korean words)
   Example: 청소율(CL)(← 단위 시간당 혈액에서 약물이 제거되는 용적)
-  Rule   : first occurrence of each term only. Never repeat.
+  Rule   : first occurrence of each term only. Never repeat for the same term.
 
 TYPE B — CONCEPTUAL BRIDGE SENTENCES
-  Trigger: new concept appearing without explicit logical connection to preceding content.
+  Trigger: new concept appearing without explicit logical connection to preceding content
+           that Pass 1 did not resolve.
   Format : 1–2 explicit bridge sentences.
   Example: "앞서 정의한 Vd 없이는 CL의 임상 의미를 해석할 수 없다. 왜냐하면..."
-  Rule   : only where the connection is genuinely non-obvious to a PhD reader.
+  Rule   : only where the connection is genuinely non-obvious at PhD level.
 
 TYPE C — STRUCTURAL ANALOGIES
-  Trigger: abstract concept resisting mental visualization.
+  Trigger: abstract concept resisting mental visualization after Pass 1.
   Format : "이것은 마치 ...와 같다. 단, 실제로는..."
   Rule   : maximum 1 per concept card. Exclude if the analogy risks misunderstanding.
 
-=== FILTER (apply to every candidate before output) ===
-
-  F1: Already clearly explained in current text? → Exclude.
+FILTER (apply to every candidate before inclusion):
+  F1: Already clear after Pass 1? → Exclude.
   F2: Would a PhD reader find this patronizing? → Exclude.
   F3: Does this interrupt reading flow? → Exclude.
-  F4: Rate remaining: Overexplanation Risk = Low | Medium | High.
+  F4: Does this introduce unsupported meaning? → Exclude.
+  F5: Rate remaining: Overexplanation Risk = Low | Medium | High.
 
-=== OUTPUT ===
+Pass 2 output:
+  Step 1: Annotation candidate table.
+  | Type | Location (§ + card) | Current text (excerpt) | Proposed annotation | Risk |
 
-Step 1: Annotation candidate table.
-| Type | Location (§ + card) | Current text (excerpt) | Proposed annotation | Risk |
+  Step 2: Final recommendation list.
+    Must annotate (Low risk):
+    Optional (Medium risk, high learning value):
+    Do not annotate:
 
-Step 2: Final recommendation list.
-  Must annotate (Low risk only):
-  Optional (Medium, high learning value):
-  Do not annotate:
-
-Step 3: Generate Content Lock v2.
-  Incorporate: all Low-risk + selected Medium-risk candidates.
-  Add marker <!-- ANNOTATION --> at each insertion point.
+  Step 3: Generate Content Lock v2.
+    Incorporate: all Low-risk + selected Medium-risk annotations.
+    Add marker <!-- ANNOTATION --> at each insertion point.
 
 === HARD CONSTRAINTS ===
 
-- Content Lock v2 must not exceed Content Lock v1 by more than 5%.
-  If exceeded: remove lowest-value annotations until constraint is met.
-- Do not add new concepts, values, or examples.
-- Do not alter any existing sentence — insert annotation inline only.
-- [확인 필요] flags: carry forward unchanged.
+- Content Lock v2 must not exceed Content Lock v1 by more than 8%.
+  (Pass 1 readability edits + Pass 2 annotations combined.)
+  If exceeded: remove lowest-value annotations first, then revert lowest-value Pass 1 edits.
+- Do not add new concepts, values, examples, or source claims in either pass.
+- [확인 필요] flags must carry forward unchanged through both passes.
+- Pass 1 must complete and produce v1.5 before Pass 2 begins.
 
-Language: Korean prose. English for technical terms, equations, variables.
+Language: Korean prose. English for technical terms, equations, variables, NONMEM syntax.
 
 Content Lock v2 = STEP 1 FINAL DELIVERABLE.
 ```
@@ -621,14 +667,15 @@ Rendering, structure, marker styling, and interactivity fixes only.'
 ## 단계 간 산출물 체계
 
 ```
-Phase 0 → Scope Lock block (text)
-Phase 1 → Step 1 Draft v0.md
-Phase 2 → Audit Report v1.md
-Phase 3 → Crucible Report v1.md
-Phase 4A → Content Lock v1.md         (intermediate)
-Phase 4B → Content Lock v2.md         ← STEP 1 FINAL
-Phase 5 → Draft HTML v1.html
-Phase 6 → QA Report v1.md + Final HTML
+Phase 0  → Scope Lock block (text)
+Phase 1  → Step 1 Draft v0.md
+Phase 2  → Audit Report v1.md
+Phase 3  → Crucible Report v1.md
+Phase 4A → Content Lock v1.md          (intermediate — integration + compression)
+Phase 4B-1 → Content Lock v1.5.md     (intermediate — readability polish)
+Phase 4B-2 → Content Lock v2.md       ← STEP 1 FINAL
+Phase 5  → Draft HTML v1.html
+Phase 6  → QA Report v1.md + Final HTML
 ```
 
 ---
@@ -644,9 +691,12 @@ Phase 6 → QA Report v1.md + Final HTML
 | 2 | 새로운 설명이나 비유가 Audit Report에 포함됨 | Gemini에 재지시: "이미 작성한 설명을 모두 삭제하고 감사표만 남겨라" |
 | 3 | Crucible Report에 T4 삭제 목록 없음 | Phase 3 재실행 |
 | 3 | 삽입 문장이 3문장 이상 | 각 삽입문을 1–2문장으로 재압축 |
-| 4A | Content Lock v1이 Draft v0보다 길다 | Compression Pass 재수행 |
-| 4A | Crucible Grade C 항목이 채택됨 | 해당 항목 REJECT 처리 |
-| 4B | Content Lock v2가 v1보다 5% 초과 | 낮은 가치 annotation 제거 |
+| 4A   | Content Lock v1이 Draft v0보다 길다 | Compression Pass 재수행 |
+| 4A   | Crucible Grade C 항목이 채택됨 | 해당 항목 REJECT 처리 |
+| 4B-1 | 문장의 사실·수식·결론이 바뀜 | 해당 문장만 원문으로 복원 |
+| 4B-1 | 새 임상 시나리오나 수치가 추가됨 | 추가 내용 삭제, Pass 1 규칙 재확인 |
+| 4B-2 | Content Lock v2가 v1 대비 8% 초과 | 낮은 가치 annotation 제거 후 재점검 |
+| 4B-2 | 같은 용어에 gloss가 두 번 이상 달림 | 첫 등장 1회만 남기고 나머지 삭제 |
 | 5 | 마커가 HTML에 스타일 없이 텍스트로 남음 | 마커별 컴포넌트 매핑 재적용 |
 | 5 | Self-Test 정답이 기본 상태에서 노출됨 | JS 아코디언 로직 수정 |
 | 5 | [확인 필요]가 HTML에서 사라짐 | `<mark>` 태그 적용 |
@@ -665,7 +715,8 @@ Phase 6 → QA Report v1.md + Final HTML
 
 ---
 
-*교과서 체화 HTML 워크플로우 Unified v3.0*  
+*교과서 체화 HTML 워크플로우 Unified v3.1*  
 *통합 기반: v1.0 Prompt Suite + v2.0 Master's Lens Design + v3.0 Phase Ordering*  
+*v3.1 패치: Phase 4B → 4B-1(Readability Polish) + 4B-2(Annotation) 분리 적용*  
 *핵심 설계 원칙: 기능 분리 → Master's Lens First → Accuracy Before Insight → Editorial Lock → HTML化*  
 *PIPET Lab · Pharmacometrics PhD Program*
