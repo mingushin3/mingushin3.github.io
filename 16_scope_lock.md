@@ -174,3 +174,20 @@ HARD RULES (apply to all phases):
   MUST 개념 카드 내용으로 확장하지 않는다.
 
 =================
+거장의 시각에서 이 세션의 핵심 위험은 다음과 같습니다.
+첫째, Peak-shift 방향 오판이 가장 치명적입니다. 용량 증가 시 반응 최솟값(nadir) 또는 최댓값(peak)이 왼쪽으로 이동하면 Receptor On/Off 또는 Turnover-loss stimulation이고, 오른쪽으로 이동하면 Turnover-input inhibition입니다. 이 방향을 반대로 읽으면 모델 구조 자체가 틀립니다.
+둘째, Bayesian LS의 극단 케이스 세 가지(농도 없음 → population prior만, 사전정보 없음 → MLE, 둘 다 있음 → full Bayes)를 개념 없이 공식만 외우면 TDM 소프트웨어 출력을 해석할 수 없습니다.
+셋째, PK15의 안전역 소통은 "Cmax가 50 µM에 달해도 독성 없음, 치료 농도 0.05–0.1 µM → 100배 이상 안전역"이라는 규제 언어 구사 능력을 훈련합니다. 이 실제 수치가 §6 시나리오에 반드시 등장해야 합니다.
+Phase 1 진행 시 주의사항
+1. Curation Map 우선순위 명시 필수
+Ch.6의 케이스 A~I는 전부 MUST 처리가 아니라 "패턴 분류 논리(Peak-shift 방향 × Saturation 유무 × 모델 구조)"를 MUST로, 개별 케이스 방정식은 CONTEXT로 분류해야 §2 카드가 폭발하지 않습니다.
+2. PK15는 §6 시나리오에 수렴
+PK15는 별도 §2 카드보다 §6 실용 시나리오(독성동태학 NCA 보고 + 안전역 규제 언어)로 통합하는 것이 B-Standard 가중 처리에 부합합니다. Phase 1 작업자가 PK15에 과잉 카드를 생성하지 않도록 Curation Map에서 명시적으로 CONTEXT 처리할 것.
+3. 토큰 절단 대비 완성 순서 고수
+Step 1 생성 순서를 Ch.6(§2 핵심 카드) → PK35(§2 Bayesian 카드) → PK15(§6 시나리오 편입) → §5·§7·§8 순으로 배치하면, 절단 발생 시 핵심 파트가 보존됩니다.
+4. Study Problems (pp. 483–489)는 §7 Self-Test 문항 설계 참고에만 활용하고 MUST 카드 범위에 포함하지 않는다.
+5. 간질환·심혈관질환 섹션은 신질환 섹션의 대비 맥락으로 CONTEXT 처리 가능 — Curation Map 작성 시 MUST/CONTEXT 경계를 명확히 설정할 것.
+6. Disease on PD 섹션(pp. 478–482)의 WHIG model은 개념적 배경으로만 다루고 수식 도출 깊이는 CONTEXT tier가 적절하다.
+7. Digoxin CL·V 공식 (CL = 1.3·CLcr + 41, V = 226 + 298·CLcr/(29+CLcr))은 Ch. 15 Table 15-7 출처이므로 Micro-citation 태그에 [출처: R&T 5e, Ch.15, Table 15-7]로 명시한다.
+8. TCS 적용 기준(Table 18-5, 18-6)은 MUST tier, Loading dose 결정 원칙은 MUST tier, Adherence 섹션은 CONTEXT tier로 Curation Map을 구성하는 것이 권장된다.
+9. Variability 섹션(pp. 579–583)은 Ch. 12–17 복습 성격이므로 CONTEXT 처리 — Figure 18-2·18-5·18-6의 수치 인용 시 출처 태그 필수.
