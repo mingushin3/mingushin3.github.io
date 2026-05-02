@@ -80,3 +80,10 @@ HARD RULES:
   - Image rights = None → 교과서 원그림 임베드 금지;
     Figure Pointer(📖 callout) 방식으로만 처리.
 =================
+Phase 1 진행 시 주의사항
+① §3.10 의도적 제외 확인 필수
+Scope Lock의 page range는 §3.9(pp.261–272) → §3.11(pp.284–302)로 §3.10 Dose-Response-Time Models(pp.272–284)를 명시적으로 건너뛴다. PDF에는 해당 내용이 존재한다. Phase 1 초안 작성 전, §3.10 제외가 커리큘럼 의도(세션 분리 또는 범위 축소)인지 확인하고 Curation Map에 CONTEXT 처리 여부를 결정할 것. 의도적 제외가 맞다면 현행 유지.
+② G&W + R&T 역할 분담 명확 적용
+두 소스가 동시에 투입된다. Phase 1 작성 중 G&W = 수식 도출·실험 데이터 앵커링, R&T = 임상·생리학적 해석·hysteresis 진단 논리로 역할을 분리하여 혼용하지 않을 것. 특히 hysteresis 방향 판별(시계/반시계) 설명은 R&T Ch.8 논리를 우선 적용한다.
+③ PD13 데이터 해석 경계 준수
+Case Study PD13의 Model I·II·III 파라미터 비교표(Table 13.1)는 §3.11 Tolerance 개념의 핵심 앵커이나, §3.9 Effect Compartment 카드에서 오용될 위험이 있다. "Link 모델을 Turnover 데이터에 잘못 적용했을 때의 결과"로만 §3.9 C-2 Plausible Fallacy에 인용하고, PD13 수치 자체는 §3.11 카드에 귀속시킬 것.
