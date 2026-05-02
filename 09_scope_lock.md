@@ -60,3 +60,11 @@ HARD RULES (apply to all phases):
 - TMDD 파라미터 표기는 PK27/R&T Ch.21의 통일 표기(kon, koff, kin, kout,
   ke(RL), R₀, Km, Kd)를 엄격히 준수; 문헌별 혼용 표기 충돌 시 [복원] 처리.
 =================
+Phase 1 진행 시 주의사항
+① MUST 카드 수 상한 사전 설정
+74페이지 범위에서 Curation Map을 작성하면 §2.6의 모든 소절(2.6.1~2.6.7)이 MUST로 분류될 위험이 있습니다. §2.6.6(체온 일주기 리듬), §2.6.7(피드백 일반론)은 TMDD kin/kout 구조를 설명하는 데 직접 필요하지 않으므로 CONTEXT 처리가 권장됩니다. MUST 카드는 5개 이내로 제한하고 Apex Concept는 TMDD 완전 모델(PK27)에 배정하는 것이 자연스럽습니다.
+② R&T Study Problems(pp.726–730) 처분 원칙
+해당 페이지는 Scope Lock 범위에 포함되어 있으나 §2 개념 카드 대상이 아닙니다. §7 Self-Test 설계 시 이 문제들을 참조하여 질문 프레임을 차용하는 것으로 활용을 제한합니다.
+③ 파라미터 표기 충돌 사전 대비G PK27과 R&T Ch.21이 동일 파라미터를 다르게 표기하는 경우가 있습니다(예: G는 koutk_{out}
+kout​을 target degradation, R&T는 kdegk_{deg}
+kdeg​로도 표기). Phase 1 §2-B 도출 단계에서 PK27 표기를 기준으로 통일하고 R&T 표기 차이는 각주에 명시합니다.
