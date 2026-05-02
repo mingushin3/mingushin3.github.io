@@ -53,3 +53,10 @@ HARD RULES (apply to all phases):
 - Do not reproduce or embed copyrighted textbook figures unless
   Image rights = User-supplied OR Open-license source with attribution.
 =================
+Phase 1 진행 시 주의사항
+① Ch.13 MUST/CONTEXT 분리 선제 선언 필수
+Ch.13은 18페이지에 걸쳐 CYP2D6·2C9·2C19·TPMT·NAT2·UGT·약력학적 다형성을 모두 망라합니다. Phase 1 Curation Map에서 MUST: "유전적 다형성이 IIV의 불연속적 구조를 만드는 메커니즘" 하나로 수렴시키고, 개별 isoform 세부 사항(아세틸화·가수분해·hydrolysis 각론)은 CONTEXT 1–2문장 처리를 선언한 뒤 §2 작성을 시작해야 합니다. 그러지 않으면 §2 카드가 약리유전학 강의록이 됩니다.
+② G&W Ch.4 EDA 내용의 역할 명확화
+Ch.4의 spaghetti plot(4.2.2)·NAD/NPD(4.2.2)는 IIV 시각화와 population approach 도입 근거로 MUST 처리 가능합니다. 그러나 Lineweaver-Burke·Scatchard plot 선형화(4.2.4)·Euler 수치적분(4.6–4.7) 등은 이 세션의 핵심 축과 거리가 있으므로 CONTEXT 또는 생략이 적절합니다. Phase 1 Curation Map에서 이 경계를 명시적으로 그어야 합니다.
+③ 두 소스의 역할 충돌 지점 사전 설정
+R&T Ch.12는 ω²·σ²를 개념적으로 설명하고, G&W PK50은 동일 개념을 12명 실험 데이터로 앵커링합니다. 혼합 소스 처리 규칙대로 R&T = 임상·생리학적 의미 담당, G&W = 수치 앵커링·데이터 도출 담당으로 역할을 처음부터 분리해 §2 카드별 인용 출처가 뒤섞이지 않도록 해야 합니다.
