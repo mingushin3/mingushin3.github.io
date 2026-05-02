@@ -73,3 +73,12 @@ HARD RULES:
 - Do not reproduce or embed copyrighted textbook figures.
   Image rights = None → pointer callout(P mode)만 허용.
 =================
+Phase 1 진행 시 주의사항
+주의 1 — §2.9 범위 경계 명시 필요
+§2.9 "How to Assess Exposure" (p.158–164)는 NCA 계산 방법론과 직접 연결되지 않는 노출 평가 철학 및 6가지 실험 사례 중심입니다. Phase 1에서 Curation Map 작성 시, §2.9의 대부분 항목(Fig.2.127–2.133 사례들)은 CONTEXT-tier로 분류하고 §2.9.3의 CmaxC_{max}
+Cmax​, AUC, tdt_d
+td​ 노출 지표 분류만 MUST-tier로 올리십시오. 전체를 MUST로 올리면 카드 수가 허용 범위를 초과합니다.
+주의 2 — PK41과 이론 섹션의 역할 분리
+PK41(p.661–664)은 §2.8의 실무 앵커(NCA→초기모수→MM 회귀) 역할을 합니다. Phase 1에서 §6 실용 시나리오의 원천 데이터로 사용하되, §2 개념 카드 본문에 PK41 수치를 직접 삽입하지 않도록 주의하십시오. 카드에는 수식·원리, §6에는 Turbojoint® 실제 수치가 위치해야 구조가 깔끔합니다.
+주의 3 — R&T의 위상 처리
+Scope Lock에서 R&T를 "Supplementary"로 지정했으므로, Phase 1에서 동일 개념(예: MRT 정의)이 두 소스에 모두 나올 경우 **Gabrielsson 수식 도출을 주(主), R&T의 분자 수준 직관(Appendix H의 molecule counting 논리)을 보완(補)**으로 통합하십시오. R&T의 Table H-1·H-2 실제 수치는 §5 혼동쌍 검증 예시로 활용하면 효과적입니다.
