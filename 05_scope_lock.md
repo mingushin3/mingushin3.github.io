@@ -63,3 +63,10 @@ HARD RULES:
 - [확인 필요] = flag and retain; never delete unverifiable content.
 - Do not reproduce or embed copyrighted textbook figures.
 =================
+Phase 1 진행 시 주의사항
+① 토큰 관리 — 78p 혼합 소스 처리 전략
+G&W 이론·케이스·R&T 세 덩어리를 동시에 처리하므로 Curation Map 단계에서 MUST/CONTEXT 분류를 먼저 완료한 후 §2 카드 작성에 진입해야 합니다. 분류 없이 바로 카드를 쓰면 R&T의 방대한 임상 사례가 MUST 카드로 과잉 흡수될 위험이 있습니다.
+② 혼합 소스 역할 경계 유지
+G&W PK7·PK8의 케이스 수치는 §4 시뮬레이터 기본값과 §6 시나리오에만 사용하고, R&T의 aspirin·gentamicin 사례는 §2 Big Idea 블록과 §5 혼동쌍 기억 고리에 배치하는 방식으로 역할 분담을 명확히 하세요. 두 소스의 수치가 §2 한 카드 안에 혼재되면 출처 추적이 불가능해집니다.
+③ Vss vs. Vβ — Apex Concept 지정 권장
+이 세션에서 가장 치명적인 혼동쌍은 Vss와 Vβ(Vz)입니다. R&T p.629–630의 aspirin·gentamicin 비교 수치(Table 19-1 포함)가 이를 정량적으로 보여주므로, 이 개념을 [⚡ Apex Concept]으로 지정하고 C-2 Plausible Fallacy를 여기에 집중시키는 것이 적합합니다.
