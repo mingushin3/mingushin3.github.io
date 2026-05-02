@@ -74,3 +74,12 @@ CURATION CONSTRAINTS (Phase 1 Curation Map 강제 조건):
   각각 소용적 Vd MUST 카드, 혈장-혈액 농도비 MUST 카드의
   B항(Derivation) 내 수식 보조 소스로만 활용.
 =================
+Phase 1 진행 시 주의사항
+①  Curation Map을 반드시 먼저 출력하고 MUST 6개 상한 준수
+Ch.4의 소주제(막구조→수송체→관류/투과 제한→Vd→단백결합→조직결합→소용적 모델)가 모두 MUST로 올라올 경우 Step 1이 붕괴합니다. 관류 제한·투과성 제한은 하나의 카드로 통합하고, 소용적 모델(App.C)은 Vd 카드 B항 내 처리를 권장합니다.
+② G&W PK47 데이터는 §2 B항 수치 앵커로만 사용
+PK47은 독립 개념이 아니라 단백결합 MUST 카드의 Dynamic Source Anchoring 소스입니다. 별도 카드로 분리하면 세션이 비대화됩니다.
+③ CC
+C vs. CuC_u
+Cu​ 혼동쌍은 §5 Critical Blow 지정 예약
+G&W §2.9.3–§2.9.5 + Benet & Hoener [2003] 456개 약물 결론은 이 혼동쌍의 실무 파급력이 가장 크며, NDA/IND 규제 맥락과 직결됩니다. Phase 1 시작 전 이 쌍을 Critical Blow 후보로 미리 지정해두면 Curation Map 작성이 수월합니다.
