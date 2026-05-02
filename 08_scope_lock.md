@@ -224,6 +224,11 @@ HARD RULES (apply to all phases):
 - Do not reproduce or embed copyrighted textbook figures unless
   Image rights = User-supplied OR Open-license source with attribution.
 =================
+작성 근거 메모
+항목선택 이유Mode A-CriticalMM 소거·유도 모델은 수식 오독 시 NONMEM 코드에서 직접 오류로 이어짐; 파라미터 물리적 의미와 임상 함의 엄밀 확인 필수파일 A(G) / 파일 B(T) 병기개념과 Case Study가 분리 파일이므로, Step 2에서 cross-reference 시 페이지 혼선 방지DDI PD section 포함파일명에 "DDI 기전" 명시; §3.6 경쟁/비경쟁 모델이 실제 DDI 연구설계·규제 제출의 PD 파트 기초이므로 scope에 편입Image rights = None교재 저작권 보호; 핵심 그림(Fig 2.87–2.88 Cl-C 관계, Fig 2.92 유도 time course 등)은 HTML 단계에서 SVG 자작 대체
+운영 제언: 두 챕터가 강하게 연결되어 있어(Ch.16의 Cu,ss=KmR0/(Vm−R0)C_{u,ss} = K_m R_0/(V_m - R_0)
+Cu,ss​=Km​R0​/(Vm​−R0​) → Ch.17의 CLinhibitedCL_{inhibited}
+CLinhibited​ 도출) Ch.16을 먼저 세션으로 처리한 뒤 Ch.17을 진행하는 순서를 권장합니다. 또는 두 챕터를 단일 세션으로 통합 처리할 경우 Ch.16의 Michaelis-Menten 파라미터 체계를 §2 첫 카드로 배치하는 구조가 최적입니다.
 Phase 1 진행 시 주의사항
 1. p.224 이중 귀속 처리 — §3.5.7 (Multiple binding site model)과 §3.6.1 (Competitive antagonism)이 동일 페이지(p.224)에 혼재합니다. Phase 1 추출 시 섹션 헤더 기준으로 구분하되, p.224 전체를 두 섹션에 걸쳐 이중 처리하지 않도록 주의하세요.
 2. PK21 내용 경계 — §2.7.3.3 본문(pp.123–125)에 nortriptyline 사례가 서술되어 있고, 이는 IN SCOPE입니다. 그러나 Case Study PK21 자체는 파일에 없으므로 본문 서술 범위 내에서만 수치를 인용하고, PK21 원문을 별도 참조하지 않습니다.
