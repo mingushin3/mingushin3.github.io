@@ -91,3 +91,8 @@ HARD RULES (apply to all phases):
 - Do not reproduce or embed copyrighted textbook figures.
 
 =================
+Phase 1 진행 시 공통 주의사항
+
+Vol I 소스 분기 적용: 두 소스 모두 Vol I(이론) 분류이므로 §2-B는 "NONMEM 코드 블록" 대신 "단계별 수식 도출 + 생리학적 항 주석"으로 전개. $DES 코드 구조 작성 절대 금지.
+Scope Lock A 전용: §3.6.2–§3.6.5 구간은 Phase 1에서 언급하지 않거나 [확인 필요] 처리. Curation Map 작성 시 해당 구간의 개념(예: 비경쟁적 길항)을 MUST 항목으로 설정하지 말 것.
+두 Scope Lock 동시 처리 시: Gabrielsson은 수식 도출·실험 데이터 앵커링 담당, R&T는 임상·시간적 해석 담당으로 역할 분리 후 통합. 혼합 소스 처리 규칙에 따라 Big Idea 블록부터 출처를 명확히 구분.
