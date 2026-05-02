@@ -80,6 +80,8 @@ HARD RULES:
   - Image rights = None → 교과서 원그림 임베드 금지;
     Figure Pointer(📖 callout) 방식으로만 처리.
 =================
+거장의 시각 — 이 Scope Lock이 포착한 것:
+이 세션은 단순히 "PK/PD 지연 모델 3종 세트"가 아니다. 수식을 외우는 것과 내면화하는 것 사이의 균열이 가장 극명하게 드러나는 영역이다. Effect Compartment가 "분포 속도 상수 하나를 추가하는 것"으로 암기되는 순간, Turnover 데이터에 Link 모델을 잘못 적용해 EC₅₀가 용량에 따라 3배씩 달라지는 PD13의 참사(Table 3.10)가 재현된다. Tolerance의 Moderator M 구조는 "내성"이라는 임상 단어 뒤에 숨어있는 ODE 쌍이고, 이것을 체화한 모델러는 CWRES가 반시계 히스테리시스 패턴을 보일 때 어느 구조를 추가해야 하는지를 즉각 판단한다. 이 판단 능력이 이 세션의 진짜 학습 목표다.
 Phase 1 진행 시 주의사항
 ① §3.10 의도적 제외 확인 필수
 Scope Lock의 page range는 §3.9(pp.261–272) → §3.11(pp.284–302)로 §3.10 Dose-Response-Time Models(pp.272–284)를 명시적으로 건너뛴다. PDF에는 해당 내용이 존재한다. Phase 1 초안 작성 전, §3.10 제외가 커리큘럼 의도(세션 분리 또는 범위 축소)인지 확인하고 Curation Map에 CONTEXT 처리 여부를 결정할 것. 의도적 제외가 맞다면 현행 유지.
