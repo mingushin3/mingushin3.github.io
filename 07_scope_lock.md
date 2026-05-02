@@ -122,6 +122,13 @@ HARD RULES (apply to all phases):
   unless Image rights = User-supplied OR Open-license
   source with attribution.
 =================
+거장의 시각에서 주목할 점:
+이 섹션의 숨겨진 핵심은 **"항정상태 도달 시간은 오직 t1/2t_{1/2}
+t1/2​가 결정하고, 항정상태 농도 수준은 오직 ClCl
+Cl이 결정한다"**는 두 지배자의 분리입니다. 이 분리를 체화하지 못한 모델러는 TDM 용량 조정 계산과 NONMEM 다중투여 데이터셋 코딩에서 반복적으로 오류를 범합니다. R&T 소스가 임상 판단 맥락을, Gabrielsson 소스가 수식 도출 근거를 분담하도록 통합하면 가장 강력한 학습 문서가 됩니다.
+Ch.9는 "왜 용량을 설계하는가"의 철학적 기반이고, Ch.10은 "정상상태란 무엇인가"의 수학적 기초이며, Ch.11은 "반복 투여의 언어" 전체다. 세 챕터는 R&T Section 3의 논리적 삼각형을 이루며, 이 중 Ch.11의 RacR_{ac}
+Rac​, Cav,ssC_{av,ss}
+Cav,ss​, 부하/유지용량 관계식은 NDA 제출용 PopPK 시뮬레이션 보고서에서 그대로 인용되는 규제 언어다. 따라서 A-Critical 지정은 필수적이다.
 Phase 1 진행 시 주의사항
 1.  R&T [확인 필요] 플래그 처리
 Phase 1 실행 시 R&T 소스 인용이 필요한 모든 지점에 [확인 필요 — R&T 페이지 미확정] 플래그를 인라인으로 달아 출력할 것. Phase 2 감사 전 삭제 금지.
