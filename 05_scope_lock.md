@@ -63,6 +63,9 @@ HARD RULES:
 - [확인 필요] = flag and retain; never delete unverifiable content.
 - Do not reproduce or embed copyrighted textbook figures.
 =================
+작성 근거 메모:
+Mode A-Critical 선택 이유: 이 세션은 단순 이론 암기가 아닙니다. 재파라미터화 5종 중 어느 것을 NONMEM에 쓸지의 선택은 $COV step 조건수(condition number)에 직결되고, Vss vs. Vβ 혼동은 신부전 환자 축적 예측 오류로 이어집니다. Rowland & Tozer가 직접 "terminal half-life ceases to have simple application"이라고 경고한 부분이 규제 제출에서 자주 실수가 나오는 지점입니다.
+Key Data Anchors: G&W PK7·PK8은 책에 실제 수치가 명확히 제시된 케이스 스터디로, §4 시뮬레이터 기본값과 §6 시나리오에 직접 사용할 수 있습니다. R&T의 aspirin·nicardipine·gentamicin 수치도 모두 원서에서 확인된 값입니다.
 Phase 1 진행 시 주의사항
 ① 토큰 관리 — 78p 혼합 소스 처리 전략
 G&W 이론·케이스·R&T 세 덩어리를 동시에 처리하므로 Curation Map 단계에서 MUST/CONTEXT 분류를 먼저 완료한 후 §2 카드 작성에 진입해야 합니다. 분류 없이 바로 카드를 쓰면 R&T의 방대한 임상 사례가 MUST 카드로 과잉 흡수될 위험이 있습니다.
