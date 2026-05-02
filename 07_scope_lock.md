@@ -122,3 +122,14 @@ HARD RULES (apply to all phases):
   unless Image rights = User-supplied OR Open-license
   source with attribution.
 =================
+Phase 1 진행 시 주의사항
+1.  R&T [확인 필요] 플래그 처리
+Phase 1 실행 시 R&T 소스 인용이 필요한 모든 지점에 [확인 필요 — R&T 페이지 미확정] 플래그를 인라인으로 달아 출력할 것. Phase 2 감사 전 삭제 금지.
+2. G 소스 3개 범위의 통합 순서
+§2.2.2(정속 주입) → §2.2.10(다중투여·축적) → §2.2.11(다부위 흡수) → PK11 → PK13 순서로 개념을 전개할 것. Case Study는 MUST 개념의 적용 사례로 배치하되 독립 카드로 분리하지 않아도 됨.
+3. Css 결정 인자 분리 — 핵심 교육 목표
+"도달 시간 = t½ 결정 / 도달 농도 = Cl 결정"이라는 두 지배자의 분리가 §2 Big Idea 블록에서 명시적으로 선언되어야 함. 이것이 이 세션의 Professional Moat 핵심이므로 §8C에서도 동일 구조로 수렴할 것.
+Phase 1 진행 시 주의사항
+4. 토큰 관리: 93쪽 A-Critical은 단일 Phase 1 실행 한계에 근접합니다. step2_V5.1 프로토콜의 토큰 절단 방지 지침(<!-- ✂ 여기까지 생성 완료 -->)이 발동될 가능성이 높으므로, "계속" 입력 준비를 미리 해두세요.
+5. 큐레이션 지침 이동: 수정 전 Scope Lock의 "거장 보충 메모(MUST-tier 목록, 실제 수치 앵커링 목록)"는 Scope Lock에서 제거되었습니다. 이 내용은 Prompt 1의 CURATION DIRECTIVE 섹션 또는 별도 메모로 Phase 1 실행 시 함께 첨부하세요.
+6. 챕터 우선순위 고정: Ch.11이 MUST-tier 핵심입니다. Phase 1이 중간에 절단되더라도 Ch.11 §2 카드(Rac, Cav,ss, 부하/유지용량)가 먼저 완성되어야 Step 2 HTML의 §4 시뮬레이터가 올바른 기본값을 가질 수 있습니다.
