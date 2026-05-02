@@ -91,6 +91,8 @@ HARD RULES (apply to all phases):
 - Do not reproduce or embed copyrighted textbook figures.
 
 =================
+사용 안내
+두 Scope Lock은 동일 세션에서 함께 처리하거나 별도 세션으로 나눌 수 있습니다. 두 소스를 하나의 HTML로 통합할 경우 혼합 소스 처리 규칙 적용 — Gabrielsson이 수식 도출·실험 데이터, Rowland & Tozer가 임상·생리학적 해석을 담당합니다.
 Phase 1 진행 시 공통 주의사항
 
 Vol I 소스 분기 적용: 두 소스 모두 Vol I(이론) 분류이므로 §2-B는 "NONMEM 코드 블록" 대신 "단계별 수식 도출 + 생리학적 항 주석"으로 전개. $DES 코드 구조 작성 절대 금지.
