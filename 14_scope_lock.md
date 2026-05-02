@@ -38,6 +38,10 @@ HARD RULES (apply to all phases):
   - Do not reproduce or embed copyrighted textbook figures.
     (Image rights = None → all figures as Pointer callout only)
 =================
+거장의 시각에서 본 이 세션의 핵심 판단:
+이 챕터가 A-Critical인 이유는 세 가지입니다. 첫째, Y=a⋅BWbY = a \cdot BW^b
+Y=a⋅BWb라는 단순해 보이는 수식이 실제로는 FIH 초기 용량 선택의 법적 근거가 되는 수식이라는 점. 둘째, 지수 bb
+b의 선택 오류(0.75 vs 1.0 혼동)가 마우스-인간 간 3,000배 체중 차이에서 7.7배 오차로 증폭된다는 점. 셋째, G&W의 메타돈(PK28: mouse/rat/man, IV bolus 25/500/100,000 µg)과 compound X(PK29: 5종, 3,500배 체중 범위)라는 구체적 실험 데이터가 있어 수식이 실제 어떻게 작동하는지를 수치로 검증할 수 있다는 점입니다.
 Phase 1 진행 시 주의사항
 ① Curation Map 우선 결정 필수 — R&T Ch.14 압축 전략
 R&T Ch.14는 30페이지이지만 allometric scaling의 MUST 항목은 실질적으로 세 곳입니다: BSA 산출식(Eq.14-1, 14-2), 소아 유지용량 공식(Eq.14-5, 14-6), 그리고 Fig. 14-7(크레아티닌 청소율-연령 곡선). 흡수 변화·성별 차이·Study Problems는 전부 CONTEXT 1–2문장 처리 선언을 Curation Map에 명시해두어야 §2 카드 과부하를 막을 수 있습니다.
