@@ -63,6 +63,9 @@ HARD RULES (apply to all phases):
 - [확인 필요] = flag and retain; never delete unverifiable content.
 - Do not reproduce or embed copyrighted textbook figures.
 =================
+거장의 판단 메모 (Scope Lock 작성 근거):
+이 두 챕터를 A-Critical로 분류한 이유는 세 가지입니다. 첫째, k=CL/Vk = CL/V
+k=CL/V라는 단 하나의 관계식이 이후 모든 PopPK 구조 모델의 파라미터화 선택을 결정합니다. 둘째, Gabrielsson Case Study PK1은 그래픽 초기 추정 → OFV 기반 피팅 → 이차 파라미터 해석의 전 과정을 4명의 실제 데이터로 보여주는, 계량약리학 입문에서 대체 불가한 앵커 데이터셋입니다. 셋째, R&T의 midazolam 사례는 배포 상(distribution phase)과 소실상(elimination phase) 구분—즉 "terminal phase = elimination phase"라는 가정의 조건과 한계—을 임상 데이터로 검증하는 유일한 교과서 예시로, PopPK 모델 선택 시 직접 인용됩니다.
 Phase 1 진행 시 주의사항
 ① Curation Map 우선 작성 필수 — Ka·F MUST 승격 차단
 §2.2.4–2.2.5의 extravascular 내용이 페이지 범위에 포함되므로 Phase 1 작성자가 Ka·F를 MUST 카드로 승격할 위험이 있다. Curation Map에서 반드시 CONTEXT로 분류한 뒤 §2 카드 작성에 진입할 것.
