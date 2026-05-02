@@ -73,3 +73,8 @@ HARD RULES (apply to all phases):
   T → 임상 기전·PK/PD 언어·정량적 수식 체계 담당
 - 저작권 도서 figure 직접 임베드 금지 (Image rights = None).
 =================
+Phase 1 진행 시 주의사항
+
+두 소스 역할 분담 엄수: Curation Map 작성 시 G Ch.1은 "모델링 방법론 규율(Modeling Carousel, 5대 dysfunction)" 담당, T Ch.1–2는 "임상 PK/PD 언어·정량 수식 체계" 담당으로 명시적으로 분리할 것. 혼용 시 §2 카드 논리가 흐려짐.
+실제 수치 앵커링 우선: warfarin(1.5 mg/kg, Nagashima 1969), alfentanil C50 3군(0.27/0.31/0.42 mg/L), propranolol(γ≈1, C50=5.3 µg/L), total body water turnover(2.5 L/day, 0.06 day⁻¹, 17 days)은 모두 PDF에 명시된 실제 수치임 — Dynamic Source Anchoring 기준 직접 인용 필수, 가상 수치 대체 금지.
+§2 카드 수 조절: 53페이지 3챕터를 소화하되 B-Standard의 figure budget(Pointer max 3)을 고려, MUST tier 개념은 ①Emax·C50·Hill γ 체계 ②Therapeutic Window ③Modeling Carousel(EDA 우선 철학) ④Turnover 개념에 집중하고 나머지는 CONTEXT(1–2문장)로 압축할 것.
