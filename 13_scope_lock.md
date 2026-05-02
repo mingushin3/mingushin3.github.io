@@ -53,6 +53,9 @@ HARD RULES (apply to all phases):
 - Do not reproduce or embed copyrighted textbook figures unless
   Image rights = User-supplied OR Open-license source with attribution.
 =================
+거장의 시각 — 이 Scope Lock을 쓴 이유:
+두 소스는 역할이 엄격하게 분리됩니다. R&T는 "왜 사람마다 다른가"의 임상·생리학적 언어를, G&W PK50은 "그 변이를 데이터에서 어떻게 꺼내는가"의 실험적 증거를 담당합니다. 이 두 축이 합쳐질 때 비로소 학습자는 OMEGA 행렬의 숫자 하나가 "간부전 환자에서 $C_l
+이 왜 달라지는가"라는 생물학적 현실을 코딩한 것임을 직관으로 읽게 됩니다. Scope Lock의 페이지 범위와 실제 수치 앵커링은 그 직관이 추상에 머물지 않도록 못박는 장치입니다.
 Phase 1 진행 시 주의사항
 ① Ch.13 MUST/CONTEXT 분리 선제 선언 필수
 Ch.13은 18페이지에 걸쳐 CYP2D6·2C9·2C19·TPMT·NAT2·UGT·약력학적 다형성을 모두 망라합니다. Phase 1 Curation Map에서 MUST: "유전적 다형성이 IIV의 불연속적 구조를 만드는 메커니즘" 하나로 수렴시키고, 개별 isoform 세부 사항(아세틸화·가수분해·hydrolysis 각론)은 CONTEXT 1–2문장 처리를 선언한 뒤 §2 작성을 시작해야 합니다. 그러지 않으면 §2 카드가 약리유전학 강의록이 됩니다.
