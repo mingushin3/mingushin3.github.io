@@ -73,6 +73,8 @@ HARD RULES:
 - Do not reproduce or embed copyrighted textbook figures.
   Image rights = None → pointer callout(P mode)만 허용.
 =================
+거장의 시각 메모 (Step 1 Big Idea 작성용 참고):
+이 섹션의 핵심 통찰은 하나다. NCA는 "모델-무결(model-free)"이 아니라 "구획-무결(compartment-free)"이다. 선형 소실이라는 가정은 여전히 작동하며, 이 가정이 위반되는 순간(PK41의 Turbojoint처럼 CL이 용량 의존적으로 변할 때) NCA 결과 자체가 초기 파라미터 추정의 도구로만 사용되어야 한다. MRT와 Vss는 구획 모델 없이 얻을 수 있는 가장 강력한 분포 파라미터이지만, 투여 경로 보정(T_inf/2, 1/Ka)을 누락하면 생리학적으로 불가능한 값(음수 Vss 포함)이 나온다는 사실이 §2.8.8에서 직접 경고된다.
 Phase 1 진행 시 주의사항
 주의 1 — §2.9 범위 경계 명시 필요
 §2.9 "How to Assess Exposure" (p.158–164)는 NCA 계산 방법론과 직접 연결되지 않는 노출 평가 철학 및 6가지 실험 사례 중심입니다. Phase 1에서 Curation Map 작성 시, §2.9의 대부분 항목(Fig.2.127–2.133 사례들)은 CONTEXT-tier로 분류하고 §2.9.3의 CmaxC_{max}
