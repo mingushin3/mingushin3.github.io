@@ -63,3 +63,10 @@ HARD RULES (apply to all phases):
 - [확인 필요] = flag and retain; never delete unverifiable content.
 - Do not reproduce or embed copyrighted textbook figures.
 =================
+Phase 1 진행 시 주의사항
+① Curation Map 우선 작성 필수 — Ka·F MUST 승격 차단
+§2.2.4–2.2.5의 extravascular 내용이 페이지 범위에 포함되므로 Phase 1 작성자가 Ka·F를 MUST 카드로 승격할 위험이 있다. Curation Map에서 반드시 CONTEXT로 분류한 뒤 §2 카드 작성에 진입할 것.
+② 비연속 페이지 취급
+G p.14–32와 p.469–475 사이의 내용(p.33–468)은 세션 범위 밖이다. Case Study PK1은 이론 확장이 아닌 "계산 검증 앵커"로만 활용하고, 응용부에서 새 개념이 등장하면 [확인 필요] 처리 후 진행.
+③ §2 카드 수 상한 자율 제한
+57페이지 분량이지만 핵심 파라미터는 CL·V·K·t½·MRT 5개다. 카드가 6개를 초과하면 Chapter role 범위를 벗어날 가능성이 높으므로 Curation Map 단계에서 능동적으로 압축할 것.
