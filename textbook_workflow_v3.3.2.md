@@ -333,6 +333,11 @@ This output feeds Phase 4C; do not duplicate Phase 4C judgments.
   FIGURE_CONTENT_NOT_VISIBLE.
 
 Language: Korean for rationale text. English for terms, equations, values.
+
+Additional instruction:
+A Patch Memo is attached, but do not automatically accept it.
+Use it only as an audit attention guide.
+Classify each memo item independently as MATCH / ERROR / NOT_IN_SOURCE / OPTIONAL / REJECT according to the PDF.
 ```
 
 ---
