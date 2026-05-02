@@ -38,3 +38,16 @@ HARD RULES (apply to all phases):
   - Do not reproduce or embed copyrighted textbook figures.
     (Image rights = None → all figures as Pointer callout only)
 =================
+Phase 1 진행 시 주의사항
+① Curation Map 우선 결정 필수 — R&T Ch.14 압축 전략
+R&T Ch.14는 30페이지이지만 allometric scaling의 MUST 항목은 실질적으로 세 곳입니다: BSA 산출식(Eq.14-1, 14-2), 소아 유지용량 공식(Eq.14-5, 14-6), 그리고 Fig. 14-7(크레아티닌 청소율-연령 곡선). 흡수 변화·성별 차이·Study Problems는 전부 CONTEXT 1–2문장 처리 선언을 Curation Map에 명시해두어야 §2 카드 과부하를 막을 수 있습니다.
+② 두 소스의 지수 표기 충돌 사전 인지
+G&W는 clearance 지수를 bb
+b, volume 지수를 dd
+d로 구분합니다. R&T Ch.22는 같은 지수를 bb
+b로 통일 표기하며 문맥으로 구분합니다. §2 카드 작성 시 두 표기법을 명시적으로 정렬하지 않으면 §5 혼동쌍이 자동 생성되는 오류가 발생합니다. Phase 1 §2-B(Derivation) 작성 시 "G&W 표기 기준, R&T 대응 표기 병기" 형식을 고정하십시오.
+③ Data Anchoring 소스 2개 분리 명시 필수
+G&W PK28(메타돈: mouse 23g/rat 250g/man 70kg, a=0.319a=0.319
+a=0.319, t1/2t_{1/2}
+t1/2​: 1.5/3.9/35h)과 PK29(compound X: 5종, a=0.021,b=0.74,c=0.076,d=1.18a=0.021, b=0.74, c=0.076, d=1.18
+a=0.021,b=0.74,c=0.076,d=1.18)는 §4 시뮬레이터 기본값과 §6 시나리오 수치의 유일한 합법 출처입니다. R&T 수치(digoxin Vd, 크레아티닌 청소율 등)는 G&W 수치와 맥락 없이 혼용하지 말고 소스 출처를 각 수치 옆에 태그로 구분하십시오.
