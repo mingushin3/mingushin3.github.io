@@ -174,7 +174,7 @@ HARD RULES (apply to all phases):
   MUST 개념 카드 내용으로 확장하지 않는다.
 
 =================
-거장의 시각에서 이 세션의 핵심 위험은 다음과 같습니다.
+작성 근거 메모 (Step 1 실행 시 참고): 거장의 시각에서 이 세션의 핵심 위험은 다음과 같습니다.
 첫째, Peak-shift 방향 오판이 가장 치명적입니다. 용량 증가 시 반응 최솟값(nadir) 또는 최댓값(peak)이 왼쪽으로 이동하면 Receptor On/Off 또는 Turnover-loss stimulation이고, 오른쪽으로 이동하면 Turnover-input inhibition입니다. 이 방향을 반대로 읽으면 모델 구조 자체가 틀립니다.
 둘째, Bayesian LS의 극단 케이스 세 가지(농도 없음 → population prior만, 사전정보 없음 → MLE, 둘 다 있음 → full Bayes)를 개념 없이 공식만 외우면 TDM 소프트웨어 출력을 해석할 수 없습니다.
 셋째, PK15의 안전역 소통은 "Cmax가 50 µM에 달해도 독성 없음, 치료 농도 0.05–0.1 µM → 100배 이상 안전역"이라는 규제 언어 구사 능력을 훈련합니다. 이 실제 수치가 §6 시나리오에 반드시 등장해야 합니다.
