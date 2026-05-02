@@ -224,3 +224,13 @@ HARD RULES (apply to all phases):
 - Do not reproduce or embed copyrighted textbook figures unless
   Image rights = User-supplied OR Open-license source with attribution.
 =================
+Phase 1 진행 시 주의사항
+1. p.224 이중 귀속 처리 — §3.5.7 (Multiple binding site model)과 §3.6.1 (Competitive antagonism)이 동일 페이지(p.224)에 혼재합니다. Phase 1 추출 시 섹션 헤더 기준으로 구분하되, p.224 전체를 두 섹션에 걸쳐 이중 처리하지 않도록 주의하세요.
+2. PK21 내용 경계 — §2.7.3.3 본문(pp.123–125)에 nortriptyline 사례가 서술되어 있고, 이는 IN SCOPE입니다. 그러나 Case Study PK21 자체는 파일에 없으므로 본문 서술 범위 내에서만 수치를 인용하고, PK21 원문을 별도 참조하지 않습니다.
+3. 에탄올 §2.7.7 ↔ PK18 교차 참조 — 개념(§2.7.7, pp.139–141)과 케이스(PK18, pp.556–562)가 동일 현상을 다른 깊이로 다룹니다. Phase 1에서 양쪽 수치(Vmax, Km, 생체이용률 곡선)를 분리 추출한 뒤 Step 2에서 통합 설명 구조를 잡으세요.
+4. 주의 1 — 수식 복원 우선순위 (Ch.16·17 공통)
+PDF 텍스트 추출 시 수식이 깨질 가능성이 높습니다. 특히 Ch.17의 Eq.17-9~17-14 (경쟁적 억제/MBI 정량화 수식)와 Ch.16의 Eq.16-7~16-10 (phenytoin 정상상태·plateau 도달시간)은 [복원] 태그를 적극 활용하되 맥락 기반 LaTeX 복원을 우선하세요. 생략은 금지입니다.
+5. 주의 2 — Curation Map 작성 순서 강제 (A-Critical 필수)
+두 챕터 모두 MUST/CONTEXT 분류 없이 §2 카드 작성을 시작하면 안 됩니다. Ch.16에서는 Michaelis-Menten 정상상태 수식(Cuss = Km·R₀/(Vm−R₀))과 포화 대사의 임상 결과가 MUST 최상위입니다. Ch.17에서는 CLinhib/CLnormal 예측 수식과 extraction ratio 조건 분기가 MUST 최상위이며, displacement 단독 상호작용은 CONTEXT 처리가 적절합니다.
+6. 주의 3 — 챕터 간 의존성 처리 방향
+Ch.17 Phase 1 실행 시, Ch.16의 fm, Km, Vm 개념을 이미 알고 있다는 전제로 §2를 작성하세요 (중복 도출 금지). 단, §1 지식 그래프 위치에 "Ch.16 Nonlinearities 선행 필요"를 명시적으로 표기해야 합니다.
