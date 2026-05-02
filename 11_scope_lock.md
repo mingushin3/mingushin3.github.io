@@ -148,3 +148,7 @@ Phase 1 진행 시 주의사항
 첫째, Model 1 vs. Model 3의 tss 거동 동일성입니다. 둘 다 kout에 의해서만 tss가 결정되므로 dose-independent tss를 보입니다. 이것이 Model 2/4(kout 작용)와의 핵심 감별점이며, PD5 vs. PD6 비교에서 실제로 드러납니다.
 둘째, PD6의 핵심 통찰입니다. 선형 S(C) 하에서는 turnover model과 effect compartment model이 동일한 WRSS를 낼 수 있어 단일 dose-range 데이터로는 두 모델을 감별할 수 없습니다. 이 한계를 명시적으로 가르치는 것이 이 챕터의 가장 중요한 실용적 교훈입니다.
 셋째, §3.8의 K 표기 충돌 위험입니다. 세균 kill 모델에서 K는 second-order rate constant(단위: L·CFU⁻¹·h⁻¹)이지만, 같은 장에서 K가 elimination rate constant로도 쓰입니다. 학습 노트에 [확인 필요] 태그로 명시해두는 것을 권장합니다.
+Mode A-Critical 선택 이유: 이 챕터는 단순 개념 정리가 아닙니다. Effect compartment (ke0k_{e0}
+ke0​) 파라미터 추정, Indirect Response Model 4형 분류, tD=1kln⁡ ⁣(DoseCmin⋅V)t_D = \frac{1}{k}\ln\!\left(\frac{Dose}{C_{min}\cdot V}\right)
+tD​=k1​ln(Cmin​⋅VDose​) 수식, PK vs PD rate-limitation 판별이 모두 수식·임상 수치·규제 파급력을 동시에 갖추고 있어 A-Critical 기준을 충족합니다.
+Chapter role 서술 의도: 이 챕터가 후속 챕터(Ch.10, 11, 16, 20, 21)의 선행 지식임을 명시해야 Step 1에서 각 개념의 "지식 그래프 위치"가 정확하게 설정됩니다.
