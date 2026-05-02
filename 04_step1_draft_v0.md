@@ -336,49 +336,7 @@ $$\boxed{Cl_H = Q_H \cdot E_H = \frac{Q_H \cdot f_u \cdot Cl_{int}}{Q_H + f_u \c
 >
 > **CONTEXT 흡수**: fu가 *blood* 기준 (G p.79; T5 p.135). plasma fu_p와 fu_b 변환 → **M10**, **App.D 통합 완료 (M10 내)**.
 
-#### App.E Model I — Tozer 대안 유도 (Eq E-1 ~ E-8) + Gabrielsson과 Cross-Validation
-
-Tozer Appendix E (pp.777–778)는 well-stirred를 *Gabrielsson과 다른 변수 표기와 다른 출발점*에서 유도하여 **동일 결론**에 도달함을 명시적으로 보인다. Master's lens 관점에서 이 cross-validation은 well-stirred 모델의 *광범위한 수용*과 *수식적 견고성*을 입증.
-
-**Tozer Model I 가정** (App.E p.777):
-- 정상상태에서 blood ↔ liver 분포평형 (rapid equilibration).
-- Liver의 세 aqueous 공간 (blood, interstitial, intracellular) *모두 well-mixed*.
-- Distribution은 passive diffusion 만; 핵심 가정 (Eq E-2): `Cucell = Cuout = fub · Cb,out`.
-
-**유도 단계**:
-
-Eq E-1 (mass balance across organ):
-$$V_H \cdot \frac{dC_H}{dt} = Q_H \cdot C_{b,in} - Q_H \cdot C_{b,out} - CL_{int} \cdot Cu_{cell}$$
-
-Eq E-2 substitute → Eq E-3:
-$$V_H \cdot \frac{dC_H}{dt} = Q_H \cdot C_{b,in} - (Q_H + f_{ub} \cdot CL_{int}) \cdot C_{b,out}$$
-
-Steady state `dC_H/dt = 0` → Eq E-4:
-$$\frac{C_{b,out}}{C_{b,in}} = \frac{Q_H}{Q_H + f_{ub} \cdot CL_{int}}$$
-
-Eq E-5 (extraction ratio definition) + Eq E-4 → Eq E-6:
-$$E_H = \frac{f_{ub} \cdot CL_{int}}{Q_H + f_{ub} \cdot CL_{int}}$$
-
-Eq E-7 + Eq E-8:
-$$\boxed{CL_{b,H} = Q_H \cdot E_H = Q_H \cdot \left[\frac{f_{ub} \cdot CL_{int}}{Q_H + f_{ub} \cdot CL_{int}}\right]}$$
-
-**Cross-Validation Table — Gabrielsson ↔ Tozer App.E**:
-
-| 단계 | Gabrielsson Eq | Tozer App.E Eq | 결론 |
-|------|------------------|-------------------|------|
-| Mass balance 출발 | 2:188 (rate of change) | E-1 (concentration × volume) | *동일 mass balance* |
-| Steady-state 가정 | dC/dt = 0 | dC_H/dt = 0 | *동일* |
-| Cb,out 분리해 | 2:191–2:193 | E-3, E-4 | *동일 algebraic step* |
-| Extraction ratio | 2:194 | E-6 | **수식 *완전 동일*** |
-| Hepatic clearance | 2:195 | E-8 | **수식 *완전 동일*** |
-| 출발 변수 | C, fu (plasma) | Cb, fub (blood) | 표기 차이 only |
-
-**Master's Lens — 왜 cross-validation이 중요한가**:
-1. *동일 결론*: 두 독립 출발점에서 *수렴* → well-stirred 모델의 robust한 수식적 기반.
-2. *다른 변수*: Gabrielsson은 plasma-based 표기 시작, Tozer는 blood-based 표기 시작. **동일 식 두 표현**.
-3. *임상 영향*: PopPK 보고서가 어느 교재 표기를 따르든 *결과는 같음*. 그러나 fu vs fub 혼동 시 (→ Confusion Pair #14) 수치 오류.
-
-> **CONTEXT 흡수 — Cucell = Cuout 가정 (Eq E-2)**: rapid equilibration의 핵심 — hepatocyte 막 통과가 즉시(빠름). 막투과성 율속이면 이 가정 무너짐 → Model II 필요 (M15).
+> **CONTEXT 흡수 — App.E Model I cross-validation (Tozer pp.777–778, Eq E-1 ~ E-8)**: Tozer Appendix E는 *blood-based* 표기 (Cb, fub)와 rapid equilibration 가정 (Cucell = Cuout)에서 출발하여 Gabrielsson Eq 2:188–2:195와 *완전히 동일한* extraction ratio를 도출 — `E_H = fub·CLint / (QH + fub·CLint)` (Eq E-6) → `CLb,H = QH·fub·CLint / (QH + fub·CLint)` (Eq E-8). 두 교재의 *독립 유도가 동일 결론에 수렴*함은 well-stirred 모델의 수식적 견고성을 입증하며, 표기 차이만 있음 — 단 fu와 fub 혼동은 약물별 다른 비율로 추정 편향을 일으키므로 *반드시* Confusion Pair #14에서 분리 처리.
 
 <!-- ANCHOR -->
 **다음**: 분모 우세성에 따른 두 단순화 → M5.
@@ -539,7 +497,7 @@ In vitro = blood, 임상 = plasma. **변환 → M10**. 핵심: plasma CL 1.3 L/m
 
 $$CL_H = CL_{H,B} \cdot \frac{C_B}{C_P}$$
 
-C_B/C_P first-principles 유도 → **Step 4 Tozer App.D 통합 예정**.
+C_B/C_P first-principles 유도 → **M10 (App.D Eq D-6 통합 완료)**.
 
 <!-- ANCHOR -->
 **다음**: 4가지 모델 비교 → M8.
@@ -553,13 +511,27 @@ C_B/C_P first-principles 유도 → **Step 4 Tozer App.D 통합 예정**.
 
 #### Table 2.9 자체 재구성 (Gabrielsson p.94)
 
+먼저 4 모델에 공통 적용되는 *3 무차원 변수* 정의:
+- `R_N = f_u · Cl_int / Q_H` — clearance/flow ratio (extraction efficiency 핵심).
+- `ε²` (Distributed model) — variance of relative blood flow; intra-organ flow heterogeneity 측정.
+- `D_N` (Dispersion model) — axial dispersion number; D_N → 0 = plug flow, D_N → ∞ = perfectly mixed.
+- `a = (1 + 4·R_N·D_N)^{1/2}` — Dispersion model 보조 변수.
+
 | Parameter | **Well-stirred** | **Parallel tube** | **Distributed** | **Dispersion** |
 |-----------|------------------|-------------------|------------------|----------------|
-| **E_H** | $\dfrac{f_u Cl_{int}}{Q_H + f_u Cl_{int}}$ | $1 - e^{-\frac{f_u Cl_{int}}{Q_H}}$ | $1 - e^{-\left[\frac{f_u Cl_{int}}{Q_H} + \frac{1}{2}\varepsilon^2(\cdots)^2\right]}$ | (a 함수, see below) |
-| **F_H** | $\dfrac{Q_H}{Q_H + f_u Cl_{int}}$ | $e^{-\frac{f_u Cl_{int}}{Q_H}}$ | (E_H에서 1−E_H) | (E_H에서 1−E_H) |
+| **E_H** | $\dfrac{R_N}{1 + R_N}$ | $1 - e^{-R_N}$ | $1 - e^{-R_N \left(1 + \tfrac{1}{2} \varepsilon^2 R_N\right)}$ [확인 필요] | $1 - \dfrac{4a}{(1+a)^2 \cdot e^{(a-1)/(2 D_N)} - (1-a)^2 \cdot e^{-(a+1)/(2 D_N)}}$ [확인 필요] |
+| **F_H** | $1 - E_H$ | $1 - E_H$ | $1 - E_H$ | $1 - E_H$ |
 | **Cl_H** | $Q_H \cdot E_H$ | $Q_H \cdot E_H$ | $Q_H \cdot E_H$ | $Q_H \cdot E_H$ |
 
-여기서 `a = (1 + 4·R_N·D_N)^(1/2)`, `R_N = f_u · Cl_int / Q_H`, `D_N` = dispersion number.
+> **[확인 필요]** Distributed model의 정확한 expansion form (`1 + ε²R_N/2`이 지수 내부 곱셈자인지 합자인지) 및 Dispersion model 닫힌 해는 Gabrielsson p.93–94 본문 + Roberts & Rowland 원전 (1986)에서 페이지 별로 표기가 다를 수 있어 *원전 직접 cross-reference 후* 최종 확정. 본 카드의 형태는 Gabrielsson Table 2.9 (p.94) 기반 *재구성*; Phase 2 변환 시 Roberts & Rowland 1986 원전 식 (Roberts MS, Rowland M. *J Pharm Sci* 75:1100–1106, 1986)과 *반드시 1:1 검증* 필요.
+
+#### 모델 간 *수렴 조건* 정밀화
+
+| 조건 | Distributed → | Dispersion → |
+|------|----------------|----------------|
+| 이질성·혼합 극단적 큼 | ε² → ∞ → **Well-stirred** | D_N → ∞ → **Well-stirred** |
+| 이질성·혼합 극단적 작음 | ε² → 0 → **Parallel tube** | D_N → 0 → **Parallel tube** |
+| 수치적으로 fit 가능 | ε이 *데이터에서* 추정 | D_N이 *데이터에서* 추정 |
 
 #### 4 모델 개념적 차이
 
@@ -672,91 +644,25 @@ $$CL_b = CL \cdot \left(\frac{C}{C_b}\right), \quad CL_u = \frac{CL}{f_u}$$
 <!-- TRENCH -->
 **현장 팁**: PBPK·IVIVE 보고서 받으면 *반드시 첫 페이지*에서 (1) C/C_b 명시? (2) CL이 plasma인가 blood인가? (3) E_H 계산이 *blood*로? 셋 중 하나라도 불명확이면 잠재 오류. AIMS 표준 첫 질문 [확인 필요].
 
-#### App.D — C/Cb의 First-Principles Mass-Balance 유도 (Eq D-1 ~ D-8)
+> **CONTEXT 흡수 — App.D first-principles (Tozer pp.775–776, Eq D-1 ~ D-8)**: 전혈 mass-balance (`Cb·VB = C·VP + CBC·VBC`) + RBC partition (`CBC = KpBC·fu·C`) + 부피 분율 (`VP = (1−H)·VB`, `VBC = H·VB`)에서 출발하여 다음 두 결과식 도출:
+>
+> $$\boxed{\frac{C}{C_b} = \frac{1}{1 + H \cdot [f_u \cdot K_{PBC} - 1]} \quad \text{(Eq D-6)}, \qquad K_{PBC} = \frac{H - 1 + (C_b/C)}{f_u \cdot H} \quad \text{(Eq D-8)}}$$
+>
+> Eq D-6은 *세 결정자* (H, fu, KpBC)의 조합으로 plasma-to-blood 비를 결정하며, **`fu·KpBC < 1` → C/Cb > 1 (RBC 회피); `fu·KpBC > 1` → C/Cb < 1 (RBC 강한 분배)**. Tozer p.776 Study Problem 1은 H/fu 변동 시나리오 (anemic, nephrotic) 정량 풀이를 제시 — 본 통합본에서는 *symbolic 수준*으로만 보존하고, 풀이 자체는 학습자가 교재 원문을 직접 풀어볼 *Phase 4 학습 과제*로 분리. **임상 메시지**: 단백결합 변동 (uremia, hypoalbuminemia, DDI displacement) 시 plasma-to-blood 비 *동시 변동* → plasma 농도만 측정하는 routine TDM은 *hidden bias* 발생 가능.
 
-Tozer Ch.5 p.127은 C/Cb 비를 *경험적 범위 (0.3 ~ 2.0)*로 제시했다. **Appendix D (pp.775–776)는 이 비의 first-principles 식을 제공** — KpBC, fu, hematocrit (H)의 *조합*이 변환을 결정.
-
-**5단계 mass-balance 유도**:
-
-Eq D-1 (전혈 mass balance):
-$$\underbrace{C_b \cdot V_B}_{\text{Amount in blood}} = \underbrace{C \cdot V_P}_{\text{Amount in plasma}} + \underbrace{C_{BC} \cdot V_{BC}}_{\text{Amount in blood cells}}$$
-
-Eq D-2 (RBC partition coefficient KpBC):
-$$C_{BC} = K_{PBC} \cdot C_u = K_{PBC} \cdot f_u \cdot C$$
-
-Eq D-3 (Volume of blood cells = hematocrit × blood volume):
-$$V_{BC} = H \cdot V_B$$
-
-Eq D-4 (plasma volume):
-$$V_P = (1 - H) \cdot V_B$$
-
-Eq D-5 (Eq D-2~D-4 → Eq D-1):
-$$C_b \cdot V_B = (1 - H) \cdot V_B \cdot C + f_u \cdot K_{PBC} \cdot H \cdot V_B \cdot C$$
-
-V_B로 나누고 C_b로 나누면 — Eq D-6 (**핵심 결과**):
-
-$$\boxed{\frac{C}{C_b} = \frac{1}{1 + H \cdot [f_u \cdot K_{PBC} - 1]}}$$
-
-역수 (Eq D-7):
-
-$$\frac{C_b}{C} = 1 + H \cdot [f_u \cdot K_{PBC} - 1]$$
-
-**KpBC 역산식** (Eq D-8) — *parameter 식별 식*:
-
-$$\boxed{K_{PBC} = \frac{H - 1 + (C_b/C)}{f_u \cdot H}}$$
-
-KpBC 결정에는 *세 측정값* 필요: hematocrit (H), 농도 비 (Cb/C), plasma unbound 분율 (fu).
-
-#### Eq D-6의 *세 결정자* 직관
-
-| 조건 | C/Cb | 의미 |
-|------|------|------|
-| `fu · KpBC = 1` | C/Cb = 1 (모든 H) | 평형 — 약물이 plasma·RBC 동등 분포 |
-| `fu · KpBC < 1` | C/Cb > 1 | Plasma-favored — RBC 회피 |
-| `fu · KpBC > 1` | C/Cb < 1 | Blood-favored — RBC 강한 분배 |
-| 상한 `fu = 0` | C/Cb = 1/(1−H) ≈ 1.82 (H=0.45) | RBC 분배 *완전 차단* — 단백결합 100%에 가까울 때 |
-
-**세 결정자 모두 변동 가능** (uremia·hypoalbuminemia·displacement DDI에서 fu 변동, 빈혈에서 H 감소, KpBC는 약물 화학구조 결정).
-
-#### App.D Study Problem 1 — 정량 검증 (p.776)
-
-가상 환자: C/Cb = 0.425, H = 0.45, fu = 0.1.
-
-**(a) KpBC 계산** (Eq D-8):
-
-$$K_{PBC} = \frac{0.45 - 1 + (1/0.425)}{0.1 \cdot 0.45} = \frac{-0.55 + 2.353}{0.045} = \frac{1.803}{0.045} \approx 40.1$$
-
-→ KpBC ≈ 40 — RBC 강한 분배.
-
-**(b) Anemic 환자** (H = 0.27, fu = 0.1, KpBC = 40 unchanged) — Eq D-6:
-
-$$\frac{C}{C_b} = \frac{1}{1 + 0.27 \cdot [0.1 \cdot 40 - 1]} = \frac{1}{1 + 0.27 \cdot 3} = \frac{1}{1.81} \approx 0.55$$
-
-→ Hematocrit 감소 (0.45 → 0.27)만으로 **C/Cb가 0.425 → 0.55** (약 30% 증가). RBC 분배 약물에서 빈혈은 *plasma 농도를 상대적으로 증가*시킴.
-
-**(c) Nephrotic 환자** (H = 0.45 normal, fu = 0.32, KpBC = 40) — Eq D-6:
-
-$$\frac{C}{C_b} = \frac{1}{1 + 0.45 \cdot [0.32 \cdot 40 - 1]} = \frac{1}{1 + 0.45 \cdot 11.8} = \frac{1}{6.31} \approx 0.159$$
-
-→ 단백결합 감소 (fu 0.1 → 0.32)만으로 **C/Cb가 0.425 → 0.159** (3배 감소). Plasma 농도가 blood 대비 *극단적으로 낮아짐* — RBC가 약물 흡수 *증가*.
-
-#### 이 정량 결과의 임상 함의
-
-1. **단백결합 변동 임상 시나리오 (uremia, hypoalbuminemia, DDI displacement)**: fu 변동 시 *plasma-to-blood 비도 동시 변동*. plasma 농도만 측정하는 routine TDM은 *hidden bias*.
-2. **빈혈 코호트 PopPK**: H가 inter-individual variability source — H를 covariate로 두면 inter-individual 변동성 일부 *체계적으로* 설명 가능.
-3. **PopPK 코딩**: 데이터셋에 H + fu 컬럼이 있으면 BPRATIO를 *환자별로 계산*:
+#### NONMEM 코딩 — App.D 환자별 변환
 
 ```
 BPRATIO = 1.0 / (1.0 + H * (FU * KPBC - 1.0))
 CLB    = CL * BPRATIO            ; blood clearance per patient
 ```
 
-KpBC는 약물별 *상수*로 model에 fixed (i.v. 별도 study 또는 in vitro RBC partition 측정).
+KpBC는 약물별 *상수*로 model에 fixed (in vitro RBC partition 측정 또는 별도 i.v. paired blood/plasma study에서 Eq D-8로 추정).
 
 #### Trench-Level Tip — fu vs fub 혼동 검출
 
 <!-- TRENCH -->
-**현장 팁**: NONMEM 보고서 검토 시, 코드의 `FU` 컬럼이 *plasma fu*인지 *blood fub*인지 *반드시 명시 확인*. Tozer Ch.5 well-stirred (Eq 5-14) 분모 `Q_H + fub·CLint`에 *plasma fu*를 잘못 입력하면 — 약물별 차이 (보통 fu/fub = 1.0 ~ 4.0) — CL_H 추정 *체계적 편향*. Confusion Pair #14에 정리.
+**현장 팁**: NONMEM 보고서 검토 시, 코드의 `FU` 컬럼이 *plasma fu*인지 *blood fub*인지 *반드시 명시 확인*. Tozer Ch.5 well-stirred (Eq 5-14) 분모 `Q_H + fub·CLint`에 *plasma fu*를 잘못 입력하면 CL_H 추정 *체계적 편향*. Confusion Pair #14에 정리.
 
 <!-- ANCHOR -->
 **다음**: 한 약물의 한 청소율의 두 표현. 그러나 *여러 기관*이 동시 청소할 때 → M11.
@@ -1018,73 +924,13 @@ $$CL_{b,H} = Q_H \cdot \frac{f_{u_b} \cdot (PS_{influx} + PS_{pd}) \cdot CL_{int
 <!-- TRENCH -->
 **현장 팁**: Statin PBPK 받으면 *반드시* OATP1B1 inhibition을 covariate scenario로. 단일 inhibitor가 동시에 CYP3A4 inhibitor면 효과 *증폭*. AIMS에서 statin·gemfibrozil 같은 조합은 단순 CYP-only 모델로 임상 변화 폭 예측 못 함 [확인 필요].
 
-#### App.E Model II — Permeability Extension의 First-Principles (Eq E-9 ~ E-15)
+> **CONTEXT 흡수 — App.E Model II ρ term (Tozer pp.778–779, Eq E-9 ~ E-15)**: Model I의 rapid equilibration 가정을 완화하여 hepatocyte 막투과성을 명시 — intracellular mass balance에서 *intracellular-to-extracellular unbound concentration ratio* `ρ = Pin·SA / (Pout·SA + CL_int)`를 정의. 결과식:
+>
+> $$\boxed{CL_{b,H} = Q_H \cdot \frac{f_{ub} \cdot \rho \cdot CL_{int}}{Q_H + f_{ub} \cdot \rho \cdot CL_{int}} \quad \text{(Eq E-13)}}$$
+>
+> *세 임상 시나리오*: (#1) Pin·SA >> CLint → ρ ≈ 1 → **기본 well-stirred (Model I) 회복** (lipophilic 약물); (#2) Pin·SA << CLint → ρ = Pin·SA/CLint → **basolateral uptake 율속** (statins); (#3) Pin << QH → **`CLb,H ≈ fub·Pin`** (Eq E-15, 매우 polar 약물). Eq 5-35 (Tozer Ch.5)와 *수학적 동등* (`PS_influx ≈ Pin·SA`, `PS_efflux ≈ Pout·SA`, `PS_pd ≈ 0` 매핑) — App.E가 first-principles 유도 제공.
 
-Tozer Appendix E (pp.778–779)는 Model I의 rapid equilibration 가정 (Eq E-2: Cucell = Cuout)을 *완화*하여 막투과성 (basolateral permeability)을 명시적으로 도입한다. 본 카드의 Eq 5-35 extended clearance (Tozer Ch.5)와 *동일 결과의 다른 표현* — App.E가 first-principles 유도 제공.
-
-**Model II 추가 가정**:
-- Hepatocyte 막에 permeability barrier.
-- Pin·SA = uptake permeability × surface area; Pout·SA = efflux permeability × surface area.
-- Passive diffusion → Pin = Pout. **Active transporter** (OATP1B1, P-gp 등) → Pin ≠ Pout.
-
-**Eq E-9 (intracellular mass balance)**:
-$$V_{cell} \cdot \frac{dC_{cell}}{dt} = P_{in} \cdot SA \cdot Cu_{is} - P_{out} \cdot SA \cdot Cu_{cell} - CL_{int} \cdot Cu_{cell}$$
-
-여기서 Cuis = unbound concentration in interstitial space.
-
-Steady state (`dCcell/dt = 0`) → **Eq E-10 (ρ 정의)**:
-
-$$Cu_{cell} = \frac{P_{in} \cdot SA \cdot Cu_{is}}{P_{out} \cdot SA + CL_{int}} = \rho \cdot Cu_{is}$$
-
-여기서:
-
-$$\boxed{\rho = \frac{P_{in} \cdot SA}{P_{out} \cdot SA + CL_{int}}}$$
-
-**ρ의 의미**: *intracellular-to-extracellular unbound concentration ratio*. ρ는 막투과성 + intrinsic clearance의 *상대적 크기*에 따라 결정.
-
-Eq E-11 (interstitial ↔ outflow 평형):
-$$Cu_{is} = Cu_{out} = f_{ub} \cdot C_{b,out}$$
-
-Eq E-9 + Eq E-10 + Eq E-11에 Model I logic 적용 → **Eq E-12, Eq E-13**:
-
-$$E_H = \frac{f_{ub} \cdot \rho \cdot CL_{int}}{Q_H + f_{ub} \cdot \rho \cdot CL_{int}}$$
-
-$$\boxed{CL_{b,H} = Q_H \cdot \left[\frac{f_{ub} \cdot \rho \cdot CL_{int}}{Q_H + f_{ub} \cdot \rho \cdot CL_{int}}\right]}$$
-
-**기본 well-stirred (Model I)는 ρ → 1의 특별 case**.
-
-#### ρ의 *세 임상 시나리오*
-
-| 시나리오 | Pin, Pout vs CLint | ρ | 결과 식 | 율속 단계 |
-|----------|---------------------|---|----------|----------|
-| **#1: High permeability (passive diff)** | Pin = Pout >> CLint | ρ ≈ 1 | Eq E-13 = Eq E-8 (Model I) | **Hepatocellular metabolism** (CLint) |
-| **#2: Low permeability (passive diff)** | Pin = Pout << CLint | ρ = Pin·SA / CLint | Eq E-14: `CL = QH·[fub·Pin·SA / (QH + fub·Pin·SA)]` | **Basolateral uptake** (Pin·SA) |
-| **#3: Very low + Pin << QH** | Pin << QH | (#2 + 추가 단순화) | **Eq E-15: `CL_b,H = fub · Pin`** | *Permeability 완전 율속* |
-
-**Tozer p.779 (시나리오 #2,#3)**:
-> "Now, we see that clearance is dependent on permeability and insensitive to intrinsic clearance. Furthermore, this condition is most likely to arise with large or polar molecules."
-
-#### Active Transporter의 영향 — ρ ≠ 단순 비
-
-Pin ≠ Pout인 경우 (active uptake):
-- OATP1B1 강한 uptake → Pin >> Pout → **ρ가 단순 Pin·SA/CLint를 초과** → intracellular 농도 *축적*.
-- P-gp 강한 efflux → Pout >> Pin → **ρ < Pin·SA/CLint** → intracellular 농도 *감소*.
-
-**임상 사례**:
-- **Statins (rosuvastatin, pravastatin)**: OATP1B1 매개 hepatic uptake → Pin이 율속. SLCO1B1 \*5 polymorphism (~15% 보유): Pin 감소 → ρ 감소 → CLb,H 비례 감소 → AUC 2–3배 증가.
-- **Cyclosporine + Statin DDI**: cyclosporine이 OATP1B1 inhibitor → Pin 감소 → 동일 메커니즘.
-
-#### Eq 5-35 (Tozer Ch.5) ↔ Eq E-13 (App.E) Cross-Validation
-
-Tozer Ch.5 Eq 5-35:
-$$CL_{int,H} = \frac{(PS_{influx} + PS_{pd}) \cdot CL_{int}}{(PS_{efflux} + PS_{pd} + CL_{int})}$$
-
-App.E Eq E-13의 ρ:
-$$\rho = \frac{P_{in} \cdot SA}{P_{out} \cdot SA + CL_{int}}$$
-
-`PS_influx ≈ Pin·SA`, `PS_efflux ≈ Pout·SA`, `PS_pd ≈ 0` (passive diff 제외) 가정에서 — 두 식이 *수학적으로 동등*. **App.E가 first-principles 유도 + ρ의 *세 임상 시나리오* 명시적 분류 제공**.
-
-> **CONTEXT 흡수 — passive diffusion 약물**: lipophilic 약물 (diclofenac, lidocaine, diazepam)은 시나리오 #1. `PS_pd >> CLint` → ρ ≈ 1 → 기본 well-stirred 회복. App.E가 이 *수렴 조건*을 정량적으로 명시.
+> **임상 함의**: SLCO1B1 \*5 polymorphism (~15% 보유) → OATP1B1 활성 감소 → Pin·SA 감소 → ρ 감소 → CLb,H 비례 감소 → 통상 statin AUC 2–3배 증가 → rhabdomyolysis 위험. Cyclosporine 같은 OATP1B1 inhibitor도 동일 메커니즘.
 
 #### 통합 IVIVE 워크플로우 5단계 (Step 4 갱신)
 
@@ -1428,61 +1274,11 @@ DADT(CENTRAL_M)= KA * FM_FP * A(DEPOT) + KF * A(CENTRAL) - KM * A(CENTRAL_M)
 
 이게 **두 metabolite source 분리** NONMEM 표준. 단순 `KF * A(CENTRAL)`만 두면 first-pass missed → metabolite peak time *더 늦게* 예측되어 misfit.
 
-#### App.E Events After Oral Dose — First-Principles (Eq E-16 ~ E-20)
-
-Tozer Appendix E p.779은 oral 투여 후 AUC를 *first-principles*에서 유도. 결과 식 (Eq E-19)는 **oral AUC가 QH에 무관**이라는 *주목할 만한 결론*을 명시적으로 보인다 — 본 카드 first-pass 논의의 *수식적 정수*.
-
-**가정**: hepatic extraction이 oral 흡수 손실의 *유일한 원인* (gut wall metabolism 무시).
-
-**Eq E-16** (App.E Eq E-13 → F):
-
-$$F = 1 - E_H = \frac{Q_H}{Q_H + f_{ub} \cdot \rho \cdot CL_{int}}$$
-
-**Eq E-17** (universal NCA 식):
-
-$$F \cdot Dose = CL \cdot AUC_{po}$$
-
-Eq E-16과 Eq E-13 (CL_b,H의 식)을 Eq E-17에 대입 → Eq E-18 (algebraic) → 단순화:
-
-**Eq E-19** (단일 oral dose 후 AUC):
-
-$$\boxed{AUC_{po} = \frac{Dose}{f_{ub} \cdot \rho \cdot CL_{int}}}$$
-
-**Eq E-20** (다회 oral dosing plateau):
-
-$$AUC_{ss,po} = \frac{F \cdot Dose}{CL} = \frac{Dose}{f_{ub} \cdot \rho \cdot CL_{int}}$$
-
-#### 이 결과의 *주목할 만한* 함의 — 4가지 "oral은 QH 무관"
-
-1. **Oral AUC는 hepatic blood flow QH에 *완전히 무관***:
-   - High extraction이든 low extraction이든 식 동일.
-   - 운동, sepsis, 심부전 등 QH 변동 시 — *i.v.는 변동, oral은 무변*.
-2. **단백결합 변화 → Oral AUC 비례 변동**:
-   - fub ↑ (uremia, hypoalbuminemia) → AUCpo 비례 감소.
-   - "Phenytoin in uremia" (M6)에서 fu 0.10 → 0.20 시 *plasma total* 절반 — Eq E-19로 정확히 예측.
-3. **Permeability 변화 → Oral AUC 비례 변동**:
-   - ρ ↓ (basolateral uptake inhibitor) → AUCpo 비례 *증가*.
-   - Statin + cyclosporine: ρ 감소 → AUCpo *수배* 증가 → rhabdomyolysis 위험.
-4. **CYP induction/inhibition → Oral AUC 비례 변동**:
-   - CLint ↑ (rifampin) → AUCpo 비례 감소.
-   - CLint ↓ (ritonavir) → AUCpo 비례 증가.
-
-#### Statin DDI Worst-Case — 두 메커니즘 *곱셈*
-
-**Cyclosporine + Simvastatin 시나리오** (가설):
-- Cyclosporine이 OATP1B1 inhibitor → ρ 0.5×.
-- Cyclosporine이 CYP3A4 inhibitor → CLint 0.4×.
-- 두 효과 *곱셈*: AUCpo 변화 = 1 / (0.5 × 0.4) = **5배 증가**.
-- 임상 보고와 일치 (rhabdomyolysis 위험).
-
-**메시지**: oral AUC의 *네 결정자* (fub, ρ, CLint, Dose) 중 *어느 것이 변하든* AUC에 직접 영향. Eq E-19는 임상 DDI 예측의 *first-principles* 도구.
-
-#### Cross-Validation — Tozer Ch.20 Eq 20-15 ↔ App.E Eq E-19/E-20
-
-Tozer Ch.20 Eq 20-15: `C(m)_av,ss = AUC(m)_single / τ`. 이는 *대사체*에 대한 superposition 식.
-App.E Eq E-20: `AUC_ss,po = Dose / (fub·ρ·CLint)` = *parent*에 대한 first-principles 식.
-
-두 식 결합 → metabolite의 oral plateau 농도 = `(fm × Dose) / (fub × ρ × CLm,int × τ)`. **Step 3 + Step 4의 통합 결과식**.
+> **CONTEXT 흡수 — App.E oral first-principles (Tozer p.779, Eq E-16 ~ E-20)**: hepatic extraction이 oral 손실의 유일한 원인이라는 가정 + Eq E-13 + universal NCA 관계 (`F·Dose = CL·AUC_po`)에서 algebraic 단순화 → 다음 *주목할 만한 결론*:
+>
+> $$\boxed{AUC_{po} = \frac{Dose}{f_{ub} \cdot \rho \cdot CL_{int}} \quad \text{(Eq E-19, 단회);} \quad AUC_{ss,po} = \frac{Dose}{f_{ub} \cdot \rho \cdot CL_{int}} \quad \text{(Eq E-20, 만성 plateau)}}$$
+>
+> **Oral AUC가 hepatic blood flow Q_H에 완전히 무관** — 운동/sepsis/심부전 등 Q_H 변동 시 i.v.는 변동하지만 oral은 무변. 4 결정자 (fub, ρ, CLint, Dose) 중 *어느 것이 변하든* AUC에 직접 영향. **임상 함의**: 단백결합 변동 (fub) + transporter inhibition (ρ) + CYP DDI (CLint)이 *각각 독립적으로 작용하면 곱셈* — cyclosporine+simvastatin 같은 dual-mechanism inhibitor에서 AUC가 *수배* 증가 가능 (rhabdomyolysis 위험). Tozer Ch.20 Eq 20-15와 결합하면 metabolite oral plateau = `(fm × Dose) / (fub × ρ × CLm,int × τ)` — Step 3+4의 통합 결과식.
 
 #### Trench-Level Tip — Oral DDI 시뮬레이션
 
@@ -1802,7 +1598,7 @@ DADT(CENT_M) = CLF/V * A(CENT) - CLM/VM * A(CENT_M)
 
 **다른 점**: f_u (또는 f_u,p) — 혈장. f_u,b — 전혈 (RBC 분배 포함).
 
-**구조적 이유**: **Well-stirred는 *blood* 기준** (Gabrielsson p.79; Tozer p.135). plasma fu를 그대로 넣으면 hematocrit 무시. C_b/C_p ratio 결정자. **Tozer App.D Step 4 통합 예정**.
+**구조적 이유**: **Well-stirred는 *blood* 기준** (Gabrielsson p.79; Tozer p.135). plasma fu를 그대로 넣으면 hematocrit 무시. C_b/C_p ratio 결정자. *App.D Eq D-6 통합 완료 → Confusion Pair #14에 fu vs fub 정밀 처리*.
 
 ### Confusion Pair #4 — Highly cleared drug에서 IV vs Oral
 
@@ -1975,9 +1771,9 @@ DADT(CENT_M) = CLF/V * A(CENT) - CLM/VM * A(CENT_M)
 
 <!-- SELF-TEST -->
 
-> **Step 4 메모**: 본 §7은 Step 1+2+3 시나리오 *모두 보존* + **Tozer App.D·E 통합 후 3-axis 복합 dilemma 시나리오 (Q14) 추가**. 세 축이 단일 환자 시나리오에서 *동시 작용*할 때의 정량적 분석. 본 §7은 *최종 형태*.
+> **§7 구조 (Step 4 *최종*)**: 본 질문 7개 (Q1–Q4 핵심 dilemma + Q5–Q7 Tozer Ch.5 보강 + Q8 Tozer Ch.20 핵심) + **Q14 진짜 Socratic Dilemma (두 충돌하는 optimization target)** + Quick Self-Test 19문항 (4 layer 통합). 본 §7은 *최종 형태*.
 
-### 핵심 Dilemma (Step 1 유지 + Step 3 확장)
+### 핵심 Dilemma (Q1–Q4 — 신청소 axis)
 
 당신은 **신청소율(ClR)에 의해 35% 배설되는 신약 X의 phase 1 PopPK 보고서**를 작성 중. Renal impairment 코호트(GFR 30–60 mL·min⁻¹) 데이터에서 다음 두 모델 결정:
 
@@ -2001,208 +1797,129 @@ $$Cl_i = (1 - f_{e,typ}) \cdot Cl_{typ} + f_{e,typ} \cdot Cl_{typ} \cdot \frac{C
 
 **질문 7 (M15)**: SLCO1B1 \*5 polymorphism 보유자에서 노출 2.5배. 별도 covariate vs ETA?
 
-### Tozer Ch.20 보강 — **질문 8–13 (Step 3 신규)**
+### Tozer Ch.20 보강 — 질문 8 (Step 3, *핵심 1문항*)
 
-**질문 8 (M16 + M20)** — 약물 X에 *active metabolite Y*가 추가 발견. i.v. parent 후 AUC(parent) = 200 mg·hr/L, AUC(metabolite) = 80 mg·hr/L. 별도 i.v. metabolite study에서 measured CL(metabolite) = 5 L/hr.
-(a) parent의 fm을 추정.
-(b) Metabolite가 *활성*이고 parent와 동등 효력 (additive)이라면, 정상 환자에서 metabolite contribution은 total response의 몇 %?
-(c) Metabolite fe(m) = 0.85일 때, anuric 환자에서 parent + metabolite 상대 노출 변화?
+**질문 8 (M17 진단 + M20 시나리오 결합)** — 약물 X에 active metabolite Y가 동반. 임상 데이터:
+- i.v. parent 후 plasma 농도-시간 곡선이 parent와 metabolite *parallel decay* (둘 다 t1/2 ≈ 6 hr 관찰).
+- 별도 i.v. metabolite Y 투여 study에서 metabolite *본래* t1/2 = 1.5 hr.
+- 정상에서 fm = 0.4, fe(m) = 0.85.
 
-**질문 9 (M17 진단)** — Active metabolite Y의 i.v. parent 후 plasma 농도-시간 곡선이 parent와 *parallel decay* (둘 다 t1/2 ≈ 6 hr). 별도 i.v. metabolite Y 투여 study에서 metabolite t1/2 = 1.5 hr.
-(a) 어느 case (formation vs elimination rate-limited)?
-(b) 신부전 환자(CrCL = 30)에서 metabolite Y의 t1/2 *관찰값* 변화?
-(c) 만약 (b)에서 관찰 t1/2 *증가*한다면, parent CL과 metabolite CL 중 어느 것이 더 영향?
+**(a)** 어느 case (formation vs elimination rate-limited)? 진단 근거?
+**(b)** *시나리오 분류* (M20의 A/B/C 결정 트리)? 신부전 환자에서 어떤 species가 가장 많이 축적되는가?
+**(c)** parent CL만 보고 dose 결정하면 *왜 위험한가*?
 
-**질문 10 (M18 — first-pass)** — 약물 X를 i.v. (10 mg)와 oral (50 mg) 투여 시 AUC(metabolite Y)가 거의 동일 (per-dose 보정 i.v. 1.0 vs oral 1.05).
-(a) 이 관찰이 의미하는 metabolite 형성 부위?
-(b) 만약 비가 oral 1.5배였다면 다른 결론?
-(c) Oral/i.v. 농도 비를 PopPK 모델에서 어떻게 모델링?
+### 답안의 방향성 (Q1–Q8 스포일러)
 
-**질문 11 (M19 — 만성 dosing)** — 약물 X를 6 hr 간격 50 mg oral. Single dose 후 AUC(metabolite Y) = 120 ng·hr/mL. Toxic threshold = 25 ng/mL.
-(a) Plateau metabolite 평균 농도?
-(b) 안전한가?
-(c) Dosing interval 8 hr로 변경 시 plateau 농도?
-(d) metabolite t1/2 = 12 hr (parent t1/2 = 4 hr)라면 plateau 도달까지 며칠? (Case A인지 Case B인지 결정)
+**Q1–Q4 (Step 1 신청소 dilemma)**:
+- Q1: CrCL = 100에서 둘 다 `Cl_i = Cl_typ` (수렴).
+- Q2: Model A는 *모든* CL이 power-scale → severe impairment 매우 낮게 외삽. Model B는 65% 비신청소 *건드려지지 않음* → ~70% × Cl_typ로 수렴. **Model B가 보수적**.
+- Q3: 환자 안전 우선이면 *낮은 Cl 예측* Model A를 base; under-treatment 위험. 보통 둘 다 보고 + sensitivity. 메시지: **fe 사전 지식을 explicit incorporate**.
+- Q4: Model A 옳을 가능성 — *비신청소 자체가 신기능 의존* 시 (uremic toxin이 hepatic CYP3A4 down-regulate). 검증: metabolite formation rate ↔ CrCL 상관성 — Tozer Ch.20 framework로 분리 진단.
 
-**질문 12 (M20 시나리오 분류)** — 약물 X (fe = 0.35) + active metabolite Y (fe(m) = 0.85, fm = 0.45). 정상 환자에서 metabolite contribution이 total activity의 30% (가정).
-(a) Anuric 환자에서 parent + metabolite 추정 농도 변화 비를 *대략적으로* 계산.
-(b) Metabolite도 *equipotent*면, anuric 환자 권장 dose 비 (정상 대비)?
-(c) *반대로* fe(m) = 0.05라면 (시나리오 A), 권장 dose?
+**Q5–Q7 (Step 2 Tozer Ch.5 보강)**:
+- Q5 (M11+M14): Model B와 일치 안 함. *t1/2 무변* + CL 감소 + V 1.3배 ↑ → fu 증가 (large V drug; M6 phenytoin 패턴) — **fu를 covariate로**.
+- Q6 (M10+M5): Blood CL = 22×0.3 = 6.6 L/h. Hepatic blood CL = 0.65×6.6 = 4.3 L/h. E_H = 4.3/81 ≈ **0.053 — very low**. Plasma CL 22/81 ≈ 0.27 (intermediate으로 *잘못 보임*) → **분류 오류 위험**.
+- Q7 (M15): SLCO1B1이 uptake transporter 영향 → blood CL 자체 변화. fe와 무관 → Model B *비신청소 항*에 추가 covariate. ETA 흡수만 시키면 *체계적 패턴* 잃음.
 
-**질문 13 (Interconversion)** — 약물 X가 metabolite Y와 *interconvert* (Y가 esterase로 X로 가수분해 가능). Y의 fe(m) = 0.95.
-(a) 정상 환자에서 X의 effective CL이 측정 CL보다 클 것? 작을 것?
-(b) 신부전에서 Y의 가수분해 (Y → X)가 X의 effective CL을 *간접적으로* 어떻게 변화?
-(c) Clofibric acid 패턴 (Tozer Fig 20-13)을 참고하여, X의 unbound CL이 GFR과 어떤 관계?
+**Q8 (Step 3 Tozer Ch.20 — 핵심 1문항)**:
+- (a) 별도 i.v. metabolite t1/2 = 1.5 hr (관찰 6 hr보다 *훨씬 짧음*) → **Case A (formation rate-limited) 확정**. parent t1/2 = 6 hr가 metabolite *겉보기* t1/2를 결정.
+- (b) fe(m) = 0.85 → 신부전 시 metabolite CL 격감 → **시나리오 B (M20)**. Active metabolite가 *압도적으로* 축적.
+- (c) Case A이지만 fe(m)가 크면 metabolite 자체 CL의 신부전 의존성이 강해 — **parent CL 보정 (renal axis)이 *부족*하고, metabolite CL 별도 보정 (metabolite axis) 필수**. parent agonist의 plasma 농도만 보면 metabolite 축적 위험을 *체계적으로 놓침*.
 
-### 답안의 방향성 (스포일러)
 
-**질문 1–4** (Step 1 유지):
-- 1: CrCL = 100에서 둘 다 `Cl_i = Cl_typ`.
-- 2: Model A는 *모든* CL이 power-scale → severe impairment에서 매우 낮게 외삽. Model B는 65% 비신청소 *건드려지지 않음* → ~70% × Cl_typ로 수렴. **Model B가 보수적**.
-- 3: 환자 안전 우선이면 *낮은 Cl 예측* Model A를 base; under-treatment 위험. 보통 둘 다 보고 + sensitivity. 메시지: **fe 사전 지식을 explicit incorporate**.
-- 4: Model A 옳을 가능성은 *비신청소 자체가 신기능 의존* 시 (uremic toxin이 hepatic CYP3A4 down-regulate). 검증: metabolite PopPK + CrCL과 metabolite formation rate 상관성 — **Tozer Ch.20에서 본격 → Step 3 통합 완료**.
 
-**질문 5–7** (Step 2 유지):
-- 5: Model B와 일치 안 함. *t1/2 무변* + CL 감소 + V 1.3배 ↑ → fu 증가 (large V drug; M6 phenytoin) — fu를 covariate로.
-- 6: Blood CL = 22×0.3 = 6.6 L/h. Hepatic blood CL = 0.65×6.6 = 4.3 L/h. E_H = 4.3/81 ≈ **0.05 — 매우 low**. Plasma CL 기준 22/81 ≈ 0.27 (intermediate으로 보임). **분류 잘못 평가**.
-- 7: SLCO1B1이 uptake transporter 영향 → blood CL 자체 변화. fe와 무관 → Model B 비신청소 항에 추가 covariate: `Cl_typ_nonrenal = θ_base · θ_SLCO^(genotype)`. ETA만 흡수시키면 *체계적 패턴* 잃음.
+### Tozer App.D·E 보강 — 질문 14 (Step 4 *최종 Socratic Dilemma*)
 
-**질문 8–13 (Step 3 신규)**:
+**질문 14 (Two Competing Optimization Targets — *진짜 Socratic Dilemma*)**
 
-- **8 (a)**: AUC 비 = 80/200 = 0.4. Eq 20-6: 0.4 = fm · (CL/CL(m)). 추가 정보로 i.v. parent dose가 알려진다면 CL = Dose/AUC(parent) 직접 계산 가능. Dose = 10 mg 가정 → CL = 10/200 × 1000 = 50 L/hr. 0.4 = fm · (50/5) = 10 fm → **fm = 0.04**. 매우 작은 fraction.
-  **(b)**: Total activity at SS = parent C × 1 + metabolite C × 1 (equipotent). Single dose AUC 비로 SS 비도 동일 (steady state superposition) → metabolite/total = 80/(200+80) = **약 29%**.
-  **(c)**: Anuric에서 parent CL은 감소 (fe 부분 차단), metabolite는 *fe(m) = 0.85*이므로 격감 → metabolite 노출 *수배 증가*. Tozer p.674 워크드와 유사. 정확한 비는 fe(parent) 추가 정보 필요.
+당신은 **active metabolite를 가진 만성 투약 신약 Z의 신부전 환자 dose 권고**를 최종 결정 중이다. 다음 *두 임상 목표*가 충돌한다:
 
-- **9 (a)**: 별도 study에서 metabolite t1/2 = 1.5 hr (관찰 6 hr보다 *훨씬 짧음*) → **Case A (formation rate-limited) 확정**. Parent t1/2 = 6 hr가 metabolite의 *겉보기* t1/2를 결정.
-  **(b)**: Case A이므로 metabolite 거동은 parent에 *묶임*. 신부전에서 parent t1/2 *증가* (CL 감소 → t1/2 = 0.693V/CL ↑) → metabolite 관찰 t1/2도 *parent와 함께 증가*.
-  **(c)**: Case A에서 parent CL이 줄면 metabolite 형성도 비례 감소. 그러나 metabolite 자체 CL이 병행 변화하면 (fe(m)이 크면 신부전에서 metabolite CL도 격감), *metabolite 자체 t1/2*는 증가하여 단순 Case A를 *유지하지 못할 수도*. 두 t1/2 모두 영향받지만 metabolite CL의 영향이 더 클 가능성. 이 case 진단 후 별도 metabolite i.v. study 재실행 권장.
+**Target A — Metabolite 안전성 보수성**:
+*"Active metabolite 축적이 신부전에서 큰 폭으로 일어날 수 있으므로 (M20 시나리오 B), 신부전 환자에서 dose를 *aggressively* 감소시켜야 한다 (예: 정상의 25-30%). 일부 환자에서 under-treatment가 발생해도 toxic accumulation 회피가 우선."*
 
-- **10 (a)**: AUC(m) i.v. ≈ oral → metabolite 형성이 *간 우세* (gut wall에서 거의 안 형성). Morphine 패턴.
-  **(b)**: Oral 1.5배면 *gut wall에서 추가 형성*. Isoproterenol 패턴.
-  **(c)**: NONMEM에서 oral 경로일 때 별도 first-pass formation 항: `DADT(CENT_M) += KA * (1-FH) * FM_FP * A(DEPOT)`. i.v. 시 이 항 자동 0.
+**Target B — Parent Exposure 기반 효능 유지**:
+*"Parent drug의 plasma exposure가 효능을 결정하며, parent CL이 신부전에서 비례 감소하지 않으면 (예: fe = 0.35로 26% 감소만) parent dose를 크게 줄이는 것은 *under-treatment*. 표준 dose의 65-75%로 유지하여 효능 보장."*
 
-- **11 (a)**: Eq 20-15: C(m)_av,ss = 120/6 = **20 ng/mL**.
-  **(b)**: Toxic threshold 25 ng/mL > 20 ng/mL → **borderline 안전**. 그러나 inter-individual variability 고려하면 일부 환자에서 threshold 초과 가능. Therapeutic window 좁음.
-  **(c)**: τ = 8 hr → 120/8 = **15 ng/mL**. Safer.
-  **(d)**: metabolite t1/2 (12 hr) > parent t1/2 (4 hr) → **Case B**. Metabolite plateau 도달 시간 = max(t1/2 parent, t1/2 metabolite) = 12 hr 기준 → 3.3 × 12 = 약 40 hr 또는 1.7일에서 90% plateau. 4–5일에서 거의 완전 plateau.
+**핵심 Dilemma**: 두 목표는 *상호 배타적*이며 — Target A 채택 시 효능 부족 위험, Target B 채택 시 metabolite 독성 위험. 어느 것을 *우선*하는가?
 
-- **12 (a)**: 정상에서 contribution 30% → metabolite C/total C = 0.30. Anuric에서 parent CL 약 65% 유지 (extrarenal), parent C 약 1.5배 증가. Metabolite는 fe(m) = 0.85이고 fm 0.45 → 0.66 (redirected) → metabolite C는 약 *(0.66/0.45) × (CL_m/CL_m,extrarenal) = 1.47 × (10/1.5) ≈ 9.8배 증가*. 합산 활성 비는 (1 × 1.5 + 0.43 × 9.8) / (1 + 0.43) ≈ 약 4.4배 증가.
-  **(b)**: Equipotent + 합산 4.4배 → 권장 dose ≈ 1/4.4 ≈ **23%** of 정상.
-  **(c)**: fe(m) = 0.05 (시나리오 A) → metabolite 거의 비신경로 → metabolite CL 변화 minor → 합산 활성 변화는 주로 parent에 묶임 → 권장 dose ≈ 정상의 **약 65–70%** (parent 만 보정).
+**(a)** 두 Target 각각의 *수식적 근거*를 본 통합본 카드 번호로 명시 (예: Target A → M20 시나리오 B 결정 트리; Target B → M11 additivity).
 
-- **13 (a)**: Interconversion이 있으면 measured CL은 *effective elimination CL*이 아니라 forward + reverse path 합. 실제로 X가 Y로 갔다가 다시 X로 돌아오는 cycle은 *distribution* (Tozer Ch.20 Fig 20-12). **Effective CL은 측정 CL보다 *작음*** (measured CL이 reversible loss를 elimination으로 잘못 분류).
-  **(b)**: 신부전에서 Y가 격감 (fe(m) = 0.95) → Y 축적 → Y → X 가수분해 증가 → X effective CL 더 감소.
-  **(c)**: Clofibric acid 패턴 — X의 *unbound CL*이 GFR 감소에 따라 비선형으로 감소 (Tozer Fig 20-13의 직접 mirror). fe(parent) 작아도 신부전에서 X 노출 *수배 증가* 가능.
+**(b)** 두 Target 중 어느 것이 옳은지 결정하기 위해 *반드시 측정해야 할* PK 파라미터 *3개*는? (어떤 데이터가 dilemma를 *해소*하는가?)
 
-### Tozer App.D·E 보강 — **질문 14 (Step 4 신규: 3-axis 복합 dilemma)**
+**(c)** *상황 의존적* 결정 — 어떤 환자 특성·약물 특성에서 Target A가 우선되어야 하고, 어떤 경우 Target B가 우선되어야 하는가?
 
-**질문 14 (3-Axis 복합 시나리오 — Step 4 *최종* dilemma)**
+**(d)** *임상 실무에서 이 dilemma가 자주 일어나는 약물 사례*를 본 통합본에서 식별 (Tozer Ch.20 본문 명시 약물).
 
-당신은 신약 Z에 대한 phase 2 PopPK 보고서를 *최종 검토* 중. 정상 환자의 측정 파라미터:
+#### 질문 14 답안 방향성
 
-| 파라미터 | 값 | Source |
-|----------|-----|--------|
-| Plasma CL | 22 L/h | i.v. study 직접 측정 |
-| C/Cb (plasma-to-blood) | 0.30 | i.v. paired sample |
-| fu (plasma) | 0.05 | equilibrium dialysis |
-| Hematocrit (H) | 0.45 | normal |
-| fe (parent, neon renal impairment) | 0.35 | urinary recovery |
-| Active metabolite W: fm | 0.40 | mass balance |
-| Active metabolite W: fe(m) | 0.85 | metabolite urinary |
-| Metabolite t1/2 (별도 i.v. metabolite study) | 1.5 hr | confirmed |
-| Parent t1/2 | 6 hr | terminal slope |
+**(a) 수식적 근거**:
+- Target A: M20 시나리오 B (`fe(m) → 1`인 active metabolite) + Tozer p.674 워크드 예제 (anuric에서 metabolite 13배 축적) + Confusion Pair #11 (Case B에서 metabolite는 *자기 t1/2*로 누적; parent CL 보정과 *별도* metabolite CL 보정 필요).
+- Target B: M11 additivity (`CL = (1-fe)·CL_typ + fe·CL_typ·CrCL/120`) — 비신청소 (1-fe) 부분이 신기능과 *무관*하게 유지 → fe 작은 약물 (예: 0.35)에서 신부전 dose는 *전체*가 아닌 *fe 비례분*만 감소. M14 (t1/2는 derived parameter — primary는 CL과 V).
 
-환자 Mr. K: GFR = 5 mL/min (anuric에 가까움), fu plasma 0.10 (uremic, 단백결합 displacement), H = 0.45 (normal), 다른 파라미터 무변.
+**(b) 결정적 측정 파라미터 *3개***:
+1. **fe(m) — metabolite의 신청소 분율**: < 0.3이면 Target B 안전 (시나리오 A); > 0.7이면 Target A 강제 (시나리오 B).
+2. **Metabolite 약리 활성과 효력 (intrinsic potency 비)**: parent의 *몇 %* 효력? equipotent (M20 워크드처럼)이면 metabolite 축적 영향 큼; metabolite 활성이 parent의 1/10이면 13배 축적도 임상 영향 미미.
+3. **Therapeutic index (TI) of metabolite**: metabolite의 toxic-to-effective 농도 비. TI 좁으면 (예: < 5) Target A 강제; TI 넓으면 (> 50) Target B 안전 여유.
 
-**(a) Plasma-Blood Axis (App.D)**: 환자 Mr. K의 **C/Cb 변화**? 정상의 fub과 변화 후 fub은? 
+이 3개가 측정되면 dilemma가 *수식적으로 해소* — 단순한 trade-off가 아닌 정량 결정.
 
-**(b) Renal Axis (Tozer Ch.5)**: Parent의 *blood* CL은 Mr. K에서 어떻게 변하는가? Eq E-19 (oral AUC)로 계산하면 — Mr. K의 oral AUCpo 변화 비율?
+**(c) 상황 의존적 결정**:
 
-**(c) Metabolite Axis (Tozer Ch.20)**: Active metabolite W의 *시나리오 분류* (A/B/C)? Mr. K의 metabolite 농도 변화 비율?
+| 조건 | Target A 우선 (보수적 dose 감량) | Target B 우선 (효능 유지) |
+|------|-------------------------------------|------------------------------|
+| Active metabolite 효력 | parent와 equipotent 또는 더 강함 | parent의 1/10 미만 |
+| fe(m) | > 0.7 | < 0.3 |
+| Therapeutic index | 좁음 (procainamide·NAPA 패턴) | 넓음 |
+| 환자 모니터링 | 어려움 (외래) | 가능 (TDM 가능) |
+| 임상 endpoint 측정 | 어려움 (delayed onset) | 즉각 (혈압 등) |
+| 약물 정지 가능성 | 어려움 (만성 indication) | 쉬움 |
 
-**(d) 통합 결정 — Total Active Species 노출**: parent와 metabolite *equipotent + additive* 가정 하 Mr. K에서 *총 활성 물질 노출 변화*? 이 환자에서 *추천되는 dose 비율* (정상 대비)?
+**(d) 임상 실무 사례** (Tozer Ch.20 본문 명시 약물):
+- **Procainamide / NAPA** (Tozer p.683 Study Problem 3): 항부정맥, fe(m) → 1, equipotent → **Target A 강제**. 임상 모니터링이 "parent + NAPA" 표준.
+- **Morphine / Morphine-6-glucuronide** (Tozer Fig 20-7): M6G가 진통 활성, fe(m) 큼 → **Target A 강제** (신부전 환자 morphine dose aggressive 감량).
+- **Sulindac / Sulindac sulfide** (Tozer Table 20-5, p.667): sulfide가 active form, interconversion → 신부전에서 추가 복잡성.
+- **Codeine / Morphine** (Tozer Table 20-1): codeine 자체 약하고 morphine이 *주 효과* — fm·fe(m) 모두 큼 → **Target A 강제**.
 
-**(e) Three-Axis 비교**: 셋 중 *어느 축이 가장 큰* dose 변동을 강제하는가?
+**임상 메시지**: 본 dilemma는 *fe = 0.35*나 *Plasma-blood 변환* 같은 *수치*가 아니라 **약물의 *물리화학적 본질* (active metabolite 존재 + 그 metabolite의 신청소 의존성 + 효력 비)에 의해 결정**된다. App.D·E의 first-principles는 *수치 정확도*에 기여하되, dilemma 자체는 *분자 수준*에서 결정.
 
-#### 질문 14 답안 방향성 (정량 풀이)
+### Quick Self-Test (가상 수치 사용 — *교육용 계산 연습*; 통합 19문항)
 
-**(a) Plasma-Blood Axis 풀이**:
+> 본 절의 수치는 *교육용 가정* (symbolic 수치)이며 *실측 임상 데이터를 가장한 것이 아님*. 학습자가 교재 본문 식을 *직접 적용* 연습하도록 단순화된 문제.
 
-먼저 Eq D-8로 KpBC 결정 (정상):
-$$K_{PBC} = \frac{0.45 - 1 + 1/0.30}{0.05 \cdot 0.45} = \frac{-0.55 + 3.33}{0.0225} = \frac{2.78}{0.0225} \approx 124$$
+**Layer 1 (Gabrielsson §2.3·§2.5·PK5)**
 
-→ KpBC ≈ 124 (RBC 매우 강한 분배). 정상 fub:
-$$f_{ub,\text{normal}} = f_u \cdot \frac{C}{C_b} = 0.05 \cdot 0.30 = 0.015$$
-
-Mr. K (uremic, fu 0.10) — Eq D-6:
-$$\frac{C}{C_b}_{\text{Mr.K}} = \frac{1}{1 + 0.45 \cdot [0.10 \cdot 124 - 1]} = \frac{1}{1 + 0.45 \cdot 11.4} = \frac{1}{6.13} \approx 0.163$$
-
-$$f_{ub,\text{Mr.K}} = 0.10 \cdot 0.163 = 0.0163$$
-
-→ **fub은 거의 무변** (0.015 → 0.0163; +9%). plasma fu 2배 변화 시 plasma-to-blood 비도 *역으로 변동* → **fub는 거의 일정** — App.D의 자기보상 (self-compensating) 효과. Eq E-19 oral AUC는 *fub로* 결정 → AUCpo도 거의 무변.
-
-**(b) Renal Axis 풀이**:
-
-Blood CL (정상) = 22 × 0.30 = 6.6 L/h. Hepatic blood CL = (1-0.35) × 6.6 = 4.3 L/h. Renal CL = 0.35 × 6.6 = 2.31 L/h. E_H = 4.3 / (1.35×60) = 4.3/81 ≈ **0.053** — *very low extraction*.
-
-Mr. K: renal CL = 0.35 × (5/120) × 6.6 = 0.097 L/h (거의 0). Hepatic CL 무변 (저추출 + IV → fub 의존; (a)에서 fub 거의 무변 → CL_H 거의 무변).
-
-→ **Total parent CL: 6.6 → 0.097 + 4.3 = 4.40 L/h** (33% 감소).
-→ Parent AUC 비: 6.6 / 4.40 = **1.50배 증가** (i.v. 기준). Oral은 (a)의 결론대로 거의 무변.
-
-**(c) Metabolite Axis 풀이**:
-
-정상 metabolite t1/2 = 1.5 hr << parent t1/2 = 6 hr → **Case A (formation rate-limited)**. 정상 환자에서 metabolite 거동은 parent에 묶임.
-
-그러나 Mr. K에서: parent fe 부분 차단 → fm 0.40 → 약 0.40 + 0.35×(redirected to metabolite formation 가정 비율). 가정: fe parent의 50%가 metabolite 경로로 redirect → fm: 0.40 → 0.40 + 0.5×0.35 = 0.575.
-
-Metabolite의 *자체 CL* 변화: fe(m) = 0.85 → metabolite CL의 85% 차단. Metabolite CL: 1.0× → 0.15×.
-
-→ Metabolite plateau (i.v. 기준): C(m) ∝ fm / CL(m). 비 = (0.575/0.40) / (0.15/1.0) = 1.4375 / 0.15 ≈ **9.6배 증가**.
-
-**(d) 통합 — Total Active Species**:
-
-가정: 정상에서 metabolite contribution이 total activity의 30% (parent : metabolite = 70 : 30; 비 0.43 : 1로 normalize).
-
-Mr. K에서:
-- Parent contribution 비: 0.70 × 1.50 = 1.05.
-- Metabolite contribution 비: 0.30 × 9.6 = 2.88.
-- **Total: 1.05 + 2.88 = 3.93배 증가**.
-
-→ Mr. K 권장 dose 비 = 1 / 3.93 ≈ **25% of 정상 dose**. 즉 75% 감량.
-
-**(e) Three-Axis 비교**:
-- Plasma-Blood Axis: dose 영향 *거의 없음* (fub 자기보상).
-- Renal Axis: dose 영향 *moderate* (1.5배).
-- Metabolite Axis: dose 영향 **압도적** (9.6배).
-
-→ **결론**: 본 시나리오에서 *metabolite axis가 단연 dominant*. parent CL만 보고 dose 결정 시 (renal axis만 고려) — 1/1.5 ≈ 65% — 실제 안전 dose (25%)보다 *2.6배 과량*. **임상의가 만나는 가장 위험한 함정**.
-
-#### 질문 14의 통합 메시지
-
-§1의 fe = 0.35 dilemma에서 시작한 본 통합본은 *세 단계로 확장*되며 진정한 임상 위험이 *어디에 숨어 있는지* 명확히 한다:
-
-1. **Step 1 (Gabrielsson)**: Model A vs Model B — 신청소율 외삽 dilemma. *2-fold 차이*.
-2. **Step 2 (Tozer Ch.5)**: Plasma vs Blood CL + extended clearance — 분류 오류 위험. *수배 차이 가능*.
-3. **Step 3 (Tozer Ch.20)**: Active metabolite + 신부전 축적 — *13배 metabolite 축적의 임상 함정*.
-4. **Step 4 (Tozer App.D·E)**: First-principles cross-validation + plasma-blood axis는 *대부분 자기보상*하므로 *축 #1이 아니라 축 #2·#3이 임상 위험의 주축*임을 입증.
-
-**메시지**: *진정한 임상 위험은 metabolite axis에서 나오며*, parent drug의 plasma 농도만 보는 routine TDM은 *active metabolite 약물에서 체계적으로 부족하다*. App.D·E의 first-principles는 plasma-blood axis가 *수치 계산의 정확도*에 기여하되, *임상 위험의 *직접* 결정자가 아님*을 명확히 한다 — parent drug PopPK에서 active metabolite 모델링이 *임상 안전성의 핵심*.
-
-### Quick Self-Test (계산 없이)
-
-**Q5**: PK5 약물 Cl = 1.2 L·h⁻¹, fe = 0.35. ClR = ?
-**Q6**: V = 7 L. K = ?
-**Q7**: Highly cleared IV 환자, albumin 절반 (fu 2배). 총 Css? Unbound Css?
-**Q8**: 같은 환자가 oral. 총 Css? Unbound Css?
+- **Q5** (M2): Cl = 1.2 L·h⁻¹, fe = 0.35. ClR = ?
+- **Q6** (M9): V = 7 L, Cl = 1.2 L·h⁻¹. K = ?
+- **Q7** (M6, IV): Highly cleared IV 환자, albumin 절반 (fu 2배). 총 Css? Unbound Css?
+- **Q8** (M6, Oral): 같은 환자가 oral. 총 Css? Unbound Css?
 
 (답: Q5 = 0.42 L·h⁻¹; Q6 = 0.171 h⁻¹; Q7 IV total 무변, IV unbound 2배 ⚠️; Q8 oral total 절반, oral unbound 무변.)
 
-### Tozer Ch.5 Quick Self-Test
+**Layer 2 (Tozer Ch.5)**
 
-**Q9 (M10)**: Plasma CL = 1.0 L/min, plasma-to-blood = 0.5. Blood CL? E_H (Q_H = 1.35)?
-**Q10 (M11)**: 약물 Y의 fe = 0.40, total CL = 5 L/h. CL_R? CL_H?
-**Q11 (M14)**: 효소 유도로 CL 2배, V 무변. t1/2?
+- **Q9** (M10): Plasma CL = 1.0 L/min, plasma-to-blood = 0.5. Blood CL? E_H (Q_H = 1.35)?
+- **Q10** (M11): 약물 Y의 fe = 0.40, total CL = 5 L/h. CL_R? CL_H?
+- **Q11** (M14): 효소 유도로 CL 2배, V 무변. t1/2?
 
 (답: Q9 blood CL = 0.5 L/min, E_H ≈ 0.37 (intermediate); Q10 CL_R = 2 L/h, CL_H = 3 L/h; Q11 t1/2 절반.)
 
-### Tozer Ch.20 Quick Self-Test (Step 3)
+**Layer 3 (Tozer Ch.20)**
 
-**Q12 (M16)**: i.v. parent 후 AUC(parent) = 100, AUC(metabolite) = 50. fm = 0.5로 알려져 있을 때 CL/CL(m)?
-**Q13 (M17)**: Parent t1/2 = 8 hr, 별도 i.v. metabolite t1/2 = 1 hr. Case?
-**Q14_quick (M19)**: AUC(m)_single = 60 ng·hr/mL after 100 mg oral. τ = 12 hr. C(m)_av,ss?
-**Q15 (M20)**: fe(parent) = 0.1, fm = 0.4, fe(m) = 0.9. 신부전 시 어느 시나리오?
+- **Q12** (M16): i.v. parent 후 AUC(parent) = 100, AUC(metabolite) = 50. fm = 0.5. CL/CL(m)?
+- **Q13** (M17): Parent t1/2 = 8 hr, 별도 i.v. metabolite t1/2 = 1 hr. Case?
+- **Q14_quick** (M19): AUC(m)_single = 60 ng·hr/mL after 100 mg oral. τ = 12 hr. C(m)_av,ss?
+- **Q15** (M20): fe(parent) = 0.1, fm = 0.4, fe(m) = 0.9. 신부전 시 어느 시나리오?
 
-(답: Q12 = 1 (AUC 비 = 0.5 = 0.5 × CL/CL(m) → CL/CL(m) = 1; CL = CL(m)); Q13 = Case A (formation RL); Q14_quick = 5 ng/mL; Q15 = **시나리오 B** — metabolite가 격감, dose 반드시 감소.)
+(답: Q12 = 1 (AUC 비 = 0.5 = 0.5 × CL/CL(m) → CL/CL(m) = 1); Q13 = Case A (formation RL); Q14_quick = 5 ng/mL; Q15 = **시나리오 B** — metabolite가 격감.)
 
-### Tozer App.D·E Quick Self-Test (Step 4 신규)
+**Layer 4 (Tozer App.D·E)**
 
 **Q16 (M10 + App.D Eq D-6)**: H = 0.45, fu = 0.05, KpBC = 100. C/Cb = ?
 **Q17 (M10 + App.D Eq D-8)**: 측정 H = 0.40, C/Cb = 0.40, fu = 0.10. KpBC = ?
 **Q18 (M15 + App.E Eq E-13의 ρ)**: Pin·SA = 5, Pout·SA = 5 (passive diff), CLint = 50. ρ = ? Model I 회복?
-**Q19 (M18 + App.E Eq E-19)**: Oral AUC가 *Q_H 무변시 변동하지 않는다*. 정확? 부정확?
+**Q19** (M18 + App.E Eq E-19): Eq E-19에 따르면 *oral AUC는 hepatic blood flow QH 변동 시* 변동하는가? (정확/부정확)
 
-(답: Q16 = 1/(1 + 0.45×[0.05×100 - 1]) = 1/(1 + 0.45×4) = 1/2.8 ≈ **0.357**; Q17 = (0.40 - 1 + 0.40)/(0.10×0.40) = -0.20/0.04 = **-5** [*비물리적*; 측정 오류 또는 fu 잘못 측정 — 진단적 가치]; Q18 = 5/(5+50) = 0.091, *Model I 회복 안 됨* (Pin·SA << CLint이므로 시나리오 #2: basolateral uptake rate-limited); Q19 = **정확** — Eq E-19에서 QH 항이 사라짐.)
+(답: Q16 = 1/(1 + 0.45×[0.05×100 - 1]) = 1/(1 + 0.45×4) = 1/2.8 ≈ **0.357**; Q17 = (0.40 - 1 + 0.40)/(0.10×0.40) = -0.20/0.04 = **-5** — *비물리적 결과* (KpBC < 0 불가) → 측정 오류 또는 fu 잘못 측정 진단; Q18 = 5/(5+50) = **0.091**, *Model I 회복 안 됨* (Pin·SA << CLint이므로 시나리오 #2: basolateral uptake rate-limited); Q19 = **부정확 — Oral AUC는 QH에 무관**, QH 변동 무관하게 일정 (i.v.는 변동).)
 
 ---
 
@@ -2287,106 +2004,40 @@ $$\underbrace{AUC_{po} = \frac{Dose}{f_{ub} \cdot \rho \cdot Cl_{int}}}_{\text{M
 
 ## Step 4 (Phase 1 *최종*) 완료 블록
 
-### 산출 확인 체크리스트 (Step 4)
+### Step 4 산출물 요약
 
-#### Step 4 자체 산출물
+| 영역 | Step 3 → Step 4 변동 |
+|------|-----------------------|
+| Curation Map MUST | 20개 → 20개 (변동 없음 — App.D·E는 CONTEXT 흡수) |
+| Curation Map CONTEXT | 19개 → 26개 (C20–C26 신규: App.D·E 7개 항목) |
+| §2 MUST 카드 보강 | M4 (App.E Model I), M10 (App.D Eq D-6/D-8), M15 (App.E Model II ρ), M18 (App.E Eq E-19) |
+| §5 Confusion Pairs | 13개 → 14개 (#14: fu vs fub) |
+| §7 본 질문 | 13개 → 8개 (Q1–Q8 핵심 보존) + Q14 (Socratic Dilemma 재설계) |
+| §7 Quick Self-Test | 15개 → 19개 (Q16–Q19 App.D·E 신규) |
+| §8 Recap | Layer 4 (App.D·E cross-validation) 추가 + NONMEM 매핑 4행 신규 |
 
-- [x] Curation Map 0.1 헤더 갱신 (Step 4 status 명시 + Mode 매핑에 App.D·E B-Standard 추가)
-- [x] Curation Map 0.2 CONTEXT 항목 확장 (19 → 26개; C20–C26 = App.D·E 흡수 항목 7개 신규)
-- [x] Curation Map 0.3 Mode 분기 매핑 표에 App.D·E 5개 행 신규 추가
-- [x] §1 도입에 Tozer App.D·E 핵심 메시지 추가 (3-axis dilemma 압축 + Phenytoin 사례)
-- [x] §2 기존 카드 M4 *보존* + **App.E Model I (Eq E-1 ~ E-8) 대안 유도 단락 추가** (Gabrielsson Eq 2:188-2:195 cross-validation 표 포함)
-- [x] §2 기존 카드 M10 *보존* + **App.D 5단계 mass-balance 유도 + KpBC 역산식 + Study Problem 1 정량 검증 (a/b/c)**
-- [x] §2 기존 카드 M15 *보존* + **App.E Model II (Eq E-9 ~ E-15) ρ 항 first-principles 유도 + 세 임상 시나리오 분류 + Eq 5-35 cross-validation**
-- [x] §2 기존 카드 M18 *보존* + **App.E Eq E-16 ~ E-20 oral first-principles + "Oral AUC는 QH 무관" 4가지 함의 + Statin DDI worst-case**
-- [x] §5 Confusion Pairs 13개 → 14개 확장 (#14: fu plasma vs fub blood — App.D 기반)
-- [x] §7 Step 3 보존 + **Q14 (3-Axis 복합 dilemma) 신규** (Mr. K 시나리오: GFR=5, fu=0.10, KpBC=124 첨가 — 정량 풀이 (a)~(e))
-- [x] §7 Quick Self-Test에 Q16–Q19 (App.D·E 4문항) 신규 추가
-- [x] §8 Recap 갱신: **Layer 4 (App.D·E cross-validation) 추가** + NONMEM 매핑 표에 4개 행 신규
-- [x] §8 Step 4 placeholder 제거 + 본 phase 종결 메시지 + Phase 4 Obsidian 입주 안내
-- [x] 파일명 `01_step1_draft_v0.md` 확정 (s04 세션 *최종* 버전)
+### Patch Pass 1 적용 결과 (검수 의견 반영)
 
-#### SCOPE LOCK 검수 (Phase 0 directive 전 범위)
+| 의견 | 적용 결과 |
+|------|-----------|
+| #1 CONTEXT 처리 압축 | M4·M10·M15·M18 보강부를 *각 1단락 + 핵심식*으로 압축 — mini-card 수준 → CONTEXT 1–2 sentence 규칙 준수 |
+| #2 M8 Table 2.9 placeholder 복원 | Distributed/Dispersion 식 placeholder 제거 + 변수 정의 (`R_N`, `ε²`, `D_N`, `a`) 명시; 단 [확인 필요] 태그로 Roberts & Rowland 1986 원전 재대조 권고 |
+| #3 §7 Socratic Dilemma 재설계 | Q14를 *Two competing optimization targets* (Target A metabolite 안전성 vs Target B parent 효능 유지) 형태로 재작성 — 충돌 + 결정자 + 상황 의존 + 임상 사례 4단계 |
+| #4 가상 수치 정리 | Quick Self-Test 도입부에 "*교육용 가정* (symbolic 수치)" 명시 — 학습 연습용임을 분명히 함; Q14의 가설 시나리오 정량 풀이 (Mr. K) 부분은 Q14 재설계 시 *수식적 근거 + 결정 트리* 중심으로 전환되어 가설 수치 의존 최소화 |
+| #5 통합 흔적 제거 | "Step 4 통합 예정" (M7, §5 #3) 제거 → "통합 완료" 표현으로 갱신; 완료 블록의 과밀 self-audit 단락 압축 |
 
-##### 1. CURATION DIRECTIVE: Master's Lens First
+### Phase 2 입력 준비 상태
 
-- [x] Curation Map이 §2 작성 *전*에 완성됨
-- [x] MUST 항목: "Test — 이 개념 없이 다음 내용 이해 가능?" 적용
-  - App.D·E: 두 교재 동일 결론 cross-validation → *후속 이해 붕괴 없음* → **CONTEXT로 분류 (C20–C26)**, MUST 카드 추가 없음
-- [x] CONTEXT: §2 본문 1~2 sentence 흡수 + 전용 카드 *없음* (M4·M10·M15·M18 내 *보강 단락*으로 위치)
-
-##### 2. STRUCTURAL RULES (1~7)
-
-- [x] **Rule 1**: MUST 항목 모두 §2 Concept Anatomy Cards로 (M1–M20 = 20개)
-- [x] **Rule 2**: CONTEXT 항목 1–2 sentence + standalone card 없음 — App.D·E의 7개 CONTEXT 모두 보강 단락 형태
-- [x] **Rule 3**: 수치값·페이지 인용 fabrication 없음
-  - App.D Eq D-6/D-8: Tozer p.775 정확 인용
-  - App.E Eq E-1~E-20: Tozer pp.777–779 정확 인용
-  - App.D Study Problem 1 정량: 각하 직접 풀이 (KpBC ≈ 40.1; anemic C/Cb ≈ 0.55; nephrotic C/Cb ≈ 0.159) — 본문 page 776 명시
-  - §7 Q14 정량: 가설 시나리오 명시; KpBC ≈ 124, fub ≈ 0.015 등 *내부 일관 계산*
-- [x] **Rule 4**: 수식·NONMEM 코드 [복원]/[확인 필요] 태그 보존 — 기존 11건 보존
-- [x] **Rule 5**: Big Idea blocks이 *구체적 임상 결과* 제시
-  - M4 보강: "Gabrielsson과 동일 결론 → 표기 차이 only → fu vs fub 혼동 시 약물별 다른 비율로 추정 편향"
-  - M10 보강: "anemic C/Cb 0.425→0.55; nephrotic 0.425→0.159 — 단백결합 변동이 plasma-blood 비도 *동시 변동* → routine TDM hidden bias"
-  - M15 보강: "Statin + cyclosporine: ρ 감소 → CLb,H 비례 감소 → AUC 2-3배 증가 → rhabdomyolysis 위험"
-  - M18 보강: "Cyclosporine + simvastatin: ρ × CLint 곱셈 → 5배 증가"
-  - PROHIBITED 표현 ("이 개념은 PK의 기초다") 부재 검증 완료
-- [x] **Rule 6**: §5 Memory Hooks이 *구조적 이유* 인코딩
-  - #14: "신장은 plasma에서 여과 → fu, 간은 blood에서 추출 → fub" — *물리적 출발점 차이* 명시
-- [x] **Rule 7**: §7 Q14가 *3-axis 복합 dilemma* (단일 환자 Mr. K에서 세 axis 동시 작용 + 정량 비교 + 어느 축이 dominant인가)
-
-##### 3. OUTPUT FORMAT — 마커 시스템
-
-- [x] `<!-- MASTER LENS -->`: M1–M20 + 보강 단락 (App.D, App.E Model I·II, oral first-principles) Big Idea blocks
-- [x] `<!-- ANCHOR -->`: 카드 간 causal bridge — Step 4에서 4개 갱신 (M4, M10, M15, M18) + 새 ANCHOR 보존
-- [x] `<!-- TRENCH -->`: M10·M15·M18에 Step 4 신규 Trench Tip 3개 추가 (fu vs fub 검출, Statin PBPK, Oral DDI 시뮬레이션)
-- [x] `<!-- CONFUSION -->`: §5 #14 신규 — Step 4 추가
-- [x] `<!-- SELF-TEST -->`: §7 본문 + Q14 + Quick Self-Test 모두 마커 보존
-- [x] `<!-- RECAP -->`: §8에 보존
-- [x] **FIGURE 마커 미삽입** — Phase 4C 대기 (App.D·E도 동일)
-
-##### 4. Output 순서
-
-- [x] Curation Map → §1 → §2 → §5 → §7 → §8 → 완료 블록 — 순서 보존
-- [x] Language: Korean prose + English technical terms/equations/code
-
-##### 5. Page Range Compliance (Step 4 전용)
-
-- [x] **App.D pp.775–776**: Eq D-1 ~ D-8 + Study Problem 1 정확 흡수
-- [x] **App.E pp.777–780**: Eq E-1 ~ E-20 (Model I + Model II + Oral) 정확 흡수 — Eq E-15 (CLb,H = fub·Pin)까지 포함
-- [x] App.E Study Problem 1·2 — *문제만 명시*, 풀이는 §7 Q14에 통합 (각하 시나리오와 결합)
-- [x] App.D·E *범위 외* 확장 없음 (Multiple-Dose Regimens 챕터, Appendix K answer key 등 미참조)
-
-##### 6. 누적 Phase 1 보존 검증
-
-- [x] Step 1 (Gabrielsson §2.3·§2.5·PK5) 카드 M1–M9 *보존, 무수정*
-- [x] Step 2 (Tozer Ch.5) 카드 M10–M15 *보존*; M4·M10·M15는 *Step 4 보강 단락만 추가*
-- [x] Step 3 (Tozer Ch.20) 카드 M16–M20 *보존, 무수정*; M18은 *Step 4 보강 단락만 추가*
-- [x] §5 Confusion Pairs #1–#13 *보존*; #14 신규 추가
-- [x] §7 본 질문 Q1–Q13 *보존*; Q14 신규; Quick Self-Test Q5–Q15 *보존*; Q16–Q19 신규
-
-##### 7. 본 file 무결성
-
-- [x] Markdown 구조 무손상: heading hierarchy, table syntax, LaTeX equations 모두 유효
-- [x] 카드 수: §2 MUST 카드 20개 (M1–M20) — 변경 없음
-- [x] Confusion Pairs: 14개 (#1–#14) — 1개 신규
-- [x] §7 본 질문: 14개 (Q1–Q14) — 1개 신규
-- [x] §7 Quick Self-Test: 19개 (Q5–Q19) — 4개 신규
-- [x] CONTEXT 항목: 26개 (C1–C26) — 7개 신규
-
-### Phase 1 종결 — Phase 2 입력 준비
-
-본 통합본 `01_step1_draft_v0.md`는 다음 Phase로 *준비 완료*:
-
-- **Phase 2 (의미 단위 fragmentation)**: 20개 MUST 카드 + 14개 Confusion Pairs + 14개 §7 dilemma + 19개 Quick Self-Test가 atomic 단위로 분해 가능 형태.
-- **Phase 3 (Inter-card linking)**: `<!-- ANCHOR -->` 마커가 카드 간 causal bridge 명시 — Phase 3에서 directed graph로 변환.
-- **Phase 4 (Obsidian 입주)**: 카드별 YAML frontmatter 자동 생성을 위한 metadata가 § 헤딩 + Mode (A/B) + Source 표기로 *모두* 코드화. App.D·E 보강 단락은 별도 노트가 *아니라* M4·M10·M15·M18 노트 *내부* 포함 결정.
-- **Phase 4C (SVG figure 자체 제작)**: FIGURE 마커 미삽입 상태 — Phase 4C에서 App.D Fig 없음 (개념적 mass balance만), App.E Fig 없음 (개념적 model 다이어그램만), Tozer Ch.5 Fig 5-10 (hyperbolic), Fig 5-12 (EHC), Fig 5-16 (urine pH), Fig 5-19 (CL-V-t1/2 관계), Fig 5-28 (propranolol fu) + Tozer Ch.20 Fig 20-1 (rate-limiting), Fig 20-2 (methylprednisolone), Fig 20-3 (propranolol/NLA), Fig 20-7 (morphine), Fig 20-8 (infusion plateau), Fig 20-9 (halazepam), Fig 20-10 (renal failure), Fig 20-11 (carbamazepine autoinduction), Fig 20-12 (interconversion), Fig 20-13 (clofibric acid)이 SVG 자체 제작 후보.
+- **Atomic units**: M1–M20 (20개) + Confusion Pairs (14개) + §7 (Q1–Q8 + Q14) + Quick Self-Test (19문항)
+- **Inter-card linking**: `<!-- ANCHOR -->` 마커 22개가 directed graph 입력 — Phase 3 변환 직접 가능
+- **Obsidian metadata**: § 헤딩 + Mode (A/B) + Source (G·T5·T20·TD·TE) 표기로 YAML frontmatter 자동 생성 가능
+- **Phase 4C SVG candidates**: Tozer Ch.5 Fig 5-10·5-12·5-16·5-19·5-28 + Tozer Ch.20 Fig 20-1·20-2·20-3·20-7·20-8·20-9·20-10·20-11·20-12·20-13 (App.D·E는 개념도만, 별도 figure 없음)
+- **잔존 [확인 필요] 태그**: 11건 (Step 1·2·3 누적) + M8 Table 2.9의 Distributed/Dispersion 식 (Roberts & Rowland 1986 원전 재검증 필요)
 
 ---
 
-*Step 4 (Tozer App.D + App.E) 통합 완료. Phase 1 *최종* 통합본 `01_step1_draft_v0.md` 생성 완료.*
+*Phase 1 *최종* 통합본 `01_step1_draft_v0.md` — Patch Pass 1 적용 완료. Phase 2 진행 가능.*
 
 ---
 
-C-260502-061847-N4P
+C-260502-072613-V8R
