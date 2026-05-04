@@ -1,4 +1,4 @@
-# 09_Crucible Report v1 — Insight Extraction beyond Step 1
+# 10_Crucible Report v1 — Insight Extraction beyond Step 1
 
 **Mode:** [논문·연구 리뷰] · A-Critical · B-Standard
 **Personas:** P1 (30-year senior pharmacometrics mentor) + P3 (FDA clinical pharmacology reviewer)
