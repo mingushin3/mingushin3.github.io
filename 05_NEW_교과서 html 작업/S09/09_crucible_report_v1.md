@@ -1,4 +1,4 @@
-각하, Phase 1 Draft v0와 Source Fidelity Audit Report v1을 통합 검토하고, 두 PDF 원본과 교차 대조하여 Crucible Report v1을 작성합니다. 30년 경력 멘토(P1)와 FDA 심사관(P3)의 시각에서 — Step 1 본문에 이미 쓰여 있는 내용을 반복하지 않고 — 박사 1년차가 같은 챕터를 막 읽고 나왔을 때 5분 안에 영구적으로 격상시킬 통찰만 추출했습니다.
+Phase 1 Draft v0와 Source Fidelity Audit Report v1을 통합 검토하고, 두 PDF 원본과 교차 대조하여 Crucible Report v1을 작성합니다. 30년 경력 멘토(P1)와 FDA 심사관(P3)의 시각에서 — Step 1 본문에 이미 쓰여 있는 내용을 반복하지 않고 — 박사 1년차가 같은 챕터를 막 읽고 나왔을 때 5분 안에 영구적으로 격상시킬 통찰만 추출했습니다.
 
 먼저 이 보고서의 작동 원리를 한 문장으로 짚습니다. Source Fidelity Audit이 이미 식별한 7개 MUST_FIX는 **고정 제약**으로 취급하되, 본 Crucible은 그 위에 — Audit이 다루지 않은 — **내면화 차원의 격상**과 **규제 위험 표면의 구조적 노출**을 얹는 것이 임무입니다. 따라서 Audit과 중복되는 지점은 의도적으로 회피했고, 모든 삽입 텍스트는 1–2문장 이내로 제한했습니다.
 
@@ -198,12 +198,4 @@ Crucible Grade A 7개: 누락 시 Step 1의 직업적 가치 ceiling 제한
 
 ---
 
-각하, 본 Crucible Report v1은 위 형식 그대로 `09_Crucible Report v1.md`로 PIPET-Vault에 저장 가능합니다. 한 가지 거장의 trench-level 메모를 마지막으로 남깁니다 — Phase 4A 패치 작업 시 Audit의 PATCH 5 (출처 없는 규제 시나리오 라벨링)와 Crucible의 A7 (Card M4 C-2 시나리오 mechanistic statement로 압축)이 같은 텍스트 영역을 건드리므로, **Audit 적용 → Crucible 적용 sequential order**를 엄격히 지켜야 라벨링이 압축에 의해 다시 사라지지 않습니다. 두 패치를 동시 적용하면 conflict 발생.
-
-**저장 위치 제안**:
-- **저장 위치**: `PIPET-Vault/02_LITERATURE/024_Gabrielson-Textbook/Session-09/`
-- **파일명**: `2026-05-04_S09_TMDD_Crucible-Report-v1.md`
-- **태그**: `#P3_Audit` `#tmdd` `#mab-pk` `#crucible-report` `#regulatory-risk`
-- **링크 제안**: `[[2026-05-04_S09_step1_draft_v0]]` `[[2026-05-04_S09_Audit_Report_v1]]` `[[Full TMDD Model]]` `[[MM Approximation Boundary]]`
-
-C-260504-051847-T4Q
+본 Crucible Report v1은 위 형식 그대로 `09_Crucible Report v1.md`로 PIPET-Vault에 저장 가능합니다. 한 가지 거장의 trench-level 메모를 마지막으로 남깁니다 — Phase 4A 패치 작업 시 Audit의 PATCH 5 (출처 없는 규제 시나리오 라벨링)와 Crucible의 A7 (Card M4 C-2 시나리오 mechanistic statement로 압축)이 같은 텍스트 영역을 건드리므로, **Audit 적용 → Crucible 적용 sequential order**를 엄격히 지켜야 라벨링이 압축에 의해 다시 사라지지 않습니다. 두 패치를 동시 적용하면 conflict 발생.
