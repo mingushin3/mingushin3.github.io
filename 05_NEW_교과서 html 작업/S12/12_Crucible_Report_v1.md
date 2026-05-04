@@ -217,4 +217,31 @@ Phase 4A 진입 시 권장 순서: **(i)** Audit MUST_FIX 6개 적용 → **(ii)
 
 ---
 
+## 핵심 판정
+
+**Audit Report v1은 *Draft의 사실 오류 6개*를 잡았고, 본 Crucible은 *체화의 임계선에 도달하지 못한 직관 지점 4–5개*를 잡았습니다.** 두 보고서는 상호 배타가 아니라 *상보적*입니다.
+
+**Audit이 잡은 것** (fixed constraint로 취급):
+- Case label 오류(PD13 ≠ Table 3.10), `k1e=ke0` 식별가능성 vs 물리적 정합성 오기, succinylcholine/d-tubocurarine 수치 혼합, hysteresis 방향의 deterministic 표현, NDA narrative, 구현 layer 침범.
+
+**Crucible이 새로 잡은 것** (Operative Filter 기반):
+- **Wall 1**: `ke0`/`kout`/`koff`의 단위 동일성을 지시체 동일성으로 착각하는 함정 — PD21 데이터 자체가 가르치지 못함.
+- **Wall 2**: `tmax` 불변 검정이 *linear PK 위에서만* 작동한다는 G&W p.264의 명시적 전제 — Draft에서 완전 누락.
+- **Wall 4**: PD35의 1319→789→642→632→682 패턴을 단순 model selection 규칙이 아니라 *데이터의 information capacity ceiling 진단*으로 읽는 epistemological framing.
+- **GOF 시그니처 카탈로그 4종**(EC50 용량 분기 / S자 잔차 / Trough Drift / OFV Plateau) 중 후자 3종이 Draft에 없음.
+
+## Phase 4A Patch 진입 시 권장 순서
+
+본 보고서 마지막 섹션에 명시된 순서대로 진행하면 Content Lock 후보로 충분합니다:
+
+1. Audit MUST_FIX 6개 적용 →
+2. Crucible **Grade A 6개** 삽입(특히 A1 — `ke0/kout/koff` 지시체 분리 직관, A2 — `tmax` 검정의 linear PK 선결조건) →
+3. **T4 deletion 9개** 실행(특히 §7 Q10 보스 딜레마 정답 공개의 7–8문장 narrative 압축, §8 Moat의 NDA 제출 mock 인용 삭제) →
+4. Grade B 중 §1 Roadmap에 자연스럽게 흡수되는 1–2개만 선택 적용. **Grade C 6개는 모두 거부.**
+
+## Trench-Level Tips 4개 (T3)
+
+각각 *(상황)–(함정)–(탐지)–(삽입 위치)–(삽입 텍스트 1–2문장)* 완성 형식으로 복사-붙여넣기 가능하게 작성했습니다 — Sparse sampling이 만드는 가짜 figure-eight, `tmax` 검정의 PK linearity 선결, PD21의 식별 불가능성, n 선택의 information capacity ceiling.
+
+
 C-260504-073500-K7M
