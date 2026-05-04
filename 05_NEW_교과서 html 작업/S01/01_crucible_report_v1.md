@@ -137,13 +137,5 @@ Step 1 Draft v0의 **구조 골격은 정확하고 견고하다.** Audit Report 
 
 ---
 
-### Obsidian 저장 메타데이터
-
-- **저장 위치:** `02_LITERATURE/024_Gabrielson-Textbook/Session_01_CL_V_t-half/`
-- **파일명:** `2026-05-03_S01_Step1_Draft_v0_Crucible_Report_v1_논문리뷰.md`
-- **태그:** `#P1_Action` `#P3_Audit` `#PIPET-S01` `#crucible-report` `#source-fidelity-patch`
-- **링크 제안:** `[[01_Audit_Report_v1]]` · `[[01_step1_draft_v0]]` · `[[S01_phase1_patch_memo]]` · `[[MOC — One-Compartment IV Kinetics]]` · `[[Phase_4A_Patch_Workflow]]`
-
----
 
 C-260503-041752-9TR

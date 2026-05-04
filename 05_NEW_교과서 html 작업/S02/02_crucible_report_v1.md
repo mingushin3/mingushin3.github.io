@@ -179,21 +179,5 @@ Step 1 v0는 **구조적으로 합격**이다. 6개 MUST 카드의 선정은 정
 
 ---
 
-## Obsidian 파일링 제안
-
-- **저장 위치**: `02_LITERATURE/021_Key-References/Session-02_Distribution-Biology/`
-- **파일명**: `2026-05-03_Session-02_Crucible-Report-v1_논문리뷰.md`
-- **태그**: `#pharmacometrics/distribution` `#pk-pd/Vd-fu` `#regulatory/IND-NDA` `#nonmem/covariate-modeling` `#popk/diagnostics` `#P1_Action` `#P3_Audit`
-- **링크 제안**:
-  - `[[2026-05-03_Session-02_Step1-Draft-v0]]`
-  - `[[2026-05-03_Session-02_Audit-Report-v1]]`
-  - `[[Albumin-V-False-Covariate-Pattern]]` (M3 Plausible Fallacy로부터 atom 생성)
-  - `[[fu-Covariate-Inversion-Pattern]]` (T2 신규 atom)
-  - `[[PK47-Single-Site-Misfit-Pattern]]` (T2 신규 atom)
-  - `[[Vss-vs-Vbeta-Confusion-Pattern]]` (T2 신규 atom)
-  - `[[MOC — 분포의 생물학]]`
-  - `[[Benet-Hoener-2003 PPB review]]`
-
----
 
 C-260503-074200-K7Q
