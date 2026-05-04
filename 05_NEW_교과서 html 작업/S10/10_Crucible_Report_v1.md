@@ -257,3 +257,26 @@ Phase 4A로 진행 권고. HTML compile은 Phase 4C(Visual Pedagogy) 통과 후.
 ---
 
 C-260504-031847-K8R
+
+세 자료(Step 1 Draft v0 + Audit Report v1 + 두 PDF)를 모두 교차 대조했습니다. Audit가 사실·수식 검증을 끝냈으므로, Crucible 단계의 임무는 **"Draft v0가 잘 정리한 사실 위에서, 1년차 박사과정생이 5분 엘리베이터 대화로 들었을 때 영구히 업그레이드되는 통찰 — 단, Step 1에 이미 있는 것은 제외"**를 추출하는 것입니다.
+
+P1(30년차 멘토)와 P3(FDA 심사관) 두 시각을 작업 구조에 그대로 매핑하여 산출물을 생성하겠습니다.Crucible Report v1을 산출했습니다. P1(30년차 멘토) + P3(FDA 심사관) 두 시각을 단일 산문 narrative에 녹여, Step 1 Draft v0의 사실 위에서 *그 위에 얹어야 할* 통찰만 추출했습니다.
+
+**산출물의 5축 구조:**
+
+**T1 (P1 — 내재화 장벽):** 학생이 외울 수는 있으나 *볼 수는 없는* 세 가지 인지 벽을 외화했습니다. 가장 중요한 것은 (i) IDR의 dose-invariant peak time을 "공식의 결과"가 아닌 "구조적 필연"으로 보는 시각, (ii) `ke0`가 microscopic 의미 없는 lumped parameter라는 사실이 외삽 한계를 결정한다는 점, (iii) Hill `n`을 "mechanism의 증거"가 아닌 **"dose-titration 민감도 lever"**로 재framing — 이것이 Audit MUST_FIX된 "5–100배" 자리에 들어갈 source-supported 대체 통찰입니다.
+
+**T2 (P3 — 규제 risk surface):** Hill `n` 메커니즘 단정의 규제 패턴, PD-rate-limited 약물의 hepatic/renal dose adjustment risk, ke0 정밀도 propagation 문제를 외화하고, NONMEM 진단 시그니처 4개에 명명("Range-Starved Hill", "Plateau-Starved Emax", "PK-Aliased ke0", "Dose-Invariant Peak Anomaly")했습니다.
+
+**T3 (Trench-Level Tips, 5개):** 각각 *Insert at + Insert text*가 1–2문장 copy-paste-ready로 명시되어 Phase 4A에서 즉시 적용 가능합니다.
+
+**T4 (Deletion Candidates, 7개):** §2 모든 카드의 Five Cognitive Layers 압축, §C-2 PD3 표 중복 제거, §1 "5–100배" 표현 교체 등 — Audit MUST_FIX와 *내용 정리 효율* 양쪽을 동시에 다룹니다.
+
+**T5 (Priority Matrix):** A-12개, B-10개, C-6개. Grade A 항목만 적용해도 Phase 4A Content Lock이 가능합니다.
+
+**핵심 자기 제약:** Audit MUST_FIX 모순 없음, figure 의사결정 없음(Phase 4C 영역), Step 1 재작성 없음 — *insertion text + deletion instruction*만. 불확실 항목은 모두 [확인 필요]로 명시했습니다.
+
+다음 단계는 **Phase 4A Content Lock**입니다. HTML 직행은 Phase 4C(Visual Pedagogy) 통과 후로 보류해야 합니다.
+
+---
+C-260504-031847-K8R
