@@ -220,22 +220,3 @@ PhD reader에게 자명하거나, 카드 간 중복이거나, CONTEXT-tier가 MU
 
 ---
 
-### Obsidian Filing Guide
-
-- **저장 위치**: `02_LITERATURE/024_Gabrielson-Textbook/Pre-Sprint/` 또는 `03_PROJECTS/032_Dissertation/Curriculum-Crucible/`
-- **파일명**: `2026-05-03_PreSprint_Crucible_논문리뷰.md`
-- **태그**:
-  - `#P1_Action` — Wall 1–4 internalization, 30-Second Diagnostic Grid 운영 룰
-  - `#P3_Audit` — 3개 NONMEM Signature, Risk P3-1/2/3
-  - 추가 태그: `#pharmacometrics/methodology` `#nonmem/diagnostics` `#pk-pd/linkage` `#turnover/indirect-response` `#regulatory/source-fidelity`
-- **링크 제안**:
-  - `[[2026-05-03_PreSprint_Step1_Draft_v0]]`
-  - `[[2026-05-03_PreSprint_Audit_Report_v1]]`
-  - `[[Modeling Carousel — G Fig.1.1]]`
-  - `[[PK-PD Linkage MOC]]`
-  - `[[Hill γ Identifiability]]`
-  - `[[Indirect Response Model — KIN-KOUT Parametrization]]`
-
----
-
-**ID**: C-260503-094412-K7Q
