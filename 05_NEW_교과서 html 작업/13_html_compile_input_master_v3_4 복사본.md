@@ -276,6 +276,23 @@ Learner instruction: A/B/C에서 mean은 같지만 spread가 달라지는 점을
 > **연습 2 (10분, 분산 분류)**: 임의의 IIV 추정 결과(예: ω²(CL) = 0.09, ω²(V) = 0.12, σ²(prop) = 0.04)에 대해 다음 자문 — *"이 변이의 어느 부분이 생리학적으로 설명 가능한가? 어느 부분이 모델 결함의 흡수통로일 수 있는가? 이 ω² 크기를 보고 어떤 covariate를 a priori 후보로 잡겠는가?"*  
 > **자기 점검 신호**: `$OMEGA`를 보지 않고 `$THETA`부터 읽기 시작했다면 1번부터 다시 한다. C1의 좌표축이 잡히지 않은 채 C2–C4로 진입하면 모든 후속 진단이 흔들린다.
 
+> **🛡 v3.4 실무 경고: shrinkage와 EBE는 η를 '보았다'는 착각을 만들 수 있다 · [EXPERT_INFERENCE — PopPK implementation guardrail; textbook scope를 넘는 실무 진단 개념이므로 source-boundary를 명시함]**  
+>
+> **A. 정의 (Definition)**  
+> 경험적 베이즈 추정치(EBE; empirical Bayes estimate)는 모집단 수준 파라미터(θ, ω², σ²)와 그 개인의 관측치를 함께 사용하여 각 개인의 η를 사후추정(posterior estimate)한 값이다. 즉 EBE는 개인의 "참값(true value)"이 아니라, 모델 가정과 그 사람이 제공한 자료의 양·질이 허용하는 범위 안에서 도출된 조건부 추정치이다. 수축(shrinkage)은 그 개인이 제공한 정보가 충분하지 않을 때 EBE가 개인의 실제 η 차이를 충분히 드러내지 못하고 모집단 평균(0) 쪽으로 끌려가는 현상을 가리킨다.  
+>
+> **B. 실무 경고 — η-shrinkage 임계값 (Operational Warning)**  
+> η-shrinkage가 높으면 개체간 변이(IIV; interindividual variability)가 실제보다 작아 보이고, 개인 간 차이가 평탄화된 채 보고된다. 관행적으로 **η-shrinkage가 약 30%를 넘으면** EBE 기반 산점도(scatter plot), η-vs-공변량(covariate) plot, 그리고 EBE에 의존한 공변량 분석(covariate analysis)의 해석을 매우 조심해야 한다. 단, **"30%"는 절대적인 법칙이 아니라 경고 임계값(rule-of-thumb threshold)이며**, sampling density·자료 설계·model parsimony에 따라 더 보수적으로 잡아야 할 때도 있다.  
+>
+> **C. 공변량 분석에서 발생하는 두 방향의 위험 (Covariate Analysis Risk)**  
+> *(1) 거짓 음성(false negative)*: η-shrinkage가 높을 때는 공변량(covariate)이 실제로 η와 관련이 있어도 η-vs-covariate plot에서 그 신호가 약하게 보이거나 사라질 수 있다. *(2) 거짓 양성(false positive)*: 잔차 오차 모델(residual error model)이 잘못 지정되어 ε가 η로 새면(η–ε leakage), 모델은 본래 잔차/잔차변이(RUV; residual unexplained variability)에 속해야 할 패턴을 η에 흡수하고 그 결과로 가짜 공변량 신호가 생긴다. 이 두 위험은 모두 File 13의 보존 법칙(conservation law)에 직접 연결된다 — **ω²와 σ²는 같은 unexplained variability를 두고 경쟁하며, 한쪽의 오지정(misspecification)은 반대쪽으로 새어 들어가 EBE의 개인별 모양 자체를 왜곡한다.**  
+>
+> **D. 한 줄 기억 고리 (Memory Hook)**  
+> EBE는 개인의 참값이 아니라 모델과 자료가 허용한 조건부 추정치이며, shrinkage가 높을수록 그 개인별 모양은 더 조심해서 보아야 한다.  
+>
+> **E. 범위 제한 (Do Not Overexpand)**  
+> 추정법(estimation method)인 FOCE / FOCEI / Laplacian / SAEM의 알고리즘적 차이와 그것이 EBE·shrinkage에 미치는 구체적 영향은 본 파일에서 확장하지 않는다. Volume II / NONMEM module에서 다룰 별도 주제이다.
+
 ### C2. 잔차 오차 모델 — additive / proportional / exponential
 
 <!-- MASTER LENS -->
