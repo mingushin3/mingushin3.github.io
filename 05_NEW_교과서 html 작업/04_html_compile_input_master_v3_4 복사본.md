@@ -190,6 +190,74 @@ Alt text: A flowchart starts from observed clearance-related metrics and branche
 Source relation: Newly designed
 <!-- /FIGURE_SCHEMATIC -->
 
+## §1.5 v3.4 학습 항법 오버레이: 14개 카드를 한 번에 다 읽지 않는 법
+
+[EXPERT_INFERENCE — senior reviewer navigation patch; 기존 source equations와 card structure를 보존하기 위한 학습 항법 보강]
+
+<!-- ANNOTATION -->
+**A. 이 세션을 읽는 핵심 원칙**
+
+File 04는 처음부터 끝까지 한 방향으로 흘러가는 직선형 강의가 아니다. 제거(elimination)와 대사(metabolism)를 해부하기 위한 **지도(map)** 다. 첫 회독에서 M1부터 M14까지 14개 카드를 모두 같은 강도로 소화하려고 하면, 정작 가장 중요한 의사결정 좌표를 잃고 페이지 사이에서 길을 잃는다.
+
+이 장 전체를 관통하는 단 하나의 핵심 질문은 다음과 같다.
+
+> **"지금 다루는 것이 어떤 청소율(clearance)인가?"**
+
+그리고 이 질문은 항상 다음 4개 좌표(coordinates)로 분해해서 풀어야 한다.
+
+| # | 좌표 | 묻는 내용 |
+|---|---|---|
+| 1 | 농도 기준(concentration basis) | 혈장(plasma)인가, 전혈(blood)인가, 비결합(unbound)인가? |
+| 2 | 장기(organ) | 신장(kidney)인가, 간(liver)인가, 그 밖의 조직(tissue)인가? |
+| 3 | 투여 경로(route) | 정맥(IV)인가, 경구(oral)인가, 초회통과(first-pass)가 작동하는가? |
+| 4 | 분석 대상(analyte) | 모약물(parent)인가, 대사체(metabolite)인가? |
+
+매 카드를 펼칠 때마다 머릿속에서 이 4개 좌표를 먼저 찍고 본문에 들어가라. 그래야 같은 `CL`이라는 기호가 카드마다 다른 대상을 가리킨다는 사실 — 이 장의 진짜 함정 — 이 보인다.
+
+<!-- ANNOTATION -->
+**B. 90분 최소 회독 경로 (Minimum-Viable Pass)**
+
+시간이 부족하거나 첫 통독에서 골격만 잡고 싶다면, 다음 5개 카드만 순서대로 읽어도 이 장의 의사결정 체계는 작동한다.
+
+**M1 → M2 → M4 → M5 → M14**
+
+| 카드 | 이 경로에서의 역할 |
+|---|---|
+| **M1** | 청소율(clearance)의 비례식과 기본 좌표 — `Rate = CL · C`로 시작해서 4개 좌표가 왜 필요한지를 정의한다 |
+| **M2** | 신장 청소율(renal clearance)의 분해 — 여과(filtration), 분비(secretion), 재흡수(reabsorption)로 `CL_R`을 풀어낸다 |
+| **M4** | 간 청소율(hepatic clearance)과 well-stirred 모델 — `Q_H`, `f_{ub}`, `CL_int`을 한 식 안에서 분리한다 |
+| **M5** | 고추출/저추출(high/low extraction ratio) 해석 — 같은 식이 추출률(extraction ratio)에 따라 어떻게 다른 임상 함의로 갈라지는지 본다 |
+| **M14** | 신장애(renal impairment) + 활성 대사체(active metabolite) 통합 시나리오 — 위 4개 카드가 한 환자에서 동시에 충돌하는 임상·규제 의사결정 사례 |
+
+이 경로가 끝나면, 나머지 카드(M3, M6–M13)는 이 5개 좌표의 정밀화·확장·예외 처리로 읽힌다.
+
+<!-- ANNOTATION -->
+**C. 정독 경로 (Full Sweep)**
+
+M1–M14를 모두 읽는 경우, 14개를 한 흐름으로 읽지 말고 다음 **세 덩어리(chunk)** 로 나누어라. 각 덩어리가 끝날 때마다 잠시 덮고 4개 좌표를 스스로 재구성해 본 뒤 다음 덩어리로 넘어가는 것이 권장된다.
+
+| 덩어리 | 카드 | 학습 목표 |
+|---|---|---|
+| **① 기본 제거 좌표** | M1–M5 | 청소율(clearance) 정의, 신장·간 분해, well-stirred 모델, 추출률(extraction ratio) 해석 — 4개 좌표 자체의 정립 |
+| **② 구현/자료해석 확장** | M6–M10 | 농도 기준 변환(`C` vs `C_b`), 단백결합(protein binding)의 영향, 투과성(permeability)·수송체(transporter), 경구 생체이용률(oral bioavailability)과 초회통과(first-pass) 처리 — 좌표를 실제 데이터에 적용하는 도구 |
+| **③ 대사체와 임상위험 통합** | M11–M14 | 모약물/대사체(parent/metabolite) 시스템, 형성·제거 율속(formation/elimination rate-limited), 신장애(renal impairment) 환자에서 활성 대사체(active metabolite) 축적 — 좌표 4(분석 대상) 축의 임상·규제 함의 |
+
+<!-- ANNOTATION -->
+**D. 전문가형 2회독 경로 (Expert Re-Pass)**
+
+이미 기본 약동학(basic PK)을 알고 있는 학습자, 또는 첫 정독을 마치고 두 번째 회독에 들어가는 학습자에게는 다음 순서가 권장된다.
+
+**M4 → M10 → M11 → M12 → M14 → §8E**
+
+이 경로의 목적은 카드를 다시 외우는 것이 아니라, **간 대사(hepatic metabolism), 확장 청소율(extended clearance), 대사체 노출(metabolite exposure), NONMEM/PopPK 구현 번역(implementation bridge)을 하나의 의사결정 체계로 묶는 것**이다. 즉, 환자 수준의 임상 관찰(`AUC`, `t1/2`, `AUC(m)/AUC` 변동) → 생리학적 병목 가설(`Q_H`, `f_{ub}`, `CL_int`, transporter, formation/elimination rate-limit) → 모델 구현(공변량(covariate) 자리 결정, 모약물/대사체 joint model 구조)까지 하나의 흐름으로 추적하는 훈련이다.
+
+<!-- ANNOTATION -->
+**E. 주의 문장 — 이 오버레이의 범위**
+
+> 이 §1.5는 **새로운 약동학 이론(new PK theory)을 추가하는 것이 아니다.** 이미 PART A에 존재하는 M1–M14 카드를 **읽는 순서를 명시**해 학습자의 인지부하(cognitive load)를 낮추기 위한 v3.4 항법 패치(navigation patch)일 뿐이다. 신규 page tag, 신규 수식, 신규 약물 예시, 신규 규제 인용, 신규 figure marker는 단 한 건도 추가되지 않았다. 모든 카드의 본문, 수식, 페이지 태그, 그림 마커, source anchor는 v3.3에서 byte-level로 보존된다.
+
+---
+
 ## §2 Concept Anatomy Cards
 
 ### M1. Clearance proportionality + half-life is derived
