@@ -219,6 +219,46 @@ Source relation: Newly designed
 
 ---
 
+## §1.5 v3.4 Clock-Type Navigation Banner: 이 장은 세 개의 시계로 읽는다
+
+[EXPERT_INFERENCE — senior reviewer navigation patch; 기존 다회투여·정상상태 구조를 보존하기 위한 학습 항법 보강]
+
+> **핵심 안내**: File 07의 핵심은 정상상태(steady state)를 하나의 숫자가 아니라 **timing × level × amplitude의 세 질문**으로 분해하는 것이다. M1–M10 카드는 각각 이 세 축 중 어디에 답하는 카드인지를 의식하면서 읽어야 한다. 같은 “정상상태”라는 단어가 도달 시간(timing)의 질문일 때와 평균 수준(level)의 질문일 때, 그리고 진폭(amplitude)의 질문일 때 의미하는 바가 전혀 다르다.
+
+### 세 개의 시계로 카드를 묶어 읽는다
+
+**① 약동학 시계(PK clock) — M1–M5: 약물 쪽의 시간 구조를 잠근다**
+
+- **M1–M2**: 정상상태(steady state)는 **언제** 형성되는가? — 도달 시간(approach time)의 결정인자.
+- **M3**: **얼마나** 축적되는가? — 축적계수(accumulation factor) $R_{ac}=1/(1-e^{-K\tau})$.
+- **M4**: 평균농도(average concentration, $C_{av,ss}$)와 평균량(average amount, $A_{av,ss}$)을 **어떻게 구분**하는가? — 농도와 약물량(amount)의 차원 분리.
+- **M5**: flip-flop 상황에서 apparent half-life가 dosing clock을 **어떻게 바꾸는가?** — 말단 기울기(terminal slope)가 소실(elimination)을 말하지 않는 예외.
+
+**② 설계 연결부(dosing-design bridge) — M7–M8: PK 시계를 임상 투여 설계로 변환한다**
+
+- **M7**: 부하용량(loading dose)과 유지용량(maintenance dose)의 **수식적 연결** — 목표 즉시 도달과 유지를 분리하는 구조.
+- **M8**: 치료역(therapeutic window)을 기준으로 regimen을 조정하는 **실무적 연결** — 치료역 기반 알고리즘(TW-driven algorithm)으로 PK 결과를 임상 의사결정으로 변환.
+
+**③ 약력학/안전성 시계(PD/safety clock) — M6, M9, M10: 환자 쪽의 시간을 잠근다**
+
+- **M6**: 치료역(therapeutic window)은 농도(concentration) 하나가 아니라 **효과(efficacy)와 독성(toxicity)의 창**이다 — PK 식의 결과가 아니라 임상 효용(clinical utility)의 제약조건.
+- **M9**: PK plateau와 PD plateau는 **같은 속도로 오지 않을 수 있다** — 전환율(turnover) 또는 세포 수명(cell lifespan)이라는 별개의 시계가 효과 plateau를 결정할 수 있다.
+- **M10**: 용량분할(dose fractionation)은 **같은 총용량(total daily dose)이라도 독성 프로파일을 바꿀 수 있다** — 단일 노출 변수(exposure variable)로 위해(harm)를 환원하지 않는다.
+
+### 첫 회독 권장 순서(First-Pass Reading Order)
+
+처음 읽는 학습자는 다음 순서를 권장한다:
+
+> **M1 → M2 → M3 → M4(핵심 정의만 skim) → M7 → M8 → M6 → M9 → M10**
+
+이때 **M4의 $C_{av,ss}$ / $A_{av,ss}$ 수식 세부**와 **M5의 flip-flop 세부**는 1회독에서는 정의 수준만 확인하고, **2회독에서 정독**하라. 이렇게 하면 M7의 부하/유지용량(loading/maintenance dose)을 이해하는 데 필요한 최소 개념(평균농도의 정의, 축적계수의 형태)은 유지하면서, 1회독의 인지부하(cognitive load)를 낮출 수 있다. M5(flip-flop)는 흡수속도($K_a$)가 소실속도($K$)보다 느린 특수 상황을 다루는 보강 카드이므로, 표준 다중투여 직관을 먼저 잠근 뒤 다루는 것이 효율적이다. 단, M4를 skim하더라도 “평균농도(concentration)와 평균량(amount)은 차원이 다른 두 개의 plateau”라는 사실 하나는 1회독에서 반드시 잠그고 넘어가야 M7·M8이 흐려지지 않는다.
+
+### 항법 장치로서의 위상
+
+이 v3.4 보강은 **새 이론을 추가하는 것이 아니라**, 이미 존재하는 M1–M10 카드를 세 개의 clock으로 묶어 읽게 하는 **항법 장치(navigation aid)**이다. 카드의 본문, 수식, 출처(source label), 페이지 태그(page tag), 그림 마커(figure marker), 그리고 §5 혼동 쌍(confusion pair)·§7 보스 딜레마(Boss Dilemma)·§8 메타프레임은 v3.3과 byte-level identical로 보존된다. 따라서 본 banner를 무시하고 M1부터 순서대로 읽어도 학습 결과의 무결성에는 영향이 없다 — banner는 인지부하 분배를 돕는 선택적 안내이지, 본문의 일부가 아니다.
+
+---
+
 # §2 — 개념 해부 카드(Concept Anatomy Cards)
 
 ## §2-M1. 정속 주입 항정상태 농도: $C_{ss}=R_{in}/CL$
