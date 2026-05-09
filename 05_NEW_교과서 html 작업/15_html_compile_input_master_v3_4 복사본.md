@@ -173,6 +173,36 @@ Learner instruction: Trace the arrow from Explore data to Fit model(s) to Analyz
 > **Practice Lens — [CRUCIBLE_DERIVED]**  
 > 이 세션은 "모델을 한 번 잘 맞추기"가 아니라, output을 다음 design으로 되돌리는 폐루프 사고를 훈련한다. 각 MUST 카드는 독립 기술이 아니라 다음 실험을 더 정보성 있게 만들기 위한 판단 장치로 읽어야 한다.
 
+> `[교과서 외 구현 번역 — Volume II / NONMEM module로 의도적으로 defer되는 운영 도구 목록]`
+>
+> **v3.4 Scope-Honesty Callout — 이 장이 아직 다루지 않는 실제 PopPK 운영 도구**
+>
+> **A. 정직한 범위 선언 (Honest Boundary Statement)**  
+> 이 File 15는 모델 구축(model building)의 이론적·개념적 뼈대 — 즉 초기값(initial estimates), 잔차 진단(residual diagnostics), F-test 타당성, 파라미터 정밀도(parameter precision), 샘플링 설계(sampling design) — 를 다룬다. 그러나 이것만으로 실제 PopPK 모델 평가 훈련(model evaluation training)이 완성되는 것은 아니다.
+>
+> **B. Defer되는 진단 도구 (Deferred Diagnostic Tools)**  
+> - 시각적 예측검사(VPC; visual predictive check): 모델이 관측 자료의 분포와 시간 경향을 예측적으로 재현하는지 확인한다.  
+> - prediction-corrected VPC(pcVPC): 용량(dose)·노출(exposure) 차이로 단순 VPC 해석이 어려울 때 보정된 예측검사를 수행한다.  
+> - normalized prediction distribution error(NPDE): 예측분포 내에서 관측치가 얼마나 일관되게 위치하는지 평가한다.  
+> - 부트스트랩(bootstrap): 재표본추출을 통해 파라미터 불확실성(parameter uncertainty)과 신뢰구간(confidence interval)을 확인한다.  
+> - 그 외 시뮬레이션 기반 불확실성 방법(SIR 등): 특정 software 환경에서 보조적으로 사용되는 추가 방법이며, Volume II에서 필요 시 소개한다.
+>
+> **C. Defer되는 추정법 (Deferred Estimation Methods)**  
+> 다음 추정법들은 Volume II / NONMEM module에서 추정법 선택(estimation method selection)과 함께 다룰 주제다.  
+> - 일차 추정법(FO; first-order)  
+> - 조건부 일차 추정법(FOCE; first-order conditional estimation)  
+> - interaction 포함 FOCE(FOCEI)  
+> - 라플라스 근사(Laplacian)  
+> - stochastic approximation expectation-maximization(SAEM)
+>
+> **D. 모델 적격성 평가 vs 모델 검증 (Model Qualification vs Validation)**  
+> - 모델 적격성 평가(model qualification): 현재 목적에 대해 모델이 충분히 잘 작동하는지 확인하는 실무적 판단.  
+> - 모델 검증(model validation): 외부 자료 또는 독립적 근거를 통해 모델의 일반화 가능성을 더 강하게 평가하는 절차.  
+> - File 15는 적격성 평가의 이론적 기반을 제공하지만, VPC/NPDE/bootstrap 같은 운영적 적격성 평가 도구(operational qualification toolkit)는 별도 모듈에서 다룬다.
+>
+> **E. 학습자 보호 문장 (Learner Protection Sentence)**  
+> 따라서 이 장을 끝낸 학습자는 "모델 구축의 이론적 문법"을 익힌 것이지, 아직 "NONMEM 운영·진단 전체 훈련"을 마친 것은 아니다. 이 callout 이후 §2 MUST 카드로 진입할 때, 본 장의 GOF·F-test·정밀도 도구들이 modeling carousel의 **이론 절반**을 책임지고, 위 B·C 항목의 운영 도구가 **나머지 절반**을 Volume II에서 책임진다는 분담 구조를 머릿속에 고정하라.
+
 ---
 
 ## §2 — Concept Anatomy Cards
