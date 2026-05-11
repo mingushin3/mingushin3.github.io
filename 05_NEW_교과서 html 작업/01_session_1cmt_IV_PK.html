@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 01 — 1구획 IV 동력학: CL · V · t½ · K</title>
+
+<!-- MathJax 3 configuration: $...$ and $$...$$ delimiters explicit -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']],
+    processEscapes: true,
+    processEnvironments: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+<!-- Mermaid for FIGURE_SCHEMATIC #4 -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#f7f3e8',
+        primaryTextColor: '#1f2937',
+        primaryBorderColor: '#c9a84c',
+        lineColor: '#6b7280',
+        fontFamily: 'Inter, "Noto Sans KR", system-ui, sans-serif'
+      },
+      flowchart: { curve: 'basis', padding: 12, htmlLabels: true }
+    });
+  }
+});
+</script>
+
+<style>
+/* ===== Reset / base ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  font-family: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #1f2937;
+  background: #fafaf7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Layout: sticky sidebar + main content ===== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.toc {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 16px 24px 24px;
+  background: linear-gradient(180deg, #fafaf7 0%, #f5f3ed 100%);
+  border-right: 1px solid #e5e2d8;
+  font-size: 13.5px;
+}
+.toc h2 {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+.toc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #c9a84c;
+  line-height: 1.4;
+}
+.toc ul { list-style: none; padding: 0; margin: 0; }
+.toc li { margin: 0; }
+.toc a {
+  display: block;
+  padding: 6px 10px;
+  color: #4b5563;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+  line-height: 1.45;
+}
+.toc a:hover {
+  color: #1f2937;
+  background: rgba(201, 168, 76, 0.08);
+  border-left-color: #c9a84c;
+}
+.toc a.sub {
+  padding-left: 22px;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+.toc a.subsub {
+  padding-left: 32px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.content {
+  padding: 40px 56px 96px;
+  max-width: 920px;
+}
+
+/* ===== Typography ===== */
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 8px 0;
+  color: #111827;
+  line-height: 1.3;
+}
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 48px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e2d8;
+  color: #111827;
+}
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: #1f2937;
+}
+h4 {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #374151;
+}
+p { margin: 0 0 14px 0; }
+
+.session-header {
+  background: #fff;
+  border: 1px solid #e5e2d8;
+  border-left: 4px solid #c9a84c;
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 32px;
+}
+.session-header h1 { margin-bottom: 12px; }
+.session-meta {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.7;
+}
+.session-meta strong { color: #1f2937; }
+.rights-note {
+  font-size: 13.5px;
+  color: #6b7280;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #d1d5db;
+}
+
+/* ===== Source page tag (must remain visible in print) ===== */
+.source-page {
+  display: inline;
+  font-size: 0.85em;
+  color: #6b7280;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  background: rgba(107, 114, 128, 0.06);
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(107, 114, 128, 0.15);
+  white-space: nowrap;
+}
+.source-uncertain { background: rgba(245, 158, 11, 0.1); color: #92400e; }
+
+/* ===== Annotation inline gloss (← ...) ===== */
+.annotation {
+  display: inline;
+  font-style: italic;
+  color: #6b7280;
+  font-size: 0.95em;
+}
+
+/* ===== Marker components ===== */
+/* MASTER LENS — gold */
+.master-lens {
+  background: rgba(201, 168, 76, 0.08);
+  border-left: 4px solid #c9a84c;
+  padding: 16px 20px;
+  margin: 16px 0 20px;
+  border-radius: 0 6px 6px 0;
+}
+.master-lens.tag-aug::before {
+  content: 'MASTERY AUGMENTATION';
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #8b6f1f;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.master-lens.tag-fallacy::before {
+  content: '⚡ APEX CONCEPT — PLAUSIBLE FALLACY';
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #8b6f1f;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ANCHOR — bridge sentence, italic muted */
+.anchor {
+  font-style: italic;
+  color: #4b5563;
+  border-left: 2px solid #d1d5db;
+  padding-left: 14px;
+  margin: 14px 0;
+}
+
+/* TRENCH — rose */
+.trench {
+  background: rgba(244, 63, 94, 0.05);
+  border-left: 4px solid #e11d48;
+  padding: 12px 18px;
+  margin: 16px 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 14.5px;
+}
+.trench::before {
+  content: '실무 확장 · 교과서 외 해석';
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  color: #be123c;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* CONFUSION — amber wrapping its table */
+.confusion {
+  background: rgba(245, 158, 11, 0.04);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-left: 4px solid #f59e0b;
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 16px 0;
+}
+.confusion table { margin: 0; }
+
+/* SELF-TEST accordion */
+.qa {
+  border: 1px solid #e5e2d8;
+  border-left: 4px solid #6366f1;
+  background: #fff;
+  border-radius: 0 6px 6px 0;
+  margin: 14px 0;
+  overflow: hidden;
+}
+.qa summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 18px;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  user-select: none;
+}
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary::after {
+  content: '답 보기 ▾';
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: rgba(99, 102, 241, 0.08);
+  padding: 4px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.qa[open] summary::after { content: '답 숨기기 ▴'; }
+.qa[open] summary { border-bottom: 1px solid #e5e7eb; }
+.qa .qa-body { padding: 14px 20px 18px; background: #fafaf7; }
+.qa .qa-body p:last-child { margin-bottom: 0; }
+.q-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #4338ca;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: 2px;
+}
+
+/* RECAP — blue */
+.recap {
+  background: rgba(59, 130, 246, 0.06);
+  border-left: 4px solid #3b82f6;
+  padding: 12px 18px;
+  margin: 18px 0;
+  border-radius: 0 4px 4px 0;
+}
+.recap::before {
+  content: '요약';
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: #1d4ed8;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.recap.final::before { content: '최종 요약'; }
+
+/* FIGURE_POINTER — purple */
+.figure-pointer {
+  background: rgba(139, 92, 246, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-left: 4px solid #8b5cf6;
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px 16px 52px;
+  margin: 20px 0;
+  position: relative;
+}
+.figure-pointer::before {
+  content: '📖';
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  font-size: 20px;
+}
+.figure-pointer .fp-label {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: #6d28d9;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.figure-pointer .fp-field {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.figure-pointer .fp-field strong {
+  display: inline-block;
+  min-width: 110px;
+  color: #4c1d95;
+  font-weight: 600;
+}
+
+/* FIGURE_SCHEMATIC */
+figure.schematic {
+  margin: 24px 0;
+  padding: 18px 20px 14px;
+  background: #fff;
+  border: 1px solid #e5e2d8;
+  border-radius: 8px;
+}
+figure.schematic .schematic-label {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: #6b7280;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+figure.schematic .schematic-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+figure.schematic .mermaid {
+  text-align: center;
+  background: #fafaf7;
+  border-radius: 6px;
+  padding: 12px 8px;
+  margin-bottom: 10px;
+}
+figure.schematic figcaption {
+  font-size: 13px;
+  color: #4b5563;
+  font-style: italic;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #d1d5db;
+}
+
+/* ===== Tables ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14.5px;
+  background: #fff;
+}
+th, td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: #f3f1ea;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 13.5px;
+  border-bottom: 2px solid #c9a84c;
+}
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.checkpoint th:first-child, table.checkpoint td:first-child { width: 22%; font-weight: 600; }
+
+/* ===== Code blocks ===== */
+pre {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 16px 18px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 14px 0;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+code:not(pre code) {
+  background: rgba(107, 114, 128, 0.1);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.92em;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+/* ===== Lists ===== */
+ul, ol { margin: 8px 0 14px 0; padding-left: 24px; }
+li { margin: 4px 0; line-height: 1.7; }
+
+/* ===== Card heading ===== */
+.card-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 40px 0 12px;
+  padding: 14px 18px;
+  background: linear-gradient(90deg, #fff 0%, #fafaf7 100%);
+  border: 1px solid #e5e2d8;
+  border-left: 4px solid #1f2937;
+  border-radius: 0 6px 6px 0;
+}
+.card-heading.apex { border-left-color: #c9a84c; }
+.card-heading h3 { margin: 0; font-size: 19px; }
+.apex-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, #c9a84c 0%, #b8941a 100%);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* ===== Practice Brief & Memory Hook ===== */
+.practice-brief, .memory-hook {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 14.5px;
+}
+.practice-brief {
+  border-left: 4px solid #10b981;
+}
+.practice-brief::before {
+  content: '▶ 실무 체화 요약 (Practice Brief)';
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  color: #047857;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.memory-hook {
+  border-left: 4px solid #ec4899;
+}
+.memory-hook::before {
+  content: '⚡ 기억 고리 (Memory Hook)';
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  color: #be185d;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.practice-brief ul, .memory-hook p { margin-top: 4px; }
+.practice-brief li strong { color: #064e3b; }
+
+hr.divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d1d5db, transparent);
+  margin: 32px 0;
+}
+
+/* ===== Print mode: keep page tags visible; hide nav ===== */
+@media print {
+  body { background: #fff; }
+  .layout { display: block; max-width: none; }
+  .toc { display: none; }
+  .content { padding: 0; max-width: none; }
+  .master-lens, .recap, .trench, .figure-pointer, .confusion, .practice-brief, .memory-hook {
+    background: #fff !important;
+    page-break-inside: avoid;
+  }
+  pre { background: #f3f4f6 !important; color: #1f2937 !important; border: 1px solid #d1d5db; }
+  .source-page {
+    display: inline !important;
+    visibility: visible !important;
+    background: none;
+    border: none;
+    color: #4b5563;
+  }
+  details.qa { border: 1px solid #d1d5db; }
+  details.qa[open] .qa-body { display: block; }
+  .qa summary::after { display: none; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+  .toc { position: static; height: auto; max-height: 50vh; border-right: none; border-bottom: 1px solid #e5e2d8; }
+  .content { padding: 24px 20px 64px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ===== Sticky sidebar TOC ===== -->
+<aside class="toc" aria-label="목차">
+  <div class="toc-title">세션 01<br>1구획 IV 동력학<br><span style="font-weight:500;color:#6b7280;font-size:12.5px;">CL · V · t½ · K</span></div>
+  <h2>목차</h2>
+  <ul>
+    <li><a href="#sec-1-roadmap">§1 세션 헤더와 로드맵</a></li>
+    <li><a href="#sec-2-cards">§2 개념 해부 카드</a>
+      <ul>
+        <li><a href="#card-c1-cl" class="sub">C1. 청소율 (CL)</a></li>
+        <li><a href="#card-c2-v" class="sub">C2. 분포용적 (V)</a></li>
+        <li><a href="#card-c3-k" class="sub">C3. 소실속도상수 (K)</a></li>
+        <li><a href="#card-c4-thalf" class="sub">C4. 반감기 (t½)</a></li>
+        <li><a href="#card-c5-mrt" class="sub">C5. 평균체류시간 (MRT)</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec-5-confusion">§5 혼동쌍 해부</a>
+      <ul>
+        <li><a href="#pair-1-cl-vs-k" class="sub">혼동쌍 1: CL vs K</a></li>
+        <li><a href="#pair-2-v-vs-vss" class="sub">혼동쌍 2: V vs V<sub>ss</sub></a></li>
+        <li><a href="#pair-3-thalf-vs-mrt" class="sub">혼동쌍 3: t½ vs MRT</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec-7-selftest">§7 자기 테스트</a></li>
+    <li><a href="#sec-8-metaframe">§8 메타프레임과 큰 그림</a></li>
+  </ul>
+</aside>
+
+<main class="content">
+
+<!-- ===== Session header ===== -->
+<header class="session-header">
+  <h1>세션 01 — 1구획 IV 동력학: CL · V · t½ · K</h1>
+  <div class="session-meta">
+    <div><strong>Source:</strong> Gabrielsson &amp; Weiner 5e Ch.2 §2.2.1–2.2.5 + Case Study PK1 / Rowland &amp; Tozer 5e Ch.3</div>
+    <div><strong>Pages:</strong> G p.14–32, p.469–475 / R&amp;T p.53–76</div>
+    <div><strong>Mode:</strong> A-Critical</div>
+    <div><strong>Learner:</strong> 계량약리학 박사과정, PopPK 입문–중급</div>
+  </div>
+  <div class="rights-note">
+    <strong>그림 권한 안내 (Figure rights note):</strong>
+    이 자료에는 교과서 그림을 직접 수록하지 않습니다.
+    <code>FIGURE_POINTER</code> 마커는 학습자가 참고해야 할 교과서 그림을 안내합니다.
+    <code>FIGURE_SCHEMATIC</code> 마커는 원본 그림을 복제하지 않고 새로 설계할 도식의 요약(brief)을 기술합니다.
+  </div>
+</header>
+
+<!-- ===== Learner Navigation Aid ===== -->
+<section id="sec-0-nav" aria-labelledby="nav-h">
+  <h2 id="nav-h">학습 내비게이션 안내</h2>
+
+  <h3>이 자료 사용법</h3>
+  <ol>
+    <li>§1을 한 번 읽으면서 파라미터 위계를 먼저 고정하면 됩니다. $CL$과 $V$가 일차 파라미터(primary parameter)이고, $K$, $t_{1/2}$, 1구획 $MRT$는 이 둘로부터 파생됩니다.</li>
+    <li>§2는 카드 순서대로 학습하면 됩니다. C1과 C2는 건너뛰지 않는 것이 좋습니다. 이후의 모든 시간 파라미터가 이 두 카드에 의존하기 때문입니다.</li>
+    <li>Figure pointer가 나오면 계속 읽기 전에 해당 교과서 그림을 먼저 확인하면 됩니다. 이 마커는 장식용 주석이 아니라 학습 경로의 일부입니다.</li>
+    <li>§7 자기 테스트를 하기 전에 §5를 통해 주요 혼동 쌍을 먼저 능동적으로 구분해 보세요.</li>
+    <li>§8은 최종 전문가 시각으로 활용하면 됩니다. 숫자를 해석하기 전에 파라미터 위계부터 읽어야 합니다.</li>
+  </ol>
+
+  <h3>학습 순서</h3>
+  <pre>§1 로드맵 → C1 청소율 → C2 분포용적 → C3 K → C4 반감기 → C5 MRT → §5 혼동쌍 → §7 자기 테스트 → §8 메타프레임</pre>
+
+  <h3>시작 전 / 완료 후 체크포인트</h3>
+  <table class="checkpoint">
+    <thead>
+      <tr><th>체크 항목</th><th>시작 전</th><th>완료 후</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>파라미터 위계</td>
+        <td>$CL$과 $V$가 일차(primary)인 이유를 말할 수 있는가?</td>
+        <td>$K$와 $t_{1/2}$가 이차(secondary)인 이유를 암기 문구 없이 설명할 수 있는가?</td>
+      </tr>
+      <tr>
+        <td>노출량(Exposure) 대 시간</td>
+        <td>AUC, $C^0$, 기울기(slope), $C_{ss}$를 구분할 수 있는가?</td>
+        <td>각각을 결정하는 파라미터를 지목할 수 있는가?</td>
+      </tr>
+      <tr>
+        <td>겉보기 용적(Apparent volume)</td>
+        <td>$V$가 해부학적 부피가 아닌 이유를 말할 수 있는가?</td>
+        <td>매우 큰 $V$를 실제 체적으로 오해하지 않고 해석할 수 있는가?</td>
+      </tr>
+      <tr>
+        <td>말단 기울기(Terminal slope)</td>
+        <td>반로그 말단 기울기(semilog terminal slope)를 정의할 수 있는가?</td>
+        <td>terminal slope가 전체 소실(elimination)을 안전하게 대표하지 못하는 조건을 말할 수 있는가?</td>
+      </tr>
+      <tr>
+        <td>NCA 연결</td>
+        <td>$MRT$를 정의할 수 있는가?</td>
+        <td>$MRT=1/K=1.443\cdot t_{1/2}$가 1구획 IV bolus에서만 성립하는 이유를 설명할 수 있는가?</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<!-- ===== §1 Session Header & Roadmap ===== -->
+<section id="sec-1-roadmap" aria-labelledby="sec1-h">
+  <h2 id="sec1-h">§1 — 세션 헤더와 로드맵</h2>
+
+  <div class="master-lens">
+    <p><strong>핵심 아이디어(Big Idea):</strong> $CL$과 $V$는 약물 체내 처리(disposition), 즉 분포와 소실을 묶은 체내 처리 과정을 결정하는 두 일차 좌표(primary coordinate)입니다. $K$와 $t_{1/2}$는 그 좌표가 만든 시간 그림자입니다. 다시 말해, 관찰되는 기울기(slope)와 반감기(half-life)는 원인이 아니라 결과입니다. 그림자($K$, $t_{1/2}$)만 보고 원인이 $CL$인지 $V$인지 단정하면 유지용량, 부하용량, 공변량 위치가 모두 틀릴 수 있습니다. <span class="source-page">[G p.17; R&amp;T p.58]</span></p>
+  </div>
+
+<pre>IV bolus, 1-cmt, first-order
+        │
+        ├── Primary:  CL  ──┐
+        │                   ├── K = CL/V ── t½ = ln(2)/K = 0.693V/CL
+        └── Primary:  V   ──┘
+
+Exposure/AUC  ← governed by CL
+Initial concentration C0 ← governed by V
+Mean residence time MRT ← 1/K only in 1-cmt IV bolus</pre>
+
+  <p class="anchor">R&amp;T의 도입 그림(opening figures)은 이 구조를 가장 빠르게 보여 줍니다. Drugs A/B는 같은 초기 농도에서 출발하지만 기울기와 AUC가 다릅니다. 반대로 Drugs C/D는 같은 반감기(half-life)를 보이지만 초기 농도와 AUC가 다릅니다. 즉, "처음 높이"와 "기울기"는 같은 정보가 아닙니다. 서로 다른 일차 결정인자(primary determinant)가 표면에 드러난 모습입니다. <span class="source-page">[R&amp;T p.54–55]</span></p>
+
+  <p>이 세션에서는 다음 다섯 카드만 고정합니다: <strong>C1 청소율(Clearance) → C2 분포용적(Volume) → C3 소실속도상수(Elimination Rate Constant) → C4 반감기(Half-life) → C5 MRT</strong>.</p>
+
+  <p><strong>선행:</strong> 1차 ODE, 자연로그, 혈장/혈액/조직 구분.<br>
+  <strong>후속:</strong> 다구획 동력학(multi-compartment kinetics), 흡수 모델(absorption models), 간/신 청소율(hepatic/renal clearance), 집단약동학(PopPK, population pharmacokinetics) 공변량 모델링(covariate modeling), NCA 모멘트 분석(moment analysis).</p>
+
+  <!-- FIGURE_POINTER #1 -->
+  <aside class="figure-pointer" role="note">
+    <span class="fp-label">📚 FIGURE POINTER — 교과서 그림 참조</span>
+    <div class="fp-field"><strong>Source:</strong> Rowland &amp; Tozer 5e, p.54, Fig.3-1; p.55, Fig.3-2</div>
+    <div class="fp-field"><strong>Why this matters:</strong> 같은 용량(dose)에서 "초기 농도", "기울기", "AUC"가 서로 다른 정보를 담는다는 사실을 한 번에 분리해 보여 줍니다. 이 그림이 없으면 학습자가 $C^0$, 기울기(slope), AUC를 하나의 노출 지표처럼 뭉뚱그려 읽을 위험이 큽니다.</div>
+    <div class="fp-field"><strong>When to look:</strong> §1 로드맵을 읽은 뒤에 확인하면 됩니다.</div>
+    <div class="fp-field"><strong>Learner instruction:</strong> Fig.3-1에서는 같은 초기 농도(initial concentration)에서 기울기(slope)와 AUC가 어떻게 갈라지는지 확인해 보세요. Fig.3-2에서는 같은 반감기(half-life)라도 초기 농도와 AUC가 달라질 수 있음을 먼저 확인하면 됩니다.</div>
+  </aside>
+
+  <div class="master-lens tag-aug">
+    <p>이 핸드아웃의 판정 순서는 간단합니다. 노출량·유지용량 질문은 먼저 $CL$로, 초기농도·부하용량 질문은 먼저 $V$로, 시간축 질문은 $CL/V$ 또는 $V/CL$ 조합으로 되돌려 읽으면 됩니다. 이 순서가 지켜져야 기울기와 반감기가 원인처럼 보이는 착시를 피할 수 있습니다. <span class="source-page">[CRUCIBLE_DERIVED]</span></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== §2 Concept Anatomy Cards ===== -->
+<section id="sec-2-cards" aria-labelledby="sec2-h">
+  <h2 id="sec2-h">§2 — 개념 해부 카드</h2>
+
+  <!-- ===== C1 Clearance ===== -->
+  <div id="card-c1-cl" class="card-heading apex">
+    <h3>🃏 C1. 청소율 (Clearance, $CL$)</h3>
+    <span class="apex-badge">⚡ Apex Concept</span>
+  </div>
+
+  <div class="master-lens">
+    <p>$CL$은 "농도가 얼마나 빨리 내려가는가"가 아니라 <strong>단위 시간당 완전히 비워지는 가상의 혈장/혈액 부피</strong>입니다. 이 관점에서 보면 $CL=Q\cdot E$는 직관적으로 이해됩니다. 혈류량 $Q$가 약물을 장기에 가져오고, 추출비 $E$<span class="annotation">(← 장기 통과 중 제거되는 비율)</span>가 청소 효율을 정합니다. 따라서 완전 추출자라도 $CL$은 $Q$를 넘을 수 없습니다. 여기서 핵심은 속도처럼 보이는 값을 유량 구조로 읽는 것입니다. <span class="source-page">[R&amp;T p.55–56]</span></p>
+  </div>
+
+  <h4>A. 형식적 정의 (Formal Definition)</h4>
+  <p><strong>청소율(Clearance, $CL$):</strong> 단위 시간당 혈장 또는 혈액에서 약물이 완전히 제거되는 겉보기 용적(apparent volume)입니다. 단위는 유속 단위(flow unit)입니다. <span class="source-page">[G p.16; R&amp;T p.56]</span></p>
+
+  $$\text{Rate of elimination}=CL\cdot C \qquad \text{[R\&T Eq.3-4, p.56; G Eq.2:2, p.16]}$$
+
+  $$CL=Q\cdot E \qquad \text{[R\&T Eq.3-5, p.56]}$$
+
+  <h4>B. 용량, AUC, 그리고 항정상태</h4>
+  <p>AUC는 시간 전체에 걸친 노출 적분(exposure integral), 즉 농도-시간 곡선 아래 면적입니다. 1차 IV bolus에서는 제거된 총량이 $CL\cdot AUC$로 표현됩니다. 전체 용량(dose)이 결국 제거되므로 다음 관계가 성립합니다. <span class="source-page">[G p.19; R&amp;T p.59–60]</span></p>
+
+  $$CL=\frac{Dose}{AUC_0^\infty}$$
+
+  <p>일정 속도 주입(constant infusion)에서는 다음과 같습니다.</p>
+
+  $$\frac{dC}{dt}=\frac{R_{in}}{V}-\frac{CL}{V}C$$
+
+  <p>항정상태에서 $dC/dt=0$이므로 다음과 같습니다.</p>
+
+  $$C_{ss}=\frac{R_{in}}{CL} \qquad \text{[G Eq.2:22, p.23]}$$
+
+  <p class="anchor">여기서 $V$가 소거됩니다. $V$는 항정상태에 도달하는 <strong>속도</strong>를 바꾸지만, 동일 주입속도(infusion rate)에서 최종 $C_{ss}$는 $CL$이 결정합니다. <span class="source-page">[G p.22–23]</span></p>
+
+  <h4>C. Compound A 기준 데이터</h4>
+  <p>Gabrielsson Case Study PK1은 4명에게 Compound A 10 mg IV bolus를 투여한 출처 기반(source-bound) 계산 기준점입니다. <span class="source-page">[G p.469–475]</span></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Subject</th><th>Sex</th>
+        <th class="num">$K$ (min⁻¹)</th>
+        <th class="num">$V$ (L)</th>
+        <th class="num">$CL$ (L/min)</th>
+        <th class="num">$AUC$ (µg·min·L⁻¹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>M</td><td class="num">0.01</td><td class="num">10</td><td class="num">0.1</td><td class="num">98,000</td></tr>
+      <tr><td>2</td><td>M</td><td class="num">0.02</td><td class="num">9.8</td><td class="num">0.2</td><td class="num">49,000</td></tr>
+      <tr><td>3</td><td>F</td><td class="num">0.02</td><td class="num">10</td><td class="num">0.2</td><td class="num">51,000</td></tr>
+      <tr><td>4</td><td>F</td><td class="num">0.01</td><td class="num">20</td><td class="num">0.2</td><td class="num">51,000</td></tr>
+    </tbody>
+  </table>
+  <p><span class="source-page">[Source: G Tables 1.2/1.3, p.473–474]</span></p>
+
+  <p class="anchor"><strong>정정된 핵심:</strong> Subject 1과 4는 $K$와 $t_{1/2}$가 비슷하지만 $CL$은 2배 다릅니다. S1은 $CL=0.1$ L/min, S4는 $CL=0.2$ L/min입니다. S4에서는 $V$도 동일 비율로 커져 있어 $K=CL/V$가 우연히 보존된 결과입니다. 따라서 같은 $R_{in}$에서 두 사람의 $C_{ss}$는 절반 차이가 납니다(§7 Q5에서 정량 확인). $K$와 $t_{1/2}$만 보고 "두 사람이 같은 약물 처리 능력을 가졌다"고 읽는 것이 이 세션 전체의 핵심 함정입니다. <span class="source-page">[G p.473–474; G Eq.2:22, p.23]</span></p>
+
+  <h4>D. 경계 및 압축</h4>
+  <ul>
+    <li>$CL=Q\cdot E$는 간/신 청소율(hepatic/renal clearance)의 문을 열지만, 고추출(high extraction)/저추출(low extraction) 약물 예시와 장기별 모델은 후속 청소율 세션으로 넘깁니다. <span class="source-page">[R&amp;T p.56]</span></li>
+    <li>혈관외 투여(extravascular dosing)에서는 $F$ 때문에 겉보기 파라미터(apparent parameter) 해석이 필요하지만, $K_a$, $F$, $t_{lag}$는 흡수 세션 주제입니다. <span class="source-page">[G p.28–32]</span></li>
+    <li>$CL_R=f_e\cdot CL$은 신장 기여분(renal contribution)을 분리하는 맥락으로만 유지합니다. <span class="source-page">[R&amp;T p.66–68]</span></li>
+  </ul>
+
+  <div class="trench">
+    NONMEM에서 공변량을 $K$에 직접 묶으면 $CL$ 변화와 $V$ 변화가 한 항에 섞입니다. <code>TRANS2</code>처럼 $CL$과 $V$를 분리해 두는 이유는 통계적 편의가 아니라 인과 위치 보존입니다.
+  </div>
+
+  <div class="recap">
+    <strong>C1 요약(Recap):</strong> $CL$은 노출량과 유지용량을 결정하는 일차 소실 파라미터(primary elimination parameter)입니다. $t_{1/2}$이나 $K$가 아니라 $CL$을 먼저 물어야 합니다.
+  </div>
+
+  <div class="master-lens tag-fallacy">
+    <p><strong>그럴듯한 오해 (Plausible Fallacy) — <span class="source-page">[EXPERT_INFERENCE, v3]</span></strong></p>
+    <ul>
+      <li><strong>그럴듯한 오해:</strong> "Compound A에서 Subject 1과 Subject 4의 $K$가 같으면, 두 피험자의 소실 능력(elimination capacity)이 같습니다."</li>
+      <li><strong>왜 틀렸는가:</strong> $K=CL/V$이므로 $K$가 같아도 $CL$과 $V$가 모두 다를 수 있습니다. Subject 1의 작은 $V$(10 L)에서 작은 $CL$(0.1 L/min)이, Subject 4의 큰 $V$(20 L)에서 큰 $CL$(0.2 L/min)이 같은 $K$를 만듭니다. 부하용량(loading dose)은 $V$에, 유지용량(maintenance dose)과 AUC는 $CL$에 의존하므로 임상 결정이 분기됩니다.</li>
+      <li><strong>실무에서 어떻게 드러나는가:</strong> $K$를 공변량(covariate) 탐색의 대상으로 삼으면 $CL$과 $V$의 서로 다른 생리학적 원인이 한 항 안에 뭉개집니다. 그 결과 예측력이 낮은 모델이 만들어집니다. GOF에서 잔차 패턴이 체중이나 신기능과 연동되어 나타나도 원인을 $K$에서 찾으면 올바른 공변량 위치를 놓칩니다.</li>
+    </ul>
+  </div>
+
+  <div class="practice-brief">
+    <p style="margin:0 0 8px 0;font-size:13.5px;color:#047857;font-weight:600;">C1 체화 4축 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <ul>
+      <li><strong>왜 알아야 하는가:</strong> $CL$을 이차 파라미터(secondary parameter)로 오해하면, 신기능 저하나 약물상호작용으로 노출량이 변했을 때 $t_{1/2}$ 변화만 보고 역추정하게 됩니다. 그 결과 유지용량을 잘못 결정하게 됩니다.</li>
+      <li><strong>흐름상 역할:</strong> C1은 이 세션 전체 카드의 결정 분기점(C2의 $V$, C3의 $K=CL/V$, C4의 $t_{1/2}=0.693\cdot V/CL$, C5의 $V_{ss}=CL\cdot MRT$)입니다. 이후 간/신 청소율(hepatic/renal clearance) 세션과 PopPK 공변량(covariate) 모델링, 즉 공변량을 $CL$에 묶는 표준 관행의 출발점입니다.</li>
+      <li><strong>체화 꿀팁:</strong> 수식 $CL=Dose/AUC$를 외우는 대신 "단위 시간당 비워지는 혈장 부피"라는 생리학적 지시체를 먼저 고정하면 됩니다. 그러면 $C_{ss}=R_{in}/CL$에서 $V$가 사라지는 이유가 즉시 보입니다.</li>
+      <li><strong>실무 활용:</strong> NONMEM 데이터셋에서 용량-AUC 쌍(dose-AUC pair)으로 NCA $CL$을 산출해 모델 기반(model-based) $CL$과 비교하는 것이 첫 GOF 점검입니다. 두 값이 크게 다르면 모델 구조 또는 데이터 무결성을 의심합니다.</li>
+    </ul>
+  </div>
+
+  <!-- FIGURE_POINTER #2 -->
+  <aside class="figure-pointer" role="note">
+    <span class="fp-label">📚 FIGURE POINTER — 교과서 그림 참조</span>
+    <div class="fp-field"><strong>Source:</strong> Rowland &amp; Tozer 5e, p.55, Fig.3-3</div>
+    <div class="fp-field"><strong>Why this matters:</strong> 저장소-추출기 도식(reservoir-extractor diagram)은 $Q$, $E$, $C$, $C_{out}$이 어떻게 연결되어 $CL=Q\cdot E$가 되는지 시각적으로 고정해 줍니다. 텍스트만 읽으면 $CL$을 단순 기울기(slope)나 제거 속도로 오해하기 쉽습니다.</div>
+    <div class="fp-field"><strong>When to look:</strong> C1 청소율(Clearance) 카드를 읽은 뒤에 확인하면 됩니다.</div>
+    <div class="fp-field"><strong>Learner instruction:</strong> 저장소(reservoir)를 "몸", 추출기(extractor)를 "간/신장"으로 대응시켜 보세요. 들어가는 양 $Q\cdot C$와 제거되는 분율(fraction) $E$의 곱이 왜 청소율(clearance)의 물리적 의미가 되는지 확인하면 됩니다.</div>
+  </aside>
+
+  <div class="master-lens tag-aug">
+    <p>$CL=Dose/AUC$에서 $V$가 사라진다는 사실은 암기용 공식이 아니라 유지용량 판단의 구조입니다. 분포공간은 곡선의 출발점과 시간상수를 바꾸지만, 전체 투약 사건을 적분하면 노출-용량 변환의 중심에는 $CL$만 남습니다. <span class="source-page">[CRUCIBLE_DERIVED]</span></p>
+  </div>
+
+  <!-- ===== C2 Volume of Distribution ===== -->
+  <div id="card-c2-v" class="card-heading">
+    <h3>🃏 C2. 분포용적 (Volume of Distribution, $V$)</h3>
+  </div>
+
+  <div class="master-lens">
+    <p>$V$는 실제 해부학적 부피가 아니라 <strong>체내 총량을 혈장 농도로 환산하는 겉보기 희석 공간(apparent dilution space)</strong>입니다. 같은 100 units를 넣어도 물에만 녹으면 $V=10$ L, 숯(charcoal)에 결합해 물에서 거의 안 보이면 $V=100$ L이 됩니다. 총량은 같지만 측정 가능한 농도가 다르기 때문입니다. <span class="source-page">[G Fig.2.3, p.14–15; R&amp;T p.63–64]</span></p>
+  </div>
+
+  <h4>A. 형식적 정의 (Formal Definition)</h4>
+
+  $$V=\frac{A_b}{C} \qquad \text{[G Eq.2:14, p.20; R\&T Eq.3-26, p.63]}$$
+
+  <p>IV bolus에서는 역외삽 절편(back-extrapolated intercept)으로 다음을 계산합니다.</p>
+
+  $$V=\frac{D_{iv}}{C^0} \qquad \text{[G Eq.2:13, p.20]}$$
+
+  <p>R&amp;T는 시간 0 외삽(time-zero extrapolation)만으로 $V$를 확신하기 어려운 상황을 지적합니다. 분포 평형이 완성되기 전의 절편은 실제 분포공간을 안정적으로 대표하지 못할 수 있기 때문입니다. 그래서 말단 단계(terminal phase)에서 $CL$과 $k$로 $V$를 구하는 우회식을 제시합니다. <span class="source-page">[R&amp;T p.63]</span></p>
+
+  $$V=\frac{CL}{K}=1.44\cdot CL\cdot t_{1/2} \qquad \text{[R\&T Eq.3-27/3-28, p.63]}$$
+
+  <h4>B. 겉보기 분포용적이 거대해질 수 있는 이유</h4>
+  <p>Gabrielsson은 $V$를 비결합 용적(unbound volume)과 유리 분율(free fraction)로 분해합니다. <span class="source-page">[G p.20]</span></p>
+
+  $$V=V_u\cdot f_u \qquad \text{[G Eq.2:15, p.20]}$$
+
+  <p>조직 분배(tissue partition)까지 고려하면 $V_{ss}$는 혈액 부피와 조직별 분배계수의 합으로 표현됩니다. <span class="source-page">[G Eq.2:16–2:18, p.20–21]</span></p>
+
+  $$V_{ss}=V_B+\sum V_{Ti}\cdot K_{Pi}\cdot(1-E_{Ti})$$
+
+  <p>Quinacrine의 $V=40{,}000$ L는 겉보기 분포용적(apparent volume)의 극단값입니다. 이 값은 실제 체적이 아니라 조직 결합(tissue binding)과 측정 공간(measurement space)의 불일치를 흡수한 환산률로 읽어야 합니다. <span class="source-page">[G p.20]</span></p>
+
+  <h4>C. Compound A 기준 데이터</h4>
+  <p>Compound A에서 Subject 1–3의 $V$는 약 10 L이고, Subject 4는 20 L입니다. Gabrielsson Fig.1.2는 Subject 4의 낮은 절편(intercept)이 더 큰 용적(volume)을 의미한다고 설명합니다. <span class="source-page">[G p.470, p.473]</span></p>
+
+  <p class="anchor">$V$가 커지면 동일 용량(dose)에서 $C^0=D/V$가 낮아집니다. 그러나 $V$만으로 AUC가 결정되지는 않습니다. AUC는 $CL$이 결정합니다. <span class="source-page">[G Fig.2.6, p.17; G Fig.2.12, p.26–27]</span></p>
+
+  <h4>D. 경계 및 압축</h4>
+  <ul>
+    <li>1구획 모델에서는 $V$와 $V_{ss}$ 구분이 사실상 사라지지만, 다구획에서는 $V_c$, $V_{ss}$, 말단 용적(terminal volume)이 분기됩니다. 이 본격 전개는 분포 동력학(distribution kinetics) 세션으로 넘깁니다. <span class="source-page">[G p.20–21; R&amp;T p.61]</span></li>
+    <li>$V$를 이용한 부하용량(loading dose) 계산은 분포 단계(distribution phase)가 충분히 빠르다는 가정에 의존합니다. <span class="source-page">[R&amp;T p.62–64]</span></li>
+  </ul>
+
+  <div class="trench">
+    반로그 도표(semi-log plot)에서 명백한 꺾임점(break point)이 보이면, 1구획 $V$를 곧바로 부하용량(loading dose)에 쓰기 전에 중심 구획 용적(central volume) 대 항정상태 용적(steady-state volume) 문제를 점검합니다.
+  </div>
+
+  <div class="recap">
+    <strong>C2 요약(Recap):</strong> $V$는 "약물이 어디에 얼마나 숨어 있는가"를 혈장 농도 하나로 환산한 겉보기 파라미터(apparent parameter)입니다. $C^0$와 부하용량(loading dose)에는 직접적이지만, 유지 노출량(maintenance exposure)은 $CL$이 결정합니다.
+  </div>
+
+  <div class="practice-brief">
+    <p style="margin:0 0 8px 0;font-size:13.5px;color:#047857;font-weight:600;">C2 체화 4축 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <ul>
+      <li><strong>왜 알아야 하는가:</strong> $V$를 실제 해부학적 부피로 오해하면 $V=40{,}000$ L 같은 quinacrine 값을 모델 오류로 판단해 정상 데이터를 폐기하게 됩니다.</li>
+      <li><strong>흐름상 역할:</strong> C2의 $V$는 C1의 $CL$과 함께 일차(primary) 파라미터 쌍을 이루며, C3($K=CL/V$)와 C4($t_{1/2}=0.693\cdot V/CL$)의 분모로 직접 들어갑니다. 이후 분포 동력학(distribution kinetics) 세션에서 $V_c$, $V_{ss}$, terminal $V_z$로 분기됩니다.</li>
+      <li><strong>체화 꿀팁:</strong> "측정 공간(plasma)과 총량 사이의 환산률"이라는 정의를 고정하면 됩니다. 조직 결합이 강할수록 혈장(plasma) 농도가 낮아져 환산률($V$)이 커진다는 인과 방향이 자동으로 생깁니다.</li>
+      <li><strong>실무 활용:</strong> 부하용량(loading dose) 계산식 $LD=V\cdot C_{target}$의 $V$로 바로 사용됩니다. NCA에서 $V_z=CL/\lambda_z$로 산출된 값이 $V_{ss}$와 다를 때는 다구획 동력학을 의심하는 첫 번째 신호가 됩니다.</li>
+    </ul>
+  </div>
+
+  <!-- FIGURE_POINTER #3 -->
+  <aside class="figure-pointer" role="note">
+    <span class="fp-label">📚 FIGURE POINTER — 교과서 그림 참조</span>
+    <div class="fp-field"><strong>Source:</strong> Gabrielsson &amp; Weiner 5e, p.15, Fig.2.3</div>
+    <div class="fp-field"><strong>Why this matters:</strong> 두 양동이(bucket)의 실제 물 부피가 같아도 측정 농도 차이 때문에 겉보기 용적(apparent volume)이 10 L와 100 L로 달라지는 장면을 보여 줍니다. 이 그림이 없으면 $V$를 실제 해부학적 부피로 오해하기 쉽습니다.</div>
+    <div class="fp-field"><strong>When to look:</strong> C2 분포용적(Volume of Distribution) 카드를 읽은 뒤에 확인하면 됩니다.</div>
+    <div class="fp-field"><strong>Learner instruction:</strong> 두 양동이(bucket) 모두 총 용량(dose)은 100 units로 같다는 점을 먼저 확인해 보세요. 그다음 숯 결합(charcoal binding) 때문에 측정 공간의 농도가 낮아지면 왜 겉보기 $V$가 커지는지 확인하면 됩니다.</div>
+  </aside>
+
+  <div class="master-lens tag-aug">
+    <p>$V$가 매우 크다는 말은 "몸 안에 실제로 그만한 부피가 있다"는 뜻이 아닙니다. 측정 공간(plasma)에서 보이는 농도가 낮아졌기 때문에 총량을 그 농도로 환산한 겉보기 공간(apparent space)이 커진 것입니다. <span class="source-page">[AUDIT_DERIVED]</span></p>
+  </div>
+
+  <!-- ===== C3 Elimination Rate Constant ===== -->
+  <div id="card-c3-k" class="card-heading">
+    <h3>🃏 C3. 소실속도상수 (Elimination Rate Constant, $K$)</h3>
+  </div>
+
+  <div class="master-lens">
+    <p>$K$는 독립적 제거 능력이 아니라 <strong>체내 약물량(amount) 중 단위 시간당 제거되는 분율(fraction)</strong>입니다. 즉, $K$는 "얼마나 잘 제거하는가"와 "얼마나 넓게 퍼져 있는가"의 비율입니다. 제거 능력($CL$)을 분포 공간($V$)으로 나눈 값이므로 $K=CL/V$가 됩니다. <span class="source-page">[G p.17; R&amp;T p.56]</span></p>
+  </div>
+
+  <h4>A. 형식적 정의와 ODE</h4>
+
+  $$K=\frac{CL}{V} \qquad \text{[G p.17; R\&T Eq.3-7, p.56]}$$
+
+  $$\frac{dC}{dt}=-K\cdot C=-\frac{CL}{V}\cdot C \qquad \text{[G Eq.2:1, p.16; R\&T Eq.3-9, p.57]}$$
+
+  <p>적분하면 다음과 같습니다.</p>
+
+  $$C=C^0\cdot e^{-K\cdot t}=\frac{D}{V}\cdot e^{-(CL/V)\cdot t} \qquad \text{[G Eq.2:4, p.17; R\&T Eq.3-10, p.58]}$$
+
+  <p>반로그 도표(semi-log plot)에서는 다음과 같습니다.</p>
+
+  $$\ln C=\ln C^0-K\cdot t$$
+
+  <p>따라서 기울기(slope)는 $-K$입니다. <span class="source-page">[G Fig.2.4/2.6, p.15–17; R&amp;T Eq.3-11, p.58]</span></p>
+
+  <h4>B. 분율 제거의 직관</h4>
+  <p>R&amp;T Table 3-1은 $K=0.1$ hr⁻¹인 저장소(reservoir)에서 100 mg이 1시간 후 90 mg, 2시간 후 81 mg, 3시간 후 72.9 mg으로 감소하는 예를 제시합니다. 매 시간 "10 mg"이 아니라 <strong>남아 있는 양의 10%</strong>가 제거됩니다. <span class="source-page">[R&amp;T p.57]</span></p>
+
+  $$\frac{A}{Dose}=e^{-Kt}=\left(\frac12\right)^n,\quad n=t/t_{1/2} \qquad \text{[R\&T Eq.3-19, p.59]}$$
+
+  <h4>C. 경계 (Boundary)</h4>
+  <ul>
+    <li>분포 단계(distribution phase) 중 관찰되는 빠른 농도 저하(decline)가 반드시 소실(elimination) $K$를 의미하지는 않습니다. midazolam은 초기 약 1시간 동안 분포 단계를 보입니다. 이후 말단 단계(terminal phase)에서 소실 반감기(elimination half-life)가 해석됩니다. <span class="source-page">[R&amp;T p.61–62]</span></li>
+    <li>혈관외(extravascular) flip-flop에서는 말단 기울기(terminal slope)가 흡수 속도를 반영할 수 있으므로, 이 세션에서는 배경 맥락으로만 다룹니다. <span class="source-page">[G p.29–30]</span></li>
+  </ul>
+
+  <div class="trench">
+    <code>ADVAN1 TRANS1</code>에서 $K$를 직접 추정하면 적합(fit) 자체는 가능하지만, 공변량이 $CL$에 작용하는지 $V$에 작용하는지 분리하기 어렵습니다. <code>TRANS2</code>식 $CL/V$ 모수화(parameterization)는 후속 PopPK 해석 가능성을 보존합니다.
+  </div>
+
+  <div class="recap">
+    <strong>C3 요약(Recap):</strong> $K$는 반로그 기울기(semi-log slope)로 보이는 값이지만, 구조적으로는 $CL/V$입니다. 기울기가 변했을 때 $CL$이 변했는지 $V$가 변했는지는 별도로 판단해야 합니다.
+  </div>
+
+  <div class="practice-brief">
+    <p style="margin:0 0 8px 0;font-size:13.5px;color:#047857;font-weight:600;">C3 체화 4축 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <ul>
+      <li><strong>왜 알아야 하는가:</strong> $K$를 일차 파라미터(primary parameter)로 다루면 신기능 변화($CL$ 효과)와 체수분 변화($V$ 효과)가 한 항에 섞여 공변량(covariate)이 잘못 부착되거나 누락됩니다.</li>
+      <li><strong>흐름상 역할:</strong> C3는 C1·C2의 합성 결과이자 C4($t_{1/2}=\ln 2/K$)와 C5($MRT=1/K$의 1구획 형태)의 출발점입니다. NONMEM <code>ADVAN1 TRANS1</code> vs <code>TRANS2</code> 선택의 직접적 근거가 됩니다.</li>
+      <li><strong>체화 꿀팁:</strong> "독립 능력이 아니라 효율의 비율"이라는 표현을 머릿속에 고정하면 됩니다. 그러면 반로그 기울기(semi-log slope)를 보고도 자동으로 "이 기울기(slope)가 $CL$에서 왔는지 $V$에서 왔는지"를 묻게 됩니다.</li>
+      <li><strong>실무 활용:</strong> NCA에서 말단 기울기(terminal slope) $\lambda_z$를 $K$ 대용으로 보고할 때, 1구획 동력학이 아닌 경우 $\lambda_z$는 진정한 소실(elimination) $K$가 아님을 명시해야 합니다.</li>
+    </ul>
+  </div>
+
+  <!-- ===== C4 Half-life ===== -->
+  <div id="card-c4-thalf" class="card-heading">
+    <h3>🃏 C4. 반감기 (Half-life, $t_{1/2}$)</h3>
+  </div>
+
+  <div class="master-lens">
+    <p>$t_{1/2}$는 "약물이 빠지는 속도" 자체가 아니라 <strong>$CL$과 $V$가 합성해 만든 시간 척도</strong>입니다. 그러므로 $t_{1/2}$는 원인 변수가 아니라 결과 변수로 읽어야 합니다. R&amp;T는 이 점을 명확히 밝힙니다. 반감기(half-life)와 소실속도상수(elimination rate constant)는 대개 $CL$과 $V$에 의존하며, 그 반대 방향이 아닙니다. <span class="source-page">[R&amp;T p.53, p.58]</span></p>
+  </div>
+
+  <h4>A. 형식적 정의 (Formal Definition)</h4>
+
+  $$t_{1/2}=\frac{\ln 2}{K}=\frac{0.693\cdot V}{CL} \qquad \text{[G Eq.2:3/2:6, p.17–18; R\&T Eq.3-15/3-16, p.58]}$$
+
+  <p>같은 $CL$이라도 $V$가 다르면 $t_{1/2}$는 달라집니다. R&amp;T의 creatinine과 inulin 예시는 이 점을 직접 보여 줍니다. <span class="source-page">[R&amp;T p.58]</span></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Compound</th>
+        <th class="num">$CL$ (L/hr)</th>
+        <th class="num">$V$ (L)</th>
+        <th class="num">$t_{1/2}$ (hr)</th>
+        <th>해석</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Creatinine</td><td class="num">4.5</td><td class="num">42</td><td class="num">6.5</td><td>total body water에 가까운 분포</td></tr>
+      <tr><td>Inulin</td><td class="num">4.5</td><td class="num">16</td><td class="num">2.5</td><td>extracellular water에 가까운 분포</td></tr>
+    </tbody>
+  </table>
+
+  <p>같은 $CL=4.5$ L/hr인데 $t_{1/2}$가 다른 이유는 $V$가 다르기 때문입니다. <span class="source-page">[R&amp;T p.58]</span></p>
+
+  <h4>B. 항정상태 도달 시간</h4>
+  <p>일정 속도 주입(constant infusion)에서 항정상태 도달 정도는 반감기 단위로 표현됩니다. Gabrielsson Fig.2.8은 1 반감기 후 50%, 2 반감기 후 75%, 3 반감기 후 87.5%, 3–4 반감기 후 약 90% 도달을 보여 줍니다. <span class="source-page">[G p.22]</span></p>
+
+  <p>R&amp;T는 6.64 반감기 후 약 99%가 제거된다고 설명합니다. <span class="source-page">[R&amp;T p.59]</span></p>
+
+  <p class="anchor">$V$는 $C_{ss}$ 자체를 바꾸지 않지만, $t_{1/2}=0.693\cdot V/CL$을 통해 항정상태 도달 시간을 바꿉니다. 따라서 유지용량(maintenance dose)과 부하용량(loading dose)의 질문은 분리해야 합니다. <span class="source-page">[G p.22–23]</span></p>
+
+  <h4>C. 분포 단계의 한계</h4>
+  <p>R&amp;T midazolam case는 7.5 mg base IV bolus 후 반로그 농도 프로파일(semilog profile)이 이상성(biphasic)이며, 초기 약 1시간은 분포 단계(distribution phase)라고 설명합니다. 이때 5분 시점 혈장에는 0.61 mg만 있고, 7.5 mg 중 6.9 mg, 즉 92%가 혈장 밖으로 분포되어 있습니다. <span class="source-page">[R&amp;T p.61–62]</span></p>
+
+  <p>R&amp;T Fig.3-5는 2시간까지 AUC가 전체 AUC의 48%라고 제시합니다. Fig.3-6은 분포와 소실의 속도 경쟁을 두 시나리오로 설명합니다. Midazolam처럼 분포가 소실보다 빠르고 분포 단계 동안 누적 AUC가 전체의 절반 정도에 머물면 말단 단계가 소실을 대표하기 쉽습니다. <span class="source-page">[R&amp;T p.64–65]</span></p>
+
+  <p>반대로 gentamicin은 말단 단계 도달 전 대부분의 소실이 이미 발생합니다. R&amp;T는 gentamicin IV dose의 95% 초과가 분포 평형(distribution equilibrium) 전에 소변으로 제거된다고 설명합니다. 이 경우 말단 단계를 곧바로 "소실 전체의 대표"로 읽으면 안 됩니다. <span class="source-page">[R&amp;T p.66]</span></p>
+
+  <p class="anchor">결국 <em>분포 단계 AUC 대 전체 AUC의 비율</em> 하나가 모델 단순화의 가능성을 결정합니다. Midazolam처럼 50% 부근이면 1구획 근사가 일부 임상 목적에서 안전하고, gentamicin처럼 95%가 분포 단계 동안 빠져나가면 말단 기울기(terminal slope)를 소실 대표값으로 쓰는 것 자체가 위험합니다. <span class="source-page">[R&amp;T p.64–66]</span></p>
+
+  <div class="trench">
+    말단 기울기(terminal slope)는 "마지막 직선"이 아니라 "분포 단계 오염이 충분히 작아진 뒤의 직선"으로 잡아야 합니다. 최소 데이터 포인트 수, 회귀 품질(regression quality), AUC 분율(fraction)을 함께 점검합니다.
+  </div>
+
+  <div class="recap">
+    <strong>C4 요약(Recap):</strong> $t_{1/2}$가 길어졌다는 말은 원인 진단이 아닙니다. 반드시 "$CL$ 변화인가, $V$ 변화인가, 분포 단계 문제인가"를 되물어야 합니다.
+  </div>
+
+  <div class="practice-brief">
+    <p style="margin:0 0 8px 0;font-size:13.5px;color:#047857;font-weight:600;">C4 체화 4축 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <ul>
+      <li><strong>왜 알아야 하는가:</strong> $t_{1/2}$ 증가를 곧바로 신기능 저하로 해석하면 부종으로 인한 $V$ 증가 가능성을 놓칩니다. 그 결과 용량 감량이 필요 없는 환자에게 불필요한 용량 조절을 권고하게 됩니다.</li>
+      <li><strong>흐름상 역할:</strong> C4는 C1·C2가 만들어낸 시간 그림자이자, 항정상태 도달 시간(time-to-steady-state, 3–5 half-lives)과 투여간격(dosing interval) 결정의 직접 근거입니다. 반복투여 축적(multi-dose accumulation) 세션과 PopPK simulation에서 지속적으로 참조됩니다.</li>
+      <li><strong>체화 꿀팁:</strong> "$t_{1/2}$는 결과 변수다"를 고정하면 됩니다. 이 한 줄이 $t_{1/2}$ 변화 앞에서 자동으로 "AUC와 $C^0$를 분리해서 보자"는 반응을 만듭니다.</li>
+      <li><strong>실무 활용:</strong> TDM 임상에서 채혈 시간창(sampling time window) 설계의 출발점입니다. NCA 보고서에서 terminal phase 데이터 점 수와 회귀(regression) $R^2$가 동반 보고되어야 신뢰 가능한 $t_{1/2}$ 추정이 됩니다.</li>
+    </ul>
+  </div>
+
+  <!-- FIGURE_SCHEMATIC #4 — Mermaid -->
+  <figure class="schematic" id="fig-c4-schematic" role="figure" aria-label="분포 단계와 소실 단계의 경쟁 판정 도식">
+    <div class="schematic-label">📐 FIGURE SCHEMATIC — 새로 그린 도식 (Mode: R · Redrawn)</div>
+    <div class="schematic-title">분포 단계(distribution phase)와 소실 단계(elimination phase)의 경쟁 판정</div>
+    <div class="mermaid" aria-hidden="false">
+flowchart LR
+    subgraph L1["Lane 1 — 분포 빠름 · 소실 상대적으로 느림"]
+      A1["초기 분포 단계<br>(early distribution phase)"] --> B1["말단 단계<br>(terminal phase)"]
+      B1 --> C1["분포 단계 AUC<br>≈ 전체 AUC의 50% 부근"]
+      C1 --> D1["terminal slope:<br>주의해서 사용 가능"]
+    end
+    subgraph L2["Lane 2 — 분포 평형 전에 소실 상당 진행"]
+      A2["초기 분포 단계<br>(early distribution phase)"] --> B2["말단 단계<br>(terminal phase)"]
+      B2 --> C2["대부분의 소실이<br>분포 평형 전에 완료"]
+      C2 --> D2["terminal slope:<br>오도 가능"]
+    end
+    classDef safe fill:#d1fae5,stroke:#10b981,color:#064e3b
+    classDef risk fill:#fee2e2,stroke:#ef4444,color:#7f1d1d
+    class D1 safe
+    class D2 risk
+    </div>
+    <figcaption>분포(distribution)와 소실(elimination)의 상대 속도에 따라 말단 기울기(terminal slope) 해석의 안전성이 달라집니다.<br><em>Alt text:</em> 두 개의 병렬 흐름도가 분포(distribution)가 먼저 정리되는 경우와 소실(elimination)이 먼저 크게 진행되는 경우를 비교합니다. <em>Source relation:</em> 교과서 개념을 바탕으로 새로 그린 도식이며, 원본 교과서 곡선의 형태·색상·배치를 복제하지 않습니다.</figcaption>
+  </figure>
+
+  <div class="master-lens tag-aug">
+    <p>말단 기울기(terminal slope)를 채택할 때의 질문은 "마지막 구간이 직선인가?"가 아닙니다. "그 직선이 전체 소실 과정을 대표할 만큼 분포 단계의 영향이 작아졌는가?"입니다. 이 차이가 $t_{1/2}$를 안전한 요약값으로 쓸 수 있는지 결정합니다. <span class="source-page">[CRUCIBLE_DERIVED]</span></p>
+  </div>
+
+  <!-- ===== C5 MRT ===== -->
+  <div id="card-c5-mrt" class="card-heading">
+    <h3>🃏 C5. 평균체류시간 (Mean Residence Time, $MRT$)</h3>
+  </div>
+
+  <div class="master-lens">
+    <p>$MRT$는 약물 분자가 체내에 평균적으로 머무는 시간입니다. $t_{1/2}$가 "절반으로 줄어드는 시간"이라면, $MRT$는 농도-시간 곡선의 시간 방향 평균입니다. 즉 1차 모멘트<span class="annotation">(← 시간으로 가중한 농도 면적)</span>를 AUC로 나눈 값입니다. <span class="source-page">[G p.19; R&amp;T p.60]</span></p>
+  </div>
+
+  <h4>A. 형식적 정의 (Formal Definition)</h4>
+
+  $$AUC_0^\infty=\int_0^\infty C(t)dt \qquad \text{[G Eq.2:8, p.19]}$$
+
+  $$AUMC_0^\infty=\int_0^\infty t\cdot C(t)dt \qquad \text{[G Eq.2:10, p.19]}$$
+
+  $$MRT=\frac{AUMC_0^\infty}{AUC_0^\infty} \qquad \text{[G Eq.2:11, p.19]}$$
+
+  <p>1구획 IV bolus에서는 다음이 성립합니다. <span class="source-page">[R&amp;T Eq.3-25, p.60]</span></p>
+
+  $$MRT=\frac1K=\frac{t_{1/2}}{\ln 2}\approx1.443\cdot t_{1/2}$$
+
+  <h4>B. Compound A 기준 데이터</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th class="num">$K$ (min⁻¹)</th>
+        <th class="num">$t_{1/2}$ (min)</th>
+        <th class="num">$MRT$ (min)</th>
+        <th class="num">$MRT/t_{1/2}$</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td class="num">0.01</td><td class="num">68</td><td class="num">98</td><td class="num">1.44</td></tr>
+      <tr><td>2</td><td class="num">0.02</td><td class="num">34</td><td class="num">48</td><td class="num">1.41</td></tr>
+      <tr><td>3</td><td class="num">0.02</td><td class="num">36</td><td class="num">53</td><td class="num">1.47</td></tr>
+      <tr><td>4</td><td class="num">0.01</td><td class="num">71</td><td class="num">100</td><td class="num">1.41</td></tr>
+    </tbody>
+  </table>
+
+  <p><span class="source-page">[Source: G Table 1.3, p.474]</span></p>
+
+  <p class="anchor">4명 모두 $MRT/t_{1/2}$가 약 1.44에 모입니다. 이 비율은 1구획 IV bolus에서 단일지수 감소(monoexponential decline)가 성립한다는 수학적 서명(signature)입니다. 이 세션에서는 이 사실까지만 고정하고, 다구획 또는 혈관외(extravascular) MRT 전개는 후속 세션으로 보냅니다. <span class="source-page">[G p.19, p.474; R&amp;T p.60–61]</span></p>
+
+  <h4>C. 경계 (Boundary)</h4>
+  <ul>
+    <li>AUMC는 $t\cdot C(t)$의 적분이므로 말단 영역(terminal region)에서의 외삽(extrapolation) 오차가 AUC보다 크게 증폭됩니다. 이것이 NCA 보고서에서 $MRT$ 추정의 안정성이 $t_{1/2}$보다 낮은 이유입니다. 그래서 말단 단계 데이터의 품질이 결정적으로 중요합니다. <span class="source-page">[G p.19]</span></li>
+    <li>$MRT=1/K=1.443\,t_{1/2}$는 1구획 IV bolus에 한정됩니다. 혈관외 투여나 다구획 동력학에서는 이 단순 관계가 깨집니다. 그 일반화는 후속 NCA·다구획 세션 영역입니다. <span class="source-page">[R&amp;T p.60–61]</span></li>
+  </ul>
+
+  <div class="recap">
+    <strong>C5 요약(Recap):</strong> $MRT$는 NCA에서 "평균 체류 시간"을 주는 연결 파라미터(bridge parameter)입니다. 1구획 IV bolus에서는 $1/K$로 단순하지만, 이 단순성이 성립하는 조건을 기억해야 합니다.
+  </div>
+
+  <div class="practice-brief">
+    <p style="margin:0 0 8px 0;font-size:13.5px;color:#047857;font-weight:600;">C5 체화 4축 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <ul>
+      <li><strong>왜 알아야 하는가:</strong> $MRT$를 $t_{1/2}$의 단순 변형(× 1.443)으로 외우면, 다구획·혈관외(extravascular) 상황에서 이 관계가 깨질 때 NCA 보고서를 잘못 해석하게 됩니다.</li>
+      <li><strong>흐름상 역할:</strong> C5는 C1–C4의 종합이자 비구획분석(NCA, non-compartmental analysis) 세션의 연결고리(bridge)입니다. $V_{ss}=CL\cdot MRT$를 통해 분포 동력학(distribution kinetics) 세션의 $V_{ss}$ 정의로 직접 연결됩니다.</li>
+      <li><strong>체화 꿀팁:</strong> $t_{1/2}$는 중위, $MRT$는 평균이라는 통계적 비유를 고정하면 됩니다. $\ln 2$가 등장하는 모든 자리는 "절반이 되는 시점"이지 "평균 체류"가 아님이 자동으로 떠오릅니다.</li>
+      <li><strong>실무 활용:</strong> Compound A에서처럼 $MRT/t_{1/2}\approx 1.443$이면 1구획 단일지수(monoexponential)의 정량적 신호입니다. 1.443에서 크게 벗어나면 다구획성·흡수 지연·말단 외삽(terminal extrapolation) 오차를 의심하는 첫 번째 진단 단서가 됩니다.</li>
+    </ul>
+  </div>
+
+  <div class="master-lens tag-aug">
+    <p>$MRT/t_{1/2}\approx 1.443$은 단순한 암기값이 아니라 단일지수(monoexponential) 1구획 IV bolus 구조의 서명입니다. 이 비율이 크게 흐트러지면 먼저 "자료가 1구획처럼 행동하고 있는가?"를 점검해야 합니다. <span class="source-page">[TEXTBOOK_DERIVED]</span></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== §5 Confusion Pair Dissection ===== -->
+<section id="sec-5-confusion" aria-labelledby="sec5-h">
+  <h2 id="sec5-h">§5 — 혼동쌍 해부 (Confusion Pair Dissection)</h2>
+
+  <!-- Pair 1 -->
+  <h3 id="pair-1-cl-vs-k">🔀 혼동쌍 1. $CL$ vs $K$ — 일차 vs 이차 (Primary vs Secondary)</h3>
+
+  <div class="confusion">
+    <table>
+      <thead>
+        <tr><th>비교</th><th>$CL$</th><th>$K$</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>본질</td><td>단위 시간당 완전히 제거되는 겉보기 용적(apparent volume)</td><td>단위 시간당 제거되는 분율(fraction)</td></tr>
+        <tr><td>단위</td><td>용적/시간 (volume/time)</td><td>1/시간 (1/time)</td></tr>
+        <tr><td>핵심식</td><td>$CL=Dose/AUC=R_{in}/C_{ss}=Q\cdot E$</td><td>$K=CL/V$</td></tr>
+        <tr><td>생리학적 위치</td><td>혈류, 추출, 대사, 배설 경로와 직접 연결</td><td>$CL$과 $V$의 비율로만 해석 가능</td></tr>
+        <tr><td>임상 질문</td><td>"노출과 유지용량이 어떻게 변하는가?"</td><td>"반로그 기울기(semi-log slope)와 반감기가 어떻게 보이는가?"</td></tr>
+        <tr>
+          <td><strong>치명적 타격 (Critical Blow)</strong></td>
+          <td colspan="2">$K$를 공변량(covariate) 탐색의 대상으로 삼아 신기능이나 체중의 영향을 $K$에 모델링하면, 신기능이 $CL$에, 체중이 $V$에 각각 독립적으로 영향을 주는 생리학적 구조를 놓치게 됩니다. 그 결과 공변량이 없거나 잘못된 방향으로 추가된 모델이 규제 제출에 사용되며, 신부전 환자의 용량 조절 근거가 결여된 NDA 패키지가 만들어집니다. <span class="source-page">[EXPERT_INFERENCE, v3]</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>핵심 정정:</strong> $K$가 같아도 $CL$이 같다는 뜻은 아닙니다. Compound A Subject 1과 4는 $K\approx0.01$ min⁻¹로 유사하지만 $CL$은 0.1 vs 0.2 L/min으로 다릅니다. <span class="source-page">[G p.473–474]</span></p>
+
+  <div class="memory-hook">
+    <p style="margin:0 0 6px 0;font-size:13.5px;font-style:italic;color:#be185d;">배수구 vs 배수 속도 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <p style="margin:0;">$CL$은 <strong>배수구의 크기</strong>(단위 시간당 혈액 정화량 = 처리 용량)이고, $K$는 <strong>수위가 떨어지는 상대 속도</strong>($=CL/V$, 욕조 크기로 나눈 값)입니다. 배수구가 커도 욕조가 크면 수위는 천천히 떨어집니다. 그래서 $K$가 같아도 $CL$은 전혀 다를 수 있습니다. 공변량(covariate)이 붙는 곳은 배수구($CL$)와 욕조($V$)이지, 그 비율($K$)이 아닙니다.</p>
+  </div>
+
+  <div class="trench">
+    통계적 적합도(fit)가 좋아도 공변량을 $K$에 직접 묶으면 $CL$ 매개 변화와 $V$ 매개 변화가 분리되지 않을 수 있습니다. 적합 통과와 외삽 가능성(extrapolation)은 같은 문제가 아닙니다.
+  </div>
+
+  <!-- Pair 2 -->
+  <h3 id="pair-2-v-vs-vss">🔀 혼동쌍 2. $V$ vs $V_{ss}$ — 겉보기 bolus 용적 vs 항정상태 분포 용적</h3>
+
+  <div class="confusion">
+    <table>
+      <thead>
+        <tr><th>비교</th><th>$V$</th><th>$V_{ss}$</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>본질</td><td>$A_b/C$ 또는 $D/C^0$로 보는 겉보기 희석 공간(apparent dilution space)</td><td>조직 분배계수와 조직 용적(tissue volume)을 반영한 항정상태 분포 공간(steady-state distribution space)</td></tr>
+        <tr><td>이 세션 처리</td><td>1구획에서는 사실상 같은 개념으로 사용</td><td>식의 의미만 맥락으로 유지</td></tr>
+        <tr><td>위험</td><td>실제 해부학적 부피로 오해</td><td>분포 동력학(distribution kinetics) 세션 내용을 이 세션에 과도하게 끌어옴</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>고정:</strong> 본 세션에서는 "$V$는 겉보기 파라미터(apparent parameter)"까지만 체화하면 됩니다. $V_{ss}$의 본격 해석은 후속 분포 동력학(distribution kinetics)에서 다룹니다. <span class="source-page">[G p.20–21; R&amp;T p.63–64]</span></p>
+
+  <div class="memory-hook">
+    <p style="margin:0 0 6px 0;font-size:13.5px;font-style:italic;color:#be185d;">용기 크기 vs 외관상 용기 크기 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <p style="margin:0;">$V$는 "약이 실제로 어디에 있는가"가 아니라, 관측된 혈장 농도(plasma concentration)를 설명하기 위해 <strong>가정해야 하는 겉보기 공간의 크기</strong>입니다. 조직 결합이 강할수록 $V$는 실제 체적을 훨씬 초과합니다. $V_{ss}$는 평형 상태에서의 이 겉보기 크기이며, 다구획 모델에서는 중심 구획 $V$와 달라집니다. 두 개의 수조 중 하나가 조직이고 약이 그 안에 갇혀 있다면, 혈장만 재면 수조가 훨씬 커 보이는 원리와 같습니다.</p>
+  </div>
+
+  <!-- Pair 3 -->
+  <h3 id="pair-3-thalf-vs-mrt">🔀 혼동쌍 3. $t_{1/2}$ vs $MRT$</h3>
+
+  <div class="confusion">
+    <table>
+      <thead>
+        <tr><th>비교</th><th>$t_{1/2}$</th><th>$MRT$</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>본질</td><td>농도/약물량(amount)이 절반 되는 시간</td><td>분자가 체내에 머무는 평균 시간</td></tr>
+        <tr><td>수식</td><td>$0.693/K=0.693\cdot V/CL$</td><td>$AUMC/AUC$</td></tr>
+        <tr><td>1구획 IV bolus</td><td>$t_{1/2}=0.693\cdot MRT$</td><td>$MRT=1.443\cdot t_{1/2}$</td></tr>
+        <tr><td>해석 위험</td><td>말단 단계(terminal phase) 선택 오류</td><td>AUMC 말단 외삽(terminal extrapolation) 오류</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="memory-hook">
+    <p style="margin:0 0 6px 0;font-size:13.5px;font-style:italic;color:#be185d;">중위 vs 무게중심 — <span class="source-page">[EXPERT_INFERENCE, v3]</span></p>
+    <p style="margin:0;">$t_{1/2}$은 농도가 반으로 줄어드는 <strong>중위 시간</strong>이고, $MRT$는 약 분자 한 개가 체내에 머무는 <strong>평균 체류 시간</strong>($AUMC/AUC$)입니다. 1구획 1차 제거에서 $MRT=1/K=t_{1/2}/\ln 2\approx 1.443\times t_{1/2}$입니다. 이 1.443배는 생리학적 차이가 아니라 <strong>지수함수 적분의 수학적 필연</strong>입니다. 분포나 흡수 지연이 더해지면 $MRT$는 $t_{1/2}$보다 훨씬 더 길어질 수 있어, 반감기 하나로 체류 시간을 추정하는 오류가 생깁니다.</p>
+  </div>
+
+  <div class="recap">
+    <strong>§5 요약(Recap):</strong> 세 혼동쌍은 모두 "표면적으로 비슷하지만 위계가 다르다"는 문제입니다. $CL$ vs $K$는 일차/이차(primary/secondary)의 차이입니다. $V$ vs $V_{ss}$는 겉보기/항정상태(apparent/steady-state)의 차이입니다. $t_{1/2}$ vs $MRT$는 절반이 되는 시간과 평균 체류 시간의 차이입니다.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== §7 Self-Test ===== -->
+<section id="sec-7-selftest" aria-labelledby="sec7-h">
+  <h2 id="sec7-h">§7 — 자기 테스트: 능동 회상 모듈 (Active Recall Module)</h2>
+
+  <p style="font-size:13.5px;color:#6b7280;margin-bottom:18px;">각 문항의 "답 보기"를 눌러야 정답이 표시됩니다. 먼저 직접 답을 떠올린 뒤 비교해 보세요.</p>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q1 · 회상 ★★</span>$t_{1/2}$을 $V$와 $CL$로 표현하고, 왜 이차 파라미터(secondary parameter)인지 설명해 보세요.</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong></p>
+      $$t_{1/2}=\frac{0.693\cdot V}{CL}$$
+      <p>따라서 $t_{1/2}$은 $V$와 $CL$의 함수입니다. $t_{1/2}$만 보고 $CL$ 감소인지 $V$ 증가인지 알 수 없습니다. <span class="source-page">[G p.17–18; R&amp;T p.58]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q2 · 회상 ★</span>$V$의 정의식 두 가지를 쓰세요.</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong></p>
+      $$V=\frac{A_b}{C},\qquad V=\frac{D_{iv}}{C^0}$$
+      <p>또는 말단 단계(terminal phase) 정보가 있으면 $V=CL/K=1.44\cdot CL\cdot t_{1/2}$로 계산합니다. <span class="source-page">[G p.20; R&amp;T p.63]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q3 · 회상 ★</span>$C_{ss}=R_{in}/CL$을 1구획 주입(infusion) ODE에서 도출해 보세요.</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong></p>
+      $$\frac{dC}{dt}=\frac{R_{in}}{V}-\frac{CL}{V}C$$
+      <p>항정상태에서 $dC/dt=0$입니다:</p>
+      $$C_{ss}=\frac{R_{in}}{CL}$$
+      <p>$V$는 소거됩니다. $V$는 항정 도달 시간에 영향을 주지만 최종 $C_{ss}$ 자체는 $CL$이 결정합니다. <span class="source-page">[G p.22–23]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q4 · 회상 ○</span>$MRT$의 정의식과 1구획 IV bolus에서 $t_{1/2}$와의 관계를 쓰세요.</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong></p>
+      $$MRT=\frac{AUMC}{AUC},\qquad MRT=\frac1K=1.443\cdot t_{1/2}$$
+      <p>단, 두 번째 등식은 1구획 IV bolus 한정입니다. <span class="source-page">[G p.19; R&amp;T p.60]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q5 · 적용 ★★</span>Compound A Subject 1과 4는 다음과 같습니다. 같은 주입속도(infusion rate) $R_{in}=10$ µg/min를 주면 $C_{ss}$는 같을까요?</span></summary>
+    <div class="qa-body">
+      <table>
+        <thead>
+          <tr><th>Subject</th><th class="num">$V$ (L)</th><th class="num">$CL$ (L/min)</th><th class="num">$K$ (min⁻¹)</th><th class="num">$t_{1/2}$ (min)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td class="num">10</td><td class="num">0.1</td><td class="num">0.01</td><td class="num">68</td></tr>
+          <tr><td>4</td><td class="num">20</td><td class="num">0.2</td><td class="num">0.01</td><td class="num">71</td></tr>
+        </tbody>
+      </table>
+      <p><span class="source-page">[Source: G Tables 1.2/1.3, p.473–474]</span></p>
+      <p><strong>정답:</strong> 같지 않습니다.</p>
+      $$C_{ss,1}=10/0.1=100\;\mu g/L$$
+      $$C_{ss,4}=10/0.2=50\;\mu g/L$$
+      <p>두 subject는 $K$와 $t_{1/2}$가 비슷하지만 $CL$이 다릅니다. 항정 농도는 $CL$이 결정합니다. <span class="source-page">[G Eq.2:22, p.23]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q6 · 적용 ★★</span>어떤 환자군에서 $t_{1/2}$가 길어졌습니다. 이것이 $CL$ 감소 때문인지 $V$ 증가 때문인지 구분하려면 무엇을 보아야 할까요?</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong> AUC와 $C^0$를 분리해서 봅니다. $CL$ 감소는 $AUC=Dose/CL$ 증가로 나타납니다. $V$ 증가는 $C^0=D/V$ 감소로 나타납니다. 따라서 둘이 동시에 변하면 $t_{1/2}$ 하나로는 원인 분리가 불가능합니다. <span class="source-page">[G p.17–20; R&amp;T p.58–60]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q7 · 적용 ★</span>R&amp;T midazolam case: 79-kg 성인, 7.5 mg base IV bolus, AUC = 287 µg·hr/L, $t_{1/2}=3.8$ hr. (a) $CL$은? (b) $V$는? (c) 5분 혈장 농도 180 µg/L, 혈장 용적 3.4 L이면 혈장 내 약물량과 혈장 밖 분율(fraction)은?</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong></p>
+      $$CL=7500/287=26.1\;L/hr\approx26\;L/hr$$
+      $$V=1.44\times 26\times 3.8=142\;L$$
+      <p>혈장(plasma) 내 약물량은 $180\;\mu g/L\times 3.4\;L=612\;\mu g=0.612$ mg입니다. 따라서 $7.5-0.612=6.89$ mg, 약 92%가 이미 혈장 밖에 있습니다. <span class="source-page">[R&amp;T p.61–63]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q8 · 적용 ★</span>어떤 IV bolus 자료에서 $MRT/t_{1/2}$가 1.85였습니다. 1구획 IV bolus의 기대값 1.443과 다릅니다. 무엇을 의심해야 할까요?</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong> 1구획 IV bolus의 단순 지수 감소가 아닐 가능성, 특히 분포 동력학(distribution kinetics) 또는 말단 외삽(terminal extrapolation) 문제를 의심합니다. 출처 기반 결론은 여기까지입니다. 구체적인 NONMEM ADVAN 선택은 후속 실무 모델링 판단입니다. <span class="source-page">[G p.19; R&amp;T p.60–66]</span></p>
+    </div>
+  </details>
+
+  <details class="qa">
+    <summary><span><span class="q-tag">Q9 · 출처 기반 보스 딜레마 (Boss Dilemma) ★★</span>새 IV bolus 약물이 반로그 도표(semilog plot)에서 이상성 감소(biphasic decline)를 보입니다. 1구획 모델은 단순하고 AUC 중심 결정을 설명하기 쉽습니다. 2구획 모델은 분포 단계를 더 잘 설명하지만 현재 데이터가 희박합니다(sparse). 어떤 논리로 모델 구조를 방어해야 할까요?</span></summary>
+    <div class="qa-body">
+      <p><strong>정답:</strong> "어느 모델이 항상 옳은가"가 아니라 <strong>분포 단계가 임상적으로 중요한 시간대인지</strong>를 먼저 판단합니다. Midazolam처럼 분포가 빠르고 분포 단계 AUC가 전체의 50% 미만이면 1구획 근사가 일부 목적에서 가능합니다. 그러나 gentamicin처럼 말단 단계 전에 대부분의 소실이 발생하면 말단 기울기 중심 해석은 위험합니다. 따라서 모델 선택은 통계적 단순성만이 아니라 농도-시간 프로파일에서 분포와 소실이 경쟁하는 방식에 근거해야 합니다. <span class="source-page">[R&amp;T p.61–66]</span></p>
+    </div>
+  </details>
+
+  <div class="recap">
+    <strong>§7 요약(Recap):</strong> 계산 문제의 핵심은 수식 암기가 아니라 "어떤 식에서 어떤 파라미터가 소거되는가"를 보는 것입니다. $C_{ss}$에서는 $V$가 소거되고, $t_{1/2}$에서는 $CL$과 $V$가 함께 남습니다.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== §8 Meta-Frame & Big Picture ===== -->
+<section id="sec-8-metaframe" aria-labelledby="sec8-h">
+  <h2 id="sec8-h">§8 — 메타프레임과 큰 그림 (Meta-Frame &amp; Big Picture)</h2>
+
+  <h3>A. 위치 지정 (Positioning)</h3>
+  <p>이 세션은 PK/PD 학습 그래프의 출발점입니다. 이후의 모든 구조는 여기서 갈라집니다.</p>
+  <ul>
+    <li><strong>다구획 모델:</strong> 말단 단계가 정말 소실을 대표하는지 묻습니다. <span class="source-page">[R&amp;T p.61–66]</span></li>
+    <li><strong>흡수 모델(Absorption models):</strong> 혈관외 말단 기울기가 $K$인지 $K_a$인지 묻습니다. <span class="source-page">[G p.28–32]</span></li>
+    <li><strong>간/신 청소율(Hepatic/Renal clearance):</strong> $CL=Q\cdot E$와 $CL_R=f_e\cdot CL$을 장기별 생리학으로 분해합니다. <span class="source-page">[R&amp;T p.55–68]</span></li>
+    <li><strong>PopPK 공변량:</strong> 공변량을 $CL$에 둘지 $V$에 둘지 결정합니다. <span class="source-page">[실무 확장/교과서 외 해석]</span></li>
+    <li><strong>NCA:</strong> $AUC$, $AUMC$, $MRT$가 구획 모델 없이 노출과 체류 시간을 요약합니다. <span class="source-page">[G p.19; R&amp;T p.60]</span></li>
+  </ul>
+
+  <h3>B. 의존성 (Dependencies) — 대충 넘기면 생기는 실패 모드</h3>
+  <ol>
+    <li><strong>$t_{1/2}$ 단독 해석 오류</strong><br>
+    $t_{1/2}$ 증가를 곧바로 $CL$ 감소로 읽으면 $V$ 변화 가능성을 놓칩니다. 정답은 항상 "AUC와 $C^0$가 어떻게 변했는가"를 같이 묻는 것입니다. <span class="source-page">[G p.17–20; R&amp;T p.58–60]</span></li>
+    <li><strong>$V$를 실제 부피로 오해</strong><br>
+    $V=40{,}000$ L 같은 값을 보고 모델이 틀렸다고 판단하면 겉보기 용적(apparent volume) 개념을 놓친 것입니다. $V$는 측정 공간인 혈장 농도(plasma concentration)와 총량 사이의 환산률입니다. <span class="source-page">[G p.20; R&amp;T p.63–64]</span></li>
+    <li><strong>말단 단계 자동 신뢰 (Terminal phase 자동 신뢰)</strong><br>
+    Midazolam처럼 말단 단계가 소실을 잘 대표하는 경우도 있지만, gentamicin처럼 대부분의 소실이 말단 단계 전에 끝나는 예외도 있습니다. <span class="source-page">[R&amp;T p.61–66]</span></li>
+    <li><strong>$K$-직접 모수화 ($K$-direct parameterization)의 해석 손실</strong><br>
+    <span class="source-page">[실무 확장/교과서 외 해석]</span> $K$에 공변량을 직접 묶으면 $CL$ 변화와 $V$ 변화가 구분되지 않습니다. 이 세션의 일차/이차(primary/secondary) 위계는 단순한 교과서 문장이 아니라 PopPK 모수화(parameterization)의 안전장치입니다.</li>
+  </ol>
+
+  <h3>C. 전문가 해석 지점 (Professional Moat)</h3>
+  <p>자동화 도구는 IV bolus 자료(data)에 단일지수 적합(monoexponential fit)을 빠르게 수행하고 $CL$, $V$, $K$, $t_{1/2}$를 출력할 수 있습니다. 그러나 전문가의 가치는 <strong>숫자를 출력하는 것</strong>이 아닙니다. 핵심은 <strong>숫자의 위계를 읽는 것</strong>입니다.</p>
+  <ul>
+    <li>$C_{ss}$가 다른 이유를 $t_{1/2}$가 아니라 $CL$에서 찾습니다.</li>
+    <li>$t_{1/2}$가 바뀌었을 때 $CL$인지 $V$인지 먼저 분해합니다.</li>
+    <li>반로그 도표의 말단 직선(terminal straight line)이 언제 소실을 대표하지 않는지 압니다.</li>
+    <li>출처 기반 진술(source-bound statement)과 <span class="source-page">[실무 확장/교과서 외 해석]</span>을 구분합니다.</li>
+  </ul>
+
+  <p><strong>v3 확장 — 결정 방향성의 구체화 <span class="source-page">[EXPERT_INFERENCE, v3]</span>:</strong></p>
+  <ul>
+    <li><strong>AUC와 유지용량(maintenance dose)은</strong> → $CL$의 역수에 비례합니다. 신기능이나 약물상호작용으로 $CL$이 반으로 줄면 AUC는 두 배가 됩니다. 이 방향을 즉시 계산하지 못하면 용량 조절 회의에서 기여가 불가능합니다.</li>
+    <li><strong>$C^0$(IV bolus 직후 농도)와 부하용량(loading dose)은</strong> → $V$의 함수입니다. 신부전 환자의 $V$가 변하지 않으면 부하용량은 수정할 필요가 없습니다.</li>
+    <li><strong>말단 기울기(terminal slope)와 반감기는</strong> → $CL/V$의 조합입니다. 단독으로 $CL$도 $V$도 결정하지 못합니다.</li>
+    <li><strong>공변량(covariate)이 붙어야 할 위치는</strong> → $CL$(신기능, 효소유전형)인지 $V$(체중, 수분 상태)인지를 먼저 가설로 잡고 GOF 잔차를 봅니다. $K$를 대상으로 삼으면 두 생리학이 혼재된 표현을 추정하게 됩니다.</li>
+    <li><strong>NCA에서 $MRT$를 보고할 때는</strong> → 구획 모델의 $V/CL$과 어떻게 다른지 설명할 수 있어야 합니다. $MRT=AUMC/AUC$이고, $V_{ss}=CL\cdot MRT$입니다.</li>
+    <li><strong>고위험 상황 인식:</strong> GOF에서 CWRES가 체중이나 CrCl과 상관되어 있다면 → $CL$ 또는 $V$ 중 어느 파라미터에 공변량을 추가할지 판단하는 첫 질문은 "이 공변량이 배수구($CL$)에 영향을 주는가, 아니면 욕조 크기($V$)에 영향을 주는가?"입니다.</li>
+  </ul>
+
+  <div class="recap final">
+    <strong>최종 요약 (Final Recap):</strong> 1구획 IV bolus PK의 본질은 네 식으로 잠깁니다: $CL=Dose/AUC$, $V=D/C^0$, $K=CL/V$, $t_{1/2}=0.693\cdot V/CL$. 그러나 이 자료의 진짜 목표는 식 암기가 아니라 위계 체화입니다. <strong>$CL$과 $V$를 먼저 보고, $K$와 $t_{1/2}$를 그 결과로 읽으면 됩니다.</strong>
+  </div>
+
+</section>
+
+</main>
+</div>
+
+<!-- ===== Anchor verification (compile-time integrity check) ===== -->
+<script>
+(function () {
+  // Verify all TOC href="#id" map to existing body IDs.
+  var tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+  var missing = [];
+  tocLinks.forEach(function (a) {
+    var id = a.getAttribute('href').slice(1);
+    if (id && !document.getElementById(id)) missing.push(id);
+  });
+  if (missing.length) {
+    console.warn('[anchor-check] Missing target IDs:', missing);
+  } else {
+    console.info('[anchor-check] All ' + tocLinks.length + ' TOC anchors verified → existing body IDs (1:1).');
+  }
+
+  // Highlight current section in TOC on scroll
+  var sections = document.querySelectorAll('section[id], div[id^="card-"], h3[id^="pair-"]');
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        document.querySelectorAll('.toc a').forEach(function (a) {
+          a.style.background = '';
+          a.style.borderLeftColor = '';
+        });
+        var active = document.querySelector('.toc a[href="#' + id + '"]');
+        if (active) {
+          active.style.background = 'rgba(201, 168, 76, 0.14)';
+          active.style.borderLeftColor = '#c9a84c';
+        }
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+  sections.forEach(function (s) { observer.observe(s); });
+})();
+</script>
+
+</body>
+</html>

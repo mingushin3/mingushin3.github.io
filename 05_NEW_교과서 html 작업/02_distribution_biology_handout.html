@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>02 분포의 생물학 — Vd · 막투과 · 단백결합 (학습자 핸드아웃 v3.5)</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: { fontCache: 'global' },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+
+:root {
+  --bg: #fafaf6;
+  --surface: #ffffff;
+  --surface-2: #f5f3ec;
+  --ink: #1d1d1b;
+  --muted: #5a5a55;
+  --faint: #8a8a83;
+  --line: #e3e0d4;
+  --line-strong: #c5c1b1;
+  --blue: #2c6dc6;
+  --blue-tint: rgba(44,109,198,0.08);
+  --green: #2a8a4f;
+  --green-tint: rgba(42,138,79,0.08);
+  --purple: #7a4cb8;
+  --purple-tint: rgba(122,76,184,0.08);
+  --amber: #c9a84c;
+  --amber-tint: rgba(201,168,76,0.10);
+  --amber-strong: #a0832a;
+  --rose: #b94c66;
+  --rose-tint: rgba(185,76,102,0.10);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 14px rgba(0,0,0,0.04);
+  --font: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'D2Coding', Consolas, monospace;
+  --sidebar-width: 280px;
+  --max-content: 820px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16170f;
+    --surface: #1f201a;
+    --surface-2: #292a22;
+    --ink: #ede9d6;
+    --muted: #aba89a;
+    --faint: #7e7c70;
+    --line: #3a3a30;
+    --line-strong: #50503f;
+    --blue: #6aa3e8;
+    --blue-tint: rgba(106,163,232,0.12);
+    --green: #5ac985;
+    --green-tint: rgba(90,201,133,0.12);
+    --purple: #b08ce8;
+    --purple-tint: rgba(176,140,232,0.12);
+    --amber: #e3c477;
+    --amber-tint: rgba(227,196,119,0.14);
+    --amber-strong: #f0d690;
+    --rose: #e08398;
+    --rose-tint: rgba(224,131,152,0.14);
+    --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 14px rgba(0,0,0,0.3);
+  }
+}
+
+[data-theme="light"] {
+  --bg: #fafaf6;
+  --surface: #ffffff;
+  --surface-2: #f5f3ec;
+  --ink: #1d1d1b;
+  --muted: #5a5a55;
+  --faint: #8a8a83;
+  --line: #e3e0d4;
+  --line-strong: #c5c1b1;
+  --blue: #2c6dc6;
+  --blue-tint: rgba(44,109,198,0.08);
+  --green: #2a8a4f;
+  --green-tint: rgba(42,138,79,0.08);
+  --purple: #7a4cb8;
+  --purple-tint: rgba(122,76,184,0.08);
+  --amber: #c9a84c;
+  --amber-tint: rgba(201,168,76,0.10);
+  --amber-strong: #a0832a;
+  --rose: #b94c66;
+  --rose-tint: rgba(185,76,102,0.10);
+}
+
+[data-theme="dark"] {
+  --bg: #16170f;
+  --surface: #1f201a;
+  --surface-2: #292a22;
+  --ink: #ede9d6;
+  --muted: #aba89a;
+  --faint: #7e7c70;
+  --line: #3a3a30;
+  --line-strong: #50503f;
+  --blue: #6aa3e8;
+  --blue-tint: rgba(106,163,232,0.12);
+  --green: #5ac985;
+  --green-tint: rgba(90,201,133,0.12);
+  --purple: #b08ce8;
+  --purple-tint: rgba(176,140,232,0.12);
+  --amber: #e3c477;
+  --amber-tint: rgba(227,196,119,0.14);
+  --amber-strong: #f0d690;
+  --rose: #e08398;
+  --rose-tint: rgba(224,131,152,0.14);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 1rem;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.75;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum" 1, "kern" 1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+}
+
+/* -------------------- SIDEBAR -------------------- */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  padding: 1.5rem 1.25rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  font-size: 0.92rem;
+}
+.sidebar-header { margin-bottom: 1.25rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--line); }
+.sidebar-title { margin: 0 0 0.2rem 0; font-size: 1.05rem; color: var(--ink); letter-spacing: -0.01em; }
+.sidebar-subtitle { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.sidebar-list, .sidebar-sublist {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.sidebar-list > li { margin: 0.35rem 0; }
+.sidebar-sublist {
+  margin: 0.25rem 0 0.4rem 0.6rem;
+  padding-left: 0.6rem;
+  border-left: 1px dashed var(--line);
+}
+.sidebar-sublist li { margin: 0.15rem 0; }
+.sidebar a {
+  display: block;
+  padding: 0.3rem 0.55rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background 120ms ease, color 120ms ease;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.sidebar-sublist a { font-size: 0.85rem; color: var(--muted); }
+.sidebar a:hover { background: var(--amber-tint); color: var(--ink); }
+.sidebar a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.sidebar-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.ctrl-btn {
+  flex: 1 1 auto;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 120ms ease;
+}
+.ctrl-btn:hover { background: var(--amber-tint); }
+
+/* -------------------- CONTENT -------------------- */
+.content {
+  padding: 2.5rem 2.5rem 5rem;
+  max-width: var(--max-content);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.doc-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--line);
+}
+.doc-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.doc-header .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+.doc-meta {
+  margin-top: 0.85rem;
+  font-size: 0.85rem;
+  color: var(--faint);
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.doc-meta .meta-item strong { color: var(--muted); font-weight: 600; }
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  scroll-margin-top: 1rem;
+}
+h2 {
+  font-size: 1.55rem;
+  margin: 2.5rem 0 1.1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+h3 {
+  font-size: 1.22rem;
+  margin: 2rem 0 0.9rem 0;
+  color: var(--ink);
+}
+h4 {
+  font-size: 1.05rem;
+  margin: 1.5rem 0 0.6rem 0;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.doc-section { margin-bottom: 1rem; }
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.75rem;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow);
+}
+.concept-card h3 {
+  margin-top: 0.2rem;
+  color: var(--ink);
+}
+.sec8-sub {
+  margin: 1.5rem 0;
+}
+
+p {
+  margin: 0.75rem 0;
+}
+
+/* Source page tags */
+.source-page {
+  display: inline-block;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.82em;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-weight: 500;
+  margin: 0 1px;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.source-page.source-uncertain {
+  background: var(--amber-tint);
+  border-color: var(--amber);
+  color: var(--amber-strong);
+}
+
+/* Annotations */
+.annotation {
+  font-size: 0.85em;
+  color: var(--muted);
+  font-style: italic;
+}
+.annotation-block {
+  font-size: 0.95em;
+  color: var(--muted);
+  font-style: italic;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--line);
+}
+
+/* Anchor bridge (between cards) */
+.anchor-bridge {
+  font-style: italic;
+  color: var(--muted);
+  padding-left: 1rem;
+  border-left: 3px solid var(--line);
+  margin: 1.25rem 0;
+}
+
+/* Callouts (marker boxes) */
+.callout {
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem 1rem 1.2rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+}
+.callout-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.callout-icon { font-size: 1rem; }
+.callout-title { letter-spacing: -0.005em; }
+.callout-body > :first-child { margin-top: 0; }
+.callout-body > :last-child { margin-bottom: 0; }
+
+.callout.master-lens {
+  border-left-color: var(--amber);
+  background: var(--amber-tint);
+}
+.callout.master-lens .callout-title { color: var(--amber-strong); }
+
+.callout.trench-tip {
+  border-left-color: var(--rose);
+  background: var(--rose-tint);
+}
+.callout.trench-tip .callout-title { color: var(--rose); }
+
+.callout.recap-box {
+  border-left-color: var(--blue);
+  background: var(--blue-tint);
+}
+.callout.recap-box .callout-title { color: var(--blue); }
+
+.callout.confusion-box {
+  border-left-color: var(--amber);
+  background: var(--surface-2);
+}
+.callout.confusion-box .callout-title { color: var(--amber-strong); }
+
+/* Note boxes (blockquote-derived) */
+.note-box {
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  padding: 0.9rem 1.15rem 0.9rem 1.15rem;
+}
+.note-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+.note-icon { font-size: 1rem; }
+.note-title { color: var(--ink); }
+.note-label {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.note-body > :first-child { margin-top: 0; }
+.note-body > :last-child { margin-bottom: 0; }
+
+.note-box.mastery-note { border-left-color: var(--green); background: var(--green-tint); }
+.note-box.mastery-note .note-title { color: var(--green); }
+
+.note-box.failure-mode { border-left-color: var(--rose); background: var(--rose-tint); }
+.note-box.failure-mode .note-title { color: var(--rose); }
+
+.note-box.practice-lens { border-left-color: var(--purple); background: var(--purple-tint); }
+.note-box.practice-lens .note-title { color: var(--purple); }
+
+.note-box.practice-brief { border-left-color: var(--blue); background: var(--blue-tint); }
+.note-box.practice-brief .note-title { color: var(--blue); }
+
+.note-box.plausible-fallacy { border-left-color: var(--amber); background: var(--amber-tint); }
+.note-box.plausible-fallacy .note-title { color: var(--amber-strong); }
+
+/* Figure pointer */
+.figure-pointer {
+  margin: 1.25rem 0;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: 1rem 1.2rem;
+}
+.figure-pointer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  letter-spacing: -0.005em;
+}
+.fp-icon { font-size: 1.05rem; }
+.fp-fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 0.9rem;
+  font-size: 0.92rem;
+}
+.fp-fields dt {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.fp-fields dd { margin: 0; }
+.fp-disclaimer {
+  margin: 0.75rem 0 0 0;
+  font-size: 0.78rem;
+  color: var(--faint);
+  font-style: italic;
+}
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.94rem;
+}
+thead { background: var(--surface-2); }
+th, td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.55;
+}
+th {
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 2px solid var(--line-strong);
+  font-size: 0.88rem;
+  letter-spacing: -0.005em;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--surface-2); }
+
+/* Code blocks */
+.code-wrap {
+  margin: 1.25rem 0;
+  border-radius: var(--radius);
+  background: #1a1a17;
+  overflow: hidden;
+  border: 1px solid #2a2a25;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.85rem;
+  background: #232320;
+  color: #d8d4c2;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  font-family: var(--mono);
+}
+.copy-btn {
+  background: transparent;
+  border: 1px solid #444;
+  color: #d8d4c2;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 120ms ease;
+}
+.copy-btn:hover { background: #353532; }
+.copy-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+pre {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+}
+pre code {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #ede9d6;
+  background: transparent;
+  padding: 0;
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: var(--surface-2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+pre code { border: none; padding: 0; }
+
+/* Lists */
+ul, ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+li {
+  margin: 0.3rem 0;
+  line-height: 1.7;
+}
+li > p {
+  margin: 0.2rem 0;
+}
+
+/* Self-test */
+.self-test-q-heading {
+  margin-top: 1.75rem;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.self-test-item {
+  margin: 0.5rem 0 1.25rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--purple);
+  border-radius: var(--radius);
+}
+.self-test-question { margin-top: 0; font-weight: 500; }
+.self-test-answer {
+  margin-top: 0.5rem;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.5rem;
+}
+.self-test-answer summary {
+  cursor: pointer;
+  color: var(--purple);
+  font-weight: 600;
+  font-size: 0.92rem;
+  list-style: none;
+  padding: 0.3rem 0;
+  user-select: none;
+}
+.self-test-answer summary::-webkit-details-marker { display: none; }
+.self-test-answer summary::before {
+  content: "▶";
+  margin-right: 0.4rem;
+  display: inline-block;
+  transition: transform 180ms ease;
+  font-size: 0.75em;
+}
+.self-test-answer[open] summary::before { transform: rotate(90deg); }
+.self-test-answer summary:hover { color: var(--amber-strong); }
+.answer-body { margin-top: 0.5rem; padding: 0.4rem 0; }
+
+/* Strong */
+strong { font-weight: 700; color: var(--ink); }
+em { font-style: italic; }
+
+/* Mark (highlight) */
+mark {
+  background: var(--amber-tint);
+  color: var(--amber-strong);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* Math containers */
+mjx-container[display="true"] {
+  margin: 1rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  :root { --sidebar-width: 240px; }
+  .content { padding: 2rem 1.5rem 4rem; }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: relative;
+    height: auto;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .content { padding: 1.5rem 1rem 3rem; }
+  .doc-header h1 { font-size: 1.55rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+}
+
+/* Print */
+@media print {
+  .sidebar { display: none; }
+  .layout { display: block; }
+  .content { padding: 0.5cm; max-width: 100%; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .source-page {
+    background: #f0f0f0 !important;
+    border-color: #888 !important;
+    color: #444 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .callout, .note-box, .figure-pointer, .self-test-item, .concept-card {
+    background: #fafafa !important;
+    border-color: #ccc !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .self-test-answer { open: ''; }
+  .self-test-answer[open] .answer-body, .self-test-answer > .answer-body {
+    display: block !important;
+  }
+  details summary { display: none !important; }
+  details > div { display: block !important; }
+  h1, h2, h3 { page-break-after: avoid; }
+  table { page-break-inside: avoid; }
+  .copy-btn, .ctrl-btn { display: none !important; }
+  .code-wrap { background: #f0f0f0 !important; }
+  pre code { color: #000 !important; }
+  a { color: #000; text-decoration: none; }
+}
+
+.sidebar a.active {
+  background: var(--amber-tint);
+  color: var(--amber-strong);
+  font-weight: 600;
+}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar" aria-label="목차">
+<div class="sidebar-header">
+<h2 class="sidebar-title">목차</h2>
+<p class="sidebar-subtitle">분포의 생물학</p>
+</div>
+<ol class="sidebar-list">
+<li><a href="#nav">학습자 네비게이션</a>
+</li>
+<li><a href="#sec1">§1 세션 헤더 & 로드맵</a>
+</li>
+<li><a href="#sec2">§2 개념 해부 카드</a>
+<ol class="sidebar-sublist">
+<li><a href="#m1">M1 · 막투과의 결정인자</a></li>
+<li><a href="#m2">M2 · 분포의 율속 단계</a></li>
+<li><a href="#m3">M3 · Vd의 수학 구조 ⚡</a></li>
+<li><a href="#m4">M4 · 혈장단백결합과 fu</a></li>
+<li><a href="#m5">M5 · 조직결합과 Kp</a></li>
+<li><a href="#m6">M6 · 노출 지표 선택</a></li>
+</ol>
+</li>
+<li><a href="#sec5">§5 혼동쌍 해부</a>
+</li>
+<li><a href="#sec7">§7 자기 테스트</a>
+</li>
+<li><a href="#sec8">§8 메타프레임 & 전체 조망</a>
+<ol class="sidebar-sublist">
+<li><a href="#sec8a">A. 위치 설정</a></li>
+<li><a href="#sec8b">B. 의존성</a></li>
+<li><a href="#sec8c">C. 전문가 해석 지점</a></li>
+<li><a href="#sec8d">D. 시스템 통합 지점</a></li>
+<li><a href="#sec8e">E. 진단 시그니처</a></li>
+<li><a href="#sec8f">F. 체화 시퀀스</a></li>
+</ol>
+</li>
+</ol>
+<div class="sidebar-controls">
+<button class="ctrl-btn print-btn" type="button" onclick="window.print()">🖨️ 인쇄 / PDF</button>
+<button class="ctrl-btn theme-btn" type="button" id="theme-toggle">🌓 테마</button>
+</div>
+</nav>
+<main class="content" role="main">
+
+<header class="doc-header">
+  <h1>02 분포의 생물학</h1>
+  <p class="subtitle">분포용적($V_d$) · 막투과(Membrane Permeability) · 단백결합(Protein Binding) — 학습자용 완성 핸드아웃</p>
+  <div class="doc-meta">
+    <span class="meta-item"><strong>출처:</strong> Rowland &amp; Tozer 5e, Gabrielsson &amp; Weiner 5e</span>
+    <span class="meta-item"><strong>버전:</strong> v3.5 / Phase 5</span>
+    <span class="meta-item"><strong>대상:</strong> 약물동태학 박사과정 학습자</span>
+  </div>
+</header>
+
+<section id="nav" class="doc-section nav-section">
+<h2 id="nav-h">학습자 네비게이션 안내</h2>
+<h3 id="이-자료-활용-방법">이 자료 활용 방법</h3>
+<p>1. §1을 읽으면서 핵심 질문을 먼저 고정하시면 됩니다. 지금 해석하는 농도는 어떤 종(species)이며, 어떤 결합 구획을 다루고 있는가를 먼저 확인하세요. 2. §2를 순서대로 학습하시면 됩니다. M1은 약물이 막을 통과할 수 있는지, M2는 분포 속도를 결정하는 요인, M3은 $V$의 수학적 의미, M4·M5는 혈장 및 조직 결합, M6은 어떤 노출 지표(exposure metric)가 정당화될 수 있는지를 다룹니다. 3. FIGURE_POINTER 블록은 교과서 그림을 직접 찾아보라는 안내 블록입니다. 저작권이 있는 교과서 그림을 직접 재현하지 않습니다. 4. §5와 §7로 마무리하시면 됩니다. 이 두 섹션은 자주 발생하는 실수 패턴을 미리 노출하도록 설계되어 있습니다. 5. §8로 닫으면 됩니다. §8 D는 6개 카드가 하나의 시스템으로 작동하는 두 가지 통합 시나리오를 제시합니다. §8 E는 세 가지 진단 시그니처(Albumin Covariate Asymmetry / PK47 Single-Site Misfit / Vss vs Vβ Confusion)를, §8 F는 새 PK 문제에 이 자료를 적용하는 4단계 체화 시퀀스(Mastery Sequence)를 제시합니다.</p>
+<h3 id="학습-경로">학습 경로</h3>
+<p>M1 막투과 결정인자 → M2 분포 율속 단계 → M3 겉보기 분포용적 구조 → M4 혈장단백결합과 농도의존성 $f_u$ → M5 조직결합/$K_p$/수송체 → M6 총(total) vs 유리(unbound) 노출 지표 → §5 치명적 타격(Critical Blow) → §7 자기 테스트 → §8 A–C 전문가 해석 지점 → §8 D 시스템 통합 시나리오 → §8 E 진단 시그니처 → §8 F 체화 시퀀스.</p>
+<h3 id="학습-시작-전-체크리스트">학습 시작 전 체크리스트</h3>
+<ul>
+<li>총 농도(total concentration) $C$와 유리 농도(unbound concentration) $C_u$를 구분할 수 있습니다.</li>
+<li>겉보기 분포용적(apparent volume)은 실제 장기 부피가 아님을 알고 있습니다.</li>
+<li>FIGURE_POINTER 블록은 삽입 이미지가 아니라 교과서를 직접 찾아보라는 안내임을 인지하고 있습니다.</li>
+</ul>
+<h3 id="학습-완료-후-체크리스트">학습 완료 후 체크리스트</h3>
+<ul>
+<li>수동 막 확산의 구동력(driving force)이 총 농도 $C$가 아니라 유리 농도 $C_u$인 이유를 설명할 수 있습니다.</li>
+<li>분포 범위(extent)와 분포 속도(distribution rate)를 독립적인 차원으로 분리하여 논할 수 있습니다.</li>
+<li>$V_p+\text{tissue term}$, $K_p$, $f_u/f_{uT}$가 동등한 렌즈임을 가정이 만족될 때만 사용할 수 있습니다.</li>
+<li>$AUC_u=AUC\times f_u$ 단축식이 안전한 경우와 안전하지 않은 경우를 진술할 수 있습니다.</li>
+<li>근거 없는 규제 주장(unsupported regulatory claim)을 도입하지 않고 총(total) vs 유리(unbound) 노출 지표 선택을 방어할 수 있습니다.</li>
+<li>§8 E의 세 가지 진단 시그니처를 명명하고 각각의 GOF 패턴을 설명할 수 있습니다.</li>
+<li>§8 F의 4단계 체화 시퀀스(Mastery Sequence)를 처음 보는 PK 사례에 적용할 수 있습니다.</li>
+</ul>
+</section>
+<section id="sec1" class="doc-section">
+<h2 id="sec1-h">§1 — 세션 헤더 & 로드맵</h2>
+<h3 id="핵심-통찰big-idea">핵심 통찰(Big Idea)</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p>분포용적은 실제 장기 부피가 아닙니다. <strong>체내 총량(Amount in body)을 농도로 나누기 위해 도입한 겉보기 비례상수(apparent proportionality constant) <span class="annotation">(← 실제 부피가 아닌 계산상 비례상수)</span></strong>입니다. 따라서 이 상수는 대체로 혈장 결합(plasma binding, $f_u$)이 약물을 혈장 쪽에 붙잡는 힘과 조직 결합(tissue binding, $f_{uT}/K_p$)이 조직 쪽으로 끌어당기는 힘의 균형으로 결정됩니다. <span class="source-page">[R&T pp.102–111]</span></p></div></aside>
+<aside class="note-box mastery-note">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🎯</span>
+<span class="note-title">체화 노트 (Mastery Note)</span>
+<span class="note-label">EXPERT_INFERENCE</span>
+</div>
+<div class="note-body">
+<p>이 핸드아웃을 읽을 때는 모든 농도 기호 앞에 "어떤 종(species)인가?"를 붙여서 해석하시면 됩니다. 같은 데이터라도 총 스케일(total scale), 유리 스케일(unbound scale), 혈액 스케일(blood scale), 조직 스케일(tissue scale) 중 무엇을 보고 있는지가 바뀌면 $V$, $CL$, 노출-반응(exposure-response) 판단이 달라집니다.</p>
+</div>
+</aside>
+<h3 id="개념-항법도concept-navigation">개념 항법도(Concept Navigation)</h3>
+<div class="code-wrap"><div class="code-header"><span class="code-lang">text</span><button class="copy-btn" data-target="code-45" type="button">복사</button></div><pre><code id="code-45" class="lang-text">M1 막투과 결정인자
+  → M2 분포 율속: perfusion-limited인가 permeability-limited인가?
+  → M3 Vd의 수학 구조 [Apex]
+  → M4 plasma binding과 fu 농도의존성
+  → M5 tissue binding, Kp, transporter
+  → M6 total vs unbound exposure 선택
+  → §5 Critical Blow: C vs Cu</code></pre></div>
+<h3 id="지식-그래프-위치knowledge-graph-position">지식 그래프 위치(Knowledge Graph Position)</h3>
+<ul>
+<li>이전 세션의 $C(t)=(Dose/V)\cdot e^{-kt}$에서 $V$가 무엇인지 해부하는 장입니다.</li>
+<li>다음 소실(elimination) 세션에서는 $f_u$가 well-stirred 간 청소율 식의 분자로 들어갑니다.</li>
+<li>PopPK에서는 albumin, α1-AGP, 신·간 질환 공변량(covariate)이 $V$, $CL$, 또는 $f_u$에 어떤 방향으로 연결되는지 판단하는 기반이 됩니다.</li>
+</ul>
+</section>
+<section id="sec2" class="doc-section">
+<h2 id="sec2-h">§2 — 개념 해부 카드(Concept Anatomy Cards)</h2>
+<section id="m1" class="concept-card">
+<h3 id="m1-h">M1 · 막투과의 결정인자</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p><strong>핵심 직관</strong>: 막투과는 "지용성(lipophilic)이면 통과한다"로 끝나지 않습니다. 실제 투과도(permeability)는 <strong>크기(size) × 지용성(lipophilicity) × 전하(charge) × 수송체(transporter)</strong>가 함께 만듭니다. Eq.4-1의 $P$는 이 네 축과 막 구조가 하나의 숫자로 압축된 거시 투과도(macroscale permeability)입니다. <span class="source-page">[R&T pp.80–84, 85–90]</span></p></div></aside>
+<h4 id="m1-a-형식적-정의formal-definition">A. 형식적 정의(Formal Definition)</h4>
+<p>막 양쪽 수성구획의 유리 농도(unbound concentration) <span class="annotation">(← 단백질에 결합하지 않은 농도)</span>가 각각 $C_{u,1}$, $C_{u,2}$일 때 순수송속도(net transport rate)는 다음과 같습니다.</p>
+<p>$$\text{Net rate of transport}=P\cdot SA\cdot(C_{u,1}-C_{u,2})$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-1, p.80]</span></p>
+<p>결합 약물(bound drug)은 일반적으로 막을 통과하지 못합니다. 따라서 막투과의 구동력(driving force)은 총 농도(total concentration) $C$가 아니라 유리 농도 $C_u$입니다. <span class="source-page">[R&T p.80]</span></p>
+<h4 id="m1-b-출처-기반-상세source-anchored-details">B. 출처 기반 상세(Source-Anchored Details)</h4>
+<ul>
+<li><strong>크기(Size)</strong>: 같은 지용성에서 MW 400 → 800 g/mol로 증가하면 피부 투과도(skin permeability)는 약 300배 낮아집니다. <span class="source-page">[R&T Fig.4-3, p.81–82]</span> Atenolol 246 g/mol은 위장관 흡수가 가능하지만, oxytocin 1007 g/mol은 GI membrane을 거의 통과하지 못하고, calcitonin-salmon 3432 g/mol은 비강 흡수(nasal absorption)도 약 3% 수준입니다. <span class="source-page">[R&T p.81]</span></li>
+<li><strong>지용성(Lipophilicity)</strong>: BBB 투과도는 대체로 n-octanol/water 분배계수가 증가할수록 증가합니다. 단, vinblastine·vincristine은 지용성만으로 기대되는 값보다 낮은 투과도를 보이는데, 원문은 P-glycoprotein efflux 기질임을 주요 이유로 듭니다. <span class="source-page">[R&T Fig.4-4, p.82]</span> "100배" 같은 배수는 시각 추정 <span class="source-page source-uncertain"><mark>[확인 필요]</mark></span>로만 취급합니다.</li>
+<li><strong>전하 / pH 분배(Charge / pH partition)</strong>: 약산·약염기에서는 비이온화형(un-ionized form)이 지질막(lipoidal membrane)을 주로 통과합니다. 평형에서 비이온화 농도는 같아질 수 있지만, pH와 pKa에 따라 총 농도는 달라집니다. <span class="source-page">[R&T p.83; App.B pp.763–765]</span></li>
+<li><strong>수송체(Transporter)</strong>: 수동 촉진 수송체(passive facilitated transporter)는 평형 도달 속도를 바꾸고, 능동 수송체(active transporter)는 정상상태 유리 농도비(steady-state unbound ratio) 자체를 바꿀 수 있습니다. 능동 수송이 있을 때는 다음과 같습니다.</li>
+</ul>
+<p>$$\frac{C_{u,T}}{C_u}=\frac{P_{uptake}}{P_{efflux}}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-26, p.110]</span></p>
+<aside class="callout trench-tip" role="note"><div class="callout-header"><span class="callout-icon">🛠️</span><span class="callout-title">현장 실무 팁 (Trench-Level Tip)</span></div><div class="callout-body"><p><strong>현장 실무 팁(Trench-Level Tip)</strong>: $logP$와 MW가 좋아도 P-gp/BCRP efflux 기질이면 BBB 또는 장벽에서 유효 투과도(effective permeability)가 크게 낮아질 수 있습니다. 단, Caco-2/PAMPA, Lipinski rule은 이 source 범위 밖이므로 본 핸드아웃에서는 삭제합니다.</p></div></aside>
+<aside class="note-box failure-mode">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">⚠️</span>
+<span class="note-title">실패 모드 (Failure Mode)</span>
+<span class="note-label">AUDIT_DERIVED</span>
+</div>
+<div class="note-body">
+<p>$logP$ 하나로 BBB 또는 조직 투과도를 예측하려고 하면, 크기·이온화·유출 수송체가 만드는 예외를 놓칩니다. 특히 이 세션에서는 "지용성(lipophilicity) = 투과도(permeability)"가 아니라 "유효 투과도 = 물리화학 + 막 구조 + 수송체"로 읽어야 합니다.</p>
+</div>
+</aside>
+<p class="anchor-bridge">막을 통과하는 성질이 정해지면, 다음 질문은 "조직으로 가는 속도가 혈류(blood flow)에 의해 제한되는가, 막 자체에 의해 제한되는가?"입니다.</p>
+<aside class="figure-pointer" role="note" aria-label="교과서 그림 참조 안내">
+<div class="figure-pointer-header"><span class="fp-icon" aria-hidden="true">📖</span><span class="fp-title">교과서 그림 참조 (Figure Pointer)</span></div>
+<dl class="fp-fields">
+<dt>교과서 출처</dt><dd>R&T 5e, p.82, Fig.4-4</dd>
+<dt>왜 보아야 하는가</dt><dd>BBB 투과도(permeability)가 $logP$만으로 결정되지 않고 크기(size)/유출(efflux) 예외를 갖는다는 점을 실제 좌표로 보여줍니다.</dd>
+<dt>언제 확인</dt><dd>이 카드를 읽은 뒤 확인하면 됩니다.</dd>
+<dt>학습 지시</dt><dd>caffeine, lomustine, vinblastine/vincristine의 위치를 비교해 보세요.</dd>
+</dl>
+<p class="fp-disclaimer">※ 저작권 보호 대상 교과서 그림은 본 핸드아웃에 직접 재현하지 않습니다. 위 출처를 참고해 주세요.</p>
+</aside>
+<aside class="note-box practice-brief">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">▶</span>
+<span class="note-title">실무 체화 요약 (Practice Brief)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>왜 알아야 하는가:</strong> 약물이 막을 통과할 수 있는지가 흡수, 분포, 표적 도달 여부를 결정하기 때문에, 이후 모든 PK 해석의 기초 입력값이 됩니다.</li>
+<li><strong>흐름상 역할:</strong> M2의 관류 vs 투과 율속 판단으로 가는 진입점이며, M5의 수송체 매개 분포 해석에 필요한 4축(크기·$logP$·이온화·수송체)을 정의합니다.</li>
+<li><strong>체화 꿀팁:</strong> 새 약물을 마주할 때마다 "크기(size) · $logP$ · 이온화(ionization) · 수송체(transporter)" 네 축을 한 줄로 적어보고, 어느 축이 가장 약한 결정인자인지 짚는 습관을 들이면 됩니다.</li>
+<li><strong>실무 활용:</strong> BBB 침투 가능성 1차 추정, P-gp/BCRP 기질 여부 평가, 경구 생체이용률(oral bioavailability) 추정의 출발점, NONMEM dataset에서 흡수상 모델 선택의 근거.</li>
+</ul>
+</div>
+</aside>
+</section>
+<section id="m2" class="concept-card">
+<h3 id="m2-h">M2 · 분포의 율속 단계</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p><strong>핵심 직관</strong>: 조직 분포에서는 "얼마나 많이 가는가"와 "얼마나 빨리 가는가"를 분리해야 합니다. 조직 친화도(tissue affinity)가 커지면 평형 범위(equilibrium extent)는 커집니다. 그러나 채워야 할 조직 내 약물량도 커지므로 평형 도달 시간(equilibrium time)은 오히려 길어질 수 있습니다. <span class="source-page">[R&T pp.94–100]</span></p></div></aside>
+<h4 id="m2-a-형식적-정의formal-definition">A. 형식적 정의(Formal Definition)</h4>
+<p>관류 율속 분포(perfusion-rate limited distribution) <span class="annotation">(← 혈류 공급이 속도 제한)</span>에서는 막 통과가 충분히 빠릅니다. 이때 조직으로 들어가는 공급 속도는 혈류가 결정하며, 조직 농도가 평형값에 접근하는 경로는 단일지수(mono-exponential) 형태를 따릅니다.</p>
+<p>$$k_T=\frac{Q/V_T}{K_{pb}}$$</p>
+<p>$$t_{1/2,distribution}=\frac{0.693\cdot K_{pb}}{Q/V_T}$$</p>
+<p>$$C_T(t)=K_{pb}\cdot C_A\cdot(1-e^{-k_Tt})$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-5~4-7, p.97]</span></p>
+<h4 id="m2-b-출처-기반-상세source-anchored-details">B. 출처 기반 상세(Source-Anchored Details)</h4>
+<div class="table-wrap"><table>
+<thead><tr>
+<th style="text-align:left">조직</th>
+<th style="text-align:right">관류속도(Perfusion rate), mL/min/g</th>
+<th style="text-align:left">해석</th>
+</tr></thead><tbody>
+<tr>
+<td style="text-align:left">폐(Lung)</td>
+<td style="text-align:right">10.0</td>
+<td style="text-align:left">매우 빠른 평형 도달 가능</td>
+</tr>
+<tr>
+<td style="text-align:left">신장(Kidney)</td>
+<td style="text-align:right">4.0</td>
+<td style="text-align:left">혈류 풍부 장기</td>
+</tr>
+<tr>
+<td style="text-align:left">뇌(Brain)</td>
+<td style="text-align:right">0.5</td>
+<td style="text-align:left">혈류는 높지만 BBB 투과도가 별도 제한 가능</td>
+</tr>
+<tr>
+<td style="text-align:left">지방(Adipose)</td>
+<td style="text-align:right">0.025</td>
+<td style="text-align:left">매우 낮은 혈류 → 높은 $K_p$ 약물에서 평형 도달 지연</td>
+</tr>
+<tr>
+<td style="text-align:left">비활동 근육(Inactive muscle)</td>
+<td style="text-align:right">0.025</td>
+<td style="text-align:left">큰 조직 질량 + 낮은 관류</td>
+</tr>
+</tbody></table></div>
+<p><span class="source-page">[출처: R&T Table4-4, p.96]</span></p>
+<ul>
+<li><strong>Thiopental 개 25 mg/kg IV bolus</strong>: 뇌는 빠르게 오르고 빠르게 빠지는 반면, 지방은 낮은 관류/높은 친화도 때문에 3시간 이후에도 상당량이 남습니다. 정확한 "3.5 h 평형"은 저자 명시 값이 아니므로 삭제합니다. <span class="source-page">[R&T Fig.4-13, p.94]</span></li>
+<li><strong>고분자/림프 극단 사례(Macromolecule/lymphatic extreme)</strong>: 대분자(large molecule)는 혈관벽 통과가 제한되며 림프 배출(lymphatic drainage)이 중요합니다. 원문 caption은 림프 유속을 <code>1–10 mL/min per 70 kg</code>로 제시합니다. <span class="source-page">[R&T Fig.4-14, p.95]</span> MW >5000 g/mol에서는 투과 제한(permeability limitation)과 림프 회수(lymphatic return)가 분포 속도를 크게 늦출 수 있습니다. <span class="source-page">[R&T Table4-1, p.84; Fig.4-14, p.95]</span></li>
+<li><strong>Ribitol과 penicillin G</strong>: 작은 극성 화합물(small polar compound)도 조직별 투과도에 따라 혼합 제한(mixed limitation)을 보이고, penicillin G는 근육과 달리 뇌/CSF에서 투과 제한이 두드러집니다. <span class="source-page">[R&T Fig.4-17 p.99; Fig.4-18 p.100]</span></li>
+</ul>
+<h4 id="m2-c-경계-조건boundary-conditions">C. 경계 조건(Boundary Conditions)</h4>
+<ul>
+<li>Eq.4-5~4-7은 <strong>관류 율속(perfusion-rate limited)</strong> 가정에서만 안전합니다.</li>
+<li>투과 율속(permeability-rate limited) 조직에서는 $Q$를 올려도 분포 속도가 비례해서 증가하지 않습니다.</li>
+<li>높은 $K_{pb}$는 "많이 간다"와 동시에 "평형 도달이 늦다"를 의미할 수 있습니다.</li>
+</ul>
+<aside class="note-box practice-lens">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🔍</span>
+<span class="note-title">실무 렌즈 (Practice Lens)</span>
+<span class="note-label">CRUCIBLE_DERIVED</span>
+</div>
+<div class="note-body">
+<p>분포 문제를 볼 때는 먼저 범위(extent)와 속도(rate)를 분리합니다. $V$ 또는 $K_p$는 "얼마나 많이"를 말하고, $Q/V_T$와 투과도는 "얼마나 빨리"를 말합니다. 따라서 작용 발현(onset) 또는 채혈 시점(sampling-time) 문제를 평형 파라미터만으로 설명하지 않습니다.</p>
+</div>
+</aside>
+<aside class="callout recap-box" role="note"><div class="callout-header"><span class="callout-icon">📌</span><span class="callout-title">요약 (Recap)</span></div><div class="callout-body"><p><strong>M2 요약(recap)</strong>: 분포 반감기(distribution half-life)는 혈류, 조직 크기, 조직 친화도의 함수입니다. 큰 $K_{pb}$와 낮은 $Q/V_T$가 만나면 분포는 느려집니다.</p></div></aside>
+<aside class="figure-pointer" role="note" aria-label="교과서 그림 참조 안내">
+<div class="figure-pointer-header"><span class="fp-icon" aria-hidden="true">📖</span><span class="fp-title">교과서 그림 참조 (Figure Pointer)</span></div>
+<dl class="fp-fields">
+<dt>교과서 출처</dt><dd>R&T 5e, p.94, Fig.4-13</dd>
+<dt>왜 보아야 하는가</dt><dd>thiopental에서 뇌(brain)와 지방(fat)의 시간 경과(time-course) 차이가 관류(perfusion)와 친화도(affinity)의 결합 효과임을 보여줍니다.</dd>
+<dt>언제 확인</dt><dd>이 카드를 읽은 뒤 확인하면 됩니다.</dd>
+<dt>학습 지시</dt><dd>뇌(brain)의 최고점(peak)과 지방(fat)의 잔류를 비교해 보세요.</dd>
+</dl>
+<p class="fp-disclaimer">※ 저작권 보호 대상 교과서 그림은 본 핸드아웃에 직접 재현하지 않습니다. 위 출처를 참고해 주세요.</p>
+</aside>
+<aside class="note-box practice-brief">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">▶</span>
+<span class="note-title">실무 체화 요약 (Practice Brief)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>왜 알아야 하는가:</strong> 동일한 $V_d$라도 평형 도달 속도가 다르면 작용 발현(onset), 최고 농도 시점(peak time), 채혈 설계(sampling design)가 완전히 달라집니다. 그래서 이 개념은 모델 구조 결정의 분기점이 됩니다.</li>
+<li><strong>흐름상 역할:</strong> M1의 막투과 입력을 받아 M3의 $V$ 해석 시점(분포 평형 후)을 정의하며, 다구획 모델 vs 단일구획 모델 결정의 근거가 됩니다.</li>
+<li><strong>체화 꿀팁:</strong> 새 약물의 첫 농도-시간 곡선에서 분포상(distribution phase)의 굴곡 시점을 기록한 뒤 $Q/V_T\cdot K_{pb}$로 역산해 보고, 모델 가정과 일치하는지 점검하면 됩니다.</li>
+<li><strong>실무 활용:</strong> PBPK 조직 평형 시간 추정, Phase 1 PK 채혈 일정 설계, thiopental·penicillin G 같이 혼합 제한을 보이는 약물의 조직 농도 해석.</li>
+</ul>
+</div>
+</aside>
+</section>
+<section id="m3" class="concept-card">
+<h3 id="m3-h">M3 · 분포용적의 수학 구조 <strong>[⚡ Apex Concept]</strong></h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p><strong>핵심 직관</strong>: $V$는 실제 부피가 아니라 $\text{Amount}/C$입니다. 작은 $V_d$의 알부민 결합 산성 약물에서는 알부민이 페리(ferry)처럼 약물을 혈장과 혈관 외 알부민 공간으로 운반합니다. $f_u\to0$이면 약물은 그 페리에서 거의 내리지 않습니다. 이 때문에 겉보기 $V$는 알부민 분포 용적인 약 7.5 L 근처에서 하한(floor)을 갖습니다. <span class="source-page">[R&T pp.111–113; App.C pp.767–773]</span></p></div></aside>
+<h4 id="m3-a-형식적-정의formal-definition">A. 형식적 정의(Formal Definition)</h4>
+<p>$$V=\frac{\text{Amount in body}}{C}=\frac{A}{C}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-8, p.102]</span></p>
+<p>조직/혈장 평형 농도비 $K_p$를 쓰면:</p>
+<p>$$A=V_p\cdot C+V_T\cdot K_p\cdot C$$</p>
+<p>$$V=V_p+V_T\cdot K_p$$</p>
+<p>$$V=V_p+\sum_i V_{T,i}\cdot K_{p,i}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-11~4-13, pp.103–104]</span></p>
+<p>측정 매질(matrix)이 바뀌면 겉보기 용적도 달라집니다.</p>
+<p>$$V_u=\frac{A}{C_u},\qquad V_b=\frac{A}{C_b}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-14~4-15, p.104]</span></p>
+<h4 id="m3-b-결합-기반-구조binding-based-structure">B. 결합 기반 구조(Binding-Based Structure)</h4>
+<p>혈장/조직 유리 분율로 쓰면:</p>
+<p>$$V=V_p+V_{TW}\cdot\frac{f_u}{f_{uT}}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-25, p.109]</span></p>
+<p class="annotation-block">수송체가 조직 분포를 지배하면:</p>
+<p>$$V=V_p+V_{TW}\cdot\frac{f_u}{f_{uT}}\cdot\frac{P_{uptake}}{P_{efflux}}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-29, p.111]</span></p>
+<p>소 Vd 알부민 결합 약물 모델에서는:</p>
+<p>$$V=7.5+\left(7.5+\frac{V_R}{f_{uR}}\right)\cdot f_u$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-30, p.112; App.C Eq.C-13, pp.767–773]</span></p>
+<h4 id="m3-c-출처-기반-데이터-앵커source-anchored-data-anchors">C. 출처 기반 데이터 앵커(Source-Anchored Data Anchors)</h4>
+<ul>
+<li>혈장 3 L, 세포외액(extracellular water) 16 L, 총 체수분(total body water) 42 L는 $V$ 해석의 생리학적 기준점입니다. <span class="source-page">[R&T p.111]</span></li>
+<li>알부민 겉보기 분포용적은 약 7.5 L이며, cephalosporin Fig.4-25에서 $f_u\to0$ 외삽 절편이 약 7 L로 보입니다. <span class="source-page">[R&T Table4-5 p.101; Fig.4-25 pp.112–113]</span></li>
+<li>같은 cephalosporin 계열에서 $V$는 $f_u$와 함께 증가하지만, $V_u$는 $f_u$가 증가할수록 감소합니다. 이 쌍을 이루는 메시지(paired message)가 "총 농도 기준 $V$"와 "유리 농도 기준 $V$"가 같은 생리적 의미가 아님을 보여줍니다. <span class="source-page">[R&T Fig.4-25~4-26, p.113]</span></li>
+<li>Warfarin 신증후군(nephrotic syndrome) 예시: albumin 43→12.5 g/L, $V$ 9.4→13.7 L, $CL$ 0.20→0.58 L/hr, $t_{1/2}$ 36→18 hr. <span class="source-page">[R&T Table4-12, p.118]</span></li>
+<li>Adalimumab 같은 고분자량 항체는 $V$가 약 5–6 L로 작고, caffeine/alcohol처럼 작고 자유롭게 투과하는 분자는 $V$가 총 체수분에 접근합니다. <span class="source-page">[R&T p.111]</span></li>
+</ul>
+<h4 id="m3-d-정점-오류apex-fallacy">D. 정점 오류(Apex Fallacy)</h4>
+<p>"$f_u$가 증가하면 유리 농도가 증가하므로 부하 용량(loading dose)을 올려야 한다"는 직관은 소 $V_d$ 알부민 결합 약물에서 틀릴 수 있습니다. 같은 총량에서 $f_u$가 증가하면 총 $C$는 낮아지고 $V$는 증가합니다. 그러나 $C_u$는 반드시 같은 방향으로 증가하지 않습니다. R&T의 cephalosporin/warfarin 논리는 이 함정을 정면으로 다룹니다. <span class="source-page">[R&T pp.112–118]</span></p>
+<h4 id="m3-d-2-그럴듯한-오해plausible-fallacy--vd를-실제-부피로-오해">D-2. 그럴듯한 오해(Plausible Fallacy) — Vd를 실제 부피로 오해</h4>
+<aside class="note-box plausible-fallacy">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">⚡</span>
+<span class="note-title">그럴듯한 오해 (Plausible Fallacy)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>그럴듯한 오해</strong>: "$V_d$가 크다는 것은 체내 분포 공간이 실제로 크다는 뜻입니다."</li>
+<li><strong>왜 틀렸는가</strong>: $V_d$는 체적이 아니라 혈장 농도 관측값으로 역산한 비례상수입니다. 조직 결합이 강하거나 혈장 결합이 약하면 실제 체적의 수십~수백 배도 가능할 수 있습니다. $f_u$와 $f_{uT}$의 비율이 이 겉보기 크기를 결정합니다.</li>
+<li><strong>실무에서 어떻게 드러나는가</strong>: $V_d$가 500 L인 약물의 부하 용량을 "체중×4 L/kg"로 설계하다가 실제 분포 공간 개념으로 혼동하면, 부하 용량 계산이 생리학적 의미를 잃습니다. Bayesian TDM에서 총 농도(total $C$)가 정상 범위인데 유리 농도(unbound $C_u$)가 달라진 경우를 생각해 보시면 됩니다. 실제 원인은 $f_u$ 변화인데도 $V_d$ 변화로 오해하는 전형적 실수가 여기에서 비롯됩니다.</li>
+</ul>
+</div>
+</aside>
+<aside class="callout trench-tip" role="note"><div class="callout-header"><span class="callout-icon">🛠️</span><span class="callout-title">현장 실무 팁 (Trench-Level Tip)</span></div><div class="callout-body"><p><strong>[교과서 외 실무 해석] 알부민 공변량 비대칭(Albumin covariate asymmetry)</strong>: 대 $V_d$ 약물에서 알부민을 $V$ 공변량으로만 넣고 $CL$ 쪽을 보지 않으면 총 농도 기준 $CL$ 변화가 누락될 수 있습니다. ETA-CL vs albumin 관계가 ETA-V vs albumin보다 강하면 $CL$ 공변량도 검토합니다.</p></div></aside>
+<p><strong>[교과서 외 실무 경고] Vss vs Vβ</strong>: 다구획 모델(multi-compartment model)에서 부하 용량은 $V_{ss}$ 기반, 종말상 반감기(terminal half-life) 해석은 $V_\beta$ 기반이라는 구분을 유지합니다.</p>
+<aside class="note-box mastery-note">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🎯</span>
+<span class="note-title">체화 노트 (Mastery Note)</span>
+<span class="note-label">CRUCIBLE_DERIVED</span>
+</div>
+<div class="note-body">
+<p>알부민 변화가 보이면 바로 "용량을 바꿀까?"로 가지 말고, 총 $C$, $C_u$, $V$, $CL$ 중 어느 관찰값이 움직였는지 먼저 분해하시면 됩니다. 이 순서를 지키면 저알부민혈증(hypoalbuminemia) 상황에서 총 농도 변화와 활성 노출(active exposure) 변화를 혼동하지 않습니다.</p>
+</div>
+</aside>
+<aside class="callout recap-box" role="note"><div class="callout-header"><span class="callout-icon">📌</span><span class="callout-title">요약 (Recap)</span></div><div class="callout-body"><p><strong>M3 요약(recap)</strong>: $V$는 $V_p+\text{tissue term}$이며, tissue term은 $K_p$ 또는 $f_u/f_{uT}$로 읽을 수 있습니다. 소 $V_d$ 알부민 결합 약물에서는 알부민 분포 용적이 하한(floor)을 만듭니다.</p></div></aside>
+<aside class="figure-pointer" role="note" aria-label="교과서 그림 참조 안내">
+<div class="figure-pointer-header"><span class="fp-icon" aria-hidden="true">📖</span><span class="fp-title">교과서 그림 참조 (Figure Pointer)</span></div>
+<dl class="fp-fields">
+<dt>교과서 출처</dt><dd>R&T 5e, p.113, Fig.4-25 and Fig.4-26</dd>
+<dt>왜 보아야 하는가</dt><dd>같은 cephalosporin 계열(series)에서 $V$와 $V_u$가 $f_u$에 대해 반대 방향으로 읽힐 수 있음을 보여줍니다.</dd>
+<dt>언제 확인</dt><dd>이 카드를 읽은 뒤 확인하면 됩니다.</dd>
+<dt>학습 지시</dt><dd>$V$-$f_u$와 $V_u$-$f_u$ 축을 나란히 비교해 보세요.</dd>
+</dl>
+<p class="fp-disclaimer">※ 저작권 보호 대상 교과서 그림은 본 핸드아웃에 직접 재현하지 않습니다. 위 출처를 참고해 주세요.</p>
+</aside>
+<aside class="note-box practice-brief">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">▶</span>
+<span class="note-title">실무 체화 요약 (Practice Brief)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>왜 알아야 하는가:</strong> $V_d$는 부하 용량 계산과 공변량 해석의 중심 파라미터입니다. 그 본질이 겉보기 비례상수(apparent proportionality constant)임을 놓치면 후속 모든 추론이 흔들립니다.</li>
+<li><strong>흐름상 역할:</strong> M4·M5의 결합 정보($f_u$, $f_{uT}$)와 M6의 노출 지표를 $V$라는 단일 수학적 연결 고리(mathematical bridge) 위에 통합하는 세션의 중심 카드입니다.</li>
+<li><strong>체화 꿀팁:</strong> 새 약물의 $V$ 값을 보면 즉시 혈장 3 L · 세포외액 16 L · 총 체수분 42 L · 알부민 7.5 L 중 어느 기준점(anchor)에 가까운지 분류하면 됩니다. 이 분류만으로 결합 양상(binding regime)이 절반 이상 보입니다.</li>
+<li><strong>실무 활용:</strong> 부하 용량 설계, 저알부민혈증/투석 환자에서 V 변화 해석, NONMEM에서 V 위에 공변량 spec할 때의 방향(positive/negative) 판단, Bayesian TDM에서 V 이상값의 진단.</li>
+</ul>
+</div>
+</aside>
+</section>
+<section id="m4" class="concept-card">
+<h3 id="m4-h">M4 · 혈장단백결합과 fu의 농도의존성</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p><strong>핵심 직관</strong>: $f_u$는 고정 상수가 아닙니다. 혈장 단백 농도(protein concentration), 결합 친화도(binding affinity), 결합 부위 수, 유리 농도(unbound concentration) 등 여러 인자의 함수이기 때문입니다. 따라서 "총 농도 ↔ 유리 농도" 변환은 $f_u$가 일정하다는 검증 위에서만 안전합니다. <span class="source-page">[R&T pp.105–108; G&W pp.690–693]</span></p></div></aside>
+<h4 id="m4-a-형식적-정의formal-definition">A. 형식적 정의(Formal Definition)</h4>
+<p>$$f_u=\frac{C_u}{C}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-17, p.105]</span></p>
+<p>단일 결합 부위에서 결합 상수(association constant)는 다음과 같습니다.</p>
+<p>$$K_a=\frac{C_{b,t}}{C_u\cdot P}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-18, p.105]</span></p>
+<p>R&T의 질량작용 관계식(mass-law relationship)은 단백 농도와 결합 부위 점유율이 $f_u$를 바꾼다는 점을 보여줍니다.</p>
+<p>$$f_u=\frac{1}{1+K_a\cdot f_{up}\cdot P_t}$$</p>
+<p><span class="source-page">[출처: R&T Eq.4-19, p.105]</span></p>
+<h4 id="m4-b-pk47-출처-기반-데이터source-anchored-data">B. PK47 출처 기반 데이터(Source-Anchored Data)</h4>
+<p>G&W PK47은 $f_u$를 $C_u$, 총 단백 농도 $[P_T]$, 부위 수 $n$, 친화도 $K_a$의 함수로 모델링합니다.</p>
+<p>$$f_u=1-\frac{1}{1+\frac{C_u}{n[P_T]}+\frac{1}{K_a\cdot n[P_T]}}$$</p>
+<p><span class="source-page">[출처: G&W Eq.47:1, p.691]</span></p>
+<p>저 $C_u$ 근사식(Low-$C_u$ approximation):</p>
+<p>$$f_u\approx\frac{1}{1+K_a\cdot n[P_T]}$$</p>
+<p><span class="source-page">[출처: G&W Eq.47:3, p.692]</span></p>
+<p>G&W는 Compound 1에서 $[P_T]=50$과 0.3, Compound 2에서 $[P_T]=10$과 0.1 조건을 사용합니다. $n$은 대략 1–4 범위, $K_a$는 Eq.47:4 초기 추정으로 약 6 농도 단위 수준을 제시합니다. <span class="source-page">[G&W Table47.1 p.692; Eq.47:4 p.693]</span></p>
+<h4 id="m4-c-경계-조건boundary-conditions">C. 경계 조건(Boundary Conditions)</h4>
+<ul>
+<li>Eq.47:1은 단일 결합 부위 클래스(single binding-site class) 모델입니다. 다중 부위 클래스가 있으면 잔차 패턴(residual pattern)이 체계적으로 남을 수 있습니다.</li>
+<li>$AUC_u=AUC\times f_u$는 $f_u$가 시간·농도에 대해 충분히 일정할 때만 안전합니다. <span class="source-page">[G&W p.167]</span></li>
+<li>G&W는 $f_{ub}>1$이 가능하다고 명시합니다. 이는 bound/free ratio이므로, 결합 분율(fraction bound)과 혼동하지 않도록 주의해야 합니다. <span class="source-page">[G&W p.168]</span></li>
+</ul>
+<aside class="callout trench-tip" role="note"><div class="callout-header"><span class="callout-icon">🛠️</span><span class="callout-title">현장 실무 팁 (Trench-Level Tip)</span></div><div class="callout-body"><p><strong>[교과서 외 실무 해석] 단백 공변량 선택(Protein covariate choice)</strong>: 산성 약물은 알부민, 염기성 약물은 α1-AGP 변화에 먼저 주목합니다. R&T Table4-9는 알부민과 α1-AGP가 질환 상태에 따라 달라질 수 있음을 보여줍니다. <span class="source-page">[R&T Table4-9, p.114]</span></p></div></aside>
+<p><strong>[교과서 외 실무 경고] 단백결합 측정법 편향(PPB method bias)</strong>: 평형투석(equilibrium dialysis)과 한외여과(ultrafiltration)는 방법 편향이 다를 수 있습니다. 이 문장은 PDF 원문이 아니라 실험 데이터 수령 단계의 실무 주의로만 사용합니다.</p>
+<aside class="note-box practice-lens">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🔍</span>
+<span class="note-title">실무 렌즈 (Practice Lens)</span>
+<span class="note-label">TEXTBOOK_DERIVED</span>
+</div>
+<div class="note-body">
+<p>총 $AUC$에 단일 $f_u$를 곱하기 전에는, 그 $f_u$가 의사결정에 쓰는 농도 범위에서 유지되는 값인지 확인해야 합니다. PK47의 핵심은 결합 파라미터 적합(binding parameter fit) 자체보다 "변환 단축식의 안전 조건"을 드러내는 데 있습니다.</p>
+</div>
+</aside>
+<aside class="callout recap-box" role="note"><div class="callout-header"><span class="callout-icon">📌</span><span class="callout-title">요약 (Recap)</span></div><div class="callout-body"><p><strong>M4 요약(recap)</strong>: $f_u$는 단백 농도와 결합 부위 포화에 따라 변할 수 있습니다. 총-유리 변환(total-to-unbound conversion)은 $f_u$ 일정 가정이 무너지면 함께 무너집니다.</p></div></aside>
+<aside class="figure-pointer" role="note" aria-label="교과서 그림 참조 안내">
+<div class="figure-pointer-header"><span class="fp-icon" aria-hidden="true">📖</span><span class="fp-title">교과서 그림 참조 (Figure Pointer)</span></div>
+<dl class="fp-fields">
+<dt>교과서 출처</dt><dd>G&W 5e, p.691, Fig.47.1</dd>
+<dt>왜 보아야 하는가</dt><dd>$f_u$가 $C_u$와 단백 농도(protein concentration)에 따라 변하는 비선형 결합 곡선(binding curve)을 직접 보여줍니다.</dd>
+<dt>언제 확인</dt><dd>이 카드를 읽은 뒤 확인하면 됩니다.</dd>
+<dt>학습 지시</dt><dd>낮은/높은 단백 농도 곡선(low/high protein curves)이 $n$과 $K_a$ 추정에 주는 정보를 확인해 보세요.</dd>
+</dl>
+<p class="fp-disclaimer">※ 저작권 보호 대상 교과서 그림은 본 핸드아웃에 직접 재현하지 않습니다. 위 출처를 참고해 주세요.</p>
+</aside>
+<aside class="note-box practice-brief">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">▶</span>
+<span class="note-title">실무 체화 요약 (Practice Brief)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>왜 알아야 하는가:</strong> $f_u$는 총 농도와 유리 농도를 잇는 변환계수입니다. 시간·농도·dose에 따라 변하면 모든 단축식($AUC_u=AUC\times f_u$, $C_u=C\times f_u$)이 무너지기 때문입니다.</li>
+<li><strong>흐름상 역할:</strong> M3의 $V$ 구조와 M6의 노출 지표를 연결하는 핵심 매개 파라미터로, "변환 단축식의 안전 조건"을 정의합니다.</li>
+<li><strong>체화 꿀팁:</strong> 용량 정규화 $AUC$(dose-normalized AUC)가 용량에 따라 변할 때, 포화성 청소율(saturable $CL$)을 의심하기 전에 용량별 ex vivo $f_u$를 먼저 확인하세요. 진단 순서가 뒤집히면 원인 추적이 어긋납니다.</li>
+<li><strong>실무 활용:</strong> 저알부민혈증·요독증·α1-AGP 변화 환자에서 TDM 해석, 약물-약물 변위 상호작용(drug-drug displacement interaction) 평가, NDA 단계에서 유리 농도 측정 여부 결정, PopPK에서 단백 공변량(albumin/α1-AGP) spec의 근거 제시.</li>
+</ul>
+</div>
+</aside>
+</section>
+<section id="m5" class="concept-card">
+<h3 id="m5-h">M5 · 조직결합과 Kp의 결정인자</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p><strong>핵심 직관</strong>: 큰 $V_d$는 "혈장에서 많이 풀려 있다"는 뜻이 아닐 수 있습니다. 오히려 "조직에서 더 강하게 붙잡힌다"는 신호인 경우가 많습니다. 염기성 약물(basic drug)의 큰 $V_d$는 혈장 결합보다 조직 결합, 특히 산성 인지질(acidic phospholipid) 친화도로 설명되는 경우가 많습니다. <span class="source-page">[R&T pp.108–111]</span></p></div></aside>
+<h4 id="m5-a-형식적-정의formal-definition">A. 형식적 정의(Formal Definition)</h4>
+<p>조직-혈장 평형 분포비 $K_p$ <span class="annotation">(← 조직/혈장 평형 농도비)</span>는 조직 농도와 혈장 농도의 평형 비율입니다. R&T는 Eq.4-25와 Eq.4-12를 비교해 $K_p\sim f_u/f_{uT}$로 해석할 수 있음을 설명합니다. <span class="source-page">[R&T pp.104, 109–110]</span></p>
+<h4 id="m5-b-출처-기반-상세source-anchored-details">B. 출처 기반 상세(Source-Anchored Details)</h4>
+<ul>
+<li>Furosemide와 amiodarone은 혈장 $f_u$가 비슷한 범위일 수 있으나 $V$는 크게 다릅니다. 차이는 염기성 약물의 높은 조직 결합, 즉 낮은 $f_{uT}$에서 옵니다. <span class="source-page">[R&T p.110]</span></li>
+<li>Propranolol은 6명의 대조군 + 15명의 만성 간질환 환자에서 40 mg IV bolus 후 $V$와 $f_u$의 관계가 제시됩니다. 이는 혈장 결합 변화가 $V$ 변동을 설명할 수 있음을 보여줍니다. <span class="source-page">[R&T Fig.4-23, p.110]</span></li>
+<li>Metoprolol의 조직 $K_p$는 조직 산성 인지질 농도와 강한 양의 상관관계(positive relationship)를 보입니다. 정확한 $r>0.85$는 원문에 없으므로 삭제합니다. <span class="source-page">[R&T Fig.4-24, p.110]</span></li>
+<li>Indinavir 800 mg q8h 성인 HIV 환자 8명에서 CSF 유리 농도는 혈장 유리 농도보다 낮고 지연되며 변동 폭이 작습니다. 정확한 "1/10"은 대략적 시각 추정치(approximate visual estimate)로만 취급합니다. <span class="source-page">[R&T Fig.4-10, p.91]</span></li>
+<li>뇌는 전신 질량의 약 2%이므로 국소 수송체 효과가 전신 $V$를 크게 바꾸지 않을 수 있습니다. <span class="source-page">[R&T pp.109, 111]</span></li>
+</ul>
+<h4 id="m5-c-혈장-혈액-변환-맥락plasma-to-blood-context">C. 혈장-혈액 변환 맥락(Plasma-to-Blood Context)</h4>
+<p>Appendix D의 핵심은 혈액/혈장 농도비(blood/plasma concentration ratio)가 적혈구 용적률(hematocrit), 혈장 $f_u$, 적혈구 결합에 의해 달라진다는 점입니다.</p>
+<p>$$\frac{C_b}{C}=1+H\left(f_u\cdot K_{PBC}-1\right)$$</p>
+<p><span class="source-page">[출처: R&T App.D, pp.775–776]</span></p>
+<h4 id="m5-d-경계-조건boundary-condition">D. 경계 조건(Boundary Condition)</h4>
+<p>수송체가 지배적이면 조직 유리 농도와 혈장 유리 농도가 자유롭게 평형을 이룬다는 단순 $f_{uT}$ 해석이 깨질 수 있습니다. BBB의 유출 수송체(efflux transporter)가 대표적인 예입니다. <span class="source-page">[R&T pp.90–91, 110–111]</span></p>
+<aside class="note-box failure-mode">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">⚠️</span>
+<span class="note-title">실패 모드 (Failure Mode)</span>
+<span class="note-label">CRUCIBLE_DERIVED</span>
+</div>
+<div class="note-body">
+<p>Eq.4-29에서 결합 항(binding term)과 수송체 항(transporter term)을 같은 종류의 원인으로 합쳐 해석하면 안 됩니다. $f_{uT}$는 조직 결합을 나타내고, $P_{uptake}/P_{efflux}$는 능동 분포 불균형을 나타냅니다. 따라서 둘은 같은 $V$ 변화를 만들 수 있어도 실험적 확인 방법과 모델링 의미가 다릅니다.</p>
+</div>
+</aside>
+<aside class="callout recap-box" role="note"><div class="callout-header"><span class="callout-icon">📌</span><span class="callout-title">요약 (Recap)</span></div><div class="callout-body"><p><strong>M5 요약(recap)</strong>: $K_p$는 조직 친화도의 숫자 표현이고, $f_{uT}$는 조직 결합의 역신호(inverse signal)입니다. 수송체가 있으면 $K_p$는 결합뿐 아니라 유입/유출 불균형(uptake/efflux imbalance)까지 반영합니다.</p></div></aside>
+<aside class="note-box practice-brief">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">▶</span>
+<span class="note-title">실무 체화 요약 (Practice Brief)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>왜 알아야 하는가:</strong> 큰 $V_d$의 원인이 혈장 $f_u$ 증가인지 조직 $f_{uT}$ 감소인지 구분하지 못하면, 단백결합 변화의 임상 결과 방향이 정반대로 도출됩니다.</li>
+<li><strong>흐름상 역할:</strong> M3의 조직 항($V_{TW}\cdot f_u/f_{uT}$)을 결합($f_{uT}$)과 수송체($P_{uptake}/P_{efflux}$)로 분해해 M2의 율속 단계와 다시 연결하는 단계입니다.</li>
+<li><strong>체화 꿀팁:</strong> 염기성 약물에서 큰 $V_d$를 보면 산성 인지질 결합을 1순위 가설로, 수송체 기질 가능성을 2순위로 점검하세요. Eq.4-29의 두 항을 같은 종류의 원인으로 합치지 않는 것이 핵심입니다.</li>
+<li><strong>실무 활용:</strong> PBPK Kp 예측 모델 선택, BBB 약물의 조직 농도 해석, propranolol·amiodarone 같은 대 Vd 염기성 약물의 공변량 모델링, indinavir의 CSF/혈장 격차 해석.</li>
+</ul>
+</div>
+</aside>
+</section>
+<section id="m6" class="concept-card">
+<h3 id="m6-h">M6 · 노출 지표 선택: 총(total) vs 유리(unbound)</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p><strong>핵심 직관</strong>: 노출 지표(exposure metric)는 "하나의 $AUC$ 숫자"가 아닙니다. 즉, 노출 지표는 어떤 농도 종(species)이 어떤 시간 패턴으로 약리 효과를 유발하는가에 대한 인과적 선언입니다. 총 농도가 단백결합 차이에 교란(confounded)되면 유리 농도가 활성 비교 기준(active comparator)이 됩니다. <span class="source-page">[G&W pp.163–169]</span></p></div></aside>
+<h4 id="m6-a-형식적-정의formal-definition">A. 형식적 정의(Formal Definition)</h4>
+<p>총 농도와 유리 농도의 관계:</p>
+<p>$$C=\frac{C_u}{f_u}$$</p>
+<p>$f_u$가 일정하면:</p>
+<p>$$AUC_u=AUC\times f_u$$</p>
+<p><span class="source-page">[출처: G&W Eq.2:373, p.167]</span></p>
+<h4 id="m6-b-출처-기반-상세source-anchored-details">B. 출처 기반 상세(Source-Anchored Details)</h4>
+<ul><li>G&W Fig.2.134는 용량-반응, 총 농도-반응, 유리 농도-반응이 서로 다른 결론을 낼 수 있음을 보여줍니다. 총 농도 관계는 혈장 단백결합 차이에 교란되고, 유리 농도 기준에서는 역가 순위(potency order)가 뒤집힙니다. <span class="source-page">[G&W p.163]</span></li><li>G&W Fig.2.136은 같은 $AUC$라도 최고 농도(peak), 역치 초과 시간(duration above threshold), 독성 관련성(toxicity implication)이 다를 수 있음을 경고합니다. "동일 $AUC$ = 동일 효과"는 과정의 형태(process shape)를 잃는 단일 스칼라 단축식입니다. <span class="source-page">[G&W p.164]</span></li><li>G&W Fig.2.140은 $f_u$를 총 농도보다 $C_u$에 대해 그릴 때 더 명확한 관계를 보일 수 있음을 제시합니다. <span class="source-page">[G&W p.167]</span></li><li>G&W Fig.2.141은 개/쥐/마우스의 총 농도-반응 곡선은 다르게 보이나 유리 $EC_{u50}$가 약 2 nM 부근으로 정렬될 수 있음을 보여줍니다. 총 역가(total potency) 배수는 시각/추론 추정치(visual/inferred estimate)로만 다룹니다. <span class="source-page">[G&W p.168]</span></li><li>G&W Table2.21은 노출 지표를 $C_{max}$, $AUC$, $t_d$, 치료 기간(treatment period) 등으로 나누고, 각 지표의 적용 상황을 구분합니다. <span class="source-page">[G&W p.169]</span></li><li>G&W는 456개 약물 검토를 인용하며, 단백결합 변화가 PK 파라미터에는 영향을 줄 수 있으나 임상 결과에는 대개 큰 영향을 주지 않고, 예외는 IV 투여 고추출 약물로서 치료역이 좁은(narrow therapeutic index) 경우라고 정리합니다. <span class="source-page">[G&W p.168]</span></li><li>G&W 결론: IND 단계에서는 여러 농도와 종(species, 인간 포함)에서 ex vivo 혈장 단백결합을 측정하고, NDA 단계에서는 선별된 임상시험에서 유리 농도와 총 농도를 함께 얻는 것이 권장됩니다. 일상적 "있으면 좋은(good to have)" 측정은 지양합니다. <span class="source-page">[G&W p.169]</span></li></ul>
+<h4 id="m6-c-경계-조건boundary-conditions">C. 경계 조건(Boundary Conditions)</h4>
+<ul>
+<li>$f_u$가 용량·시간·농도 의존적이면 $AUC_u=AUC\times f_u$ 단축식은 무효가 될 수 있습니다.</li>
+<li>총 $AUC$가 같아도 최고 농도 매개 독성(peak-driven toxicity) 또는 역치 초과 시간 매개 효과(duration-above-threshold effect)는 다를 수 있습니다. <span class="source-page">[G&W Fig.2.136, p.164]</span></li>
+<li>"유리 농도를 항상 측정하라"가 아니라 "의사결정이 유리 종(species)에 민감한 상황에서 측정하라"가 G&W의 결론입니다. <span class="source-page">[G&W p.169]</span></li>
+</ul>
+<aside class="note-box practice-lens">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🔍</span>
+<span class="note-title">실무 렌즈 (Practice Lens)</span>
+<span class="note-label">TEXTBOOK_DERIVED</span>
+</div>
+<div class="note-body">
+<p>노출 지표는 보고서의 숫자 선택이 아니라 인과적 주장(causal claim)의 선택입니다. $AUC$, $C_{max}$, $t_d$ 중 무엇을 전면에 둘지는 "효과를 만든 시간 패턴이 무엇인가"와 "총(total)과 유리(unbound) 중 어떤 종(species)이 비교 가능한가"를 함께 답해야 정당화됩니다.</p>
+</div>
+</aside>
+<aside class="callout recap-box" role="note"><div class="callout-header"><span class="callout-icon">📌</span><span class="callout-title">요약 (Recap)</span></div><div class="callout-body"><p><strong>M6 요약(recap)</strong>: 총 농도는 분석 친화적(assay-friendly) 지표이고, 유리 농도는 활성 종(species)에 가까운 지표입니다. 어느 쪽을 쓸지는 결합 차이, 종간 외삽(species extrapolation), 노출 형태(exposure shape), 의사결정 위험도(decision risk)가 결정합니다.</p></div></aside>
+<aside class="figure-pointer" role="note" aria-label="교과서 그림 참조 안내">
+<div class="figure-pointer-header"><span class="fp-icon" aria-hidden="true">📖</span><span class="fp-title">교과서 그림 참조 (Figure Pointer)</span></div>
+<dl class="fp-fields">
+<dt>교과서 출처</dt><dd>G&W 5e, p.163, Fig.2.134</dd>
+<dt>왜 보아야 하는가</dt><dd>용량(dose), 총 농도(total concentration), 유리 농도(unbound concentration)가 서로 다른 역가(potency) 결론을 만들 수 있음을 보여줍니다.</dd>
+<dt>언제 확인</dt><dd>이 카드를 읽은 뒤 확인하면 됩니다.</dd>
+<dt>학습 지시</dt><dd>총 농도-반응(total-response)과 유리 농도-반응(unbound-response)에서 역가 순위(potency order)가 어떻게 바뀌는지 확인해 보세요.</dd>
+</dl>
+<p class="fp-disclaimer">※ 저작권 보호 대상 교과서 그림은 본 핸드아웃에 직접 재현하지 않습니다. 위 출처를 참고해 주세요.</p>
+</aside>
+<aside class="note-box practice-brief">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">▶</span>
+<span class="note-title">실무 체화 요약 (Practice Brief)</span>
+<span class="note-label">[EXPERT_INFERENCE, v3]</span>
+</div>
+<div class="note-body">
+<ul>
+<li><strong>왜 알아야 하는가:</strong> 노출 지표 선택은 단순한 보고 형식이 아니라 효과의 인과 메커니즘에 대한 주장입니다. 잘못 고르면 종간 비교와 용량 결정이 동시에 왜곡됩니다.</li>
+<li><strong>흐름상 역할:</strong> M1~M5의 모든 분포 정보를 "어느 종(species)의 어떤 시간 패턴이 효과를 만드는가"라는 단일 의사결정으로 수렴시키는 세션의 종착점입니다.</li>
+<li><strong>체화 꿀팁:</strong> $AUC$, $C_{max}$, $t_d$ 중 무엇을 전면에 둘지는 기전(mechanism)이 결정합니다. 효과가 최고 농도 매개(peak-driven)이면 $C_{max}$, 누적 매개(cumulative-driven)이면 $AUC$, 역치 매개(threshold-driven)이면 $t_d$입니다. 이 매핑을 먼저 한 줄로 적은 후 종(species)/스케일(scale)을 결정하면 됩니다.</li>
+<li><strong>실무 활용:</strong> IND/NDA 단계 PK/PD 보고서의 노출 지표 정당화, 종간 외삽을 위한 유리 농도 사용 결정, 치료역이 좁은(narrow therapeutic index) 약물의 안전 마진 분석, 규제 문서에서 "왜 AUC가 아니라 AUCu인가"를 방어하는 한 단락 작성.</li>
+</ul>
+</div>
+</aside>
+</section>
+</section>
+<section id="sec5" class="doc-section">
+<h2 id="sec5-h">§5 — 혼동쌍 해부(Confusion Pair Dissection)</h2>
+<h3 id="혼동쌍-1--c-vs-c_u-치명적-타격critical-blow">혼동쌍 1 — $C$ vs $C_u$ <strong>[치명적 타격(Critical Blow)]</strong></h3>
+<aside class="callout confusion-box" role="note"><div class="callout-header"><span class="callout-icon">⚖️</span><span class="callout-title">혼동쌍 비교 (Confusion Pair)</span></div><div class="callout-body"><div class="table-wrap"><table>
+<thead><tr>
+<th style="text-align:left">구분</th>
+<th style="text-align:left">$C$, 총 농도(total concentration)</th>
+<th style="text-align:left">$C_u$, 유리 농도(unbound concentration)</th>
+</tr></thead><tbody>
+<tr>
+<td style="text-align:left">정의</td>
+<td style="text-align:left">결합 + 비결합</td>
+<td style="text-align:left">비결합만</td>
+</tr>
+<tr>
+<td style="text-align:left">막투과 구동력(driving force)</td>
+<td style="text-align:left">부적합</td>
+<td style="text-align:left">적합 <span class="source-page">[R&T p.80]</span></td>
+</tr>
+<tr>
+<td style="text-align:left">노출-반응(Exposure-response)</td>
+<td style="text-align:left">PPB 차이에 교란 가능</td>
+<td style="text-align:left">활성 species 비교에 유리 <span class="source-page">[G&W pp.163, 167–168]</span></td>
+</tr>
+<tr>
+<td style="text-align:left">단축식(Shortcut)</td>
+<td style="text-align:left">분석이 쉬움</td>
+<td style="text-align:left">fu 측정 또는 모델 필요</td>
+</tr>
+<tr>
+<td style="text-align:left">실패 모드</td>
+<td style="text-align:left">종간/화합물간 역가 순위가 왜곡됨</td>
+<td style="text-align:left">fu가 시간 의존적이면 계산 오류 가능</td>
+</tr>
+</tbody></table></div></div></aside>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p>치명적 타격(Critical Blow)의 핵심은 "$C$와 $C_u$ 중 무엇이 참인가?"가 아닙니다. 핵심 질문은 <strong>지금 의사결정의 인과적 종(species)이 무엇인가?</strong>입니다. 막투과, 수용체 상호작용, 종간 외삽이 문제이면 $C_u$가 더 직접적입니다. 하지만 $f_u$가 안정적이고 의사결정이 총 분석(total assay) 기반으로 검증되어 있다면 $C$도 유용합니다.</p></div></aside>
+<aside class="note-box practice-lens">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🔍</span>
+<span class="note-title">실무 렌즈 (Practice Lens)</span>
+<span class="note-label">EXPERT_INFERENCE</span>
+</div>
+<div class="note-body">
+<p>$C$ vs $C_u$ 판단은 네 단계로 고정합니다. 인과적 종(species) → 분석 스케일(assay scale) → 변환 유효성(conversion validity) → 의사결정 위험도(decision risk)입니다. 이 순서가 없으면 "유리(unbound)가 더 맞다"와 "총(total)도 충분하다"가 둘 다 근거 없는 주장으로 변합니다.</p>
+</div>
+</aside>
+<p>**⚡ 기억 고리(Memory Hook) — <em>관찰자 vs 실제 행위자</em> — [EXPERT_INFERENCE, v3]** 총 농도 $C$는 사진(관찰 가능한 대리 지표)이고, 유리 농도 $C_u$는 수용체에 실제로 작용하는 행위자입니다. 같은 $C$에서 $f_u$가 다르면 $C_u$가 다르고, 같은 $C_u$에서 $f_u$가 다르면 $C$가 다릅니다. 좌표계를 잘못 선택하면 "농도가 정상인데 효과가 없다" 또는 "농도가 낮은데 독성이 있다"는 역설이 나옵니다.</p>
+<h3 id="혼동쌍-2--관류-율속perfusion-rate-vs-투과-율속permeability-rate-제한">혼동쌍 2 — 관류 율속(Perfusion-rate) vs 투과 율속(Permeability-rate) 제한</h3>
+<aside class="callout confusion-box" role="note"><div class="callout-header"><span class="callout-icon">⚖️</span><span class="callout-title">혼동쌍 비교 (Confusion Pair)</span></div><div class="callout-body"><p>관류 율속 제한에서는 혈류가 속도를 정하고 Eq.4-5~4-7이 안전합니다. 투과 율속 제한에서는 막 통과가 병목(bottleneck)이며, 뇌 penicillin G나 거대분자 림프 분포처럼 혈류만으로 설명되지 않습니다. <span class="source-page">[R&T pp.94–100]</span></p></div></aside>
+<p>**⚡ 기억 고리(Memory Hook) — <em>얼마나 퍼지나 vs 얼마나 빨리 퍼지나</em> — [EXPERT_INFERENCE, v3]** 분포 범위(distribution extent, $V_d$의 크기)는 약이 최종적으로 얼마나 넓게 퍼지는지를 결정합니다. 분포 속도(distribution rate, $Q$와 조직 혈류·막 투과도)는 그 최종 상태에 얼마나 빨리 도달하는지를 결정합니다. 빠른 분포 속도 + 작은 $V_d$는 짧은 시간 안에 좁은 구획에 가두는 패턴이고, 느린 분포 속도 + 큰 $V_d$는 오래 걸려 넓게 퍼지는 패턴입니다. 이 두 차원은 독립적으로 작동하므로, $V_d$ 하나만으로는 분포 과정의 시간 경과를 논할 수 없습니다.</p>
+<h3 id="혼동쌍-3--f_u-vs-f_ut">혼동쌍 3 — $f_u$ vs $f_{uT}$</h3>
+<aside class="callout confusion-box" role="note"><div class="callout-header"><span class="callout-icon">⚖️</span><span class="callout-title">혼동쌍 비교 (Confusion Pair)</span></div><div class="callout-body"><p>$f_u$는 혈장에서 유리 분율이고, $f_{uT}$는 조직에서 유리 분율입니다. $V=V_p+V_{TW}(f_u/f_{uT})$이므로 $f_u$가 커지면 $V$는 커질 수 있고, $f_{uT}$가 작아지면 $V$는 크게 커집니다. <span class="source-page">[R&T Eq.4-25, p.109]</span></p></div></aside>
+<p>**⚡ 기억 고리(Memory Hook) — <em>정적 균형점 vs 동적 제거 그림자 (Vss vs Vβ)</em> — [EXPERT_INFERENCE, v3]<strong> $V_{ss}$는 분포와 제거가 완전히 독립인 </strong>정적 균형 부피<strong>입니다. 제거 속도는 $V_{ss}$에 영향을 주지 않습니다. $V_\beta$는 종말상 소실 기울기(terminal elimination slope)에서 역산한 </strong>겉보기 부피**입니다. 조직에서 계속 약이 돌아오는 재분포(redistribution) 흐름을 반영하기 때문에 제거가 느릴수록 $V_{ss}$보다 커집니다. 따라서 $V_\beta$를 $V_{ss}$ 대신 쓰면 정상상태 분포 부피를 과대추정하고 부하 용량이 잘못 계산됩니다. 이 기억 고리는 $f_u/f_{uT}$ 분기를 다룰 때 함께 점검할 사항을 가리킵니다. 다구획 모델에서 $V$를 $V_{ss}$로 쓰는가, $V_\beta$로 쓰는가를 명시적으로 확인하면 됩니다.</p>
+<h3 id="혼동쌍-4--소-v_d-vs-대-v_d의-단백결합-변화-반응">혼동쌍 4 — 소 $V_d$ vs 대 $V_d$의 단백결합 변화 반응</h3>
+<aside class="callout confusion-box" role="note"><div class="callout-header"><span class="callout-icon">⚖️</span><span class="callout-title">혼동쌍 비교 (Confusion Pair)</span></div><div class="callout-body"><p>소 $V_d$ 알부민 결합 약물에서는 알부민 분포 모델과 7.5 L 하한이 필요합니다. 대 $V_d$ 염기성 약물에서는 조직 결합이 지배적이므로 혈장 단백결합 변화만으로 $V$와 $C_u$를 해석하면 위험합니다. <span class="source-page">[R&T pp.111–118]</span></p></div></aside>
+<p>**⚡ 기억 고리(Memory Hook) — <em>전체 vs 활성 화물 (AUC vs AUCu)</em> — [EXPERT_INFERENCE, v3]** $AUC$는 총 화물량(결합 + 유리)이고, $AUC_u=f_u\times AUC$는 실제로 수용체에 도달 가능한 활성 화물량입니다. 알부민 결합이 강한 약물에서 저알부민혈증이 생기면, $AUC$는 줄어도 $AUC_u$는 오히려 늘 수 있습니다. 바로 이 때문에 노출-반응(exposure-response) 분석을 $AUC$로 수행하면 효과 방향이 역전되는 결과가 나옵니다. 소 $V_d$ vs 대 $V_d$ 분기를 판단할 때, 실제로 의사결정에 쓰이는 지표가 $AUC$인지 $AUC_u$인지를 함께 묻지 않으면 PPB 변화의 임상 결과 방향을 오독합니다.</p>
+</section>
+<section id="sec7" class="doc-section">
+<h2 id="sec7-h">§7 — 자기 테스트: 능동 회상 모듈(Active Recall Module)</h2>
+<h3 id="q1-h" class="self-test-q-heading">Q1</h3>
+<div class="self-test-item">
+<p class="self-test-question">Eq.4-1에서 농도차가 $C_1-C_2$가 아니라 $C_{u,1}-C_{u,2}$인 이유는?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> 결합 약물은 일반적으로 막을 통과하지 못하고, 유리 약물만 확산 구동력이 되기 때문입니다. <span class="source-page">[R&T p.80]</span></p></div></details>
+</div>
+<h3 id="q2-h" class="self-test-q-heading">Q2</h3>
+<div class="self-test-item">
+<p class="self-test-question">MW 400→800 g/mol 증가와 $logP$ 증가가 투과도에 미치는 방향을 각각 말해 보세요.</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> MW 증가는 투과도를 크게 낮추고, $logP$ 증가는 대체로 투과도를 높입니다. 단 수송체 기질이면 $logP$ 예측이 깨질 수 있습니다. <span class="source-page">[R&T Fig.4-3~4-4, pp.81–82]</span></p></div></details>
+</div>
+<h3 id="q3-h" class="self-test-q-heading">Q3</h3>
+<div class="self-test-item">
+<p class="self-test-question">관류 율속 조직에서 $K_{pb}$가 커지면 분포 반감기(distribution half-life)는 어떻게 변하는가?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> $t_{1/2,distribution}=0.693\cdot K_{pb}/(Q/V_T)$이므로 커집니다. 친화도가 크면 채워야 할 조직 약물량이 많아져 평형 도달이 늦어집니다. <span class="source-page">[R&T p.97]</span></p></div></details>
+</div>
+<h3 id="q4-h" class="self-test-q-heading">Q4</h3>
+<div class="self-test-item">
+<p class="self-test-question">소 $V_d$ 알부민 결합 약물에서 $f_u\to0$일 때 $V$가 0 L이 아니라 약 7.5 L 근처 하한을 갖는 이유는?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> 약물이 알부민에 붙어 혈장과 혈관 외 알부민 공간에 분포하기 때문입니다. 알부민 분포 용적이 약 7.5 L 하한을 만듭니다. <span class="source-page">[R&T p.111–113; App.C pp.767–773]</span></p></div></details>
+</div>
+<h3 id="q5-h" class="self-test-q-heading">Q5</h3>
+<div class="self-test-item">
+<p class="self-test-question">Warfarin 신증후군에서 알부민 감소가 $V$, $CL$, $t_{1/2}$에 어떤 방향 변화를 보였나요?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> albumin 43→12.5 g/L에서 $V$ 9.4→13.7 L, $CL$ 0.20→0.58 L/hr, $t_{1/2}$ 36→18 hr로 변했습니다. <span class="source-page">[R&T Table4-12, p.118]</span></p></div></details>
+</div>
+<h3 id="q6-h" class="self-test-q-heading">Q6</h3>
+<div class="self-test-item">
+<p class="self-test-question">G&W Eq.2:373의 $AUC_u=AUC\times f_u$를 쓰기 위한 핵심 조건은?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> $f_u$가 시간·농도·dose에 대해 충분히 일정해야 합니다. 그렇지 않으면 총 $AUC$에 하나의 $f_u$를 곱하는 단축식이 깨집니다. <span class="source-page">[G&W p.167]</span></p></div></details>
+</div>
+<h3 id="q7-h" class="self-test-q-heading">Q7</h3>
+<div class="self-test-item">
+<p class="self-test-question">동일 AUC인데 독성이 다를 수 있는 이유는?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> 같은 면적이라도 최고 농도(peak concentration), 역치 초과 시간($t_d$), 농도-시간 형태(concentration-time shape)가 다를 수 있기 때문입니다. <span class="source-page">[G&W Fig.2.136, p.164]</span></p></div></details>
+</div>
+<h3 id="q8-h" class="self-test-q-heading">Q8</h3>
+<div class="self-test-item">
+<p class="self-test-question">PK47에서 저/고 단백 농도를 동시에 적합(fit)하는 이유는?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> $n$과 $K_a$의 상관(correlation)을 줄이고 정밀도(precision)를 높이기 위해서입니다. <span class="source-page">[G&W p.693]</span></p></div></details>
+</div>
+<h3 id="q9-h" class="self-test-q-heading">Q9 — 보스 딜레마(Boss Dilemma)</h3>
+<div class="self-test-item">
+<p class="self-test-question">신약 후보에서 총 $AUC$는 종간 차이가 큰데 유리 $EC_{u50}$는 종간 정렬됩니다. 어느 노출 지표를 안전 마진 논의의 중심에 놓으면 좋을까요?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> 유리 노출(unbound exposure)을 중심 지표로 두되, 총 노출(total exposure)과 $f_u$ 측정 방법을 함께 제시합니다. G&W는 총 농도-반응이 PPB 차이에 교란될 수 있고, 유리 농도가 종간 외삽에서 더 적절할 수 있음을 보여줍니다. <span class="source-page">[G&W pp.163, 167–169]</span></p></div></details>
+</div>
+<h3 id="q10-h" class="self-test-q-heading">Q10 — [교육용 가상 사례]</h3>
+<div class="self-test-item">
+<p class="self-test-question">Phase 1 SAD에서 용량 정규화 $AUC$(dose-normalized AUC)가 용량 증가와 함께 감소합니다. 포화성 청소율(saturable clearance)과 포화성 PPB를 어떻게 구분하면 좋을까요?</p>
+<details class="self-test-answer"><summary>정답 보기 (클릭하여 펼치기)</summary><div class="answer-body"><p><strong>정답:</strong> 용량별 ex vivo(체외 측정) $f_u$를 확인합니다. $f_u$가 용량/$C_u$에 따라 증가하면 포화성 PPB가 원인일 수 있고, $f_u$가 일정하면 청소율 비선형성을 우선 의심합니다. 이 문항은 교과서 수식의 실무 적용이며, 특정 PDF 사례는 아닙니다.</p></div></details>
+</div>
+</section>
+<section id="sec8" class="doc-section">
+<h2 id="sec8-h">§8 — 메타프레임 & 전체 조망(Big Picture)</h2>
+<section id="sec8a" class="sec8-sub">
+<h3 id="sec8a-h">A. 위치 설정(Positioning)</h3>
+<aside class="callout master-lens" role="note"><div class="callout-header"><span class="callout-icon">💡</span><span class="callout-title">핵심 렌즈 (Master Lens)</span></div><div class="callout-body"><p>이 세션은 <strong>분포를 생리학으로 읽는 법</strong>을 세웁니다. 이후 청소율(clearance), 반복 투여(multiple dosing), TDM, PBPK, PopPK 공변량 모델링은 모두 여기서 정의된 $C_u$, $f_u$, $f_{uT}$, $K_p$, $V$ 위에 쌓입니다.</p></div></aside>
+</section>
+<section id="sec8b" class="sec8-sub">
+<h3 id="sec8b-h">B. 의존성(Dependencies)</h3>
+<p>이 섹션을 약하게 이해하면 다음 오류가 발생합니다.</p>
+<p>1. <strong>부하 용량 오류</strong>: $V$가 겉보기 비례상수임을 잊고 생리학적 부피처럼 해석합니다. 2. <strong>공변량 오류</strong>: 알부민 변화가 총 $CL$, 총 $V$, 유리 노출에 미치는 방향을 구분하지 못합니다. 3. <strong>노출 지표 오류</strong>: 동일 $AUC$를 동일 효과로 가정하고 최고 농도/지속 시간 정보를 잃습니다. 4. <strong>종간 외삽 오류</strong>: 총 농도-반응의 역가 순위를 활성 유리 종(species)의 역가 순위로 착각합니다. 5. <strong>단백결합 오류</strong>: $f_u$를 상수로 가정하고 포화성 결합 또는 단백 농도 변화를 놓칩니다.</p>
+</section>
+<section id="sec8c" class="sec8-sub">
+<h3 id="sec8c-h">C. 전문가 해석 지점(Professional Moat)</h3>
+<p>박사과정생이 이 세션에서 가져가야 할 한 문장은 다음입니다.</p>
+<aside class="callout recap-box" role="note"><div class="callout-header"><span class="callout-icon">📌</span><span class="callout-title">요약 (Recap)</span></div><div class="callout-body"><p><strong>분포는 "약물이 어디에 있는가"가 아닙니다. 혈장과 조직 사이에서 결합(binding), 투과도(permeability), 혈류(flow)가 함께 형성하는 평형 문제이자 시간 경과(time-course) 문제입니다.</strong> 총 농도는 관찰값이고, 유리 농도는 많은 경우 인과적 종(species)에 더 가깝습니다. $V$는 그 둘을 총량(amount)과 연결하는 겉보기 상수입니다.</p></div></aside>
+</section>
+<section id="sec8d" class="sec8-sub">
+<h3 id="sec8d-h">D. 시스템 통합 지점(System Integration Points)</h3>
+<ul>
+<li><strong>임상약리 요약</strong>: 용량-노출 선형성(dose-exposure linearity)을 논할 때, M1(흡수/투과), M3(V/용량 의존성), M4(PPB 포화 여부), M6(노출 지표 선택) 네 카드가 하나의 문단 안에서 논리적으로 연결됩니다.</li>
+<li><strong>TDM</strong>: 저알부민혈증, 신부전, α1-AGP 변화가 동시 발생하면 총 농도만으로는 활성 노출을 놓칠 수 있습니다.</li>
+<li><strong>NONMEM</strong>: 알부민/α1-AGP 공변량은 $V$에만 기계적으로 붙이는 것이 아니라, 총(total) vs 유리(unbound) 스케일과 $CL$ 해석까지 함께 결정해야 합니다.</li>
+</ul>
+<aside class="note-box mastery-note">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🎯</span>
+<span class="note-title">체화 노트 (Mastery Note)</span>
+<span class="note-label">CRUCIBLE_DERIVED</span>
+</div>
+<div class="note-body">
+<p>위 세 통합 지점은 두 가지 <strong>구체적 실무 단락</strong>으로 작동합니다. 카드 단위 학습이 끝났는지를 자가 점검하려면 다음 두 단락을 한 번씩 자기 언어로 재구성해 보세요.</p>
+<p><strong>시나리오 1 — 임상약리 요약(용량-노출 선형성 단락)</strong> 한 단락이 6개 카드를 동시에 호출합니다: 약물이 막을 통과해 혈장에 들어오는가(M1) → 같은 용량에서 $V$가 용량에 따라 변하는가(M3) → $f_u$가 용량에 따라 변하는가(M4) → 조직 분포가 포화성 수송체에 묶여 있는가(M5) → 어떤 종(species)의 어떤 지표로 선형성을 판정하는가(M6). 이 단락이 자연스럽게 흘러야 6개 카드가 단일 시스템으로 작동합니다.</p>
+<p><strong>시나리오 2 — ICU 환자 TDM 의사결정</strong> 저알부민혈증(albumin↓) + 급성 신부전(uremia, fu 결합 경쟁) + α1-AGP 상승(외상 반응)이 동시 발생하는 한 환자의 한 용량 결정을 상상해 보시면 됩니다. M4($f_u$가 알부민·변위체·α1-AGP의 다중 함수) → M3(소 $V_d$ 약물에서 $V$가 $f_u$에 비례 증가) → M6(총 농도 "정상 범위"가 독성 $C_u$를 가릴 수 있음)을 한 결정에 묶어야 합니다. 이 시퀀스가 카드 단위로 분리되어 있으면 실무 통합이 끊깁니다.</p>
+</div>
+</aside>
+</section>
+<section id="sec8e" class="sec8-sub">
+<h3 id="sec8e-h">E. 실무 진단 시그니처(Practical Diagnostic Signatures)</h3>
+<aside class="note-box mastery-note">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🎯</span>
+<span class="note-title">체화 노트 (Mastery Note)</span>
+<span class="note-label">CRUCIBLE_DERIVED</span>
+</div>
+<div class="note-body">
+<p>본 세션 개념의 오용은 PopPK 진단 플롯에 <strong>반복 가능한 시그니처 패턴</strong>을 남깁니다. 이름을 부여하면 진단 속도가 카드 단위 → 시그니처 단위로 압축됩니다. 아래 시그니처는 모두 [교과서 외 실무 해석]이며, 출처 PDF의 직접 인용이 아닙니다.</p>
+</div>
+</aside>
+<p><strong>시그니처 1 — 알부민 공변량 비대칭 패턴(Albumin Covariate Asymmetry Pattern)</strong> <em>기전(Mechanism)</em>: 대 $V_d$ 약물에서 $V$ ~ albumin만 공변량 spec하고 $CL$ ~ albumin을 누락. <em>GOF 시그니처</em>: ETA-V vs albumin scatter는 약한 양의 상관에 머물지만, ETA-CL vs albumin scatter는 강한 음의 상관을 보입니다. 시뮬레이션에서 알부민 극단군의 예측 구간(prediction interval)이 체계적으로 어긋납니다. <em>한 줄 진단</em>: ETA-CL vs albumin이 ETA-V vs albumin보다 강한 상관을 보이면 $CL$ 공변량을 함께 spec하세요.</p>
+<p><strong>시그니처 2 — PK47 단일 부위 부적합 패턴(PK47 Single-Site Misfit Pattern)</strong> <em>기전</em>: 실제로 다중 결합 부위 클래스를 가진 약물에 단일 부위 PK47 모델(G&W Eq.47:1)을 적합. <em>GOF 시그니처</em>: 저 $C_u$ 영역에서 $f_u$가 체계적으로 과소추정되고, 고 $C_u$ 영역에서 과대추정됩니다. 잔차 플롯(residual plot)에서 V자 또는 역V자 패턴이 나타납니다. 저/고 단백 농도 동시 적합 시 두 데이터셋의 잔차 방향이 반대입니다. <em>한 줄 진단</em>: $f_u$ vs $C_u$ 잔차 플롯이 V자 형태이면 두 번째 결합 부위 클래스를 추가하세요.</p>
+<p><strong>시그니처 3 — $V_{ss}$ vs $V_\beta$ 혼동 패턴(Vss vs Vβ Confusion Pattern)</strong> <em>기전</em>: 2구획 이상 모델에서 NONMEM 출력의 V를 Vβ(소실상 겉보기 V)로 무비판 사용해 부하 용량 계산. <em>GOF 시그니처</em>: 분포상에서는 IPRED가 정확하나 소실상 꼬리(elimination phase tail)에서 체계적 과소예측(systematic underprediction)이 나타납니다. CWRES가 시간에 따라 단조 편향(monotonic drift)을 보입니다. <em>한 줄 진단</em>: 소실상 꼬리의 CWRES 편향이 보이면 $V_{ss}$와 $V_\beta$를 분리하세요. 부하 용량은 $V_{ss}$, 종말상 반감기 해석은 $V_\beta$입니다.</p>
+</section>
+<section id="sec8f" class="sec8-sub">
+<h3 id="sec8f-h">F. 체화 시퀀스(Mastery Sequence)</h3>
+<aside class="note-box mastery-note">
+<div class="note-header">
+<span class="note-icon" aria-hidden="true">🎯</span>
+<span class="note-title">체화 노트 (Mastery Note)</span>
+<span class="note-label">EXPERT_INFERENCE</span>
+</div>
+<div class="note-body">
+<p>새 PK 문제를 만났을 때 본 세션의 6개 카드를 가장 빠르게 작동시키는 4단계 시퀀스입니다. 본 시퀀스는 출처 PDF의 직접 권고가 아니라, 본 핸드아웃의 내적 통합 지침입니다. 카드 학습이 끝난 후, 새 사례에 이 시퀀스를 반복 적용하면 분리된 카드가 단일 진단 시퀀스로 통합됩니다.</p>
+</div>
+</aside>
+<p>1. <strong>Species 결정 — 지금 보고 있는 농도는 무엇인가?</strong> 총 $C$인가, 유리 $C_u$인가, 혈액 $C_b$인가? 단위와 측정 매질을 먼저 고정합니다. (M1·M4·M6의 진입점)</p>
+<p>2. <strong>$V_d$ 양상 결정(regime) — 어느 모델이 작동하는가?</strong> 소 $V_d$ 알부민 결합 양상(App.C / Eq.C-13, $V\lesssim15$ L)인가, 대 $V_d$ 조직 결합 양상(Eq.4-25 또는 4-29)인가? 이 분기에 따라 $f_u$ 변화의 임상적 결과 방향이 정반대가 됩니다. (M3·M5의 분기점)</p>
+<p>3. <strong>$f_u$ 안정성 점검 — 단축식이 유효한가?</strong> 지금 비교하려는 용량·시간·농도 범위에서 $f_u$가 일정한가? 일정하지 않다면 $AUC_u=AUC\times f_u$ 단축식과 $C_u=C\times f_u$ 변환은 무효가 될 수 있습니다. (M4 경계 점검)</p>
+<p>4. <strong>지표 정당화(Metric justification) — 어느 종(species)의 어느 시간 패턴인가?</strong> 의사결정의 인과 기전이 $C_{max}$ 매개인가, $AUC$ 매개인가, $t_d$ 매개인가? 그리고 그 기전이 총 농도와 유리 농도 중 어느 종(species)에 작동하는가? (M6 결정 단계)</p>
+<aside class="note-box generic-note">
+<div class="note-body">
+<p>이 4단계는 §5 치명적 타격(Critical Blow)의 실무 렌즈(인과적 종(species) → 분석 스케일 → 변환 유효성 → 의사결정 위험도)와 구조적으로 동형(isomorphic)이며, 카드의 "왜"와 "어떻게"를 한 진단 시퀀스로 융합합니다.</p>
+</div>
+</aside>
+</section>
+</section>
+</main>
+</div>
+<script>
+
+// Copy buttons for code blocks
+document.querySelectorAll('.copy-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var targetId = btn.getAttribute('data-target');
+    var codeEl = document.getElementById(targetId);
+    if (!codeEl) return;
+    var text = codeEl.innerText;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        btn.classList.add('copied');
+        var original = btn.textContent;
+        btn.textContent = '복사됨';
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.textContent = original;
+        }, 1400);
+      });
+    } else {
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      btn.classList.add('copied');
+      var orig = btn.textContent;
+      btn.textContent = '복사됨';
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        btn.textContent = orig;
+      }, 1400);
+    }
+  });
+});
+
+// Theme toggle (manual override of prefers-color-scheme)
+(function() {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var stored = null;
+  try { stored = localStorage.getItem('handout-theme'); } catch(e) {}
+  if (stored === 'light' || stored === 'dark') {
+    document.documentElement.setAttribute('data-theme', stored);
+  }
+  btn.addEventListener('click', function() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    if (!cur) {
+      // detect prefers
+      var pref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      cur = pref;
+    }
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('handout-theme', next); } catch(e) {}
+  });
+})();
+
+// Active section highlighting in sidebar (intersection observer)
+(function() {
+  var sectionEls = Array.from(document.querySelectorAll('section[id]'));
+  if (!sectionEls.length) return;
+  var links = document.querySelectorAll('.sidebar a[href^="#"]');
+  var linkMap = {};
+  links.forEach(function(a) {
+    var id = a.getAttribute('href').substring(1);
+    linkMap[id] = a;
+  });
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) {
+      if (en.isIntersecting) {
+        var id = en.target.id;
+        if (linkMap[id]) {
+          links.forEach(function(a) { a.classList.remove('active'); });
+          linkMap[id].classList.add('active');
+        }
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sectionEls.forEach(function(el) { io.observe(el); });
+})();
+
+</script>
+</body>
+</html>
