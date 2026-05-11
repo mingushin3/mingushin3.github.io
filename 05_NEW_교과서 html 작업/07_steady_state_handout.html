@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>07 항정상태 & 다중투여 — KoreanPKCov-Core Learner Handout</title>
+<meta name="description" content="KoreanPKCov-Core 세션 07 학습자용 핸드아웃. 정속 주입과 다중투여 항정상태 — 시간·수준·진폭의 세 결정자, 치료역(therapeutic window) 기반 투여 설계, PD-driven plateau, 용량분할 독성." />
+<!--
+  Document    : 07 항정상태 & 다중투여 (Steady-State & Multiple Dosing) — Learner Handout
+  Chapter     : KoreanPKCov-Core, Session 07
+  Source      : 07_html_compile_input_master_v3_4_v3_5_expression_refined.md (PART A only)
+  Compiled    : Phase 5 HTML (rendering contract v3.3.3)
+  Renderer    : single self-contained HTML; PART A learner-facing only
+-->
+<!--
+=== Splice Verification Table (informational) ===
+| Marker # | Anchor text                                                  | Found? | Count | Inserted? | Location                                       |
+|----------|--------------------------------------------------------------|--------|-------|-----------|------------------------------------------------|
+| 1        | ## 1. Master Lens                                            | YES    | 1     | YES       | §1 — Master Lens                               |
+| 3        | ## §2-M3. Apex Concept — 다중투여 축적인자 $R_{ac}=...$        | YES    | 1     | YES       | §2-M3 — Apex Concept                           |
+| 4        | ## §2-M4. 항정상태 평균농도와 평균 amount: $C_{av,ss}$ vs ...  | YES    | 1     | YES       | §2-M4 — Cav,ss vs Aav,ss                       |
+| 5        | ## §2-M5. Flip-flop 동태: $K_a<K$일 때 terminal slope의 정체   | YES    | 1     | YES       | §2-M5 — Flip-flop                              |
+| 6        | ## §2-M6. Therapeutic Window — ...                           | YES    | 1     | YES       | §2-M6 — Therapeutic Window                     |
+| 9        | ## §2-M8. 치료역 기반 투여 설계 알고리즘(TW-Driven ...)         | YES    | 1     | YES       | §2-M8 — TW-Driven Dosage Design Algorithm      |
+| 10       | ### Daptomycin 분할투여 앵커(Daptomycin fractionation anchor) | YES    | 1     | YES       | §2-M7 — Daptomycin fractionation anchor        |
+PATCH MODE result: ALL PASS. Phase 5 HTML rendering proceeds.
+-->
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    processEnvironments: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #fafaf7; --surface: #ffffff; --surface-2: #f4f3ec;
+  --ink: #1a1a1a; --muted: #5a5a5a; --faint: #8a8a8a;
+  --line: #e6e3d8; --line-strong: #c4c0b1;
+  --blue: #2563eb; --green: #16a34a; --purple: #7c3aed;
+  --amber: #d97706; --rose: #e11d48; --gold: #c9a84c;
+  --radius: 12px; --radius-sm: 6px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --mono: 'SF Mono', Monaco, Consolas, 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15140f; --surface: #1f1d18; --surface-2: #28261f;
+    --ink: #ede9dd; --muted: #b8b4a4; --faint: #807d70;
+    --line: #3a3730; --line-strong: #56524a;
+    --blue: #60a5fa; --green: #4ade80; --purple: #a78bfa;
+    --amber: #fbbf24; --rose: #fb7185; --gold: #d4b96b;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font); font-size: 16px; line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  max-width: 1500px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+.sidebar {
+  position: sticky; top: 0; align-self: start;
+  height: 100vh; overflow-y: auto;
+  padding: 1.5em 0.8em 2em;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+}
+@media (max-width: 900px) {
+  .sidebar {
+    position: static; height: auto; max-height: none;
+    border-right: none; border-bottom: 1px solid var(--line);
+    padding-bottom: 1em;
+  }
+}
+.sidebar .toc-header {
+  font-size: 0.85em; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+  font-weight: 700; padding: 0 0.6em 0.4em;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.6em;
+}
+.sidebar a {
+  display: block; text-decoration: none;
+  padding: 0.35em 0.7em;
+  font-size: 0.9em; color: var(--ink);
+  border-left: 3px solid transparent;
+  margin: 1px 0;
+  line-height: 1.4;
+}
+.sidebar a:hover { background: var(--surface-2); }
+.sidebar a.sub {
+  padding-left: 1.6em;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+.sidebar a.active {
+  font-weight: 700;
+  border-left: 3px solid var(--purple);
+  background: var(--surface-2);
+}
+main {
+  padding: 1.8em 2.4em 4em;
+  max-width: 920px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  main { padding: 1em 1.2em 3em; }
+}
+h1, h2, h3, h4, h5 {
+  color: var(--ink); line-height: 1.35;
+  font-weight: 700;
+}
+h1 {
+  font-size: 1.7em;
+  border-bottom: 2px solid var(--line-strong);
+  padding-bottom: 0.35em;
+  margin-top: 1.8em;
+}
+h1:first-of-type { margin-top: 0.4em; }
+h2 {
+  font-size: 1.32em;
+  margin-top: 2em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.3em;
+}
+h3 { font-size: 1.12em; margin-top: 1.5em; color: var(--ink); }
+h4 { font-size: 0.98em; margin-top: 1.1em; color: var(--muted); font-weight: 600; }
+p { margin: 0.7em 0; }
+ul, ol { margin: 0.7em 0; padding-left: 1.6em; }
+li { margin: 0.25em 0; }
+hr.rule {
+  border: 0; height: 1px;
+  background: linear-gradient(to right, transparent, var(--line-strong), transparent);
+  margin: 2em 0;
+}
+.table-wrap { overflow-x: auto; margin: 1em 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+th, td {
+  padding: 0.6em 0.85em;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  background: var(--surface-2);
+  font-weight: 600;
+  color: var(--ink);
+}
+tr:last-child td { border-bottom: none; }
+
+/* Callout: Master Lens */
+.callout-master {
+  border-left: 4px solid var(--gold);
+  background: rgba(201, 168, 76, 0.08);
+  padding: 0.9em 1.2em;
+  margin: 1.2em 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.callout-master::before {
+  content: "🔭 거장의 시각 (Master Lens)";
+  display: block;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: #b08a3a;
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.callout-master h3, .callout-master h4 { margin-top: 0.4em; }
+.callout-master h3:first-child { margin-top: 0; }
+
+/* Annotation gloss inline span */
+.annotation {
+  font-size: 0.92em;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Bridge sentence (ANCHOR) */
+.bridge {
+  font-style: italic;
+  color: var(--muted);
+  margin: 0.9em 0;
+  padding: 0.5em 0.9em;
+  border-left: 2px solid var(--line-strong);
+  background: rgba(0,0,0,0.02);
+}
+
+/* Trench */
+.callout-trench {
+  border-left: 4px solid var(--rose);
+  background: rgba(225, 29, 72, 0.06);
+  padding: 0.9em 1.2em;
+  margin: 1.2em 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.callout-trench::before {
+  content: "⚠ 실무 함정 팁 (Trench-Level Tip)";
+  display: block;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--rose);
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Recap */
+.callout-recap {
+  border-left: 4px solid var(--blue);
+  background: rgba(37, 99, 235, 0.06);
+  padding: 0.9em 1.2em;
+  margin: 1.2em 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.callout-recap::before {
+  content: "🔁 요약 (Recap)";
+  display: block;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Confusion pair box */
+.box.amber {
+  border: 1px solid var(--amber);
+  background: rgba(217, 119, 6, 0.05);
+  padding: 1em 1.2em;
+  margin: 1em 0;
+  border-radius: var(--radius-sm);
+}
+.confusion-pair table { background: transparent; }
+
+/* Self-test accordion */
+.self-test details {
+  margin: 0.7em 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.self-test details summary {
+  padding: 0.75em 1.05em;
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--surface-2);
+  list-style: none;
+  font-size: 1em;
+  color: var(--ink);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+.self-test details summary::-webkit-details-marker { display: none; }
+.self-test details summary::after {
+  content: "▼";
+  font-size: 0.7em;
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 0.4em;
+}
+.self-test details[open] summary::after { content: "▲"; }
+.self-test details .answer {
+  padding: 0.9em 1.2em;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.self-test .question-body {
+  margin-bottom: 0.8em;
+  padding-bottom: 0.6em;
+  border-bottom: 1px dashed var(--line);
+}
+.self-test .answer-body p:first-child { margin-top: 0; }
+
+/* Figure pointer */
+.figure-pointer {
+  border-left: 4px solid var(--purple);
+  background: rgba(124, 58, 237, 0.06);
+  padding: 0.95em 1.2em;
+  margin: 1.4em 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.figure-pointer::before {
+  content: "📖 교과서 참조 (Figure Pointer)";
+  display: block;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 0.6em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.figure-pointer dl { margin: 0.4em 0 0; }
+.figure-pointer dt {
+  font-weight: 700;
+  font-size: 0.85em;
+  color: var(--muted);
+  margin-top: 0.6em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.figure-pointer dd { margin: 0.15em 0 0.55em 0; }
+
+/* Figure schematic */
+figure {
+  margin: 1.6em 0;
+  padding: 1.2em 1em 0.8em;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+figcaption {
+  color: var(--muted);
+  font-size: 0.9em;
+  margin-top: 0.7em;
+  text-align: center;
+  font-style: italic;
+  padding: 0 0.6em;
+}
+.figure-attribution {
+  display: block;
+  font-size: 0.78em;
+  margin-top: 0.3em;
+  color: var(--faint);
+}
+.figure-placeholder {
+  border: 2px dashed var(--line-strong);
+  padding: 2em;
+  text-align: center;
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+}
+
+/* Mermaid containers */
+.mermaid { text-align: center; min-height: 100px; }
+
+/* Firewall / dimension card schematic (M4) */
+.firewall-cards {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.8em;
+  align-items: stretch;
+  margin: 0.8em 0 0.4em;
+}
+@media (max-width: 700px) {
+  .firewall-cards { grid-template-columns: 1fr; }
+}
+.firewall-cards .card {
+  background: var(--surface-2);
+  padding: 1em 1.1em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+}
+.firewall-cards .card-conc { border-top: 3px solid var(--blue); }
+.firewall-cards .card-amt  { border-top: 3px solid var(--green); }
+.firewall-cards .card-title { font-weight: 700; margin-bottom: 0.3em; }
+.firewall-cards .card-unit { font-size: 0.85em; color: var(--muted); margin-bottom: 0.5em; }
+.firewall-cards .card-eq { font-size: 0.95em; }
+.firewall-cards .firewall-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 700;
+  color: var(--rose);
+  padding: 0.6em;
+  font-size: 0.9em;
+}
+.firewall-cards .firewall-divider-en {
+  font-weight: 400;
+  font-size: 0.8em;
+  color: var(--muted);
+}
+.firewall-bridge {
+  background: rgba(37, 99, 235, 0.07);
+  border: 1px dashed var(--blue);
+  padding: 0.7em 1em;
+  border-radius: var(--radius-sm);
+  margin-top: 0.7em;
+  font-size: 0.94em;
+}
+
+/* Source page tag */
+.source-page {
+  font-size: 0.78em;
+  color: var(--purple);
+  background: rgba(124, 58, 237, 0.10);
+  padding: 2px 6px;
+  border-radius: 6px;
+  vertical-align: super;
+  white-space: nowrap;
+  margin-left: 0.25em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: default;
+}
+.source-page.source-uncertain {
+  color: var(--amber);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed var(--amber);
+}
+.source-page:hover { background: rgba(124, 58, 237, 0.18); }
+
+/* Blockquote */
+blockquote {
+  margin: 1.1em 0;
+  padding: 0.7em 1.05em;
+  border-left: 3px solid var(--line-strong);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+blockquote.practice-brief {
+  border-left: 4px solid var(--green);
+  background: rgba(22, 163, 74, 0.06);
+}
+blockquote.practice-brief::before {
+  content: "🧭 실무 체화 요약 (Practice Brief)";
+  display: block;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 0.45em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+blockquote p { margin: 0.4em 0; }
+
+/* Inline code */
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+}
+
+/* Display math centering */
+.math-display { text-align: center; margin: 1em 0; }
+
+/* Toolbar */
+.toolbar {
+  position: fixed;
+  top: 1em; right: 1em;
+  z-index: 100;
+  display: flex; gap: 0.5em;
+}
+.toolbar button {
+  padding: 0.45em 0.85em;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.toolbar button:hover { background: var(--surface-2); }
+
+/* Doc title meta */
+.doc-meta {
+  color: var(--muted);
+  font-size: 0.92em;
+  margin-bottom: 1.4em;
+  padding-bottom: 0.7em;
+  border-bottom: 1px dashed var(--line);
+}
+.doc-meta strong { color: var(--ink); }
+
+/* Cards inside §2 — light separation */
+main > h2 { scroll-margin-top: 0.6em; }
+
+/* Mobile sidebar toggle */
+.toc-toggle {
+  display: none;
+}
+@media (max-width: 900px) {
+  .toolbar { position: static; padding: 0.6em; justify-content: flex-end; background: var(--surface); }
+}
+
+/* Print */
+@media print {
+  .sidebar, .toolbar { display: none !important; }
+  .layout { display: block; max-width: none; }
+  main { max-width: none; padding: 0.6em; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  h1, h2, h3, h4 { color: #000; page-break-after: avoid; }
+  /* Open all self-tests in print */
+  details { break-inside: avoid; }
+  details > .answer { display: block !important; }
+  details:not([open]) > .answer { display: block !important; }
+  details > summary { list-style: none; }
+  details > summary::after { display: none; }
+  details {
+    border: 1px solid #888 !important;
+    background: #fff !important;
+  }
+  details summary { background: #f4f4f4 !important; color: #000 !important; }
+  /* Source page tags visible */
+  .source-page {
+    background: transparent !important;
+    color: #000 !important;
+    border: 1px solid #888 !important;
+  }
+  figure, table, blockquote, .callout-master, .callout-trench, .callout-recap, .box.amber, .figure-pointer {
+    page-break-inside: avoid;
+    box-shadow: none !important;
+  }
+  /* Callout backgrounds removed */
+  .callout-master, .callout-trench, .callout-recap, .box.amber, .figure-pointer, blockquote, .firewall-bridge {
+    background: #fff !important;
+    border: 1px solid #444 !important;
+  }
+  .annotation { color: #555 !important; }
+  a { color: #000; text-decoration: none; }
+}
+
+/* Skip to content */
+.skip-link {
+  position: absolute; left: -9999px; top: 0;
+}
+.skip-link:focus { left: 0.5em; top: 0.5em; z-index: 200; background: var(--surface); padding: 0.5em; }
+
+/* Tighten lists inside callouts */
+.callout-master ul, .callout-master ol,
+.callout-trench ul, .callout-trench ol,
+.callout-recap ul, .callout-recap ol {
+  margin: 0.4em 0;
+}
+
+/* Mastery note */
+.mastery-note {
+  background: var(--surface-2);
+  padding: 0.7em 1em;
+  border-radius: var(--radius-sm);
+  margin: 1em 0;
+  border: 1px solid var(--line);
+  font-size: 0.95em;
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+<div class="toolbar">
+  <button onclick="window.print()" title="인쇄 / PDF 저장">🖨️ 인쇄</button>
+  <button onclick="toggleAllAccordions()" title="모든 자기 테스트 열기/닫기" id="accordionToggleBtn">📂 모두 펼치기</button>
+</div>
+<div class="layout">
+  <nav class="sidebar" aria-label="목차">
+    <div class="toc-header">목차 (Table of Contents)</div>
+    <a href="#학습자-안내" class="sub">학습자 안내(Learner Navigation Aid)</a>
+<a href="#수정된-큐레이션-맵" class="sub">수정된 큐레이션 맵(Curation Map) (MUST / CONTEXT)</a>
+<a href="#sec1-세션-헤더-로드맵">§1 — 세션 헤더 &amp; 로드맵</a>
+<a href="#1-거장의-렌즈" class="sub">1. 거장의 렌즈(Master Lens)</a>
+<a href="#2-로드맵" class="sub">2. 로드맵(Roadmap)</a>
+<a href="#sec15-v34-시계-유형-항법-배너-이-장은-세-개의-시계로-읽습니다" class="sub">§1.5 v3.4 시계 유형 항법 배너(Clock-Type Navigation Banner): 이 장은 세 개의 시계로 읽습니다</a>
+<a href="#sec2-개념-해부-카드">§2 — 개념 해부 카드(Concept Anatomy Cards)</a>
+<a href="#sec2-m1-정속-주입-항정상태-농도" class="sub">§2-M1. 정속 주입 항정상태 농도: ·</a>
+<a href="#sec2-m2-항정상태-도달-시간-34-규칙" class="sub">§2-M2. 항정상태 도달 시간: 3–4 · 규칙</a>
+<a href="#sec2-m3-apex-concept-다중투여-축적인자" class="sub">§2-M3. Apex Concept — 다중투여 축적인자 ·</a>
+<a href="#sec2-m4-항정상태-평균농도와-평균-amount-vs" class="sub">§2-M4. 항정상태 평균농도와 평균 amount: · vs ·</a>
+<a href="#sec2-m5-flip-flop-동태-일-때-terminal-slope의-정체" class="sub">§2-M5. Flip-flop 동태: ·일 때 terminal slope의 정체</a>
+<a href="#sec2-m6-therapeutic-window-pk-식을-임상-의사결정으로-바꾸는-제약조건" class="sub">§2-M6. Therapeutic Window — PK 식을 임상 의사결정으로 바꾸는 제약조건</a>
+<a href="#sec2-m7-loading-dose-maintenance-목표-즉시-도달과-유지의-분리" class="sub">§2-M7. Loading Dose + Maintenance: 목표 즉시 도달과 유지의 분리</a>
+<a href="#sec2-m8-치료역-기반-투여-설계-알고리즘" class="sub">§2-M8. 치료역 기반 투여 설계 알고리즘(TW-Driven Dosage Design Algorithm)</a>
+<a href="#sec2-m9-pd-기반-plateau-효과의-시계는-약물의-시계와-다를-수-있습니다" class="sub">§2-M9. PD 기반 Plateau(PD-Driven Plateau): 효과의 시계는 약물의 시계와 다를 수 있습니다</a>
+<a href="#sec2-m10-용량분할-독성-같은-일일-용량가-같은-위해를-의미하지-않습니다" class="sub">§2-M10. 용량분할 독성(Dose Fractionation Toxicity): 같은 일일 용량(daily dose)가 같은 위해를 의미하지 않습니다</a>
+<a href="#sec5-혼동-pair-해부">§5 — 혼동 쌍 해부(Confusion Pair Dissection)</a>
+<a href="#sec5-pair1-vs-vs" class="sub">§5-쌍1. · vs · vs ·</a>
+<a href="#sec5-pair2-nonmem-vs" class="sub">§5-쌍2. NONMEM `SS=1` vs `SS=2`</a>
+<a href="#sec5-pair3-flip-flop-vs-ordinary-extravascular-decline" class="sub">§5-쌍3. Flip-flop vs ordinary extravascular decline</a>
+<a href="#sec5-pair4-도달-시간-vs-축적-정도-vs-fluctuation" class="sub">§5-쌍4. 도달 시간 vs 축적 정도 vs fluctuation</a>
+<a href="#sec5-pair5-therapeutic-window-vs-therapeutic-index" class="sub">§5-쌍5. Therapeutic Window vs Therapeutic Index</a>
+<a href="#sec5-pair6-mrt-vs-half-life" class="sub">§5-쌍6. MRT vs half-life</a>
+<a href="#sec5-pair7-acquired-resistance-vs-tolerance" class="sub">§5-쌍7. Acquired Resistance vs Tolerance</a>
+<a href="#sec7-자기-테스트-모듈">§7 — 자기 테스트 모듈(Self-Test Module)</a>
+<a href="#sec7-회상-영역" class="sub">§7-회상 영역(Recall Layer)</a>
+<a href="#sec7-적용-영역" class="sub">§7-적용 영역(Application Layer)</a>
+<a href="#sec7-보스-딜레마" class="sub">§7-보스 딜레마(Boss Dilemma)</a>
+<a href="#sec8-메타프레임-전체-그림">§8 — 메타프레임 &amp; 전체 그림</a>
+<a href="#sec8a-위치-설정" class="sub">§8A — 위치 설정(Positioning)</a>
+<a href="#sec8b-의존성과-실패-모드" class="sub">§8B — 의존성과 실패 모드</a>
+<a href="#sec8c-전문가-해자" class="sub">§8C — 전문가 해자(Professional Moat)</a>
+<a href="#sec8d-28세션-항법" class="sub">§8D — 28세션 항법</a>
+  </nav>
+  <main id="main-content">
+    <div class="doc-meta">
+      <strong>KoreanPKCov-Core · 세션 07</strong> — 정속 주입과 다중투여 항정상태 (Steady-State &amp; Multiple Dosing)<br/>
+      <span style="font-size:0.92em;">학습자용 핸드아웃 (Learner-Facing Handout) · v3.5 · Phase 5 HTML</span>
+    </div>
+    <h2 id="학습자-안내">학습자 안내(Learner Navigation Aid)</h2>
+<p><strong>이 핸드아웃 사용법</strong>: 먼저 큐레이션 맵(Curation Map)에서 M1–M10의 결정자 구조를 훑습니다. 그다음 §2의 개념 카드를 순서대로 읽고, §5 혼동 쌍(confusion pairs)과 §7 자기 테스트(self-test)로 오개념을 제거하면 됩니다. 교과서 참조 지시(figure pointer)는 교과서 원그림을 복제하지 않습니다. 표시된 출처 그림을 원문 PDF에서 직접 열어 확인하라는 안내 신호로 이해하면 됩니다.</p>
+<p><strong>학습 경로(Learning route)</strong>: M1–M2에서는 수준(level)과 시간(time)을 분리합니다. M3–M4에서는 축적(accumulation), 변동(fluctuation), 평균농도(average concentration), 평균량(average amount)을 분리합니다. M5–M6에서 입력/반응 해석의 예외를 잠근 뒤, M7–M8에서 부하용량(loading dose), 유지용량(maintenance dose), 치료역 기반 설계(therapeutic-window design)로 조립하면 됩니다. M9–M10은 PK plateau로 환원되지 않는 <strong>PD 시계</strong>와 분할투여(fractionation)에 의존하는 <strong>독성 누적</strong>을 따로 봅니다.</p>
+<p><strong>시작 전 확인</strong>: $CL$, $t_{1/2}$, $\tau/t_{1/2}$, $C_{av,ss}$, $A_{av,ss}$, 치료역(therapeutic window; benefit–harm을 모두 고려한 농도 구간)이 서로 다른 질문에 답한다는 점을 기억하면 됩니다.  
+<strong>학습 후 확인</strong>: §7 Q8–Q12와 보스 딜레마(Boss Dilemma)를 풀면서 “어떤 식이 어떤 조건에서만 유효한가”를 설명할 수 있어야 합니다.</p>
+<hr class="rule">
+<h2 id="수정된-큐레이션-맵">수정된 큐레이션 맵(Curation Map) (MUST / CONTEXT)</h2>
+<h3 id="must-10분-핸드아웃에-반드시-남길-개념">MUST — 10분 핸드아웃에 반드시 남길 개념</h3>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>개념</th><th>핵심 잠금 문장</th><th>핵심 수식 / 앵커</th><th>§2 카드 위치</th><th>출처 태그</th></tr></thead><tbody>
+<tr><td>M1</td><td>정속 주입 plateau 농도</td><td>항정상태 농도 수준은 $t_{1/2}$가 아니라 $CL$<span class="annotation">(← 단위 시간당 제거되는 용적)</span>이 정합니다.</td><td>$C_{ss}=R_{in}/CL$</td><td>§2-M1 (full card)</td><td><span class="source-page">[G p.23; R&amp;T p.288]</span></td></tr>
+<tr><td>M2</td><td>plateau 도달 시간</td><td>목표 plateau 수준이 높든 낮든 접근 시간표는 반감기(half-life)의 함수입니다.</td><td>$C(t)=C_{ss}(1-e^{-Kt})$; 1, 2, 3, 3–4 half-lives 후 각각 50%, 75%, 87.5%, $\approx90\%$</td><td>§2-M2 (full card)</td><td><span class="source-page">[G pp.22–23; R&amp;T pp.290–292]</span></td></tr>
+<tr><td>M3</td><td>다중투여 축적계수(accumulation factor)</td><td>축적 정도는 용량(dose)이 아니라 $\tau/t_{1/2}$가 정합니다.</td><td>$R_{ac}=1/(1-e^{-K\tau})=1/(1-2^{-\tau/t_{1/2}})$</td><td>§2-M3 (Apex full card)</td><td><span class="source-page">[G pp.43–45; R&amp;T pp.322–326; R&amp;T pp.795–797]</span></td></tr>
+<tr><td>M4</td><td>평균 plateau: 농도(concentration) vs 약물량(amount) 분리</td><td>$C_{av,ss}$와 $A_{av,ss}$를 등치하지 마세요. 농도는 $CL$, 약물량(amount)은 $MRT$를 거쳐 표현됩니다.</td><td>$C_{av,ss}=F\text{Dose}/(CL\tau)$; $A_{av,ss}=1.44F\text{Dose}t_{1/2}/\tau$; 1-compartment에서만 $C_{av,ss}=A_{av,ss}/V$</td><td>§2-M4 (full card)</td><td><span class="source-page">[G p.45; R&amp;T p.324; R&amp;T p.337]</span></td></tr>
+<tr><td>M5</td><td>Flip-flop</td><td>말단 기울기(terminal slope)가 소실(elimination)이 아니라 흡수(absorption)를 말할 수 있습니다.</td><td>$K_a<K$이면 terminal slope $\approx K_a$</td><td>§2-M5 (full card)</td><td><span class="source-page">[G pp.45–46; R&amp;T pp.332–334, 337–338]</span></td></tr>
+<tr><td>M6</td><td>치료역(Therapeutic Window)</td><td>TW는 "좋은 농도 범위"가 아니라 benefit과 harm의 balance를 농도 축 위에 투영한 의사결정 구간입니다.</td><td>치료역(therapeutic window)<span class="annotation">(← benefit–harm balance의 농도 구간)</span>과 치료 농도 범위(therapeutic concentration range) 구별; TI는 전임상 ratio와 임상 exposure sensitivity가 다름</td><td>§2-M6 (full card)</td><td><span class="source-page">[R&amp;T pp.267–281]</span></td></tr>
+<tr><td>M7</td><td>부하용량 + 유지용량(Loading + maintenance)</td><td>plateau를 기다리지 않고 목표 근처에서 시작하려면 부하용량(loading dose)이 필요하고, 유지에는 평균 입력률(average input rate)이 필요합니다.</td><td>$D_M=D_L(1-e^{-K\tau})$; $D_L=R_{ac}D_M$; bolus+주입 앵커</td><td>§2-M7 (full card)</td><td><span class="source-page">[R&amp;T pp.293–295; R&amp;T pp.326–329; G pp.537–539]</span></td></tr>
+<tr><td>M8</td><td>치료역 기반 투여 설계(TW-driven dosage design)</td><td>$C_{upper}$, $C_{lower}$, $t_{1/2}$, $V$, $F$가 있으면 투여간격(interval)과 용량(dose)의 상한을 계산할 수 있습니다.</td><td>$\tau_{max}=1.44t_{1/2}\ln(C_{upper}/C_{lower})$; $D_{M,max}=(V/F)(C_{upper}-C_{lower})$</td><td>§2-M8 (full card)</td><td><span class="source-page">[R&amp;T pp.334–337]</span></td></tr>
+<tr><td>M9</td><td>PD 기반 plateau(PD-driven plateau)</td><td>효과 plateau는 약물 PK plateau보다 늦을 수 있습니다. 무엇의 반감기인지 먼저 물어야 합니다.</td><td>atorvastatin: PK $t_{1/2}=14$ h, PD plateau 3–4 weeks; erythropoietin: PK $t_{1/2}=9$ h, hematocrit plateau $\approx70$ days</td><td><strong>§2-M9 (brief card, ver2 신설)</strong> + §2-M6 PK/PD clocks 절</td><td><span class="source-page">[R&amp;T pp.341–345]</span></td></tr>
+<tr><td>M10</td><td>용량분할 독성(Dose fractionation toxicity)</td><td>같은 일일 용량이라도 분할투여(fractionation)가 회복 시간(recovery time)을 바꾸면 독성이 달라집니다.</td><td>Daptomycin Study A: 75 mg/kg q24h vs 25 mg/kg q8h, CPK 991 vs 3996 U/L</td><td><strong>§2-M10 (brief card, ver2 신설)</strong> + §2-M7 daptomycin anchor</td><td><span class="source-page">[R&amp;T pp.351–353]</span></td></tr>
+</tbody></table></div>
+<h3 id="context-유지하되-12문장-이상-확장하지-않을-항목">CONTEXT — 유지하되 1–2문장 이상 확장하지 않을 항목(컨텍스트)</h3>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>컨텍스트 항목</th><th>잠금 결정</th><th>출처 태그</th></tr></thead><tbody>
+<tr><td>C1</td><td>항정상태(steady state) vs 열역학적 평형(thermodynamic equilibrium)</td><td>용어를 엄밀히 분리하되 독립 카드로 확장하지 않습니다.</td><td><span class="source-page">[G p.25]</span></td></tr>
+<tr><td>C2</td><td>입력 함수 분류(Input function taxonomy)</td><td>bolus, zero-order, first-order, multiple input은 “입력 함수가 달라지면 concentration-time profile이 달라집니다” 수준으로만 유지합니다.</td><td><span class="source-page">[G p.43]</span></td></tr>
+<tr><td>C3</td><td>다중 흡수 부위(Multiple absorption sites)</td><td>multiple peaks가 곧 enterohepatic recirculation을 의미하지 않는다는 주의만 유지합니다.</td><td><span class="source-page">[G p.46]</span></td></tr>
+<tr><td>C4</td><td>PK11</td><td>PK clock = PD clock의 단순 anchor로만 사용합니다.</td><td><span class="source-page">[G pp.528–531]</span></td></tr>
+<tr><td>C5</td><td>PK13</td><td>bolus+infusion IC coding anchor로 사용합니다.</td><td><span class="source-page">[G pp.537–539]</span></td></tr>
+<tr><td>C6</td><td>정속 장치(Constant-rate devices)</td><td>infusion 원리 확장 예시로만 유지합니다.</td><td><span class="source-page">[R&amp;T pp.284–286]</span></td></tr>
+<tr><td>C7</td><td>주입 후 감소(Post-infusion decline)</td><td>infusion 중단 후 concentration은 half-life에 따라 감소하되, extravascular continued input은 예외가 될 수 있습니다.</td><td><span class="source-page">[R&amp;T p.291]</span></td></tr>
+<tr><td>C8</td><td>Clobazam 단회투여 AUC(single-dose AUC)</td><td>single-dose AUC로 plateau average를 예측할 수 있다는 1문장 anchor입니다.</td><td><span class="source-page">[R&amp;T p.336]</span></td></tr>
+<tr><td>C9</td><td>방출 조절(Modified release)</td><td>intentional flip-flop의 임상 활용으로 morphine MR, leuprolide depot만 짧게 유지합니다.</td><td><span class="source-page">[R&amp;T pp.337–338]</span></td></tr>
+<tr><td>C10</td><td>투여법 평가(Regimen evaluation)</td><td>fluctuation, relative bioavailability, renal clearance는 evaluation context로만 유지합니다.</td><td><span class="source-page">[R&amp;T pp.339–341]</span></td></tr>
+<tr><td>C11</td><td>DDI 패턴(DDI patterns)</td><td>ER 중심 4패턴만 유지합니다. protein binding 단독 논리는 금지합니다.</td><td><span class="source-page">[R&amp;T pp.309–310; R&amp;T pp.350–351]</span></td></tr>
+<tr><td>C12</td><td>연습 문제(Study problems)</td><td>본문에는 통합하지 않습니다. §7에서 가상/응용 문항으로만 사용할 수 있습니다.</td><td><span class="source-page">[R&amp;T pp.353–358]</span></td></tr>
+</tbody></table></div>
+<hr class="rule">
+<h1 id="sec1-세션-헤더-로드맵">§1 — 세션 헤더 &amp; 로드맵</h1>
+<section class="callout-master"><h2 id="1-거장의-렌즈">1. 거장의 렌즈(Master Lens)</h2>
+<p>이 세션의 핵심은 <strong>항정상태를 하나의 숫자가 아니라 세 개의 독립 질문으로 분해하는 능력</strong>입니다.</p>
+<p>항정상태(steady state)<span class="annotation">(← 입력률과 제거률이 같아진 상태)</span>는 “도달했는가/얼마인가/얼마나 출렁이는가”를 따로 물어야 합니다.</p>
+<ol>
+<li><strong>언제 도달하는가?</strong> → $t_{1/2}$가 정합니다.</li>
+<li><strong>평균 수준은 어디인가?</strong> → $CL$과 평균 입력속도가 정합니다.</li>
+<li><strong>얼마나 출렁이는가?</strong> → $\tau/t_{1/2}$가 정합니다.</li>
+</ol>
+<p>R&amp;T Fig. 11-3의 메시지는 이 분리를 가장 잘 보여줍니다. 같은 평균 투여율(average dosing rate)이라면 평균량(average amount)의 plateau 접근 시간 경로는 같습니다. 그러나 투여간격(dosing interval)이 길수록 변동(fluctuation)은 커집니다 <span class="source-page">[R&amp;T p.325]</span>. 이 분리를 이해하면 <code>SS=1</code>, <code>ADDL/II</code>, 부하용량(loading dose), 유지용량(maintenance dose)을 같은 구조로 읽을 수 있습니다. 치료역(therapeutic window) 기반 투여 설계(regimen design) 역시 이 세 축 위에서 작동합니다.</p></section>
+<figure aria-label="항정상태 해석은 반감기가 지배하는 시간(timing), 청소율과 입력률이 지배하는 평균 수준(average level), 반감기 대비 투여간격이 지배하는 변동(fluctuation)으로 나뉩니다."><div class="mermaid">flowchart TB
+    Root["항정상태 투여법 해석<br/>(Steady-state regimen interpretation)"]
+    T["⏱ 시간 (Timing)"]
+    L["📏 평균 수준 (Average level)"]
+    A["🌊 진폭 / 변동 (Amplitude / fluctuation)"]
+    Td["t₁/₂"]
+    Ld["CL + 평균 입력률<br/>(average input rate)"]
+    Ad["τ / t₁/₂"]
+    Te["3–4 half-lives ≈ 90%"]
+    Le["Css / Cav,ss"]
+    Ae["Rac + peak–trough swing"]
+    Warn["⚠ 세 질문을 하나의<br/>steady-state idea로 접지 말 것"]
+    Root --> T
+    Root --> L
+    Root --> A
+    T --> Td --> Te
+    L --> Ld --> Le
+    A --> Ad --> Ae
+    Te --> Warn
+    Le --> Warn
+    Ae --> Warn
+    classDef root fill:#fff,stroke:#7c3aed,stroke-width:2px,color:#1a1a1a;
+    classDef axis fill:#fff8e1,stroke:#c9a84c,stroke-width:1.5px,color:#1a1a1a;
+    classDef driver fill:#f0f4ff,stroke:#2563eb,stroke-width:1.5px,color:#1a1a1a;
+    classDef output fill:#ecfdf5,stroke:#16a34a,stroke-width:1.5px,color:#1a1a1a;
+    classDef warn fill:#fef2f2,stroke:#e11d48,stroke-width:1.5px,color:#1a1a1a;
+    class Root root;
+    class T,L,A axis;
+    class Td,Ld,Ad driver;
+    class Te,Le,Ae output;
+    class Warn warn;</div><figcaption>항정상태 해석의 핵심은 시간(timing), 수준(level), 진폭(amplitude)을 서로 다른 파라미터(parameter) 질문으로 분리하는 것입니다.</figcaption></figure>
+<h2 id="2-로드맵">2. 로드맵(Roadmap)</h2>
+<ul>
+<li><strong>M1–M2</strong>: 정속 주입에서 $CL$은 plateau 수준, $t_{1/2}$는 접근 시간(approach time)을 결정합니다.</li>
+<li><strong>M3–M4</strong>: 다중투여에서 축적(accumulation)과 평균 plateau를 계산합니다. 이때 약물량(amount)과 농도(concentration)의 차원을 분리해야 합니다.</li>
+<li><strong>M5</strong>: 흡수(absorption)가 느리면 말단 기울기(terminal slope)가 소실(elimination)을 말하지 않습니다.</li>
+<li><strong>M6</strong>: 치료역(therapeutic window)은 PK 식의 결과가 아니라 임상 효용(clinical utility)의 제약조건입니다.</li>
+<li><strong>M7–M8</strong>: 부하/유지 용량(loading/maintenance dose)과 치료역 기반 알고리즘(TW-driven algorithm)은 위 분리를 실제 투여 설계(dosing regimen)로 변환합니다.</li>
+<li><strong>M9</strong>: 효과 plateau는 전환율/세포 수명(turnover/cell lifespan)이라는 <strong>별개의 시계</strong>가 결정할 수 있습니다 — 약물 PK plateau가 답이 아닐 수 있습니다.</li>
+<li><strong>M10</strong>: 같은 일일 용량이라도 분할투여(fractionation)가 회복 시간을 어그러뜨리면 독성이 누적됩니다 — 노출 변수(exposure variable) 하나로 위해를 설명하지 않습니다.</li>
+</ul>
+<section class="callout-recap"><p><strong>세션 잠금(Session Lock)</strong>: 항정상태는 “시간=$t_{1/2}$, 수준=$CL$, 진폭=$\tau/t_{1/2}$”의 세 축으로 잠급니다. 이 세 축을 섞는 순간 NONMEM steady-state coding, TDM adjustment, 부하용량 근거(loading dose rationale), 치료역 기반 설계(therapeutic-window design)이 동시에 흐려집니다.</p></section>
+<hr class="rule">
+<h2 id="sec15-v34-시계-유형-항법-배너-이-장은-세-개의-시계로-읽습니다">§1.5 v3.4 시계 유형 항법 배너(Clock-Type Navigation Banner): 이 장은 세 개의 시계로 읽습니다</h2>
+<p>[EXPERT_INFERENCE — 선임 검토자 항법 패치(senior reviewer navigation patch); 기존 다회투여·정상상태 구조를 보존하기 위한 학습 항법 보강]</p>
+<blockquote><p><strong>핵심 안내</strong>: File 07의 핵심은 정상상태(steady state)를 하나의 숫자가 아니라 <strong>시간(timing) × 수준(level) × 진폭(amplitude)의 세 질문</strong>으로 분해하는 것입니다. M1–M10 카드는 각각 이 세 축 중 어디에 답하는 카드인지를 의식하면서 읽으면 됩니다. 같은 “정상상태”라는 단어도 도달 시간(timing)의 질문일 때, 평균 수준(level)의 질문일 때, 진폭(amplitude)의 질문일 때 의미가 전혀 다릅니다.</p></blockquote>
+<h3 id="세-개의-시계로-카드를-묶어-읽습니다">세 개의 시계로 카드를 묶어 읽습니다</h3>
+<p><strong>① 약동학 시계(PK clock) — M1–M5: 약물 쪽의 시간 구조를 잠급니다</strong></p>
+<ul>
+<li><strong>M1–M2</strong>: 정상상태(steady state)는 <strong>언제</strong> 형성되는가? — 도달 시간(approach time)의 결정인자입니다.</li>
+<li><strong>M3</strong>: <strong>얼마나</strong> 축적되는가? — 축적계수(accumulation factor) $R_{ac}=1/(1-e^{-K\tau})$.</li>
+<li><strong>M4</strong>: 평균농도(average concentration, $C_{av,ss}$)와 평균량(average amount, $A_{av,ss}$)을 <strong>어떻게 구분</strong>하는가? — 농도와 약물량(amount)의 차원 분리입니다.</li>
+<li><strong>M5</strong>: flip-flop 상황에서 겉보기 반감기(apparent half-life)가 투여 시계(dosing clock)를 <strong>어떻게 바꾸는가?</strong> — 말단 기울기(terminal slope)가 소실(elimination)을 말하지 않는 예외입니다.</li>
+</ul>
+<p><strong>② 설계 연결부(dosing-design bridge) — M7–M8: PK 시계를 임상 투여 설계로 변환합니다</strong></p>
+<ul>
+<li><strong>M7</strong>: 부하용량(loading dose)과 유지용량(maintenance dose)의 <strong>수식적 연결</strong> — 목표 즉시 도달과 유지를 분리하는 구조입니다.</li>
+<li><strong>M8</strong>: 치료역(therapeutic window)을 기준으로 투여법(regimen)을 조정하는 <strong>실무적 연결</strong> — 치료역 기반 알고리즘(TW-driven algorithm)으로 PK 결과를 임상 의사결정으로 변환합니다.</li>
+</ul>
+<p><strong>③ 약력학/안전성 시계(PD/safety clock) — M6, M9, M10: 환자 쪽의 시간을 잠급니다</strong></p>
+<ul>
+<li><strong>M6</strong>: 치료역(therapeutic window)은 농도(concentration) 하나가 아니라 <strong>효과(efficacy)와 독성(toxicity)의 창</strong>입니다 — PK 식의 결과가 아니라 임상 효용(clinical utility)의 제약조건입니다.</li>
+<li><strong>M9</strong>: PK plateau와 PD plateau는 <strong>같은 속도로 오지 않을 수 있습니다</strong> — 전환율(turnover) 또는 세포 수명(cell lifespan)이라는 별개의 시계가 효과 plateau를 결정할 수 있습니다.</li>
+<li><strong>M10</strong>: 용량분할(dose fractionation)은 <strong>같은 총용량(total 일일 용량(daily dose))이라도 독성 프로파일을 바꿀 수 있습니다</strong> — 단일 노출 변수(exposure variable)로 위해(harm)를 환원하지 않습니다.</li>
+</ul>
+<h3 id="첫-회독-권장-순서">첫 회독 권장 순서(First-Pass Reading Order)</h3>
+<p>처음 읽는 학습자는 다음 순서를 권장합니다:</p>
+<blockquote><p><strong>M1 → M2 → M3 → M4(핵심 정의만 skim) → M7 → M8 → M6 → M9 → M10</strong></p></blockquote>
+<p>이때 <strong>M4의 $C_{av,ss}$ / $A_{av,ss}$ 수식 세부</strong>와 <strong>M5의 flip-flop 세부</strong>는 1회독에서는 정의 수준만 확인하고, <strong>2회독에서 정독</strong>하면 됩니다. 이렇게 하면 M7의 부하/유지용량(loading/maintenance dose)을 이해하는 데 필요한 최소 개념(평균농도의 정의, 축적계수의 형태)은 유지하면서, 1회독의 인지부하(cognitive load)를 낮출 수 있습니다. M5(flip-flop)는 흡수속도($K_a$)가 소실속도($K$)보다 느린 특수 상황을 다루는 보강 카드입니다. 따라서 표준 다중투여 직관을 먼저 잠근 뒤 다루는 것이 효율적입니다. 단, M4를 훑어보더라도 “평균농도(concentration)와 평균량(amount)은 차원이 다른 두 개의 plateau”라는 사실 하나는 1회독에서 반드시 잠그고 넘어가야 M7·M8이 흐려지지 않습니다.</p>
+<h3 id="항법-장치로서의-위상">항법 장치로서의 위상</h3>
+<p>이 v3.4 보강은 <strong>새 이론을 추가하는 것이 아니라</strong>, 이미 존재하는 M1–M10 카드를 세 개의 clock으로 묶어 읽게 하는 <strong>항법 장치(navigation aid)</strong>입니다. 카드의 본문, 수식, 출처(source label), 페이지 태그(page tag), 그림 마커(figure marker), 그리고 §5 혼동 쌍(confusion pair)·§7 보스 딜레마(Boss Dilemma)·§8 메타프레임은 v3.3과 byte-level identical로 보존됩니다. 따라서 본 banner를 무시하고 M1부터 순서대로 읽어도 학습 결과의 무결성에는 영향이 없습니다 — banner는 인지부하 분배를 돕는 선택적 안내이지, 본문의 일부가 아닙니다.</p>
+<hr class="rule">
+<h1 id="sec2-개념-해부-카드">§2 — 개념 해부 카드(Concept Anatomy Cards)</h1>
+<h2 id="sec2-m1-정속-주입-항정상태-농도">§2-M1. 정속 주입 항정상태 농도: $C_{ss}=R_{in}/CL$</h2>
+<section class="callout-master"><h3 id="거장의-시각">거장의 시각(Big Idea)</h3>
+<p>정속 주입에서 plateau 농도는 <strong>얼마나 빨리 없어지는가($CL$)</strong>와 <strong>얼마나 빨리 넣는가($R_{in}$)</strong>의 균형입니다. Volume은 초기 상승 곡선의 속도를 바꾸지만, plateau 농도의 높이를 직접 결정하지 않습니다 <span class="source-page">[G p.23; R&amp;T p.288]</span>.</p></section>
+<h3 id="출처-고정-수식">출처 고정 수식(Source-locked equations)</h3>
+<p class="math-display">$$\frac{dC}{dt}=\frac{R_{in}}{V}-\frac{CL}{V}C$$</p>
+<p class="math-display">$$C(t)=\frac{R_{in}}{CL}\left(1-e^{-(CL/V)t}\right)$$</p>
+<p class="math-display">$$C_{ss}=\frac{R_{in}}{CL}$$</p>
+<h3 id="핵심-기억-사항">핵심 기억 사항</h3>
+<p>유지 투여(maintenance dosing)를 시작할 때 먼저 묻는 것은 “목표농도(target concentration) × 청소율(clearance)”입니다. 목표 $C_{ss}$를 맞추려면 $R_{in}$을 조정하고, 환자의 $CL$ 변화를 반영해야 합니다. $V$는 loading이나 onset의 문제로 이동합니다.</p>
+<section class="callout-trench"><p><strong>실무 함정 팁(Trench-Level Tip)</strong>: 주입(infusion) 중 관찰 농도가 기대 plateau보다 낮다고 해서 곧바로 $CL$ 증가로 해석하지 마세요. 먼저 실제 입력률(actual input rate), line interruption, sampling time, infusion stop/start 기록을 확인해야 합니다. 교과서가 보증하는 것은 $C_{ss}=R_{in}/CL$ 구조이지, 특정 현장 오류의 빈도 숫자가 아닙니다.</p></section>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 항정상태 농도(steady-state concentration)의 지배자는 청소율(clearance)입니다. 반감기(half-life)는 plateau까지 가는 시간의 지배자입니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M1 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: $C_{ss}$를 단순히 "용량(dose)이 정한다"고 보면, 신부전 환자의 정속 주입(infusion) 보정에서 청소율(CL)과 입력률($R_{in}$)을 분리하지 못해 보정 방향 자체가 뒤집힙니다.</li>
+<li><strong>흐름상 역할</strong>: 정속 주입 임상 해석의 척추(spine). M2(도달 시간), M4($C_{av,ss}$ vs $A_{av,ss}$), M7(부하 용량) 모두에 항정상태 농도(steady-state concentration)의 정의를 공급합니다.</li>
+<li><strong>체화 꿀팁</strong>: 본문의 $C_{ss}=R_{in}/CL$ 식을 손으로 한 번 적은 뒤, 입으로 "항정상태 농도는 입력률(input rate) ÷ 청소율(clearance)의 평형이다"라고 풀어보기.</li>
+<li><strong>실무 활용</strong>: 중환자실(ICU) 정속 주입 약물의 치료적 약물 농도 모니터링(TDM, Therapeutic Drug Monitoring) 보고서에서 "$R_{in}$ = X mg/h, CL = Y L/h, 예측 $C_{ss}$ = Z mg/L" 3점 표기를 표준화합니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<blockquote><p><strong>실무 렌즈(Practice Lens) — [EXPERT_INFERENCE]</strong>  
+정속 주입 해석에서는 먼저 “입력률이 정확했는가?”와 “clearance 가정이 맞는가?”를 분리합니다. 관찰 농도가 plateau와 다를 때 시간상 아직 approach 중인지, 실제 input이 달랐는지, CL이 달랐는지를 같은 문장 안에서 섞지 않는 것이 숙련자의 기본 점검 순서입니다.</p></blockquote>
+<h2 id="sec2-m2-항정상태-도달-시간-34-규칙">§2-M2. 항정상태 도달 시간: 3–4 $t_{1/2}$ 규칙</h2>
+<section class="callout-master"><h3 id="거장의-시각-2">거장의 시각(Big Idea)</h3>
+<p>정속 주입이든 다중투여든 plateau 접근 속도는 <strong>소실 반감기(elimination half-life)</strong>가 정합니다. 즉, 목표 plateau가 높든 낮든 “몇 %까지 접근했는가”의 시간표는 half-life로 움직입니다. 1 half-life 후 50%, 2 half-lives 후 75%, 3 half-lives 후 87.5%, 3–4 half-lives 후 약 90%에 도달합니다 <span class="source-page">[G p.22; R&amp;T pp.290–292]</span>.</p></section>
+<h3 id="출처-고정-수식-2">출처 고정 수식(Source-locked equation)</h3>
+<p class="math-display">$$C(t)=C_{ss}(1-e^{-Kt})$$</p>
+<p>도달률은 $1-e^{-Kt}$이며, $K=\ln2/t_{1/2}$입니다. 90% 도달 시간은 $t=\ln(10)/K\approx3.32t_{1/2}$이다 <span class="source-page">[R&amp;T p.291]</span>.</p>
+<h3 id="실무적-해석">실무적 해석</h3>
+<p>$t_{1/2}$가 2.5시간인 eptifibatide는 plateau에 비교적 빨리 접근하고, $t_{1/2}$가 5분인 t-PA는 약 17분이면 90% 수준에 접근합니다 <span class="source-page">[R&amp;T pp.288–293]</span>. 반대로 phenobarbital처럼 $t_{1/2}=4$ days이면 plateau 접근 자체가 느립니다 <span class="source-page">[R&amp;T pp.324–325]</span>.</p>
+<p class="bridge"><strong>NONMEM 연결</strong>: 항정상태 가정(steady-state assumption)은 “평균적으로 충분히 오래 투여했다”는 시간 조건입니다. <code>SS=1</code>을 쓰기 전에 실제 투여 이력이 최소 3–4 half-lives 이상인지 먼저 확인해야 합니다.</p>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 목표 수준이 바뀌어도 접근 비율(approach fraction)의 시간표는 반감기로 움직입니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M2 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 도달 시간이 오직 $K$(즉 반감기)에 의존한다는 사실을 놓치면, 입력률(dosing rate) 조정과 항정상태(steady state) 도달 가속을 혼동해 임상 결정이 엉뚱한 방향으로 흘러갑니다(M3 그럴싸한 오해의 직접 전제).</li>
+<li><strong>흐름상 역할</strong>: M3 $R_{ac}$의 도달 속도 결정자 자리를 잡아주는 카드이며, M7 부하 용량(loading dose) 정당화의 출발점입니다.</li>
+<li><strong>체화 꿀팁</strong>: "도달은 $K$가 결정, 축적 정도는 $\tau$가 결정"을 한 문장 만트라(mantra)로 박아둡니다. 본문의 90% 도달 $\approx3.32t_{1/2}$를 목표 수준과 무관한 "비율(fraction)"의 시간표로 읽으면 됩니다.</li>
+<li><strong>실무 활용</strong>: 약물 변경 또는 용량 변경 직후 "언제 새 항정상태에 도달하는가"를 환자 차트에 3–4 $t_{1/2}$로 미리 표기한다(eptifibatide 약 7.5 시간 ≈ 3 × 2.5 h, t-PA 약 17 분 ≈ 3.32 × 5 min, phenobarbital 약 2 주 ≈ 3.5 × 4 days).</li>
+</ul></blockquote>
+<hr class="rule">
+<blockquote><p><strong>실패 모드(Failure Mode) — [EXPERT_INFERENCE]</strong>  
+3–4 반감기 규칙은 “목표가 맞다”는 보증이 아니라 “정해진 목표 plateau의 몇 %에 접근했는가”를 말합니다. 잘못 잡은 목표 농도도 half-life 시간표를 따라 성실하게 도달하므로, target 설정과 approach-time 판단을 분리해야 합니다.</p></blockquote>
+<h2 id="sec2-m3-apex-concept-다중투여-축적인자">§2-M3. Apex Concept — 다중투여 축적인자 $R_{ac}=1/(1-e^{-K\tau})$</h2>
+<section class="callout-master"><h3 id="거장의-시각-3">거장의 시각(Big Idea)</h3>
+<p>다중투여 축적(accumulation)은 새 용량(dose)이 들어올 때 이전 dose의 잔여량이 얼마나 남아 있는지의 문제입니다.</p>
+<p>축적계수(accumulation factor; 단회 투여 대비 plateau 증가비)는 농도값 자체가 아니라 반복 투여가 만든 배율입니다.</p>
+<p>1차 선형계에서 이전 dose의 잔여 비율은 $e^{-K\tau}$이고, 무한 반복하면 등비수열 합으로 닫힌 형태가 된다 <span class="source-page">[G pp.43–45; R&amp;T pp.795–797]</span>.</p></section>
+<h3 id="출처-고정-수식-3">출처 고정 수식(Source-locked equation)</h3>
+<p class="math-display">$$R_{ac}=\frac{1}{1-e^{-K\tau}}=\frac{1}{1-2^{-\tau/t_{1/2}}}$$</p>
+<p>이 식에는 용량(dose)이 들어가지 않습니다. 축적 정도는 용량 크기(용량 크기(dose size))가 아니라 <strong>반감기 대비 투여간격(dose interval relative to half-life)</strong>이 정합니다 <span class="source-page">[G pp.44–45; R&amp;T pp.325–326]</span>.</p>
+<h3 id="세-결정자-잠금">세 결정자 잠금(Three-dominator lock)</h3>
+<ul>
+<li><strong>시간(Timing)</strong>: plateau 접근 시간 = $t_{1/2}$.</li>
+<li><strong>수준(Level)</strong>: 평균 plateau 농도(average plateau concentration) = $CL$과 평균 입력률(average input rate).</li>
+<li><strong>Amplitude</strong>: peak-trough fluctuation과 accumulation factor = $\tau/t_{1/2}$.</li>
+</ul>
+<p>R&amp;T의 200 mg/day 예시는 평균 투여율(average dosing rate)이 같으면 평균량(average amount)의 접근 시간은 같다는 점을 보여줍니다. 달라지는 것은 투여간격(dosing interval)이 길어질수록 커지는 변동(fluctuation)입니다 <span class="source-page">[R&amp;T p.325]</span>.</p>
+<h3 id="그럴싸한-오해-expert_inference-v33">그럴싸한 오해(Plausible Fallacy) — [EXPERT_INFERENCE, v3.3]</h3>
+<p><strong>그럴싸한 오해</strong>: "$R_{ac}$가 클수록 항정상태(steady state)에 도달하는 시간이 길어집니다."</p>
+<p><strong>왜 틀렸는가</strong>: $R_{ac} = 1/(1-e^{-K\tau})$는 정상상태에서의 *축적 정도(extent of accumulation)*를 정의할 뿐이며, 도달 *속도(rate to steady state)*는 오직 $K$(또는 $t_{1/2}$)가 결정합니다 — §2-M2의 3–4 $t_{1/2}$ 규칙 그대로입니다. $\tau$를 줄이면 $R_{ac}$는 <em>증가</em>(더 누적)하고, $\tau$를 늘리면 $R_{ac}$는 <em>감소</em>(덜 누적)합니다. 그러나 어느 쪽이든 항정상태(steady state) 도달 시간은 $K$ 한 변수에 의해 약 3–4 $t_{1/2}$로 동일합니다. 즉, 축적 정도와 도달 속도는 서로 다른 두 결정자에 의해 분리 지배되며, 둘을 한 묶음으로 다루면 투여간격(dosing interval) 의사결정의 방향 자체가 뒤집힙니다.</p>
+<p><strong>실무에서 어떻게 드러나는가 — 축적-도달 시계 혼동 함정(Accumulation-vs-Onset Conflation Trap)</strong>: 최저 농도(trough)가 치료역(therapeutic window) 상한을 넘은 환자에서 두 직관이 충돌합니다 — (a) "축적이 너무 많다 → $\tau$를 늘려 $R_{ac}$를 줄이자"와 (b) "도달이 느려서 그렇다 → 빠르게 항정상태에 도달시키자(부하 용량 추가)". 첫 번째는 $R_{ac}$ 메커니즘에 정합하지만, 두 번째는 $K$의 시계와 $\tau$의 시계를 혼동한 결과입니다. $\tau$ 조정은 $R_{ac}$를 바꾸지만 항정상태 도달 시간은 $K$가 결정하므로, $R_{ac}$ 조정과 도달 가속 전략(부하 용량, 부하용량(loading dose))은 서로 다른 의사결정 축입니다. Phenobarbital처럼 $K$가 매우 작은 약물에서는 이 분리가 임상 결정의 핵심이며 (§2-M3 Phenobarbital 라벨 잠금에 직결), 본 카드의 세 결정자 잠금($K\tau$, $\tau/t_{1/2}$, $R_{ac}$ 비대칭성)이 이 함정의 진단 좌표입니다.</p>
+<h3 id="phenobarbital-라벨-잠금">Phenobarbital 라벨 잠금</h3>
+<p>Phenobarbital 예시는 “slow half-life + short interval”이 큰 accumulation과 느린 plateau approach를 만든다는 좋은 anchor다. 단, 라벨을 분리해야 합니다. R&amp;T는 $t_{1/2}=4$ days, 100 mg q24h 사례에서 본문상 accumulation index 5.8을 언급하지만, Eq. 11-3/11-10의 peak/trough accumulation index로 계산하면 $A_{max,ss}/Dose=630/100\approx6.3$입니다. 다시 말해, 5.8은 $A_{av,ss}/Dose\approx5.76$에 해당하는 average accumulation ratio입니다. 이것은 peak/trough 기준 $R_{ac}$와 서로 다른 라벨이므로 혼용하지 않는다 <span class="source-page">[R&amp;T pp.324–326]</span>.</p>
+<section class="callout-trench"><p><strong>실무 함정 팁(Trench-Level Tip) — 유령 Plateau 편향(Phantom Plateau Bias)</strong>: 투여 시작 직후 자료에 <code>SS=1</code>을 부적절하게 적용하면 observed rising limb를 이미 plateau인 것처럼 강제로 설명하게 됩니다. 이때 CL, bioavailability, interindividual variability 추정이 연쇄적으로 왜곡될 수 있습니다. 수치적 손상률이나 제출 실패 같은 외부 단정은 본문에서 삭제합니다.</p></section>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 축적인자(accumulation factor)는 용량(dose) 독립, $\tau/t_{1/2}$ 의존입니다. Dose를 키우면 수준(level)이 올라가지만, accumulation ratio 자체가 바뀌지는 않습니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M3 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 축적 정도(extent of accumulation)와 도달 속도(rate to steady state)를 분리하지 못하면, 최저 농도(trough)가 상승한 환자에서 $\tau$ 조정 방향이 뒤집히고(상기 그럴싸한 오해 참조), Phenobarbital처럼 $K$가 작은 약물에서는 라벨(label) 표현이 임상 결정과 어긋납니다.</li>
+<li><strong>흐름상 역할</strong>: 이 세션 항정상태 투여 사고의 핵심. M4($C_{av,ss}$)·M7(부하/유지)·M8(TW algorithm) 모두에 축적 정도 결정자를 공급하며, §5-쌍4(도달 vs 축적 vs fluctuation) 진단의 모태입니다.</li>
+<li><strong>체화 꿀팁</strong>: 본문 $R_{ac} = 1/(1-e^{-K\tau})$ 한 줄 식을 보지 않고 적은 뒤, $K\tau \to 0$(잦은 투여) 극한과 $K\tau \to \infty$(드문 투여) 극한에서의 $R_{ac}$ 거동을 손으로 풀어봅니다.</li>
+<li><strong>실무 활용</strong>: phenobarbital·장반감기 약물 protocol 작성 시 $R_{ac}$ 수치와 $K\tau$를 함께 보고하여, 축적 vs 도달의 분리를 라벨 근거로 명시한다($A_{av,ss}/Dose \approx 5.76$ vs peak/trough $R_{ac} \approx 6.3$의 라벨 분리는 §2-M3 Phenobarbital 라벨 잠금에 직결).</li>
+</ul></blockquote>
+<hr class="rule">
+<aside class="figure-pointer">
+<dl>
+<dt>Source</dt><dd>Rowland &amp; Tozer 5e, p.325, Fig. 11-3</dd>
+<dt>Why this matters</dt><dd>같은 평균 투여율(average dose rate)은 같은 평균량(average amount) plateau 접근을 만들지만, 투여 빈도(dosing frequency)는 변동(fluctuation)을 바꾼다는 점을 직접 보여 줍니다. M3의 “용량(dose)이 아니라 $\tau/t_{1/2}$가 축적과 변동을 지배한다”는 해석을 시각적으로 고정하는 핵심 기준점입니다.</dd>
+<dt>When to look</dt><dd>§2-M3의 <code>세 결정자 잠금(Three-dominator lock)</code>을 읽은 직후 확인하면 됩니다.</dd>
+<dt>Learner instruction</dt><dd>먼저 두 곡선의 평균 접근(average approach)이 같은지 확인하세요. 그다음 peak–trough swing이 어떻게 달라지는지 보시면 됩니다. “평균 수준”과 “출렁임”을 같은 말로 읽지 마세요.</dd>
+</dl>
+</aside>
+<blockquote><p><strong>숙달 노트(Mastery Note) — [CRUCIBLE_DERIVED]</strong>  
+$R_{ac}$는 노출의 절대값이 아니라 반복투여가 만든 배율입니다. 선형 PK에서는 dose를 키우면 곡선 전체가 커지지만, 같은 $\tau/t_{1/2}$에서 “배율” 자체는 그대로라는 점이 이 카드의 핵심입니다.</p></blockquote>
+<h2 id="sec2-m4-항정상태-평균농도와-평균-amount-vs">§2-M4. 항정상태 평균농도와 평균 amount: $C_{av,ss}$ vs $A_{av,ss}$</h2>
+<section class="callout-master"><h3 id="거장의-시각-4">거장의 시각(Big Idea)</h3>
+<p>이 세션에서 가장 위험한 오류는 <strong>평균 농도(average concentration)</strong>와 <strong>평균 약물량(average amount)</strong>을 같은 식으로 쓰는 것입니다.</p>
+<p>average concentration<span class="annotation">(← 용적당 평균 농도)</span>과 average amount<span class="annotation">(← 체내 평균 약물량)</span>는 단위부터 다릅니다.</p>
+<p>R&amp;T는 두 식을 분리한다 <span class="source-page">[R&amp;T p.324; R&amp;T p.337]</span>.</p></section>
+<h3 id="출처-고정-수식-4">출처 고정 수식(Source-locked equations)</h3>
+<p class="math-display">$$C_{av,ss}=\frac{AUC_{0-\tau,ss}}{\tau}=\frac{F\cdot Dose}{CL\cdot\tau}$$</p>
+<p class="math-display">$$A_{av,ss}=\frac{1.44\cdot F\cdot Dose\cdot t_{1/2}}{\tau}$$</p>
+<p>첫 식의 단위는 농도(concentration)이고, 두 번째 식의 단위는 약물량(amount)입니다. 1-compartment에서 $MRT=V/CL=1.44t_{1/2}$가 성립할 때만 $C_{av,ss}=A_{av,ss}/V$로 연결됩니다 <span class="source-page">[R&amp;T p.289; R&amp;T p.324]</span>. 다구획(multi-compartment)에서는 amount-to-concentration 변환이 모델 구조에 의존합니다.</p>
+<h3 id="왜-중요한가">왜 중요한가</h3>
+<p>$C_{av,ss}$는 clinical target, TDM interpretation, exposure-response 분석의 언어입니다. 반면 $A_{av,ss}$는 body burden과 residence time의 언어입니다. 따라서 둘을 섞으면 “농도 목표”와 “체내 amount”의 차원이 무너집니다.</p>
+<h3 id="예시-앵커">예시 앵커</h3>
+<ul>
+<li>Table 11-1의 200 mg q24h 예시는 single-dose profile을 superposition<span class="annotation">(← 단회 투여 곡선을 시간 이동해 더함)</span>하여 repeated-dose profile을 예측할 수 있음을 보여줍니다 <span class="source-page">[R&amp;T pp.320–321]</span>.</li>
+<li>Clobazam 예시는 single-dose AUC와 투여간격(dosing interval)로 average plateau 농도(concentration)를 예측하는 논리를 보강한다 <span class="source-page">[R&amp;T p.336]</span>.</li>
+<li>Amoxicillin, naproxen, piroxicam 예시는 같은 amount-time framework 안에서 <strong>세 가지 다른 $t_{1/2}/\tau$ 영역</strong>을 보여줍니다 <span class="source-page">[R&amp;T pp.330–332]</span>. 짧은 반감기(half-life)의 amoxicillin은 투여간격(dosing interval)에 비해 elimination이 빨라 <strong>fluctuation이 크고 accumulation이 작은</strong> 패턴 — peak-trough swing이 plateau의 중심에서 멀리 흔들립니다. 중간 반감기(half-life)의 naproxen은 fluctuation과 accumulation이 둘 다 적당한 균형 영역에 위치합니다. 긴 반감기(half-life)의 piroxicam은 투여간격(dosing interval)이 half-life에 비해 짧아 <strong>fluctuation이 작고 accumulation이 큰</strong> 패턴 — plateau 곡선이 거의 평탄해집니다. 같은 식 ($C_{av,ss}=F\text{Dose}/(CL\tau)$, $A_{av,ss}=1.44F\text{Dose}t_{1/2}/\tau$)으로 세 약물 모두 $C_{av,ss}$ 평균은 정의되지만, 환자가 실제로 경험하는 "농도 진폭"은 $\tau/t_{1/2}$ 영역에 따라 본질적으로 달라집니다.</li>
+</ul>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: $C_{av,ss}$는 $CL$ 기반 농도식, $A_{av,ss}$는 $MRT$ 기반 약물량(amount)식입니다. 두 식은 차원이 다릅니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M4 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 평균 농도(average concentration)와 평균 약물량(average amount)을 한 단위로 묶으면, 용량(dose) 공식 도출에서 mg/L과 mg을 혼용해 용량 자체가 단위 mismatch가 됩니다.</li>
+<li><strong>흐름상 역할</strong>: M7 유지 용량(maintenance dose) 공식의 정량적 척추(spine). M8 치료역 기반 알고리즘(TW-driven algorithm)의 입력값.</li>
+<li><strong>체화 꿀팁</strong>: 본문 식의 $C_{av,ss}=F\text{Dose}/(CL\tau)$와 $A_{av,ss}=1.44F\text{Dose}t_{1/2}/\tau$를 손으로 적고, 단위 차이("농도는 농도, 약물량은 약물량")를 자문합니다. amoxicillin / naproxen / piroxicam 세 약물을 $\tau/t_{1/2}$ 영역별 fluctuation·accumulation 패턴(짧은 / 중간 / 긴 반감기)으로 머릿속에 배치합니다.</li>
+<li><strong>실무 활용</strong>: 유지 용량 보고서에서 $C_{av,ss}$ (mg/L)와 $A_{av,ss}$ (mg)를 절대 한 표 칸에 묶지 않으며, 1-구획(one-compartment) 가정과 $V$가 명시되었을 때만 $C_{av,ss}=A_{av,ss}/V$ 변환을 적용합니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<figure aria-label="비교 카드가 평균농도와 평균량(average amount)을 분리하고, 둘 사이에 방화벽을 둡니다. 1-compartment 설정에서만 용적(volume)을 통한 조건부 bridge가 놓입니다.">
+<div class="firewall-cards">
+  <div class="card card-conc">
+    <div class="card-title">$C_{av,ss}$ — 평균농도 (average concentration)</div>
+    <div class="card-unit">단위: concentration (mass / volume)</div>
+    <div class="card-eq">$$C_{av,ss}=\dfrac{F \cdot \text{Dose}}{CL \cdot \tau}$$</div>
+  </div>
+  <div class="firewall-divider">
+    🚧<br/>직접 등치하지 말 것<br/><span class="firewall-divider-en">(Do not equate directly)</span>
+  </div>
+  <div class="card card-amt">
+    <div class="card-title">$A_{av,ss}$ — 평균량 (average amount)</div>
+    <div class="card-unit">단위: amount (mass)</div>
+    <div class="card-eq">$$A_{av,ss}=\dfrac{1.44 \cdot F \cdot \text{Dose} \cdot t_{1/2}}{\tau}$$</div>
+  </div>
+</div>
+<div class="firewall-bridge">
+  <strong>조건부 bridge:</strong> 1-compartment이고 $V$를 알 때만 — $$C_{av,ss}=A_{av,ss}/V$$
+</div>
+<figcaption>평균농도와 평균량(average amount)은 같은 steady-state idea에서 나오지만 차원이 다르므로 직접 등치하면 안 됩니다.</figcaption></figure>
+<blockquote><p><strong>실패 모드(Failure Mode) — [AUDIT_DERIVED]</strong>  
+$A_{av,ss}$ 식을 $C_{av,ss}$ 식으로 잘못 옮기는 오류는 단순 표기 문제가 아니라 단위 방화벽 붕괴입니다. 보고서나 슬라이드에서 이 줄이 무너지면 TDM target, exposure-response target, body burden 해석이 한꺼번에 섞입니다.</p></blockquote>
+<h2 id="sec2-m5-flip-flop-동태-일-때-terminal-slope의-정체">§2-M5. Flip-flop 동태: $K_a<K$일 때 terminal slope의 정체</h2>
+<section class="callout-master"><h3 id="거장의-시각-5">거장의 시각(Big Idea)</h3>
+<p>혈관 외 투여(extravascular dosing)에서 말단 기울기(terminal slope)는 항상 소실(elimination)을 의미하지 않습니다.</p>
+<p>Flip-flop<span class="annotation">(← 흡수가 제거보다 느린 상태)</span>에서는 말단 기울기의 해석 주체가 elimination에서 absorption으로 바뀝니다.</p>
+<p>흡수가 더 느리면 terminal phase는 absorption-limited phase가 된다 <span class="source-page">[G pp.45–46]</span>.</p></section>
+<h3 id="출처-고정-관계식">출처 고정 관계식(Source-locked relation)</h3>
+<p class="math-display">$$K_a<K \Rightarrow \text{terminal slope}\approx K_a$$</p>
+<p>일반적인 경우는 $K_a>K$이고 terminal slope가 $K$를 반영합니다. Flip-flop에서는 terminal half-life가 길어 보입니다. 그러나 이것은 약물 소실(drug elimination)이 느리다는 뜻이 아닙니다 — absorption input이 오래 지속되는 상황일 수 있습니다.</p>
+<h3 id="임상적-비대칭성">임상적 비대칭성(Clinical asymmetry)</h3>
+<p>Modified-release products와 depot formulations는 의도적으로 input을 느리게 만들어 fluctuation을 줄입니다. 즉, formulation이 absorption/input을 지배하면 terminal slope와 투여간격(dosing interval)의 임상 의미가 달라집니다. Morphine MR은 짧은 elimination half-life에도 q24h regimen을 가능하게 하고, leuprolide depot은 짧은 half-life에도 월 1회 투여를 가능하게 한다 <span class="source-page">[R&amp;T pp.337–338]</span>. 이것은 “나쁜 flip-flop”이 아니라 <strong>의도된 input control</strong>입니다.</p>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 말단 기울기(terminal slope)를 곧바로 소실(elimination)로 번역하지 마세요. 먼저 투여경로, 제형, 흡수 지속시간을 확인합니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M5 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 경구(oral) 단독 데이터에서 말단 기울기(terminal slope)가 $K$인지 $K_a$인지 식별 불가능한 경우를 인식하지 못하면, 잘못된 반감기 보고로 항정상태(steady state) 예측이 빗나갑니다.</li>
+<li><strong>흐름상 역할</strong>: 03번 세션 oral PK의 flip-flop 진단을 다중투여(multiple-dose) 항정상태 맥락으로 확장. §5-쌍3(flip-flop vs ordinary extravascular)의 임상 의사결정 자리.</li>
+<li><strong>체화 꿀팁</strong>: "두 개의 $K$ 후보 모두 시도 + 정맥(IV) 비교 데이터 요청" 두 단계를 일상적 점검(routine)으로 박아둡니다. Modified-release(MR)·depot 제형은 "나쁜 flip-flop"이 아니라 의도된 입력 제어(intended input control)임을 morphine MR·leuprolide depot 사례로 머릿속에 분리합니다.</li>
+<li><strong>실무 활용</strong>: 경구 약물의 모집단 약동학(PopPK, Population Pharmacokinetics) 분석 보고서에서 말단 기울기의 flip-flop 가능성을 본문에 1문장이라도 언급하지 않으면 reviewer comment가 거의 확정적으로 따라옵니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<aside class="figure-pointer">
+<dl>
+<dt>Source</dt><dd>Gabrielsson &amp; Weiner 5e, p.45, Fig. 2.29</dd>
+<dt>Why this matters</dt><dd>Flip-flop은 문장으로는 “흡수가 느리다”로 지나가기 쉽지만, 실제 오류는 말단 기울기(terminal slope)를 소실 기울기(elimination slope)로 잘못 읽는 데서 발생합니다. 이 그림은 ordinary case와 flip-flop case의 terminal phase 정체를 분리해 줍니다.</dd>
+<dt>When to look</dt><dd>§2-M5의 <code>임상적 비대칭성(Clinical asymmetry)</code>을 읽기 전에 확인하면 됩니다.</dd>
+<dt>Learner instruction</dt><dd>terminal tail이 더 길어졌을 때 먼저 $K_a<K$ 가능성을 확인하세요. 긴 말단 반감기(terminal half-life)를 곧바로 느린 소실(elimination)로 번역하지 마세요.</dd>
+</dl>
+</aside>
+<blockquote><p><strong>숙달 노트(Mastery Note) — [TEXTBOOK_DERIVED]</strong>  
+말단 상(terminal phase)은 항상 elimination phase라는 이름을 붙이기 전에 route와 input function을 먼저 확인해야 합니다. Flip-flop은 “느린 elimination”이 아니라 “느린 absorption이 terminal slope를 지배하는 상황”으로 읽어야 합니다.</p></blockquote>
+<h2 id="sec2-m6-therapeutic-window-pk-식을-임상-의사결정으로-바꾸는-제약조건">§2-M6. Therapeutic Window — PK 식을 임상 의사결정으로 바꾸는 제약조건</h2>
+<section class="callout-master"><h3 id="거장의-시각-6">거장의 시각(Big Idea)</h3>
+<p>치료역(therapeutic window)은 단순한 농도 구간이 아니라, benefit과 harm을 동시에 고려해 regimen을 정하는 임상 효용 틀(clinical utility frame)입니다. R&amp;T는 dosage regimen을 dose, dosage form, route, interval, duration으로 구성하고, 이를 systemic exposure와 beneficial/adverse response에 연결합니다 <span class="source-page">[R&amp;T pp.267–268]</span>.</p></section>
+<h3 id="용어-잠금">용어 잠금(Term lock)</h3>
+<ul>
+<li><strong>Therapeutic concentration range</strong>: 임상 경험상 효과가 있고 위해가 받아들여질 만한 농도 범위 <span class="source-page">[R&amp;T p.272]</span>.</li>
+<li><strong>Therapeutic window</strong>: utility curve의 역치(threshold) 이상으로 정의되는 임상 의사결정 구간입니다. 즉, 두 범위는 겹칠 수 있지만 같은 개념은 아닙니다 <span class="source-page">[R&amp;T pp.273–274]</span>.</li>
+<li><strong>Therapeutic index</strong>: 전임상에서는 $TD_{50}/ED_{50}$ ratio로, 임상에서는 exposure 변화에 대한 개별 환자의 limiting effect sensitivity<span class="annotation">(← 노출 변화가 위해·효과를 얼마나 예민하게 바꾸는가)</span>로 이해해야 한다 <span class="source-page">[R&amp;T p.278]</span>.</li>
+</ul>
+<h3 id="효용-수식화-잠금">효용 수식화 잠금(Utility formalization lock)</h3>
+<p>$U(C)=\sum w_iP_i(C)$ 같은 표현은 <strong>교과서 원수식이 아니라 교육적 formalization<span class="annotation">(← 개념을 수식 형태로 표현한 것)</span></strong>입니다.</p>
+<p>formalization<span class="annotation">(← 개념을 계산식 형태로 표현)</span>은 출처 식과 구별해 읽어야 합니다.</p>
+<p>R&amp;T Fig. 9-4의 가중치 예시는 저자 판단에 따른 illustrative weighting으로만 써야 하며, 표준 regulatory weight처럼 쓰면 안 된다 <span class="source-page">[R&amp;T p.273]</span>.</p>
+<h3 id="pkpd-반응-시계">PK/PD 반응 시계</h3>
+<p>Plasma concentration이 항상 effect를 즉시 설명하지 않습니다. Atorvastatin은 PK half-life가 약 14시간이지만 cholesterol response plateau는 3–4주가 걸릴 수 있습니다. Erythropoietin은 PK half-life가 약 9시간이어도 hematocrit plateau는 약 70일에 걸친다 <span class="source-page">[R&amp;T pp.343–344]</span>. 여기서 질문은 “약물의 반감기(half-life)인가, turnover system의 half-life인가”입니다.</p>
+<h3 id="항균제-앵커">항균제 앵커(Antimicrobial anchor)</h3>
+<p>Antimicrobial regimen은 PK index가 다르면 dosing logic도 달라집니다. β-lactam 계열처럼 time above MIC가 중요한 경우 prolonged/continuous infusion이 합리적일 수 있고, aminoglycoside처럼 peak/MIC와 toxicity window가 중요한 경우 once-daily fractionation이 합리적일 수 있다 <span class="source-page">[R&amp;T pp.307–312; R&amp;T pp.347–348]</span>. R&amp;T Fig. 11-20의 AUC/MIC &gt;101 예시는 resistance avoidance 논리의 정량적 근거가 되는 예시다 <span class="source-page">[R&amp;T p.348]</span>.</p>
+<section class="callout-trench"><p><strong>실무 함정 팁(Trench-Level Tip) — DDI 변수 잠금</strong>: protein binding만으로 DDI 민감도를 설명하지 않습니다. R&amp;T의 low/high extraction ratio 예시는 plateau 변화의 핵심 변수가 hepatic extraction ratio임을 보여줍니다 <span class="source-page">[R&amp;T pp.309–310; R&amp;T pp.350–351]</span>.</p></section>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 치료역(TW)은 PK 식의 마지막 줄이 아니라 투여 설계(투여 설계(regimen design))의 제약조건입니다. 목표농도, fluctuation, PD delay, toxicity mechanism을 동시에 제한합니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M6 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 치료역(therapeutic window, TW)을 정의하지 못하면 PK 파라미터가 단순 산술 연습(numerical exercise)으로 끝나고, 용량 의사결정(dose-decision)을 정량화하는 입구 자체가 닫힙니다.</li>
+<li><strong>흐름상 역할</strong>: M7 부하 용량(loading) + 유지 용량(maintenance), M8 TW-driven algorithm의 정의 출발점. PK에서 임상 의사결정으로 건너가는 다리.</li>
+<li><strong>체화 꿀팁</strong>: 본문의 효능 한계와 안전 한계를 두 점($C_{lower}$, $C_{upper}$)으로 표시하고, 투여간격(dosing interval)에 따른 농도 진동이 두 점 사이에 들어가는지 머릿속에서 시뮬레이션해봅니다. atorvastatin(PK $t_{1/2}\approx 14$ h, PD plateau 3–4주)·erythropoietin(PK $t_{1/2}\approx 9$ h, hematocrit plateau $\approx70$일) 사례로 PK 시계와 PD 시계의 분리를 동시에 박아둡니다.</li>
+<li><strong>실무 활용</strong>: 항균제(antimicrobial) 투여 protocol에서 TW 상한·하한·진동폭(fluctuation)을 매 protocol 첫 표에 명시합니다. β-lactam은 time above MIC, aminoglycoside는 peak/MIC, 일부 항균제는 AUC/MIC &gt; 101이라는 PK index 차이를 protocol 근거로 명시합니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<aside class="figure-pointer">
+<dl>
+<dt>Source</dt><dd>Rowland &amp; Tozer 5e, p.272, Fig. 9-3</dd>
+<dt>Why this matters</dt><dd>이 그림은 치료역(therapeutic window)을 단순 농도범위가 아니라 효과성(effectiveness), 유해반응(adverse response), 효용(utility)의 균형(balance)로 보게 하는 원문 핵심 그림입니다. Content Lock v2의 효용 형식화 잠금(utility formalization lock)을 원문 곡선 직관으로 되돌려 줍니다.</dd>
+<dt>When to look</dt><dd>§2-M6의 <code>용어 잠금(Term lock)</code>과 <code>효용 형식화 잠금(Utility formalization lock)</code> 사이에서 확인하면 됩니다.</dd>
+<dt>Learner instruction</dt><dd>effectiveness curve와 utility curve를 같은 것으로 보지 마세요. utility가 benefit과 harm을 함께 반영한다는 점을 확인하면 됩니다. TW는 농도축 위에 그려진 의사결정 구역(decision zone)입니다.</dd>
+</dl>
+</aside>
+<blockquote><p><strong>실무 렌즈(Practice Lens) — [CRUCIBLE_DERIVED]</strong>  
+치료역(therapeutic window)은 계산이 끝난 뒤 붙이는 장식이 아니라 regimen이 통과해야 하는 제약조건입니다. 숙련자는 먼저 benefit–harm balance가 허용하는 농도 영역을 정하고, 그 다음 PK 식이 그 영역을 유지할 수 있는지 묻습니다.</p></blockquote>
+<h2 id="sec2-m7-loading-dose-maintenance-목표-즉시-도달과-유지의-분리">§2-M7. Loading Dose + Maintenance: 목표 즉시 도달과 유지의 분리</h2>
+<section class="callout-master"><h3 id="거장의-시각-7">거장의 시각(Big Idea)</h3>
+<p>부하 용량(loading dose)<span class="annotation">(← 초기에 목표에 빨리 올리는 용량)</span>는 “기다리는 시간”을 줄이는 도구이고, 유지용량(maintenance dose)<span class="annotation">(← 목표를 유지하는 반복 용량)</span>는 “유지되는 평균 입력속도”를 맞추는 도구입니다. 둘은 목적이 다릅니다 <span class="source-page">[R&amp;T pp.326–329]</span>.</p></section>
+<h3 id="출처-고정-수식-5">출처 고정 수식(Source-locked equations)</h3>
+<p class="math-display">$$D_M=D_L(1-e^{-K\tau})$$</p>
+<p class="math-display">$$D_L=\frac{D_M}{1-e^{-K\tau}}=R_{ac}D_M$$</p>
+<p>Doxycycline 예시는 $t_{1/2}=24$ h, $D_L=200$ mg, $D_M=100$ mg/day, $R_{ac}=2$라는 단순 anchor를 제공한다 <span class="source-page">[R&amp;T p.327]</span>. Sirolimus는 $t_{1/2}=2.5$ days, loading 6 mg, maintenance 2 mg/day의 임상 예시로, 이론식과 실제 tolerability 사이의 조정 필요성을 보여줍니다 <span class="source-page">[R&amp;T pp.326–327]</span>.</p>
+<h3 id="bolus-주입-앵커">Bolus + 주입 앵커</h3>
+<p>정속 주입에서 즉시 plateau 근처로 올리려면 bolus와 infusion을 결합할 수 있습니다. 먼저 bolus가 초기 농도 위치를 만들고, infusion이 이후 input rate를 유지합니다. Gabrielsson PK13은 400 µg/kg bolus + 800 µg/kg over 26 min, therapeutic window 50–300 µg/L, $V_c=2.0$ L/kg, $CL=1.0$ L/min/kg, $CL_d=1.0$ L/min/kg, $V_t=5.0$ L/kg의 수치 anchor를 제공한다 <span class="source-page">[G pp.537–539]</span>.</p>
+<h3 id="daptomycin-분할투여-앵커">Daptomycin 분할투여 앵커</h3>
+<p>Daptomycin Study A의 같은 일일 용량(daily dose) 비교는 <strong>75 mg/kg q24h vs 25 mg/kg q8h</strong>입니다. 둘 다 75 mg/kg/day이지만 CPK는 991 vs 3996 U/L로 크게 달랐습니다 <span class="source-page">[R&amp;T pp.351–353]</span>. Study B에서는 같은 $C_{max}$ 58 µg/mL 조건에서도 AUC와 CPK가 달랐습니다. 이 예시는 $C_{max}$ 또는 AUC 하나만으로 toxicity를 설명하지 않고, recovery time과 fractionation을 함께 고려해야 한다는 점을 보여줍니다.</p>
+<aside class="figure-pointer">
+<dl>
+<dt>Source</dt><dd>Rowland &amp; Tozer 5e, p.352 Fig. 11-24 and p.353 Table 11-7</dd>
+<dt>Why this matters</dt><dd>Daptomycin anchor는 이 세션에서 “같은 일일 용량(daily dose)” 비교군을 잘못 잡으면 결론 전체가 뒤집히는 고위험 지점입니다. Fig. 11-24와 Table 11-7을 함께 보아야 농도 프로파일(concentration profile), 일일 용량(daily dose), CPK 결과가 분리됩니다.</dd>
+<dt>When to look</dt><dd>§2-M7의 <code>Daptomycin 분할투여 앵커(Daptomycin fractionation anchor)</code>를 읽은 직후 확인하면 됩니다.</dd>
+<dt>Learner instruction</dt><dd>Study A에서 같은 일일 용량(daily dose) 비교가 <code>75 mg/kg q24h</code> vs <code>25 mg/kg q8h</code>인지 확인하세요. 그다음 CPK 열을 보면서 fractionation/recovery time이 toxicity 해석에 왜 필요한지 확인하면 됩니다.</dd>
+</dl>
+</aside>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 부하 용량(loading)은 초기 조건(initial condition), 유지 용량(maintenance)은 장기 입력 속도(long-run input rate), 분할투여(fractionation)는 회복 시간(recovery time)과 변동(fluctuation)을 바꿉니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M7 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 부하 용량(loading dose, LD)을 $V$로, 유지 용량(maintenance dose, MD)을 $CL$로 분리하지 않으면, 신부전 환자에서 LD까지 함께 줄여 초기 치료 농도 미달(sub-therapeutic) 사고가 발생합니다(16번 §5.5 Critical Blow와 동일 메커니즘).</li>
+<li><strong>흐름상 역할</strong>: M6의 TW 정의를 용량 구성요소(dose component)로 번역. M8 algorithm의 핵심 단계이며 §5-쌍4와 직결됩니다.</li>
+<li><strong>체화 꿀팁</strong>: $LD = V \times \text{target} / F$와 $MD = CL \times \text{target} \times \tau$ 두 식을 동시에 적고, 약물별로 어느 변수가 변하는지 분류합니다. doxycycline(LD 200 mg, MD 100 mg/day, $R_{ac}=2$)과 sirolimus(LD 6 mg, MD 2 mg/day, $t_{1/2}=2.5$ days) 두 anchor를 머릿속에 박아둡니다. PK13 bolus + infusion 사례(400 µg/kg bolus + 800 µg/kg over 26 min, TW 50–300 µg/L)는 부하·유지 결합의 수치 anchor.</li>
+<li><strong>실무 활용</strong>: 중환자실(ICU) 부하 용량 protocol에서 신기능 조정 항목을 LD와 MD에 분리해 명시합니다. Daptomycin Study A(75 mg/kg q24h vs 25 mg/kg q8h, CPK 991 vs 3996 U/L)는 "같은 일일 용량 ≠ 같은 독성"의 라벨 근거.</li>
+</ul></blockquote>
+<hr class="rule">
+<blockquote><p><strong>실무 렌즈(Practice Lens) — [EXPERT_INFERENCE]</strong>  
+부하 용량(loading)과 유지 용량(maintenance)은 같은 “용량”이라는 단어를 쓰지만 데이터셋과 해석에서는 서로 다른 질문입니다. Loading은 시작 위치를 정하고, maintenance는 반복 입력률을 정하므로 dose event와 steady-state assumption을 분리해 기록해야 합니다.</p></blockquote>
+<h2 id="sec2-m8-치료역-기반-투여-설계-알고리즘">§2-M8. 치료역 기반 투여 설계 알고리즘(TW-Driven Dosage Design Algorithm)</h2>
+<section class="callout-master"><h3 id="거장의-시각-8">거장의 시각(Big Idea)</h3>
+<p>치료역(therapeutic window)이 $C_{lower}$와 $C_{upper}$로 주어지고 PK parameter가 있으면, 최대 투여간격과 최대 유지용량(maintenance dose)를 계산할 수 있습니다 <span class="source-page">[R&amp;T pp.334–337]</span>.</p></section>
+<h3 id="출처-고정-수식-6">출처 고정 수식(Source-locked equations)</h3>
+<p class="math-display">$$C_{lower}=C_{upper}e^{-K\tau_{max}}$$</p>
+<p class="math-display">$$\tau_{max}=\frac{\ln(C_{upper}/C_{lower})}{K}=1.44t_{1/2}\ln\left(\frac{C_{upper}}{C_{lower}}\right)$$</p>
+<p class="math-display">$$D_{M,max}=\frac{V}{F}(C_{upper}-C_{lower})$$</p>
+<p class="math-display">$$C_{ss,av}=\frac{C_{upper}-C_{lower}}{\ln(C_{upper}/C_{lower})}$$</p>
+<h3 id="알고리즘-잠금">알고리즘 잠금(Algorithm lock)</h3>
+<ol>
+<li>$C_{lower}$, $C_{upper}$를 정합니다.</li>
+<li>$t_{1/2}$로 $\tau_{max}$를 계산합니다.</li>
+<li>$V/F$로 $D_{M,max}$를 계산합니다.</li>
+<li>실제 제형 strength와 adherence를 고려해 practical $\tau$와 $D_M$을 선택합니다.</li>
+<li>필요 시 $D_L$로 initial target에 접근합니다.</li>
+</ol>
+<section class="callout-trench"><p><strong>실무 함정 팁(Trench-Level Tip)</strong>: 이 알고리즘은 선형 PK, 고정 투여간격, 그리고 target concentration과 임상 response 사이의 충분한 직접 연결을 전제합니다. Single-dose therapy나 PD plateau가 turnover로 지배되는 약물에서는 그대로 적용하지 않는다 <span class="source-page">[R&amp;T p.279; R&amp;T pp.341–345]</span>.</p></section>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: M8은 M1–M7을 투여 알고리즘(dosing algorithm)으로 묶는 끝점입니다. 즉, $C_{upper}/C_{lower}$는 interval, $V/F$는 용량 크기(dose size), $CL$은 average 농도(concentration)를 각각 제약합니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M8 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 치료역(TW)을 알고도 용량 설계 워크플로우(workflow)가 없으면 매 환자마다 즉흥 결정이 누적되어, protocol 일관성(consistency)이 무너집니다.</li>
+<li><strong>흐름상 역할</strong>: M6(TW 정의) + M7(부하/유지 분리)의 통합 출구. 이 세션 용량 결정의 종합 끝점이며, M9(PD 시계)·M5(flip-flop) 조건이 깨지면 algorithm 적용을 중단하고 모델 확장으로 돌아가야 하는 feasibility screen.</li>
+<li><strong>체화 꿀팁</strong>: 본문 알고리즘 5단계를 빈 종이에 순서대로 적어본다 — (1) 목표 설정($C_{lower}$, $C_{upper}$), (2) $\tau_{max} = 1.44 t_{1/2} \ln(C_{upper}/C_{lower})$ 계산, (3) $D_{M,max} = (V/F)(C_{upper}-C_{lower})$ 계산, (4) 실제 제형 strength·adherence 반영해 practical $\tau$, $D_M$ 선택, (5) 필요 시 $D_L$로 초기 목표 접근. §7 Boss Dilemma의 $\tau_{max}=1.44 \times 4 \times \ln(4/1) \approx 7.98$ h 사례를 한 번 손으로 검증합니다.</li>
+<li><strong>실무 활용</strong>: 신약 임상시험 dose-finding protocol 또는 SOP의 표준 sequence로 치료역 기반 알고리즘(TW-driven algorithm)을 기본값(default)으로 채택하되, 선형 PK 비성립·즉각적 농도-반응 가정 깨짐·flip-flop·single-dose therapy·PD plateau의 turnover 지배 중 하나라도 의심되면 적용을 중단하고 모델 확장으로 돌아간다는 점을 프로토콜(protocol) 첫 페이지에 명시합니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<aside class="figure-pointer">
+<dl>
+<dt>Source</dt><dd>Rowland &amp; Tozer 5e, p.335, Fig. 11-10</dd>
+<dt>Why this matters</dt><dd>M8의 식들은 각각 맞더라도, 학습자는 $C_{upper}$, $C_{lower}$, $\tau_{max}$, $D_M$, $D_L$이 하나의 투여 설계 순서(regimen design sequence)라는 점을 놓칠 수 있습니다. 이 그림은 치료역(therapeutic window)과 부하/유지 프로파일(loading/maintenance profile)을 같은 틀(frame) 안에 묶습니다.</dd>
+<dt>When to look</dt><dd>§2-M8의 <code>알고리즘 잠금(Algorithm lock)</code>을 읽은 직후 확인하면 됩니다.</dd>
+<dt>Learner instruction</dt><dd>먼저 upper/lower bound가 투여간격을 어떻게 제한하는지 확인하세요. 그다음 유지용량(maintenance dose)과 부하용량(loading dose)이 프로파일(profile) 안에서 어떤 위치를 차지하는지 확인하면 됩니다.</dd>
+</dl>
+</aside>
+<blockquote><p><strong>실무 렌즈(Practice Lens) — [EXPERT_INFERENCE]</strong>  
+치료역 기반 알고리즘(TW-driven algorithm)은 최종 처방 자동생성기가 아니라 선형 PK와 즉각적 concentration-response 가정이 통과되는지 확인하는 feasibility screen입니다. 조건이 깨지면 interval이나 dose를 억지로 고르는 대신 모델 확장 또는 PD 시간척도 검토로 돌아가야 합니다.</p></blockquote>
+<h2 id="sec2-m9-pd-기반-plateau-효과의-시계는-약물의-시계와-다를-수-있습니다">§2-M9. PD 기반 Plateau(PD-Driven Plateau): 효과의 시계는 약물의 시계와 다를 수 있습니다</h2>
+<blockquote><p><strong>카드 위치 메모</strong>: 본 카드는 ver1에서 §2-M6 <code>PK/PD and response clocks</code> 절과 §7 Q10에 fold되어 있던 MUST-tier M9를 학습자 가시성을 위해 독립 mini-card로 재집약합니다. 새로운 사실·수치·page tag는 도입하지 않습니다.</p></blockquote>
+<section class="callout-master"><h3 id="거장의-시각-9">거장의 시각(Big Idea)</h3>
+<p>혈장 약물 농도(plasma drug concentration)가 plateau에 도달했다고 해서 임상 효과가 plateau에 도달한 것은 아닙니다. 효과의 plateau는 <strong>drug의 half-life</strong>가 아니라 <strong>biological turnover 또는 cell lifespan이라는 별개의 시계</strong>가 결정합니다 <span class="source-page">[R&amp;T pp.341–345]</span>.</p>
+<p>PD-driven plateau<span class="annotation">(← 약물 PK가 아닌 생체 turnover/세포 수명이 결정하는 효과 평탄역)</span>는 투여간격(dosing interval) 결정의 또 다른 제약입니다.</p></section>
+<h3 id="출처-고정-앵커">출처 고정 앵커(Source-locked anchors)</h3>
+<ul>
+<li><strong>Atorvastatin</strong>: PK $t_{1/2}\approx14$ h이지만 cholesterol response의 maximal effect는 3–4주가 걸린다 <span class="source-page">[R&amp;T p.343]</span>.</li>
+<li><strong>Erythropoietin</strong>: PK $t_{1/2}\approx9$ h이지만 hematocrit plateau는 약 70일이 걸린다 (RBC 수명 약 120일에 종속) <span class="source-page">[R&amp;T p.344]</span>.</li>
+</ul>
+<h3 id="핵심-기억-사항-2">핵심 기억 사항</h3>
+<p>“언제 효과 plateau에 도달하는가?”의 답은 “약물 $t_{1/2}$의 3–4배”가 아닐 수 있습니다. <strong>무엇의 half-life인지</strong> 먼저 물어야 합니다. 약물의 반감기(half-life)인가, cholesterol synthesis의 turnover time인가, RBC의 수명(lifespan)인가.</p>
+<p class="bridge"><strong>M2 / M8 연결</strong>: M2의 “3–4 half-lives $\approx$ 90%” 규칙을 PD plateau에 그대로 옮기면 onset을 과대평가합니다. M8 TW-driven algorithm은 즉각적 concentration-response 가정이 성립할 때만 유효합니다. PD plateau가 turnover에 의해 지배되는 약물에서는 algorithm 적용 전에 PD 시간척도 검토를 먼저 수행해야 합니다.</p>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: PK plateau ≠ PD plateau. 효과의 시계는 약물 분자가 아니라 내인성 전환 시스템(endogenous turnover system)이 정할 수 있습니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M9 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: PD 시계와 PK 시계의 분리를 인식하지 못하면, 약효 지속을 약물 농도(plasma drug concentration)로만 설명하려다 효과 평탄역(effect plateau)의 PD 결정자(turnover, cell lifespan)를 놓칩니다.</li>
+<li><strong>흐름상 역할</strong>: M10 분할투여 독성(dose fractionation toxicity), 10–12번 PD 모델 세션으로 건너가는 다리. aspirin·omeprazole 식 비가역(irreversible) 약물 투여 결정의 정량 근거이며, M2(3–4 $t_{1/2}$ rule)가 PD에 그대로 옮겨지지 않는다는 경고.</li>
+<li><strong>체화 꿀팁</strong>: atorvastatin(PK $t_{1/2}\approx 14$ h, cholesterol response 3–4주)·erythropoietin(PK $t_{1/2}\approx 9$ h, hematocrit plateau $\approx70$일, RBC 수명 ≈120일에 종속) 사례에서 농도 곡선과 효과 곡선을 머릿속에 두 개 곡선으로 그려 분리 위치를 표시합니다. "무엇의 반감기인가 — drug인가, turnover system인가"를 매번 먼저 자문합니다.</li>
+<li><strong>실무 활용</strong>: 비가역 약물(aspirin·omeprazole·PPI 계열) 투여 protocol에서 투여간격을 약물 $t_{1/2}$이 아니라 효과 회복 시간(turnover/cell lifespan) 기반으로 산정합니다. statin·EPO·생물학적 제제(biologics)에서는 Day-to-효과-plateau를 별도 항목으로 기록합니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<section class="callout-trench"><p><strong>실무 함정 팁(Trench-Level Tip) — PD Plateau 시점 오류 — [EXPERT_INFERENCE, v3]</strong>: PD plateau 도달 시점 예측에서 가장 흔한 함정은 drug $t_{1/2}$ 숫자를 turnover system에 그대로 대입하는 것입니다. atorvastatin처럼 PK $t_{1/2}\approx14$ h인 약물의 최대 cholesterol response를 "3–4 half-lives = 2–3일"로 예측하면, 실제 plateau인 3–4주까지 regimen 결정 시점을 심각하게 앞당기게 된다 <span class="source-page">[R&amp;T pp.341–345]</span>. 효과 평가 시점을 설계하기 전에 반드시 "무엇의 half-life인가 — drug인가, turnover/cell lifespan인가"를 먼저 확인합니다.</p></section>
+<blockquote><p><strong>숙달 노트(Mastery Note) — [TEXTBOOK_DERIVED]</strong>  
+간접 반응 모델(indirect response model)의 핵심 직관은 “약물은 turnover의 input 또는 output rate를 바꿀 뿐, response variable 자체는 turnover system의 시간상수로 움직인다”는 것입니다. atorvastatin과 EPO는 단순히 “느린 약물”이 아니라 “turnover에 의해 효과가 매개되는 약물”입니다.</p></blockquote>
+<h2 id="sec2-m10-용량분할-독성-같은-일일-용량가-같은-위해를-의미하지-않습니다">§2-M10. 용량분할 독성(Dose Fractionation Toxicity): 같은 일일 용량(daily dose)가 같은 위해를 의미하지 않습니다</h2>
+<blockquote><p><strong>카드 위치 메모</strong>: 본 카드는 ver1에서 §2-M7 <code>Daptomycin fractionation anchor</code>와 §7 Q11에 fold되어 있던 MUST-tier M10을 학습자 가시성을 위해 독립 mini-card로 재집약합니다. 새로운 사실·수치·page tag는 도입하지 않습니다.</p></blockquote>
+<section class="callout-master"><h3 id="거장의-시각-10">거장의 시각(Big Idea)</h3>
+<p>“같은 일일 용량(일일 용량(daily dose))이면 같은 독성(toxicity)”이라는 직관은 종종 틀립니다. fractionation(분할 투여) 패턴이 <strong>target tissue의 recovery time</strong>과 어긋나면, average exposure가 같아도 toxicity가 폭발할 수 있다 <span class="source-page">[R&amp;T pp.351–353]</span>.</p></section>
+<h3 id="출처-고정-앵커-2">출처 고정 앵커(Source-locked anchor)</h3>
+<p>Daptomycin Study A — <strong>75 mg/kg q24h vs 25 mg/kg q8h</strong>. 두 regimen 모두 75 mg/kg/day로 일일 용량(daily dose)가 동일하지만, CPK는 <strong>991 vs 3996 U/L</strong>로 약 4배 차이가 났다 <span class="source-page">[R&amp;T pp.351–353]</span>.</p>
+<p>Study B는 같은 $C_{max}=58$ µg/mL 조건에서도 AUC와 CPK가 fractionation에 따라 달라짐을 보였다 <span class="source-page">[R&amp;T p.353]</span>.</p>
+<h3 id="핵심-기억-사항-3">핵심 기억 사항</h3>
+<p>독성(toxicity)을 단일 변수($C_{max}$ 또는 AUC) 하나로만 설명하지 않습니다. fractionation이 짧은 recovery interval을 만들면, target tissue가 회복하지 못한 상태에서 다음 노출이 시작되어 누적 손상이 일어날 수 있습니다.</p>
+<p class="bridge"><strong>M3 / M7 연결</strong>: M3의 $R_{ac}$ 식은 plasma compartment의 누적만 다룹니다. M10은 “drug 자체의 누적”이 아닌 “tissue 손상의 누적”이라는 다른 차원의 누적을 말합니다. M7의 loading + maintenance 분리도 용량 크기(dose size)만 보지 말고 fractionation pattern과 recovery time을 함께 보아야 합니다을 시사합니다.</p>
+<section class="callout-recap"><p><strong>요약(Recap)</strong>: 같은 일일 용량 ≠ 같은 독성. 회복 시간(recovery time)이 분할 투여 간격(fractionation interval)보다 길면 누적 손상이 발생할 수 있습니다.</p></section>
+<blockquote class="practice-brief"><p><strong>▶ 실무 체화 요약(Practice Brief) — M10 체화 4축 — [EXPERT_INFERENCE, v3.3]</strong></p>
+<ul>
+<li><strong>왜 알아야 하는가</strong>: 일일 용량(일일 용량(daily dose))이 같아도 분할 패턴(fractionation pattern)에 따라 $C_{max}$·최저 농도(trough)가 달라지고, $C_{max}$ 지배 약물 vs AUC 지배 약물에 따라 위해(harm) 프로필이 정반대로 변합니다.</li>
+<li><strong>흐름상 역할</strong>: M3($R_{ac}$) + M6(TW) + M9(PD-driven plateau)의 통합 결과. 이 세션의 마지막 종합 카드(capstone)이며, "농도 누적"이 아닌 "조직 손상 누적"이라는 별개 차원의 누적 개념을 도입.</li>
+<li><strong>체화 꿀팁</strong>: vancomycin(AUC/MIC 지배)과 aminoglycosides(peak/MIC 지배) 두 약물의 동일 일일 용량 분할 시나리오를 손으로 시뮬레이션합니다. Daptomycin Study A(75 mg/kg q24h vs 25 mg/kg q8h, CPK 991 vs 3996 U/L) 비교군의 분자·분모를 매번 직접 계산해 "같은 일일 용량(daily dose)" 라벨의 정확성을 검증하는 습관을 만듭니다(§5 Critical Blow와 동일 함정).</li>
+<li><strong>실무 활용</strong>: 항균제(antimicrobial) 투여 protocol 작성 시 약물의 PK/PD index(AUC vs $C_{max}$)를 첫 번째 결정 변수로 명시합니다. fractionation pattern이 회복 시간(recovery time)보다 짧을 때의 누적 위해 시나리오를 protocol risk section에 별도 항목으로 기록합니다.</li>
+</ul></blockquote>
+<hr class="rule">
+<section class="callout-trench"><p><strong>실무 함정 팁(Trench-Level Tip) — 비교군 정의 오류(Comparator Definition Error) — [EXPERT_INFERENCE, v3]</strong>: fractionation toxicity 분석에서 비교군을 잘못 정의하면 결론 전체가 뒤집힙니다. Daptomycin Study A에서 "같은 일일 용량(daily dose)" 비교군이 75 mg/kg q24h vs 25 mg/kg q8h임을 직접 확인해야 합니다 <span class="source-page">[R&amp;T pp.351–353]</span>. 이를 25 mg/kg q24h vs 25 mg/kg q8h로 오독하면 일일 용량(daily dose)가 3배 차이 나므로 fractionation의 순수 효과를 분리할 수 없습니다. 문헌에서 "same dose" 또는 "같은 일일 용량(daily dose)" 표현이 등장할 때마다 분자와 분모를 직접 계산하여 실제 total 일일 용량(daily dose)를 확인하는 습관이 필수입니다.</p></section>
+<blockquote><p><strong>숙달 노트(Mastery Note) — [AUDIT_DERIVED]</strong>  
+Daptomycin 사례의 교훈은 “비교군 정의의 정확성”입니다. Study A의 비교군이 <code>25 mg/kg q24h vs 25 mg/kg q8h</code>라면 일일 용량(daily dose) 자체가 다르므로 fractionation의 순수 효과를 분리할 수 없습니다. 정확한 비교군은 <code>75 mg/kg q24h vs 25 mg/kg q8h</code> (둘 다 75 mg/kg/day)이며, 이 점을 흐리면 fractionation의 toxicity 기여 결론이 무너집니다.</p></blockquote>
+<h1 id="sec5-혼동-pair-해부">§5 — 혼동 쌍 해부(Confusion Pair Dissection)</h1>
+<h2 id="sec5-pair1-vs-vs">§5-쌍1. $C_{ss}$ vs $C_{av,ss}$ vs $A_{av,ss}$</h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>혼동</th><th>정확한 분리</th><th>왜 중요한가</th></tr></thead><tbody>
+<tr><td>$C_{ss}$</td><td>정속 주입 plateau concentration: $R_{in}/CL$</td><td>infusion maintenance target</td></tr>
+<tr><td>$C_{av,ss}$</td><td>다중투여 interval 평균 concentration: $F\text{Dose}/(CL\tau)$</td><td>TDM/exposure-response target</td></tr>
+<tr><td>$A_{av,ss}$</td><td>plateau 평균 amount: $1.44F\text{Dose}t_{1/2}/\tau$</td><td>residence time/body burden</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: $1.44F\text{Dose}t_{1/2}/\tau$를 농도(concentration) 식으로 쓰면 단위가 틀립니다. 1-compartment와 known $V$를 명시하지 않으면 amount-to-concentration 변환은 성립하지 않습니다 <span class="source-page">[R&amp;T p.324; R&amp;T p.337]</span>.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>물 비유로 차원 인코딩</em>:  
+$C_{av,ss}$는 <strong>욕조의 평균 수위</strong>(mass / volume), $A_{av,ss}$는 <strong>욕조 안 물의 평균 양</strong>(mass), $C_{ss}$는 <strong>수도꼭지를 정해진 속도로 열어둔 정상상태의 수위</strong>입니다. 같은 욕조($V$ 알려짐, 1-구획)에서만 "수위 = 물의 양 / 욕조 크기"라는 다리가 놓입니다. 욕조 모양이 바뀌면(다구획) 같은 양의 물이라도 수위가 달라집니다.</p></section>
+<hr class="rule">
+<h2 id="sec5-pair2-nonmem-vs">§5-쌍2. NONMEM <code>SS=1</code> vs <code>SS=2</code></h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>항목</th><th><code>SS=1</code></th><th><code>SS=2</code></th></tr></thead><tbody>
+<tr><td>의미</td><td>steady-state dose event</td><td>steady-state infusion/input condition</td></tr>
+<tr><td>위험</td><td>실제 accumulation phase를 plateau로 오인</td><td>bolus/infusion initial condition을 잘못 설정</td></tr>
+<tr><td>선행 질문</td><td>충분한 투여 이력이 있었는가?</td><td>input이 어떤 형태였는가?</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: 항정상태 플래그(steady-state flag)는 "편의상 넣는 옵션"이 아니라 초기 조건(initial condition)을 수학적으로 바꾸는 명령입니다. 투여 이력이 plateau 조건을 만족하지 않으면 쓰지 않습니다.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>깃발 비유로 시제 인코딩</em>:  
+<code>SS=1</code>은 <strong>"옛날부터 같은 용량(dose)이 충분히 반복됐다"</strong>고 NONMEM에 알리는 <strong>과거형 깃발</strong> — 직전 사건만이 아니라 무한 과거의 같은 패턴이 누적된 결과를 가정합니다. <code>SS=2</code>는 <strong>"지금 이 순간 정상상태 입력이 진행 중"</strong>임을 알리는 <strong>현재진행형 깃발</strong> — bolus가 아닌 input function의 형태가 plateau 조건을 채웠음을 가정합니다. 두 깃발 모두 <strong>시제(tense)</strong>를 잘못 꽂으면 NONMEM은 존재하지 않는 history를 만들어냅니다.</p></section>
+<hr class="rule">
+<h2 id="sec5-pair3-flip-flop-vs-ordinary-extravascular-decline">§5-쌍3. Flip-flop vs ordinary extravascular decline</h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>Ordinary</th><th>Flip-flop</th></tr></thead><tbody>
+<tr><td>$K_a>K$</td><td>$K_a<K$</td></tr>
+<tr><td>terminal slope $\approx$ elimination</td><td>terminal slope $\approx$ absorption</td></tr>
+<tr><td>terminal half-life가 drug elimination 정보를 줌</td><td>terminal half-life가 formulation/input 정보를 줄 수 있음</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: 말단 기울기(terminal slope)만 보고 소실 반감기(elimination half-life)를 확정하지 않습니다. 투여경로(route), 제형(formulation), 흡수 지속시간(absorption duration)이 먼저입니다 <span class="source-page">[G pp.45–46]</span>.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>수도꼭지/배수구 역할 전도</em>:  
+<strong>Ordinary</strong>: 큰 배수구(빠른 elimination, $K$가 큼) + 작은 수도꼭지(느린 absorption) → 입력이 끝나면 배수구가 빠르게 비워서 <strong>배수구의 속도($K$)</strong>가 terminal slope를 그립니다. <strong>Flip-flop</strong>: 작은 배수구(느린 elimination) + 더 작은 수도꼭지(더 느린 absorption, $K_a < K$) → 입력이 길게 이어져서 <strong>수도꼭지의 속도($K_a$)</strong>가 terminal slope를 그립니다. 즉, terminal phase가 보여주는 것은 "더 느린 쪽의 속도"이지, 항상 elimination이 아니다 — terminal slope의 정체는 <strong>두 process 중 더 율속(rate-limiting)인 쪽</strong>입니다.</p></section>
+<hr class="rule">
+<h2 id="sec5-pair4-도달-시간-vs-축적-정도-vs-fluctuation">§5-쌍4. 도달 시간 vs 축적 정도 vs fluctuation</h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>질문</th><th>결정자</th><th>대표식</th></tr></thead><tbody>
+<tr><td>plateau에 언제 도달하는가?</td><td>$t_{1/2}$</td><td>$1-e^{-Kt}$</td></tr>
+<tr><td>얼마나 축적되는가?</td><td>$\tau/t_{1/2}$</td><td>$R_{ac}=1/(1-e^{-K\tau})$</td></tr>
+<tr><td>평균 level은 어디인가?</td><td>$CL$과 average input</td><td>$C_{av,ss}=F\text{Dose}/(CL\tau)$</td></tr>
+<tr><td>peak-trough 진폭은?</td><td>$\tau/t_{1/2}$</td><td>투여간격(dosing interval)이 길수록 커짐</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: 용량을 두 배로 하면 농도 수준은 올라가지만, $R_{ac}$ 자체는 변하지 않습니다.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>4개의 자(scale)가 같은 약 한 방울에서 갈라진다</em>:  
+<strong>도달 시간</strong>(1−$e^{-Kt}$)은 <strong>시계</strong> — $t_{1/2}$로 똑딱입니다. <strong>축적 정도</strong>($R_{ac}$)는 <strong>배율</strong> — $\tau/t_{1/2}$로 결정되며 dose 크기와 무관합니다. <strong>평균 농도</strong>($C_{av,ss}$)는 <strong>무게중심</strong> — $CL$과 평균 입력률(average input rate)가 정합니다. <strong>진폭</strong>(peak−trough swing)은 <strong>출렁임</strong> — 같은 평균이라도 $\tau/t_{1/2}$가 클수록 큰 파도. 같은 약물에 손을 댈 때, 어느 자(시계/배율/무게중심/출렁임)를 움직이려는지 먼저 묻는 것이 숙련자의 첫 질문입니다.</p></section>
+<hr class="rule">
+<h2 id="sec5-pair5-therapeutic-window-vs-therapeutic-index">§5-쌍5. Therapeutic Window vs Therapeutic Index</h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>개념</th><th>정확한 의미</th><th>오해</th></tr></thead><tbody>
+<tr><td>Therapeutic Window</td><td>utility threshold 이상인 concentration region</td><td>“경험적 치료농도범위”와 동의어로 사용</td></tr>
+<tr><td>Therapeutic Concentration Range</td><td>임상 경험상 효과와 허용 가능한 위해를 만족하는 농도 범위</td><td>TW와 항상 같은 수치라고 가정</td></tr>
+<tr><td>Therapeutic Index</td><td>전임상 ratio 또는 임상 exposure sensitivity</td><td>high TI가 모든 환자의 안전을 보장한다고 해석</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: 넓은 치료역(wide therapeutic window)과 높은 치료 지수(high therapeutic index)는 같은 문장이 아닙니다. 전자는 concentration bound, 후자는 exposure 변화에 대한 safety margin/sensitivity 문제다 <span class="source-page">[R&amp;T pp.272–278]</span>.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>자(ruler)와 떨림(tremor)의 구조 차이</em>:  
+<strong>Therapeutic Window</strong>는 농도라는 <strong>자 위에 그어진 두 선</strong> — $C_{lower}$와 $C_{upper}$로 정의되는 <strong>공간(region)</strong>의 문제. 넓은 window는 두 선 사이가 멀다는 뜻일 뿐입니다. <strong>Therapeutic Index</strong>는 그 <strong>선의 굵기(전임상 ratio)</strong>이거나 <strong>환자의 손떨림(임상 exposure sensitivity)</strong> — 같은 두 선을 그은 자라도, 손이 떨리는 환자(highly variable PK)에서는 효과적인 자가 못 됩니다. 즉 TW는 <strong>공간 척도</strong>, TI는 <strong>변동성/민감도 척도</strong>다. wide TW + low TI 환자는 아주 흔한 임상 시나리오이며, 두 개념을 같다고 보면 이 환자군 전체가 보이지 않습니다.</p></section>
+<hr class="rule">
+<h2 id="sec5-pair6-mrt-vs-half-life">§5-쌍6. MRT vs half-life</h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>항목</th><th>의미</th><th>주의</th></tr></thead><tbody>
+<tr><td>$t_{1/2}$</td><td>amount/concentration이 절반이 되는 시간</td><td>1차 decline의 slope 기반</td></tr>
+<tr><td>MRT</td><td>molecule이 체내에 머무는 평균 시간</td><td>moment-based: $AUMC/AUC$</td></tr>
+<tr><td>1-compartment</td><td>$MRT=1/K=1.44t_{1/2}=V/CL$</td><td>단순식 가능</td></tr>
+<tr><td>multi-compartment</td><td>$MRT=AUMC_{0-\infty}/AUC_{0-\infty}$</td><td>$V/CL$ 단순 치환 위험</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: $1.44t_{1/2}$는 1차 선형 시스템의 시간척도일 뿐, 어떤 compartment의 농도(concentration)를 대표하는지는 모델 구조가 결정합니다 <span class="source-page">[R&amp;T p.289; R&amp;T pp.299–304]</span>.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>기울기 시간 vs 무게중심 시간</em>:  
+$t_{1/2}$는 <strong>곡선의 기울기</strong>가 만든 시간 — "절반이 될 때까지"라는 곡선 모양에 종속된 척도입니다. <strong>MRT</strong>는 <strong>곡선 아래 면적의 무게중심</strong> — 분자 한 개가 평균적으로 머문 시간을 묻는 moment-based 척도입니다. 두 척도가 1-구획에서만 우연히 깔끔한 비율($MRT = 1.443\,t_{1/2} = V/CL$)로 일치합니다. 다구획에서는 분자가 central → tissue → central을 왕복하므로 MRT가 단순 $V/CL$로 환원되지 않습니다. 즉, $1.443 \times t_{1/2}$를 어떤 compartment의 시간척도로 바로 옮기는 순간 <strong>moment를 slope로 압축</strong>하는 차원 함몰이 일어납니다.</p></section>
+<hr class="rule">
+<h2 id="sec5-pair7-acquired-resistance-vs-tolerance">§5-쌍7. Acquired Resistance vs Tolerance</h2>
+<section class="box amber confusion-pair"><div class="table-wrap"><table><thead><tr><th>항목</th><th>Acquired resistance</th><th>Tolerance</th></tr></thead><tbody>
+<tr><td>본질</td><td>세포/미생물 population 또는 mutation 변화</td><td>환자/시스템의 PD adaptation</td></tr>
+<tr><td>시간 구조</td><td>selection pressure와 population shift</td><td>receptor desensitization 또는 homeostatic feedback</td></tr>
+<tr><td>관리 논리</td><td>exposure target, resistance window 회피</td><td>drug holiday, modified release, rate-of-change control</td></tr>
+</tbody></table></div>
+<p><strong>치명적 타격(Critical Blow)</strong>: 효과 감소가 보인다고 모두 내성(tolerance)이 아닙니다. 항균제에서는 resistance selection, nitrate/nicotine/nifedipine에서는 PD adaptation이 핵심일 수 있다 <span class="source-page">[R&amp;T pp.346–348]</span>.</p>
+<p><strong>⚡ 기억 고리(Memory Hook)</strong> — <em>적이 변했나, 내가 변했나</em>:  
+<strong>Acquired Resistance</strong>: <strong>적이 변한 것</strong> — target 미생물·세포 population이 selection 압력 하에 mutation/clonal shift로 약물에 둔감해졌습니다. 약물도 환자도 그대로지만 표적이 다른 표적이 되었습니다. <strong>Tolerance</strong>: <strong>내가 변한 것</strong> — 환자/시스템(receptor downregulation, homeostatic feedback)이 같은 약물에 적응했습니다. 표적은 그대로지만 내 반응이 약해졌습니다. 임상 관리 논리도 다르다 — resistance는 <strong>노출 패턴(MIC 회피, AUC/MIC 확보)</strong>으로 다루고, tolerance는 <strong>drug holiday, modified-release, rate-of-change 제어</strong>로 다룹니다. "효과가 떨어진다"는 같은 표면 증상에서 두 메커니즘은 정반대 방향의 처방을 만듭니다.</p></section>
+<section class="callout-recap"><p><strong>§5 Recap</strong>: 위험한 혼동은 “수학식의 기호가 비슷해서”만 생기지 않습니다. 더 자주 생기는 원인은 결정자가 다른 질문을 같은 질문으로 취급하는 것입니다.</p></section>
+<hr class="rule">
+<h1 id="sec7-자기-테스트-모듈">§7 — 자기 테스트 모듈(Self-Test Module)</h1>
+<h2 id="sec7-회상-영역">§7-회상 영역(Recall Layer)</h2>
+<section class="self-test">
+<details><summary>Q1. 정속 주입에서 $C_{ss}$를 결정하는 parameter는 무엇인가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: $C_{ss}=R_{in}/CL$이므로 plateau 농도 수준은 청소율(clearance)과 입력률(input rate)이 정합니다 <span class="source-page">[G p.23; R&amp;T p.288]</span>.</p></div></div></details>
+<details><summary>Q2. 90% plateau에 도달하는 데 필요한 시간은 대략 몇 half-lives인가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 약 3.3 half-lives, 실무적으로 3–4 half-lives <span class="source-page">[G p.22; R&amp;T p.291]</span>.</p></div></div></details>
+<details><summary>Q3. 다중투여 accumulation factor에 용량(dose)이 들어가지 않는 이유는?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 같은 용량(dose)이 반복될 때 잔여분의 비율은 $e^{-K\tau}$이고, 반복합은 등비수열이므로 ratio는 $\tau/t_{1/2}$에만 의존합니다 <span class="source-page">[G pp.44–45; R&amp;T pp.795–797]</span>.</p></div></div></details>
+<details><summary>Q4. $C_{av,ss}$와 $A_{av,ss}$의 차원은 각각 무엇인가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: $C_{av,ss}$는 concentration, $A_{av,ss}$는 약물량(amount)입니다. $A_{av,ss}$를 농도(concentration)처럼 쓰면 차원 오류입니다 <span class="source-page">[R&amp;T p.324; R&amp;T p.337]</span>.</p></div></div></details>
+<details><summary>Q5. Flip-flop에서 말단 기울기(terminal slope)는 무엇을 반영하는가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: $K_a<K$이면 말단 기울기(terminal slope)는 흡수속도(absorption rate)를 반영합니다 <span class="source-page">[G pp.45–46]</span>.</p></div></div></details>
+</section>
+<hr class="rule">
+<h2 id="sec7-적용-영역">§7-적용 영역(Application Layer)</h2>
+<section class="self-test">
+<details><summary>Q6. 어떤 약물의 $t_{1/2}=8$ h이고 q24h 투여합니다. 축적은 클까?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: $\tau/t_{1/2}=3$이므로 $R_{ac}=1/(1-2^{-3})=1.14$ 정도로 크지 않습니다. q24h라도 half-life 대비 interval이 길면 accumulation은 작습니다.</p></div></div></details>
+<details><summary>Q7. 같은 일일 용량(daily dose)를 q24h에서 q8h로 바꾸면 무엇이 변하는가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 평균 입력률(average input rate)가 같으므로 $C_{av,ss}$는 원칙적으로 같지만, peak-trough fluctuation은 줄어듭니다. 단 toxicity가 recovery time/fractionation에 의존하면 결과가 달라질 수 있습니다 <span class="source-page">[R&amp;T p.325; R&amp;T pp.351–353]</span>.</p></div></div></details>
+<details><summary>Q8. $C_{av,ss}=F\text{Dose}/(CL\tau)=1.44F\text{Dose}t_{1/2}/\tau$라고 쓴 문장을 교정하세요.</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 앞 식은 concentration, 뒤 식은 약물량(amount)입니다. 정확히는 $C_{av,ss}=F\text{Dose}/(CL\tau)$이고, $A_{av,ss}=1.44F\text{Dose}t_{1/2}/\tau$입니다. 1-compartment에서만 $C_{av,ss}=A_{av,ss}/V$입니다.</p></div></div></details>
+<details><summary>Q9. Phenobarbital 100 mg q24h, $t_{1/2}=4$ days에서 R&amp;T의 5.8과 식의 6.3을 어떻게 설명할 것인가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 5.8은 $A_{av,ss}/Dose\approx5.76$에 해당하는 average accumulation ratio이고, peak/trough accumulation index $R_{ac}$는 Eq. 11-10 기준 약 6.3입니다. 둘을 같은 라벨로 쓰지 않는다 <span class="source-page">[R&amp;T pp.324–326]</span>.</p></div></div></details>
+<details><summary>Q10. Atorvastatin에서 PK plateau와 PD plateau가 다를 수 있는 이유는?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 혈장 농도(plasma concentration)의 반감기(half-life)와 cholesterol turnover response의 시간척도(time scale)가 다르기 때문입니다. Atorvastatin은 $t_{1/2}\approx14$ h이나 최대 cholesterol response는 3–4주가 걸릴 수 있습니다 <span class="source-page">[R&amp;T p.343]</span>.</p></div></div></details>
+<details><summary>Q11. Daptomycin Study A에서 “같은 일일 용량(daily dose)” 비교군은 무엇인가?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 75 mg/kg q24h와 25 mg/kg q8h입니다. 둘 다 75 mg/kg/day이며, CPK는 991 vs 3996 U/L로 달랐습니다 <span class="source-page">[R&amp;T pp.351–353]</span>.</p></div></div></details>
+<details><summary>Q12. TW algorithm에서 $C_{upper}/C_{lower}$ ratio가 주로 결정하는 것은?</summary><div class="answer"><div class="answer-body"><p><strong>답변(Answer)</strong>: 허용 가능한 투여간격(dosing interval)의 상한입니다. $\tau_{max}=1.44t_{1/2}\ln(C_{upper}/C_{lower})$이다 <span class="source-page">[R&amp;T p.334]</span>.</p></div></div></details>
+</section>
+<hr class="rule">
+<h2 id="sec7-보스-딜레마">§7-보스 딜레마(Boss Dilemma)</h2>
+<section class="self-test">
+<details><summary>Q-BD. 새로운 경구 약물(new oral drug)이 linear PK를 보이고, $F=0.6$, $V=100$ L, $t_{1/2}=4$ h이며, 제안된 치료역(therapeutic window)이 1–4 mg/L라고 가정합니다. Phase 1 multiple ascending dose protocol을 IRB에 제출하기 위해 두 regimen이 검토 중입니다.</summary><div class="answer"><div class="question-body"><p><strong>Regimen A — 안정적 목표 유지(Steady aim)</strong>:  
+$200$ mg q8h, <strong>부하용량 없음(no 부하용량(loading dose))</strong>.</p>
+<ul>
+<li>장점: $\tau=8$ h 적용 시 $C_{max,ss}/C_{min,ss}$ 변동이 비교적 좁아 peak이 $C_{upper}=4$ mg/L를 안정적으로 유지합니다 (peak safety 우선).  </li>
+<li>단점: plateau 도달까지 약 $3-4 \times t_{1/2}=12-16$ h 동안 $C_{lower}=1$ mg/L 미달 구간이 존재 — 초기 약 1 투여간격(dosing interval) 동안 환자가 "효과 sub-window" 상태에 놓입니다.</li>
+</ul>
+<p><strong>Regimen B — 빠른 도달 후 유지(Hit and hold)</strong>:  
+$400$ mg loading + $200$ mg q8h maintenance.</p>
+<ul>
+<li>장점: 첫 dose 직후 농도가 즉시 window 중앙 근처에 위치 — 효과 onset이 plateau 대기 시간 없이 시작됩니다 (time-to-effect 우선).  </li>
+<li>단점: $D_L = 400$ mg 직후의 $C_{max}$ 추정치는 $F \cdot D_L / V = 0.6 \times 400 / 100 = 2.4$ mg/L로 $C_{upper}=4$ 이내지만, <strong>상부 95% CI</strong>가 IIV 30%만 가정해도 $C_{upper}$를 일시적으로 침범할 수 있습니다.</li>
+</ul>
+<p>Phase 1 protocol에서 어느 쪽을 채택하고, IRB 심사관 또는 FDA pre-IND 응답에서 그 선택을 어떻게 방어할 것인지 판단하세요. 이 문제가 가상 연습 문제임을 명시해야 합니다.</p></div><div class="answer-body"><p><strong>정답 — 거장의 상충 판단(Trade-off) 논리</strong>:</p>
+<p>이 문제는 단순 계산이 아니라 <strong>두 충돌하는 최적화 목표</strong> 사이의 양자택일입니다:</p>
+<ul>
+<li><strong>목표 X (peak safety)</strong>: $C_{max}$가 $C_{upper}$를 절대 초과하지 않게 합니다.</li>
+<li><strong>목표 Y (time to effect)</strong>: 효과 sub-window 노출 시간을 최소화합니다.</li>
+</ul>
+<p>선택과 방어 논리는 다음과 같습니다.</p>
+<ol>
+<li><strong>사례 명시</strong>: 이 문제는 교과서 등재 약물이 아닌 <strong>가상 연습 문제</strong>이며, 실제 Phase 1 protocol은 IIV·sample size·sparse sampling design을 동반한 model-based simulation으로 결정됩니다.</li>
+<li><strong>$\tau_{max}$ feasibility 점검</strong>: $\tau_{max}=1.44 \times 4 \times \ln(4/1) \approx 7.98$ h. 즉 q8h는 TW algorithm이 허용하는 <strong>이론적 상한</strong>에 정확히 맞춰진 interval입니다. q12h는 window를 벗어납니다 (<span class="source-page">[R&amp;T p.334]</span>). 따라서 두 regimen 모두 q8h 채택은 정당합니다.</li>
+<li><strong>선택 — Regimen A를 원칙적 1차 선택으로 권고</strong>:</li>
+</ol>
+<ul>
+<li><strong>이유 ①</strong> (Phase 1 환경 특수성): Phase 1 first-time-in-multiple-dose는 IIV가 아직 정량화되지 않은 상태입니다. Regimen B의 peak이 IIV 가정에 따라 $C_{upper}$를 침범할 가능성이 있다면, peak-safety가 time-to-effect보다 <strong>불확실성 우선순위</strong>에서 위에 있습니다.</li>
+<li><strong>이유 ②</strong> (M9 PD-driven plateau 존재 가능성): 효과 plateau가 PK plateau가 아닌 turnover system에 종속되는 약물이라면, 부하용량(loading dose)로 PK plateau에 빨리 도달해도 효과 발현(effect onset)은 빨라지지 않습니다 — Regimen B의 실익이 사라집니다.</li>
+<li><strong>이유 ③</strong> (M5 flip-flop 가능성): Phase 1 단계에서 $K_a < K$ 가능성이 배제되지 않았다면, observed $t_{1/2}=4$ h가 elimination이 아닐 수 있어 부하용량(loading dose) 산정의 전제가 무너집니다.</li>
+</ul>
+<ol>
+<li><strong>Regimen B를 1차 선택으로 정당화하려면</strong>:</li>
+</ol>
+<ul>
+<li>active metabolite 없음, PD-driven plateau 부재, $K_a > K$ 확인이 in vitro/in silico로 사전 확보되어야 합니다.</li>
+<li>IIV 추정치(또는 사전 분포)가 $C_{upper}$ 침범 risk를 받아들일 수 있는 수준임을 simulation으로 보여주어야 합니다.</li>
+<li>효과 발현 지연이 임상적으로 수용 불가능한 indication(급성 항생제 등)일 때 Regimen B를 정당화하기 쉽습니다.</li>
+</ul>
+<ol>
+<li><strong>IRB 응답 frame</strong>: 어느 쪽을 선택하든, 응답 문서는 <strong>"우리는 X와 Y 중 X(또는 Y)를 우선시했습니다. 그 이유는 [Phase 1 단계의 IIV 미정량성 / indication의 효과 onset 임상 중요도]이다"</strong>라는 trade-off 논리를 명시해야 합니다. "이 regimen이 안전하다"는 단정은 두 목표를 동시에 만족시킬 수 있다는 잘못된 함의를 줍니다.</li>
+<li><strong>Algorithm 적용 중단 조건</strong> (M8 Trench Tip 재인용): linear PK 비성립, immediate concentration-response 깨짐, PD plateau가 turnover 지배, flip-flop, single-dose therapy — 이 중 하나라도 의심되면 TW-driven algorithm은 feasibility screen에 그치고 모델 확장으로 돌아갑니다.</li>
+</ol></div></div></details>
+</section>
+<section class="callout-recap"><p><strong>§7 요약(Recap)</strong>: 계산 문제의 핵심은 숫자를 넣는 것이 아니라 “어떤 식이 어떤 조건에서만 유효한가”를 먼저 잠그는 것입니다.</p></section>
+<hr class="rule">
+<h1 id="sec8-메타프레임-전체-그림">§8 — 메타프레임 &amp; 전체 그림</h1>
+<h2 id="sec8a-위치-설정">§8A — 위치 설정(Positioning)</h2>
+<section class="callout-master"><p>Session 07은 pharmacometrics의 “steady-state grammar”를 만듭니다. 이전 세션의 single-dose PK는 시간-농도 곡선의 기본 모양을 제공합니다. 이 세션은 그 곡선을 반복·유지·제약하는 법을 제공합니다. 이후 TDM, PopPK covariate interpretation, exposure-response, Phase 1 multiple ascending dose design은 모두 이 문법 위에 올라갑니다.</p></section>
+<hr class="rule">
+<h2 id="sec8b-의존성과-실패-모드">§8B — 의존성과 실패 모드</h2>
+<div class="table-wrap"><table><thead><tr><th>실패 모드</th><th>원인</th><th>결과</th></tr></thead><tbody>
+<tr><td>Early data에 <code>SS=1</code> 적용</td><td>plateau 시간 조건 무시</td><td>CL/F, V/F, ETA 추정 왜곡</td></tr>
+<tr><td>$A_{av,ss}$를 $C_{av,ss}$로 표기</td><td>amount/concentration 차원 혼합</td><td>dose rationale 오류</td></tr>
+<tr><td>dose 크기로 accumulation ratio 설명</td><td>$R_{ac}$의 dose independence 미이해</td><td>regimen 변경 효과 오판</td></tr>
+<tr><td>terminal half-life를 elimination으로 고정</td><td>flip-flop 미인식</td><td>formulation/absorption 해석 오류</td></tr>
+<tr><td>TW와 TI 혼용</td><td>concentration bound와 safety sensitivity 혼동</td><td>dose justification 불명확</td></tr>
+<tr><td>PD plateau를 PK plateau로 가정</td><td>전환율/세포 수명(turnover/cell lifespan) 무시</td><td>효과 발현/지속시간(effect onset/duration) 예측 실패</td></tr>
+<tr><td>$C_{max}$ 또는 AUC 단일 변수로 toxicity 설명</td><td>fractionation/recovery time 무시</td><td>regimen selection 오류</td></tr>
+</tbody></table></div>
+<hr class="rule">
+<h2 id="sec8c-전문가-해자">§8C — 전문가 해자(Professional Moat)</h2>
+<p class="bridge">전문가의 해자(professional moat)는 복잡한 식을 많이 외우는 데 있지 않습니다. 같은 투여법(regimen) 질문을 다음 결정자 표로 즉시 분해하는 데 있습니다.</p>
+<div class="table-wrap"><table><thead><tr><th>질문</th><th>결정자</th><th>대표 사용처</th></tr></thead><tbody>
+<tr><td>목표 평균 농도는?</td><td>$CL$, 평균 입력률(average input rate)</td><td>유지용량(maintenance dose), TDM</td></tr>
+<tr><td>목표에 얼마나 빨리 도달하나?</td><td>$t_{1/2}$</td><td>washout, Day-to-SS, sampling schedule</td></tr>
+<tr><td>peak-trough 진폭은?</td><td>$\tau/t_{1/2}$</td><td>투여간격(dosing interval), adherence, toxicity</td></tr>
+<tr><td>loading이 필요한가?</td><td>target onset, $V/F$, $R_{ac}$</td><td>urgent therapy, bolus+infusion</td></tr>
+<tr><td>TW 안에 머무르는가?</td><td>$C_{upper}$, $C_{lower}$, $V/F$, $t_{1/2}$</td><td>투여 설계(regimen design)</td></tr>
+<tr><td>effect가 늦게 오나?</td><td>turnover/cell lifespan</td><td>statin, EPO, indirect response</td></tr>
+<tr><td>formulation이 terminal slope를 바꾸나?</td><td>absorption/input duration</td><td>MR/depot/flip-flop</td></tr>
+<tr><td>toxicity가 recovery time에 의존하나?</td><td>fractionation, minimum exposure duration</td><td>daptomycin-like cases</td></tr>
+</tbody></table></div>
+<p>[교과서 외 실무 해석] 이 표는 regulatory submission 문장을 대신 쓰는 것이 아닙니다. 교과서 수식을 제출 가능한 정량 논리로 번역하기 위한 내부 검토 틀입니다. unsupported 수치, “deficiency letter”, “NDA refusal” 같은 외부 단정은 본 Content Lock에서 삭제했습니다.</p>
+<hr class="rule">
+<h2 id="sec8d-28세션-항법">§8D — 28세션 항법</h2>
+<section class="callout-recap"><p>이 세션이 잠그는 것은 네 가지입니다.</p>
+<ol>
+<li><strong>정속 입력(Constant-rate input)</strong>: $C_{ss}=R_{in}/CL$.</li>
+<li><strong>항정상태 도달 시간(Time to steady state)</strong>: $t_{1/2}$가 접근 속도를 지배합니다.</li>
+<li><strong>다중투여(Multiple dosing)</strong>: $R_{ac}$와 변동(fluctuation)은 $\tau/t_{1/2}$에 의존합니다.</li>
+<li><strong>투여 설계(Regimen design)</strong>: 치료역(therapeutic window)이 PK 파라미터를 용량과 투여간격 제약으로 변환합니다.</li>
+</ol>
+<p>다음 세션으로 넘어갈 때 이 문장을 유지하면 됩니다.</p></section>
+<blockquote><p>“항정상태는 하나의 숫자가 아니라, 시간·수준·진폭·임상제약을 분리해 다시 조립하는 작업입니다.”</p></blockquote>
+<hr class="rule">
+  </main>
+</div>
+<script>
+// Mermaid initialization
+if (window.mermaid) {
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'neutral',
+    themeVariables: {
+      fontFamily: 'var(--font)'
+    },
+    flowchart: {
+      curve: 'basis',
+      htmlLabels: true
+    }
+  });
+}
+
+// Active-section highlight via IntersectionObserver
+(function() {
+  const headings = document.querySelectorAll('main h1[id], main h2[id]');
+  const tocLinks = document.querySelectorAll('.sidebar a');
+  if (!headings.length || !tocLinks.length) return;
+  const linkMap = new Map();
+  tocLinks.forEach(a => {
+    const href = a.getAttribute('href');
+    if (href && href.startsWith('#')) linkMap.set(href.slice(1), a);
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        tocLinks.forEach(a => a.classList.remove('active'));
+        const link = linkMap.get(id);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+  headings.forEach(h => observer.observe(h));
+})();
+
+// Accordion expand/collapse toggle
+function toggleAllAccordions() {
+  const all = document.querySelectorAll('.self-test details');
+  const anyClosed = Array.from(all).some(d => !d.open);
+  all.forEach(d => d.open = anyClosed);
+  const btn = document.getElementById('accordionToggleBtn');
+  if (btn) btn.textContent = anyClosed ? '📁 모두 접기' : '📂 모두 펼치기';
+}
+
+// Self-validation: log id mismatches (developer console only)
+(function() {
+  const links = Array.from(document.querySelectorAll('.sidebar a'));
+  const missing = [];
+  const dupCheck = new Map();
+  document.querySelectorAll('[id]').forEach(el => {
+    const id = el.id;
+    dupCheck.set(id, (dupCheck.get(id) || 0) + 1);
+  });
+  links.forEach(a => {
+    const href = a.getAttribute('href');
+    if (!href || !href.startsWith('#')) return;
+    const id = href.slice(1);
+    if (!document.getElementById(id)) missing.push(id);
+  });
+  const dups = [];
+  dupCheck.forEach((count, id) => { if (count > 1) dups.push([id, count]); });
+  if (missing.length || dups.length) {
+    console.warn('TOC anchor self-check — missing:', missing, 'duplicates:', dups);
+  } else {
+    console.log('TOC anchor self-check — all links match unique body ids.');
+  }
+})();
+</script>
+</body>
+</html>
