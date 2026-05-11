@@ -1458,7 +1458,7 @@ flowchart LR
     var dup = ids.filter(function (id, i) { return ids.indexOf(id) !== i; });
     if (missing.length) console.warn('[TOC] missing target ids:', missing);
     if (dup.length)     console.warn('[TOC] duplicate ids:', dup);
-    if (!missing.length && !dup.length) console.info('[TOC] anchor integrity OK (' + hrefs.length + ' links, ' + ids.length + ' ids).');
+    if (!missing.length && !dup.length) console.log('[TOC] anchor integrity OK (' + hrefs.length + ' links, ' + ids.length + ' ids).');
   })();
 </script>
 
