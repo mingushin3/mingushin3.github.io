@@ -755,5 +755,444 @@ Object.entries(vizMap).forEach(function(kv){
 })();
 </script>
 
+<!-- v8.1: per-step explanation blocks (injected) -->
+<script>
+(function(){
+  // CSS for explanation blocks
+  const style = document.createElement('style');
+  style.textContent = `
+    .q-explain {
+      padding: 14px 18px;
+      margin: 0 0 12px 0;
+      background: var(--s3);
+      border-left: 3px solid var(--ac);
+      border-radius: 0 4px 4px 0;
+      font-size: 12.5px;
+      line-height: 1.85;
+      color: var(--t2);
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .q-explain .ex-where {
+      font-size: 11px;
+      color: var(--ac2);
+      font-family: 'Geist Mono', monospace;
+      margin-bottom: 6px;
+      display: block;
+      letter-spacing: 0.02em;
+    }
+    .q-explain strong { color: var(--tx); }
+    .q-explain .tip {
+      color: var(--gt);
+      display: block;
+      margin-top: 6px;
+      font-size: 11.5px;
+    }
+    .q-explain .pass {
+      color: var(--gn);
+      display: block;
+      margin-top: 4px;
+      font-size: 11.5px;
+    }
+    .q-explain .next {
+      color: var(--t3);
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      font-style: italic;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const explainMap = {
+    'q01': `<span class="ex-where">[1/35] P0 사전 설계 · ID 체계 설계</span>
+NONMEM 데이터셋을 만드는 전체 35단계 중 <strong>맨 처음</strong>입니다. P0(데이터를 만지기 전, 설계만 하는 Phase)의 시작점으로, 여러 Study를 합칠 때 subject ID가 충돌하면(서로 다른 사람이 같은 숫자로 묶임) 모든 후속 작업이 무효화되므로 <strong>ID offset</strong>(Study별로 더해주는 큰 정수)을 미리 설계해 원천 차단합니다.
+<span class="tip">💡 offset은 향후 Study 추가까지 고려해 1000·10000 단위로 충분히 크게 잡으세요. 작게 잡으면 다음 Study에서 또 충돌합니다.</span>
+<span class="pass">✓ Pass: Study별 offset 표 확정, 가상 병합 시 ID 충돌 0건 검증 완료</span>
+<span class="next">→ Q02: 합칠 데이터에 어떤 공변량 컬럼이 실제로 존재하는지 가용성 점검</span>`,
+
+    'q02': `<span class="ex-where">[2/35] P0 사전 설계 · 공변량 가용성 점검</span>
+P0의 두 번째 step입니다. Q01에서 ID 체계를 세웠다면, 이번에는 <strong>어떤 공변량(AGE, WT, SCr, eGFR, ALT 등)이 어느 source table에 실제로 존재하는지</strong>를 매트릭스로 점검합니다. 존재하지 않는 컬럼을 모델에 넣겠다는 계획은 여기서 차단해야, 수개월 뒤 작업 전체가 무효화되는 사고를 막을 수 있습니다.
+<span class="tip">💡 eGFR처럼 파생되는 변수는 원본(SCr·AGE·SEX·WT) 가용성을 함께 확인하고, 결측 비율도 미리 메모하세요.</span>
+<span class="pass">✓ Pass: 공변량×source 가용성 매트릭스 작성, 파생 공식과 결측 패턴까지 정리 완료</span>
+<span class="next">→ Q03: PK 모델 구조(Depot/Central/Peripheral)에 맞춰 CMT 번호를 사전 확정</span>`,
+
+    'q03': `<span class="ex-where">[3/35] P0 사전 설계 · CMT 체계 설계</span>
+P0의 세 번째 step입니다. Q01-Q02에서 ID와 공변량 준비가 끝났다면, 이번에는 PK 모델 구조에 맞춰 <strong>CMT(Compartment, 약물이 분포하는 가상의 공간) 번호를 사전 확정</strong>합니다. CMT=1(Depot, PO·SC 흡수), CMT=2(Central, 농도 측정 위치)와 같이 투여 경로·관측 위치를 미리 약속해 두지 않으면, 데이터 빌더와 모델러 사이에서 사고가 끊이지 않습니다.
+<span class="tip">💡 모델링자와 반드시 합의해서 문서화하세요. CMT는 후속에서 바꾸기 매우 어렵습니다(전 데이터 재구축).</span>
+<span class="pass">✓ Pass: 투여 경로별·관측 위치별 CMT 표 작성, 모델링자 confirm 완료</span>
+<span class="next">→ Q04: 연구 시작 전 미기록 투여(pre-study dose)가 있는지 탐지하고 처리 방침 결정</span>`,
+
+    'q04': `<span class="ex-where">[4/35] P0 사전 설계 · pre-study 투여 탐지</span>
+35단계 중 네 번째 step입니다. Q03에서 CMT 체계를 확정했다면, 이번에는 <strong>Study 시작 시점 이전의 투여 이력</strong>이 누락되어 있을 가능성을 점검합니다. 환자가 study 진입 직전까지 같은 약을 복용 중이었는데 그 기록이 없다면, 첫 관측치는 사실상 정상상태(SS) 농도이므로 baseline=0으로 가정하면 CL/V가 체계적으로 어긋납니다.
+<span class="tip">💡 dosing gap &gt; 5×t½이면 reset(EVID=4) 검토, 그보다 짧으면 SS=1 또는 historical dose 추정으로 대응하세요.</span>
+<span class="pass">✓ Pass: pre-study 투여 처리 방침(무시·추정·SS=1) 확정, 근거 문서화 완료</span>
+<span class="next">→ Q05: P0의 마지막 step. 여러 Study/Center 데이터를 ID offset과 함께 안전하게 병합</span>`,
+
+    'q05': `<span class="ex-where">[5/35] P0 사전 설계 · 다기관 병합 (P0 종료점)</span>
+P0(사전 설계) Phase의 <strong>마지막 단계</strong>입니다. Q01의 ID offset, Q02의 공변량 매핑, Q03의 CMT 체계, Q04의 pre-study 방침이 모두 준비되었으므로 이제 여러 Study를 <strong>bind_rows()</strong>(행 방향으로 이어붙임)로 안전하게 합칩니다. 단순한 결합처럼 보이지만, ID offset을 적용하지 않으면 서로 다른 환자가 같은 ID로 묶이는 즉각적인 사고가 발생합니다.
+<span class="tip">💡 stopifnot(nrow(merged) == sum(nrow(each)))로 행수 보존을 반드시 검증하세요. full_join·inner_join은 절대 금지(행수 폭증).</span>
+<span class="pass">✓ Pass: STUDY 컬럼 추가, ID 충돌 0건, 행수 검증 통과 → P1 진입 가능</span>
+<span class="next">→ Q06 (P1 시작): 실제 투여 기록(EXSTAT=COMPLETED)만 골라내어 dose_df 빌딩 시작</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return; // 중복 주입 방지
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q06': `<span class="ex-where">[6/35] P1 dose_df 빌딩 · 실제 투여 기록 추출 (P1 시작)</span>
+P0(사전 설계)이 끝나고 이제 본격적으로 데이터를 만지는 <strong>P1 Phase의 첫 step</strong>이자, dose_df를 완성하는 6개 단계(Q06~Q11) 중 첫 번째입니다. EX(Exposure) source table에는 계획된 투여·실제 투여·취소된 투여가 모두 섞여 있으므로, <strong>EXSTAT='COMPLETED'</strong>(실제로 투여된 기록만)으로 필터링하지 않으면 AMT에 계획 용량이 섞여 들어가 CL/V가 체계적으로 틀립니다.
+<span class="tip">💡 REDUCED·INTERRUPTED 같은 부분 투여는 AMT를 실제 투여량으로 재계산해야 합니다. EXSTAT만 보고 일괄 제외하면 dose 누락이 발생합니다.</span>
+<span class="pass">✓ Pass: COMPLETED만 잔류, MISSED/NOT DONE 제외, 부분 투여는 실제 AMT로 보정 완료</span>
+<span class="next">→ Q07: 이 dose_df의 AMT 단위와 RATE/DUR 코딩을 확정</span>`,
+
+    'q07': `<span class="ex-where">[7/35] P1 dose_df 빌딩 · AMT 단위 & RATE/DUR 확정</span>
+dose_df 6단계 중 <strong>두 번째</strong>입니다. Q06에서 실제 투여 기록만 골라냈으므로, 이제 그 기록의 <strong>AMT 단위(mg/μg/ng)와 RATE 코딩</strong>을 확정합니다. AMT[mg] · DV[ng/mL] · CL[L/h]의 단위 사슬이 어긋나면 1000배 오차가 나도 NONMEM은 조용히 돌아갑니다 — 가장 무서운 종류의 사고입니다. IV infusion은 RATE=AMT÷DUR(고정) 또는 RATE=-2(D1 추정) 중 선택해야 합니다.
+<span class="tip">💡 ng↔μg, mL↔L 변환은 가장 흔한 실수입니다. 단위 사슬을 종이에 손으로 한 번 적어 확인하세요.</span>
+<span class="pass">✓ Pass: AMT 단위 관계식 명시, RATE 코딩 확정, IV infusion은 DUR&gt;0 검증 통과</span>
+<span class="next">→ Q08: dose_df에 ROUTE 기반으로 CMT 컬럼 배정</span>`,
+
+    'q08': `<span class="ex-where">[8/35] P1 dose_df 빌딩 · CMT 할당</span>
+dose_df 6단계 중 <strong>세 번째</strong>입니다. Q03에서 사전 설계한 CMT 체계를 이번에 dose_df의 실제 컬럼으로 구현합니다. <strong>case_when(ROUTE=='PO'~1, ROUTE=='IV'~2)</strong> 패턴으로 ROUTE → CMT를 매핑하는데, 가장 흔한 실수는 case_when의 마지막 절을 누락해 <strong>CMT=NA</strong>가 남는 것입니다. NA CMT는 NONMEM에서 즉시 에러를 내거나 더 나쁘게는 silent하게 잘못된 compartment로 들어갑니다.
+<span class="tip">💡 case_when 끝에 반드시 TRUE ~ NA_real_을 두고, 그 다음 줄에서 sum(is.na(CMT))==0을 stopifnot으로 강제하세요.</span>
+<span class="pass">✓ Pass: 모든 ROUTE에 CMT 배정 완료, CMT의 NA=0건, Q03 설계와 일치 확인</span>
+<span class="next">→ Q09: 반복 투여 기록을 ADDL/II 형식으로 압축해 행수 절약</span>`,
+
+    'q09': `<span class="ex-where">[9/35] P1 dose_df 빌딩 · ADDL/II 압축</span>
+dose_df 6단계 중 <strong>네 번째</strong>입니다. Q08까지 dose_df의 한 행=한 투여 형태가 완성되었는데, 매일 같은 용량을 7일간 투여한다면 7개 행이 됩니다. <strong>ADDL</strong>(Additional doses, 추가 투여 횟수) + <strong>II</strong>(Interdose Interval, 투여 간격)로 압축하면 1개 행으로 줄어듭니다. 단, 용량 변경·skip·dose hold가 있으면 그 구간은 압축할 수 없으니 분할해야 합니다.
+<span class="tip">💡 ADDL = n_doses − 1입니다(첫 dose는 본 행에서 이미 카운트). off-by-one 실수가 가장 흔합니다. 압축 전후로 Σ(AMT×(ADDL+1))이 같은지 반드시 검산하세요.</span>
+<span class="pass">✓ Pass: 동일 용량·간격 구간만 압축, 총 투여량 보존 검증(Σ AMT 동일), ADDL≥0·II&gt;0 확인</span>
+<span class="next">→ Q10: 장기 휴약기(reset, EVID=4)와 정상상태 진입(SS=1)의 특수 코딩 처리</span>`,
+
+    'q10': `<span class="ex-where">[10/35] P1 dose_df 빌딩 · EVID=3/4 · SS 처리</span>
+dose_df 6단계 중 <strong>다섯 번째</strong>입니다. 일반 투여(EVID=1)는 Q06~Q09에서 다 처리했고, 이번에는 <strong>특수 EVID 코드</strong>를 다룹니다. dosing gap이 5×t½을 넘으면 약물이 완전히 washout된 것이므로 <strong>EVID=4</strong>(reset, 다음 dose부터 새 cycle)로 표시하고, 환자가 study 진입 전에 이미 정상상태였다면 <strong>SS=1, II=24</strong>로 표시해 NONMEM이 prior dosing을 가정하도록 합니다.
+<span class="tip">💡 EVID=3(reset only, dose 없음)과 EVID=4(reset + dose)를 혼동하지 마세요. SS=1 행에는 반드시 II&gt;0이 있어야 합니다(없으면 NONMEM 무한 적분).</span>
+<span class="pass">✓ Pass: gap&gt;5×t½ 구간 EVID=4 처리, SS=1 행은 II 명시, EVID∈{1,3,4}만 잔류</span>
+<span class="next">→ Q11: dose_df 완성! 7-point QC Gate를 통과해야 P2로 진입 가능</span>`,
+
+    'q11': `<span class="ex-where">[11/35] P1 dose_df 빌딩 · 7-point QC Gate (P1 종료점)</span>
+dose_df 6단계의 <strong>마지막 step이자 P1 Phase의 종료점</strong>입니다. Q06~Q10에서 만든 dose_df가 NONMEM 입력으로 적합한지 7개 자동 검증을 통과해야 합니다: ①EVID∈{1,3,4} ②EVID=1/4→AMT&gt;0 ③모든 ID에 dose 존재 ④DATETIME 결측 0 ⑤ADDL 총량 검산 ⑥CMT가 Q03 설계와 일치 ⑦CRF 누적 투여량 검증. <strong>하나라도 실패하면 즉시 STOP</strong> — P2로 넘어가서는 안 됩니다.
+<span class="tip">💡 ⑦ CRF 대조는 자동화하기 어렵지만 가장 중요합니다. ID별 총 투여량 한두 명이라도 손으로 대조하면 흔한 unit error를 즉시 잡아낼 수 있습니다.</span>
+<span class="pass">✓ Pass: 7개 항목 모두 PASS, dose_df 동결(freeze)·해시 기록 → P2 진입 허용</span>
+<span class="next">→ Q12 (P2 시작): obs_df 빌딩 개시. PK 농도(DV)를 ADPC source에서 추출</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q12': `<span class="ex-where">[12/35] P2 obs_df 빌딩 · PK 농도(DV) 추출 (P2 시작)</span>
+P1에서 dose_df를 완성했고, 이제 <strong>P2 Phase</strong>로 넘어와 obs_df(관측 데이터프레임)를 빌딩하는 4개 단계(Q12~Q15) 중 <strong>첫 번째</strong>입니다. ADPC(Analysis Dataset for PC, PK 농도 분석용 source)에는 수십 개의 컬럼이 섞여 있는데, NONMEM이 필요한 것은 <strong>PCSTRESN</strong>(표준화된 농도 수치) 하나뿐입니다. 이를 select·rename으로 추출하면서 동시에 EVID=0, CMT=2, AMT=0을 mutate로 채워 obs_df의 골격을 만듭니다.
+<span class="tip">💡 PCSTAT='NOT DONE' 행은 삭제하지 말고 남겨서 Q14에서 MDV=1로 처리하세요. 삭제하면 nominal time 정보가 영구히 손실됩니다.</span>
+<span class="pass">✓ Pass: ID·TIME·DV·CMT·EVID·AMT·MDV 7개 컬럼만 잔류, NOT DONE 행 보존, DV 단위 일치 확인</span>
+<span class="next">→ Q13: 추출한 DV 값 중 LLOQ 미만(BLQ)을 식별하고 flag</span>`,
+
+    'q13': `<span class="ex-where">[13/35] P2 obs_df 빌딩 · BLQ 식별 & flag</span>
+obs_df 4단계 중 <strong>두 번째</strong>입니다. Q12에서 DV 컬럼을 추출했으므로, 이번에는 <strong>BLQ</strong>(Below Limit of Quantification, 정량하한 미만)인 값을 식별해 flag합니다. 핵심은 <strong>아직 imputation하지 않는다</strong>는 점입니다 — 단지 BLQ=1 컬럼만 추가합니다. M1/M3/M5 같은 처리 방법(M-method)을 어디서 선택할지는 Q21로 미루고, 여기서는 식별과 LLOQ 명시까지만 합니다.
+<span class="tip">💡 LLOQ가 시기별·assay별로 다를 수 있습니다. assay re-validation 이후 LLOQ가 바뀐 study에서는 LLOQ를 행별 컬럼으로 두세요. 단일 상수로 두면 일부 BLQ를 놓칩니다.</span>
+<span class="pass">✓ Pass: BLQ 컬럼(0/1) 추가, LLOQ 컬럼 명시, BLQ 비율 계산 완료(Q21 의사결정용)</span>
+<span class="next">→ Q14: BLQ·NA·dose 행에 대해 MDV(Missing DV) 코드를 일괄 부여</span>`,
+
+    'q14': `<span class="ex-where">[14/35] P2 obs_df 빌딩 · MDV 코딩</span>
+obs_df 4단계 중 <strong>세 번째</strong>입니다. Q13에서 BLQ flag가 추가되었으므로, 이번에는 <strong>MDV</strong>(Missing Dependent Variable, 우도에서 제외할 행 표시)를 결정합니다. NONMEM은 MDV=0인 행만 likelihood 계산에 사용하므로, BLQ=1·DV=NA·EVID=1(dose 행) 세 경우는 모두 MDV=1로 두어야 합니다. 이 단계의 본질은 <strong>"이 행이 모델 fit에 기여하는가?"라는 질문에 하나의 컬럼으로 답하는 것</strong>입니다.
+<span class="tip">💡 MDV와 EVID는 독립 컬럼처럼 보이지만 강하게 묶여 있습니다. EVID=0인데 MDV=1인 행(=관측이지만 결측)은 정상이고, EVID=1인데 MDV=0인 행은 즉시 에러입니다.</span>
+<span class="pass">✓ Pass: 4개 분기(BLQ·NA·dose·valid) 모두 처리, MDV=0 행은 모두 DV&gt;0 확인</span>
+<span class="next">→ Q15: obs_df 4-point QC Gate 통과 → P3 진입 자격 획득</span>`,
+
+    'q15': `<span class="ex-where">[15/35] P2 obs_df 빌딩 · 4-point QC Gate (P2 종료점)</span>
+obs_df 4단계의 <strong>마지막 step이자 P2 Phase의 종료점</strong>입니다. Q11의 7-point gate가 dose_df를 검증했다면, 이번에는 obs_df 차원의 4개 자동 검증을 통과해야 합니다: ①모든 행 EVID=0 ②MDV=0이면 DV&gt;0 ③MDV=0이면서 DV=NA인 행 0건 ④모든 ID에 valid 관측 ≥1건. obs_df는 dose_df보다 검증 항목이 적은데, 이는 obs_df가 <strong>독립 객체로서 가질 수 있는 결함이 적기 때문</strong>입니다 — TIME 정합성·dose 연결 같은 큰 문제는 P3 병합 후에야 비로소 검출 가능합니다.
+<span class="tip">💡 ④는 자주 누락되는 검증입니다. 모든 dose는 있지만 한 번도 채혈 안 된 ID가 섞이면 NONMEM은 그 환자를 무시한 채 돌아갑니다(silent loss).</span>
+<span class="pass">✓ Pass: 4개 항목 모두 PASS, obs_df 동결·해시 기록, dose_df와 함께 P3 진입 준비 완료</span>
+<span class="next">→ Q16 (P3 시작): TIME 빌딩 개시. 문자열 datetime을 POSIXct로 파싱하고 numeric TIME 계산</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q16': `<span class="ex-where">[16/35] P3 TIME 빌딩 · POSIXct 파싱 & REF_TIME (P3 시작)</span>
+P1·P2에서 dose_df와 obs_df를 각각 완성했고, 이제 <strong>P3 Phase</strong>로 넘어와 두 데이터프레임을 시간축 위에 정렬하는 5개 단계(Q16~Q20) 중 <strong>첫 번째</strong>입니다. NONMEM의 TIME 컬럼은 문자열 datetime이 아니라 <strong>각 ID의 첫 dose로부터의 경과시간(numeric, 단위 hours)</strong>입니다. 원본 문자열을 ymd_hms로 POSIXct(R의 datetime 자료형)로 파싱한 뒤, ID별 min(DATETIME)을 REF_TIME으로 두고 difftime으로 TIME을 계산합니다.
+<span class="tip">💡 timezone 미지정 POSIXct는 시스템 locale에 따라 결과가 달라집니다. 반드시 tz="UTC"를 명시해 재현성을 확보하세요. DST(서머타임) 경계에서 1시간이 사라지거나 추가되는 사고도 UTC면 차단됩니다.</span>
+<span class="pass">✓ Pass: 모든 DATETIME이 POSIXct로 파싱(NA 0건), 각 ID의 첫 record TIME=0, TIME 단위 hours 통일</span>
+<span class="next">→ Q17: 계산된 actual TIME을 protocol nominal TIME과 대조해 시간 오류 탐지</span>`,
+
+    'q17': `<span class="ex-where">[17/35] P3 TIME 빌딩 · Actual vs Nominal 대조</span>
+P3의 <strong>두 번째</strong> step입니다. Q16에서 numeric TIME을 계산했지만, 그 값이 실제로 맞는지는 <strong>NTIME</strong>(Nominal Time, 프로토콜상 예정 채혈 시각)과 대조해야 비로소 알 수 있습니다. ±(t½×0.1) 범위를 벗어나면 deviation을 flag하고, 자정 통과로 인한 음수 TIME·시계 역전·DATE만 있고 TIME 결측인 경우 같은 패턴을 분류합니다. 핵심은 <strong>"NTIME을 버리지 말고 별도 컬럼으로 보존"</strong>한다는 점 — Q18 병합·Q20 정렬·EDA 단계에서 모두 다시 쓰입니다.
+<span class="tip">💡 자정 통과(예: 23:55 → 00:05) 시 day 컬럼이 누락된 source는 actual TIME이 -23.83h처럼 음수로 나옵니다. TIME&lt;0 행은 모두 강제 검토 대상으로 두세요.</span>
+<span class="pass">✓ Pass: NTIME 컬럼 보존, |TIME−NTIME|&gt;t½×0.1인 행 flag, TIME 역전·음수 0건</span>
+<span class="next">→ Q18: dose_df와 obs_df를 시간축 위에서 bind_rows로 통합 (P0~P2의 결실)</span>`,
+
+    'q18': `<span class="ex-where">[18/35] P3 TIME 빌딩 · dose+obs 병합 (전체 흐름의 변곡점)</span>
+P3의 <strong>세 번째 step이자 전체 workflow의 변곡점</strong>입니다. P1의 dose_df(EVID=1, AMT&gt;0, DV 없음)와 P2의 obs_df(EVID=0, AMT=0, DV 있음)가 그동안 독립 객체로 만들어졌는데, 이번 step에서 <strong>처음이자 마지막으로</strong> bind_rows로 합쳐집니다. Q16의 REF_TIME을 left_join하고 arrange(ID, TIME)로 시간순 정렬하면 비로소 nm_df의 초기 형태가 등장합니다.
+<span class="tip">💡 bind_rows는 누락된 컬럼을 NA로 채웁니다 — dose_df에 DV가 없고 obs_df에 AMT가 없어도 자동 정렬되지만, 컬럼 이름·자료형이 미세하게 다르면 silent하게 묶이지 않습니다. 사전에 names()와 sapply(class)로 양쪽을 대조하세요.</span>
+<span class="pass">✓ Pass: nrow(nm_df) = nrow(dose_df) + nrow(obs_df), 모든 ID에 EVID=1·EVID=0 행 공존, is.grouped_df()=FALSE</span>
+<span class="next">→ Q19: 시간 결측 행(date만 있고 clock time 없음)을 nominal로 imputation + TIMEF flag</span>`,
+
+    'q19': `<span class="ex-where">[19/35] P3 TIME 빌딩 · 시간 결측 imputation & TIMEF flag</span>
+P3의 <strong>네 번째</strong> step입니다. Q18에서 nm_df가 만들어졌지만, 일부 행은 DATE만 있고 clock time이 결측이라 TIME 계산이 불가능합니다(특히 D&gt;1의 trough sample이나 PK day가 아닌 일자에서 자주 발생). 이 행들을 그냥 버리면 ID별 관측 수가 줄어 NONMEM 추정이 불안정해지므로, <strong>nominal TIME으로 imputation</strong>하되 <strong>TIMEF=1 flag</strong>를 남겨 sensitivity 분석에서 IGNORE=(TIMEF.GT.0)으로 쉽게 제외할 수 있게 만듭니다.
+<span class="tip">💡 imputation 자체보다 "imputed 여부를 영구히 추적 가능하게 만드는 것"이 중요합니다. flag 없이 imputation만 하면 6개월 뒤 reviewer 질문에 답할 수 없습니다.</span>
+<span class="pass">✓ Pass: TIME의 NA 0건, TIMEF 컬럼 추가(0/1), imputed 행은 NTIME 그대로 보존, imputation 비율 기록</span>
+<span class="next">→ Q20: P3의 마지막 step. dose→obs 정렬 강제 + TAD 계산</span>`,
+
+    'q20': `<span class="ex-where">[20/35] P3 TIME 빌딩 · dose→obs 정렬 & TAD (P3 종료점)</span>
+P3의 <strong>마지막 step</strong>입니다. Q18에서 arrange(ID, TIME)로 정렬했지만, <strong>TIME=0에서 dose와 obs가 동시에 존재할 때 정렬이 모호</strong>해집니다. NONMEM은 같은 TIME에서 위에 있는 행을 먼저 처리하므로, dose 행이 obs 행보다 위에 있어야 baseline(=pre-dose) 관측이 dose 직후 농도로 잘못 해석되지 않습니다. <strong>arrange(ID, TIME, desc(EVID))</strong>로 강제 정렬한 뒤, TAD(Time After Dose, 마지막 dose 이후 경과시간)를 ID별로 cumulative하게 계산합니다.
+<span class="tip">💡 TAD는 EDA·진단 plot의 핵심 축이지만 NONMEM 추정에 직접 쓰이지는 않습니다. 그래도 dataset에 미리 계산해 두면 Q24의 EDA·Q31 개인별 plot이 훨씬 빨라집니다.</span>
+<span class="pass">✓ Pass: TIME=0에서 dose가 obs보다 위, TAD=0 (dose 시점), TAD 컬럼 추가 → P3 완료, P4 진입</span>
+<span class="next">→ Q21 (P4 시작): BLQ M-method 최종 선택 (DV/MDV 실제 recoding)</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q21': `<span class="ex-where">[21/35] P4 BLQ·이상치·EDA · BLQ M-method 최종 선택 (P4 시작)</span>
+P3에서 nm_df의 시간축이 완성되었고, 이제 <strong>P4 Phase</strong>로 넘어와 BLQ·이상치·EDA를 다루는 4개 단계(Q21~Q24) 중 <strong>첫 번째</strong>입니다. Q13에서 BLQ flag만 달아두고 미뤘던 결정을 이제 내립니다: BLQ 비율이 &lt;5%면 M1/M5(단순 제외 또는 LLOQ/2), 5–20%면 <strong>M3</strong>(likelihood에 BLQ 구간 적분, LAPLACIAN/SAEM 필요), &gt;20%면 assay 자체를 재검토해야 합니다. 이번 step의 본질은 <strong>"BLQ 행의 DV와 MDV를 어떻게 recoding할지 최종 확정"</strong>입니다.
+<span class="tip">💡 M3는 강력하지만 LAPLACIAN/SAEM 추정만 가능하고 시간이 10배 이상 걸립니다. BLQ&lt;5%면 M1이 실용적입니다. M-method는 protocol·SAP에 사전 명시해야 합니다(post-hoc 변경 금지).</span>
+<span class="pass">✓ Pass: BLQ% 산출 완료, M-method 선택 근거 문서화, DV/MDV recoding 규칙 확정</span>
+<span class="next">→ Q22: 통계적·임상적 이상치를 EXCL flag로 처리 (행 삭제 금지)</span>`,
+
+    'q22': `<span class="ex-where">[22/35] P4 BLQ·이상치·EDA · EXCL flag 부여</span>
+P4의 <strong>두 번째</strong> step입니다. Q21에서 BLQ 처리를 끝냈으므로 이번에는 <strong>이상치</strong>(통계적 outlier, assay error, 농도 단위 의심 등)를 다룹니다. 가장 중요한 원칙은 <strong>"이상치는 절대 행을 삭제하지 않는다"</strong>는 것입니다 — 대신 EXCL=1 flag를 부여하고 EXCLR(reason 코드, 'STAT_OUTLIER'·'ASSAY_FAIL' 등)을 함께 기록합니다. 실제 NONMEM 실행 시에는 $DATA IGNORE=(EXCL.GT.0)으로 자동 제외되며, sensitivity 분석에서는 이 조건만 끄면 됩니다.
+<span class="tip">💡 nrow(before) == nrow(after)를 stopifnot으로 강제하세요. 한 번 삭제한 행은 reviewer 질문이 들어와도 복원할 수 없고, sensitivity 분석 자체가 불가능해집니다.</span>
+<span class="pass">✓ Pass: 행수 보존(삭제 0건), EXCL·EXCLR 컬럼 추가, 이상치 행에 reason 코드 부여 완료</span>
+<span class="next">→ Q23: 분석 대상 ID(population) 확정 — CONSORT 스타일 disposition</span>`,
+
+    'q23': `<span class="ex-where">[23/35] P4 BLQ·이상치·EDA · 분석 대상 확정 (population screening)</span>
+P4의 <strong>세 번째</strong> step입니다. Q22까지 행 수준 정리는 끝났고, 이번에는 <strong>ID 수준</strong>에서 분석 population을 확정합니다. enrolled 전체에서 시작해 n_dose=0(투여 안 받음)·n_obs&lt;2(농도 측정 거의 없음)·max_TIME&lt;t½(추적 너무 짧음)·all_BLQ(농도 전부 BLQ) 같은 기준으로 단계별 제외하고, 각 단계의 제외 수를 <strong>CONSORT diagram</strong>(임상시험 등록·제외 흐름도) 형태로 기록합니다.
+<span class="tip">💡 제외된 ID도 행 삭제가 아니라 EXCL=1로 표시하세요. 그래야 sensitivity 분석에서 "n_obs≥2 기준을 풀면 결과가 어떻게 바뀌는가"를 즉시 답할 수 있습니다.</span>
+<span class="pass">✓ Pass: enrolled → analysis N 경로 문서화, 각 제외 사유별 ID 수 기록, 최종 N 확정</span>
+<span class="next">→ Q24: 자동 QC가 못 잡는 패턴 결함을 EDA(탐색적 데이터 분석)로 검출</span>`,
+
+    'q24': `<span class="ex-where">[24/35] P4 BLQ·이상치·EDA · EDA 시각 검증 (P4 종료점)</span>
+P4의 <strong>마지막 step이자 Phase 종료점</strong>입니다. Q11·Q15·Q22까지 자동 QC를 여러 번 통과했지만, 자동화로 잡히지 않는 <strong>패턴 결함</strong>(데이터 형태에 드러나는 구조적 오류)이 마지막으로 남아 있습니다. spaghetti plot(개인별 PK 프로파일 겹침)·dose-normalized plot(DV/DOSE)·BLQ 시점 plot 등 4개 핵심 plot을 그려보면 "DV=0이 dose 직후에 일관되게 나옴(=dosing gap)", "축적이 단조 증가(=TIME reference 오류)", "동일 시점에 DV가 1000배 차이(=unit mismatch)" 같은 사고가 즉시 눈에 보입니다.
+<span class="tip">💡 plot은 모델링자에게도 동일하게 공유하세요. data builder 혼자 보면 약리학적 이상은 놓칩니다. 30분 EDA가 6개월 모델링 재작업을 막습니다.</span>
+<span class="pass">✓ Pass: 4개 핵심 plot 생성, 의심 패턴 0건 또는 모두 문서화·해결, 모델링자 cross-review 완료</span>
+<span class="next">→ Q25 (P5 시작): 공변량 빌딩 개시. baseline 공변량 추출 + 파생 변수(BSA·CLCR·BMI) 계산</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q25': `<span class="ex-where">[25/35] P5 공변량 빌딩 · baseline 추출 & 파생 변수 (P5 시작)</span>
+P4에서 nm_df의 행·이상치·population을 모두 확정했고, 이제 <strong>P5 Phase</strong>로 넘어와 공변량을 빌딩하는 4개 단계(Q25~Q28) 중 <strong>첫 번째</strong>입니다. dm·lb(demographics·labs) source에서 ID별 1행짜리 cov_df를 만들면서, 동시에 모델링에서 자주 쓰이는 파생 변수들을 계산합니다: <strong>BSA</strong>(Body Surface Area, Du Bois 공식 0.007184×WT^0.425×HT^0.725)·<strong>CLCR</strong>(Creatinine Clearance, Cockcroft-Gault)·<strong>BMI</strong>(Body Mass Index, WT/(HT/100)²).
+<span class="tip">💡 SCr 단위(mg/dL vs μmol/L)가 study별로 다르면 CLCR이 침묵하며 어긋납니다. mutate 직전에 SCr 단위를 표 한 줄로 확인하세요. baseline 정의(scheduled day vs first post-dose) 합의도 필수입니다.</span>
+<span class="pass">✓ Pass: ID별 1행 cov_df 완성, 파생 변수 범위 검증(WT∈[30,250]·AGE∈[0,120]) 통과, 단위 표 문서화</span>
+<span class="next">→ Q26: 범주형 변수 numeric 변환 + nm_df에 left_join (행수 불변 강제)</span>`,
+
+    'q26': `<span class="ex-where">[26/35] P5 공변량 빌딩 · 범주형 코딩 & merge 행수 불변</span>
+P5의 <strong>두 번째</strong> step이자 <strong>전 workflow에서 가장 사고가 잦은 단계 중 하나</strong>입니다. Q25에서 cov_df(ID별 1행)를 만들었으므로 nm_df에 left_join으로 붙이는데, 두 가지를 동시에 처리해야 합니다: ①범주형 변수("M"/"F" 같은 문자) → numeric 코딩(NONMEM은 character 처리 불가) ②join 후 <strong>행수가 절대 변하지 않아야</strong> 함. cov_df에 중복 ID가 있으면 left_join이 silent하게 1:many로 펼쳐져 행수가 폭증하고, 모든 후속 분석이 무효화됩니다.
+<span class="tip">💡 left_join 직전에 stopifnot(!any(duplicated(cov_df$ID))) + 직후에 stopifnot(nrow(nm_df) == nrow_before)를 반드시 두세요. right_join·inner_join·full_join은 P5에서 전부 금지입니다.</span>
+<span class="pass">✓ Pass: SEX·RACE 등 범주형 numeric 변환, cov_df ID 유일성 확인, join 전후 행수 동일</span>
+<span class="next">→ Q27: 시간에 따라 변하는 공변량(eGFR·ALT)을 LOCF로 채움</span>`,
+
+    'q27': `<span class="ex-where">[27/35] P5 공변량 빌딩 · time-varying 공변량 LOCF</span>
+P5의 <strong>세 번째</strong> step입니다. Q26에서 baseline(시간 불변) 공변량은 모두 붙였지만, eGFR·ALT·SCr 같은 <strong>time-varying covariate</strong>(시간에 따라 변하는 공변량)은 측정 시점에만 값이 있고 나머지 행은 NA입니다. <strong>LOCF</strong>(Last Observation Carried Forward, 마지막 측정값을 다음 측정 직전까지 그대로 끌고 감) 방식으로 채우는 게 표준입니다 — group_by(ID) %&gt;% fill(eGFR, .direction='down')로 구현하며, ID 경계를 넘어 이전 환자 값이 흘러들지 않도록 group_by가 필수입니다.
+<span class="tip">💡 첫 측정 이전 시점(예: dose 직전 baseline lab이 없는 ID)은 fill로도 채워지지 않습니다. .direction='downup'으로 양방향 채우거나, 별도로 baseline imputation 규칙을 정해두세요.</span>
+<span class="pass">✓ Pass: time-varying 컬럼의 NA 0건, group_by(ID) 경계 보존 확인, imputation 행 비율 기록</span>
+<span class="next">→ Q28: 끝까지 남은 결측값 median imputation + 범위 검증 + flag</span>`,
+
+    'q28': `<span class="ex-where">[28/35] P5 공변량 빌딩 · 결측 imputation & 범위 검증 (P5 종료점)</span>
+P5의 <strong>마지막 step이자 Phase 종료점</strong>입니다. Q27의 LOCF에도 불구하고 끝까지 채워지지 않은 공변량 결측(baseline 자체가 없는 ID 등)을 <strong>cohort median으로 imputation</strong>하면서, 동시에 <strong>FLAG_IMP_xxx</strong> 컬럼으로 imputed 여부를 영구히 표시합니다. 또한 범위 검증(WT∈[30,250], AGE∈[0,120])에서 <strong>impossible value</strong>(WT=0 같은)는 imputation 대상이 아니라 DM(Data Management) query 대상 — 분석자가 임의로 고치면 안 되고 source 정정을 요청해야 합니다.
+<span class="tip">💡 mean이 아니라 median을 쓰세요(skewed distribution에 안정적). impossible value를 median으로 묻어버리는 게 가장 흔한 사고입니다 — is.na와 out-of-range를 분리해서 처리하세요.</span>
+<span class="pass">✓ Pass: 모든 공변량 NA 0건, FLAG_IMP_xxx 추가, impossible value는 DM query 발행 → P6 진입</span>
+<span class="next">→ Q29 (P6 시작): NONMEM 포맷팅 개시. 필수 컬럼 순서·$INPUT 작성·NA→'.' 변환·CSV 출력</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q29': `<span class="ex-where">[29/35] P6 NONMEM 포맷팅 · 컬럼 순서 & $INPUT & CSV 출력 (P6 시작)</span>
+P5에서 공변량까지 모두 nm_df에 통합되었고, 이제 <strong>P6 Phase</strong>로 넘어와 NONMEM 입력 포맷으로 마감하는 4개 단계(Q29~Q32) 중 <strong>첫 번째</strong>입니다. NONMEM은 <strong>$INPUT 선언 순서대로 CSV 컬럼을 읽기 때문에</strong>, CSV의 실제 컬럼 순서와 $INPUT이 어긋나면 ID 자리에 TIME이 들어가는 식의 silent 사고가 발생합니다(에러 메시지 없음). 또한 NA는 모두 마침표 <strong>'.'</strong>로 변환해야 NONMEM이 missing으로 인식합니다.
+<span class="tip">💡 write.csv가 아니라 readr::write_csv를 쓰세요(quote·encoding 일관성). na='.' 옵션을 잊으면 "NA" 문자열이 들어가 NONMEM이 첫 행부터 멈춥니다. $INPUT 문자열은 코드로 자동 생성해 paste(colnames, collapse=' ')로 출력하세요 — 손으로 적으면 반드시 어긋납니다.</span>
+<span class="pass">✓ Pass: 필수 컬럼 순서 확정(ID·TIME·DV·AMT·CMT·EVID·MDV 우선), $INPUT 문자열 자동 생성, CSV의 NA가 모두 '.'</span>
+<span class="next">→ Q30: $INPUT/$DATA 작성 + 12-point 구조 QC 자동 검증</span>`,
+
+    'q30': `<span class="ex-where">[30/35] P6 NONMEM 포맷팅 · 12-point 구조 QC</span>
+P6의 <strong>두 번째</strong> step입니다. Q29에서 CSV를 출력했으므로, 이제 <strong>마지막 프로그래밍 안전망</strong>으로 12개 구조 QC를 자동 실행합니다: 모든 ID에 dose·obs 존재, EVID=1↔AMT&gt;0 / EVID=0↔AMT=0 양방향, 중복 행 0, CMT 유효값, ADDL/SS↔II&gt;0, NA 0건(모두 '.'), 헤더 1행, 첫 행이 dose, non-ASCII 0건 등. Q11(7-point)과 Q15(4-point)가 부분 객체 검증이었다면, Q30은 <strong>최종 통합본 전체에 대한 구조 검증</strong>입니다.
+<span class="tip">💡 ⑫ non-ASCII 검사는 자주 빠뜨리는 항목입니다. 한글 코멘트나 EUC-KR로 저장된 source의 잔재가 한 글자라도 섞이면 NONMEM이 첫 줄에서 멈춥니다. iconv 또는 stringi::stri_enc_isascii로 일괄 점검하세요.</span>
+<span class="pass">✓ Pass: 12개 항목 모두 PASS, $INPUT·$DATA IGNORE=@ 작성, CSV 파일 동결 및 해시 기록</span>
+<span class="next">→ Q31: 자동 QC가 못 잡는 패턴을 개인별 PK plot으로 육안 검토</span>`,
+
+    'q31': `<span class="ex-where">[31/35] P6 NONMEM 포맷팅 · 개인별 PK plot 육안 검토</span>
+P6의 <strong>세 번째</strong> step입니다. Q30의 12-point QC를 통과했어도, <strong>약리학적 비정상</strong>(예: trough가 갑자기 0으로 떨어짐, accumulation이 비물리적, dose 후 즉시 0)은 자동화로 잡히지 않습니다. facet_wrap(~ID)로 개인별 농도-시간 곡선을 그려, ID별로 한 장씩 눈으로 훑는 것이 이 단계의 본질입니다. 30분 plot 검토가 6개월 모델링 재작업을 막는 가장 비용 대비 효과 큰 작업입니다.
+<span class="tip">💡 log scale로 그리세요(낮은 농도 구간 이상을 놓치지 않음). 의심 ID는 ID 번호와 의심 사유를 별도 표로 기록해 두면, 다음 step PRED check에서 즉시 매칭됩니다.</span>
+<span class="pass">✓ Pass: 모든 ID의 plot 확인, 의심 패턴은 모두 사유 기록·해결 또는 EXCL 처리, log scale·linear scale 양쪽 검토</span>
+<span class="next">→ Q32: 1-compartment 모델로 PRED 생성 → 5가지 실패 패턴 검증 (P6 종료점)</span>`,
+
+    'q32': `<span class="ex-where">[32/35] P6 NONMEM 포맷팅 · PRED Check Gate (P6 종료점)</span>
+P6의 <strong>마지막 step이자 Phase 종료점</strong>으로, 데이터셋 자체에 대한 <strong>마지막 모델 기반 검증</strong>입니다. mrgsolve로 간단한 1-compartment 모델을 돌려 PRED를 만들고, DV vs PRED를 그려 5가지 실패 패턴을 확인합니다: ①PRED≈0 전체(AMT 단위·CMT 오류) ②특정 ID PRED=∞(TIME 역전·중복 EVID=1) ③흡수 peak 없음(Depot CMT 누락) ④trough=0(ADDL/II 오류) ⑤DV가 DOSE에 비례하지 않음(AMT 불일치). <strong>이 5개 패턴 중 하나라도 발견되면 P7로 넘어가지 말고 즉시 데이터를 고치세요</strong>.
+<span class="tip">💡 정확한 추정이 목적이 아니라 "데이터 구조가 모델과 호환되는가"만 보는 것이므로, fixed 파라미터로 단순하게 돌리면 충분합니다. 30분 안에 끝나야 합니다.</span>
+<span class="pass">✓ Pass: 5가지 패턴 0건, DV vs PRED scatter가 합리적, 비정상 ID 0건 → P7 진입 허용</span>
+<span class="next">→ Q33 (P7 시작): 문서화·재현성·QC 개시. Data Handling Spec 9개 섹션 작성</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const explainMap = {
+    'q33': `<span class="ex-where">[33/35] P7 문서화·재현성·QC · Data Handling Spec 작성 (P7 시작)</span>
+P6의 PRED Check까지 통과해 데이터셋의 기술적 완성은 끝났고, 이제 마지막 <strong>P7 Phase</strong>(문서화·재현성·QC)의 3개 단계(Q33~Q35) 중 <strong>첫 번째</strong>입니다. 데이터셋 자체가 옳더라도 <strong>"왜 이렇게 만들었는지"</strong>가 문서화되지 않으면 규제기관 review·6개월 뒤 재현·sensitivity 분석 모두 불가능합니다. <strong>Data Handling Specification</strong>은 9개 표준 섹션(데이터 소스·제외·TIME 처리·BLQ 방법·imputation·이상치·기술통계·컬럼 정의·단위)으로 구성되며, 각 FLAG 컬럼이 어떤 $DATA IGNORE 구문에 매핑되는지 함께 명시합니다.
+<span class="tip">💡 sensitivity 분석은 별도 데이터셋을 새로 만드는 게 아니라 IGNORE 조건만 바꾸는 것입니다(예: EXCL을 무시하면 어떻게 되는가). 이를 가능케 하는 게 FLAG→IGNORE 매핑표이므로, 작성 시 반드시 포함하세요.</span>
+<span class="pass">✓ Pass: 9개 섹션 작성 완료, FLAG→IGNORE 매핑표 포함, sensitivity 분석 시나리오 사전 정의</span>
+<span class="next">→ Q34: 전 과정을 모듈 파이프라인으로 재구성 + md5sum 재현성 검증</span>`,
+
+    'q34': `<span class="ex-where">[34/35] P7 문서화·재현성·QC · 모듈 파이프라인 & 재현성</span>
+P7의 <strong>두 번째</strong> step입니다. Q33에서 spec 문서가 완성되었으므로, 이제 Q01~Q32까지의 모든 처리를 <strong>00_Master.R + 01~07 모듈</strong>(01_PK·02_Dosing·03_Merge·04_BLQ·05_Cov·06_Format·07_QC)로 재구성해 <strong>한 줄 명령(rm(list=ls()); source('00_Master.R'))으로 처음부터 끝까지 재현 가능</strong>해야 합니다. 핵심 검증은 <strong>md5sum 일치</strong>(같은 source · 같은 코드 → 비트 단위로 동일한 CSV)이며, 산출물은 CSV·spec·로그·해시·QC report·plot·script archive·session info의 8개로 표준화됩니다.
+<span class="tip">💡 "수동 수정 = 0건" 원칙을 절대 깨지 마세요. Excel에서 단 한 셀이라도 손으로 고치는 순간 재현성과 audit trail이 무너지고, 6개월 뒤 동일 결과를 만들 수 없게 됩니다.</span>
+<span class="pass">✓ Pass: 모듈 분리 완료, source('00_Master.R')만으로 end-to-end 재실행, md5sum 일치 확인, 8개 산출물 정리</span>
+<span class="next">→ Q35: 마지막 step. 독립 프로그래머의 dual check로 최종 QC Gate 통과</span>`,
+
+    'q35': `<span class="ex-where">[35/35] P7 문서화·재현성·QC · Independent QC Gate (최종)</span>
+전체 35개 step 중 <strong>마지막 단계이자 NONMEM-Ready의 종료선</strong>입니다. Q34까지로 한 사람이 만든 데이터셋의 재현성은 보장되지만, <strong>"코드 자체에 체계적 오류가 있다면?"</strong>이라는 질문에는 아직 답하지 못합니다. 답은 <strong>독립 검증</strong> — 두 번째 프로그래머가 같은 source와 같은 spec(Q33)만 받고 코드 A와 무관하게 코드 B를 작성해 nm_ready_v2.csv를 만든 뒤, all.equal(v1, v2)로 비교합니다. 6개 항목(record count·BLQ flag·dose audit·covariate distribution·md5sum·두 명 서명)이 모두 일치해야 통과입니다.
+<span class="tip">💡 mismatch가 나오는 게 정상입니다 — 그래야 검증의 의미가 있습니다. 차이가 발견되면 즉시 reconcile하고 두 코드 모두를 보존하세요(어느 쪽이 옳았는지의 흔적이 audit trail 자체).</span>
+<span class="pass">✓ Pass: 두 독립 데이터셋 all.equal=TRUE, 6개 비교 항목 일치, 양쪽 프로그래머 서명 → 규제 제출용 NONMEM-Ready 완성 🎉</span>
+<span class="next">→ 종료: nm_ready.csv가 NONMEM 추정 단계로 전달됩니다. 데이터 빌딩 임무 완수.</span>`
+  };
+
+  Object.entries(explainMap).forEach(([qid, html]) => {
+    const panel = document.getElementById('det-' + qid);
+    if (!panel) return;
+    if (panel.querySelector('.q-explain')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'q-explain';
+    wrapper.innerHTML = html;
+    const viz = panel.querySelector('.q-viz');
+    if (viz && viz.nextSibling) {
+      panel.insertBefore(wrapper, viz.nextSibling);
+    } else if (viz) {
+      panel.appendChild(wrapper);
+    } else {
+      panel.insertBefore(wrapper, panel.firstChild);
+    }
+  });
+})();
+</script>
 </body>
 </html>
