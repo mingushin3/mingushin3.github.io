@@ -201,8 +201,14 @@ PK27에서 $R_0 \approx 12$ mg·L⁻¹, $K_m \approx 0.03$ mg·L⁻¹임. ligand
 
 $$
 \underbrace{C_L}_{\text{ligand 농도}}
-\quad\text{통과}\quad
-\overbrace{\underbrace{R_0}_{\text{target 기준}},\ \underbrace{K_m}_{\text{겉보기 경계}},\ \underbrace{K_d}_{\text{결합 경계}}}^{\text{phase 전환점}}
+\quad\text{순차 통과}\quad
+\overbrace{
+  \underbrace{R_0}_{\text{target level 역치}}
+  \;\longrightarrow\;
+  \underbrace{K_m}_{\text{포화 경계}}
+  \;\longrightarrow\;
+  \underbrace{K_d}_{\text{결합 경계}}
+}^{\text{phase 전환점 (고농도 → 저농도)}}
 $$
 
 ### 4 phase의 정체
