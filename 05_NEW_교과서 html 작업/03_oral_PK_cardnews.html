@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03 · 경구 PK — F · ka · tmax · 흡수 (Remastered)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<style>
+/* ============ DESIGN TOKENS ============ */
+:root {
+  --canvas: #faf9f5;
+  --surface-soft: #f5f0e8;
+  --surface-card: #efe9de;
+  --surface-cream-strong: #e8e0d2;
+  --surface-dark: #181715;
+  --surface-dark-elevated: #252320;
+  --surface-dark-soft: #1f1e1b;
+  --hairline: #e6dfd8;
+  --hairline-soft: #ebe6df;
+
+  --coral: #cc785c;
+  --coral-active: #a9583e;
+  --coral-pale: #f4e4dc;
+  --coral-disabled: #e6dfd8;
+  --accent-teal: #5db8a6;
+  --accent-amber: #e8a55a;
+
+  --ink: #141413;
+  --body-strong: #252523;
+  --body: #3d3d3a;
+  --muted: #6c6a64;
+  --muted-soft: #8e8b82;
+  --on-primary: #ffffff;
+  --on-dark: #faf9f5;
+  --on-dark-soft: #a09d96;
+
+  --warn-bg: #fcf0ef;
+  --warn-border: #c64545;
+  --amber-bg: #fdf4e0;
+  --amber-border: #d4a017;
+  --teal-bg: #e6f4f0;
+  --teal-border: #5db8a6;
+  --success: #5db872;
+
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ============ RESET ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--canvas);
+  color: var(--body);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, p, ul, ol { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+button { font-family: inherit; }
+
+/* ============ SIDEBAR ============ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 260px;
+  background: var(--surface-soft);
+  border-right: 1px solid var(--hairline);
+  overflow-y: auto;
+  z-index: 10;
+  padding: 24px 0;
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 3px; }
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 14px;
+}
+.wordmark-text {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.wordmark-sub {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--muted);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.toc-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted-soft);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0 20px;
+  margin-bottom: 10px;
+}
+
+.toc-list { padding: 0 12px; }
+.toc-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 6px 12px 6px 14px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--body);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 0;
+  line-height: 1.4;
+}
+.toc-btn:hover { color: var(--ink); background: rgba(204, 120, 92, 0.06); }
+.toc-btn.active {
+  border-left-color: var(--coral);
+  color: var(--coral);
+  font-weight: 500;
+}
+.toc-btn.sub { padding-left: 22px; font-size: 11.5px; color: var(--muted); }
+.toc-btn.sub.active { color: var(--coral); }
+.toc-btn .toc-num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted-soft);
+  margin-right: 6px;
+}
+.toc-btn.active .toc-num { color: var(--coral); }
+
+/* ============ VIEWER ============ */
+.viewer {
+  position: fixed;
+  left: 260px; top: 0; right: 0; bottom: 56px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 56px 22px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+.slide.has-formula { padding-top: 44px; }
+
+.slide-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; }
+.slide-body.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+.slide-body.two-col-narrow { grid-template-columns: 1.1fr 0.9fr; }
+.slide-body.two-col-wide { grid-template-columns: 0.9fr 1.1fr; }
+
+.col { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+
+/* ============ SLIDE HEADER ============ */
+.slide-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.sec-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--coral);
+  color: var(--on-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.sec-badge.dark { background: var(--surface-dark); color: var(--on-dark); }
+.sec-badge.teal { background: var(--accent-teal); }
+.sec-badge.amber { background: var(--accent-amber); }
+
+.slide-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.8vw, 38px);
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  flex: 1;
+}
+.slide-title em {
+  font-style: italic;
+  color: var(--coral);
+}
+
+.header-rule {
+  height: 1.5px;
+  background: var(--hairline);
+  border: none;
+  margin: 0 0 14px 0;
+}
+
+.slide-subtitle {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: -4px;
+  margin-bottom: 14px;
+  letter-spacing: 0.2px;
+}
+
+/* ============ TYPOGRAPHY ============ */
+p { color: var(--body); font-size: 15px; line-height: 1.65; }
+p + p { margin-top: 8px; }
+strong { color: var(--body-strong); font-weight: 600; }
+em { font-style: italic; color: var(--body-strong); }
+.sub-title {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+h3.sub-title { font-size: clamp(16px, 1.5vw, 19px); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--surface-card);
+  color: var(--body-strong);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* ============ CARDS ============ */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+.card-soft {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+.card-cream {
+  background: var(--surface-cream-strong);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+.card-tight { padding: 14px 18px; }
+.card-flex { display: flex; flex-direction: column; gap: 10px; }
+
+.dark-card {
+  background: var(--surface-dark);
+  border-radius: 12px;
+  padding: 20px 24px;
+  color: var(--on-dark-soft);
+}
+.dark-card p { color: var(--on-dark-soft); }
+.dark-card strong { color: var(--on-dark); }
+.dark-card em { color: var(--on-dark-soft); font-style: italic; }
+.dark-card li { color: var(--on-dark-soft); }
+.dark-card li::marker { color: var(--coral); }
+.dark-card h2, .dark-card h3, .dark-card .sub-title { color: var(--on-dark); }
+.dark-card .dark-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--coral);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ============ FORMULA CARD ============ */
+.formula-card-wrap {
+  overflow: visible !important;
+}
+.formula-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 36px 20px 26px;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: visible !important;
+}
+.formula-card.tight { padding: 30px 16px 20px; }
+.formula-source {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--hairline);
+  letter-spacing: 0.2px;
+}
+.formula-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--coral);
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.formula-caption {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* KaTeX overrides */
+.katex-display {
+  overflow-y: visible !important;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+}
+.katex-display > .katex {
+  overflow-y: visible !important;
+}
+.katex { font-size: 1.05em !important; }
+
+/* ============ CALLOUTS ============ */
+.callout {
+  border-radius: 0 8px 8px 0;
+  padding: 13px 17px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.callout-coral { background: var(--coral-pale); border-left: 3px solid var(--coral); }
+.callout-warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); }
+.callout-amber { background: var(--amber-bg); border-left: 3px solid var(--amber-border); }
+.callout-teal { background: var(--teal-bg); border-left: 3px solid var(--teal-border); }
+
+.callout-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--body-strong);
+  margin-bottom: 4px;
+  display: block;
+}
+.callout p { font-size: 14px; line-height: 1.55; }
+
+/* ============ ALGORITHM BOX ============ */
+.algo-box {
+  background: var(--surface-dark);
+  color: var(--on-dark-soft);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.75;
+  white-space: pre;
+  overflow-x: auto;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.algo-box .algo-key { color: var(--coral); }
+.algo-box .algo-comment { color: var(--muted-soft); font-style: italic; }
+
+/* ============ SOURCE CHIP ============ */
+.chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  background: var(--surface-card);
+  color: var(--muted);
+  padding: 1px 7px;
+  border-radius: 4px;
+  margin: 0 2px;
+  letter-spacing: 0.2px;
+}
+.chip-coral { background: var(--coral-pale); color: var(--coral-active); }
+
+/* ============ TABLE ============ */
+.table-wrap {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: clip;
+  background: var(--canvas);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  background: var(--surface-card);
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  letter-spacing: 0.1px;
+  border-bottom: 1px solid var(--hairline);
+}
+thead tr:first-child th { padding-top: 16px; }
+tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--hairline-soft);
+  color: var(--body);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--surface-soft); }
+
+/* ============ LIST ============ */
+ul.bullet-list, ol.num-list {
+  padding-left: 0;
+}
+ul.bullet-list li, ol.num-list li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 7px;
+  color: var(--body);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+ul.bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 11px;
+  width: 5px; height: 5px;
+  background: var(--coral);
+  border-radius: 50%;
+}
+ol.num-list { counter-reset: nlist; }
+ol.num-list li {
+  counter-increment: nlist;
+  padding-left: 28px;
+}
+ol.num-list li::before {
+  content: counter(nlist);
+  position: absolute;
+  left: 0; top: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--coral);
+  font-weight: 500;
+  width: 20px;
+  text-align: right;
+  padding-right: 6px;
+  padding-top: 2px;
+}
+
+/* ============ COVER SLIDE ============ */
+.cover-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 20px;
+  max-width: 900px;
+}
+.cover-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--coral);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.cover-title {
+  font-family: var(--font-display);
+  font-size: clamp(46px, 5.5vw, 76px);
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  line-height: 1.0;
+  margin-bottom: 18px;
+}
+.cover-title em { color: var(--coral); font-style: italic; }
+.cover-subtitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(20px, 1.8vw, 26px);
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 28px;
+  letter-spacing: -0.005em;
+  line-height: 1.35;
+}
+.cover-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-soft);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+  width: 100%;
+  max-width: 600px;
+}
+
+/* ============ CLOSER CARD ============ */
+.closer-card {
+  background: var(--surface-dark);
+  border-radius: 12px;
+  padding: 28px 32px;
+}
+.closer-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--coral);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.closer-body {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(18px, 1.5vw, 22px);
+  color: var(--on-dark);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+}
+.closer-body strong { color: var(--coral); font-style: italic; font-weight: 500; }
+
+/* ============ NAV BAR ============ */
+.navbar {
+  position: fixed;
+  bottom: 0; left: 260px; right: 0;
+  height: 56px;
+  background: var(--canvas);
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+  z-index: 10;
+}
+.nav-btn {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 13.5px;
+  color: var(--ink);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-body);
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--coral);
+  color: var(--on-primary);
+  border-color: var(--coral);
+}
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.nav-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.prog-text {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.prog-bar {
+  width: 260px;
+  height: 3px;
+  background: var(--hairline);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--coral);
+  width: 0%;
+  transition: width 0.22s ease;
+}
+
+/* ============ DENSITY HELPERS ============ */
+.dense .card, .dense .card-soft { padding: 14px 16px; }
+.dense .slide-body { gap: 10px; }
+.dense p { font-size: 14px; line-height: 1.55; }
+.dense ul.bullet-list li, .dense ol.num-list li { font-size: 13.5px; }
+.dense table { font-size: 12px; }
+.dense tbody td, .dense thead th { padding: 7px 11px; }
+
+/* ============ TWO-CARD ROW ============ */
+.row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.row-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+/* ============ HIGHLIGHT BLOCK ============ */
+.danger-box {
+  background: var(--warn-bg);
+  border: 1px solid #f0d4d4;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.danger-box .num {
+  display: inline-block;
+  font-family: var(--font-mono);
+  background: var(--warn-border);
+  color: white;
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  line-height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+/* ============ COVER WORDMARK SVG ============ */
+.spike-icon { display: inline-block; vertical-align: middle; }
+
+/* prevent overflow on small content blocks */
+.card p:last-child, .card-soft p:last-child, .dark-card p:last-child { margin-bottom: 0; }
+
+/* Equation marker - non-katex display */
+.eq-name {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--coral);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+/* Center-of-card flex */
+.fc-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+/* small footer note inside slide */
+.foot-note {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.2px;
+}
+
+/* mark used inside text */
+.mark-coral { color: var(--coral); font-weight: 500; }
+.mark-teal { color: var(--accent-teal); font-weight: 500; }
+.mark-amber { color: #b8860b; font-weight: 500; }
+
+</style>
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="wordmark">
+    <svg class="spike-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78"
+            stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="wordmark-text">Oral PK</div>
+      <div class="wordmark-sub">Session 03 · Remastered</div>
+    </div>
+  </div>
+
+  <div class="toc-label">Contents</div>
+  <nav class="toc-list" id="toc-list"></nav>
+</aside>
+
+<!-- ============ VIEWER ============ -->
+<main class="viewer" id="viewer">
+
+<!-- ============================================================
+     SLIDE 1 — COVER
+============================================================ -->
+<section class="slide active" data-title="Cover">
+  <div class="cover-wrap">
+    <div class="cover-label">Session 03 · Pharmacokinetics</div>
+    <h1 class="cover-title">경구 PK의<br>네 가지 <em>apparent</em></h1>
+    <p class="cover-subtitle">\(F\) · \(k_a\) · \(t_{max}\) · 흡수 — 그리고 합성곱의 진실<br>같은 곡선, 다른 결론을 어떻게 가르는가</p>
+    <div class="cover-meta">
+      Gabrielsson &amp; Weiner 5e · Rowland &amp; Tozer 5e &nbsp;|&nbsp; Document C-260518-064237-9XQ
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — 한 줄 치트키
+============================================================ -->
+<section class="slide" data-title="치트키">
+  <div class="slide-header">
+    <span class="sec-badge">CHEAT KEY</span>
+    <h1 class="slide-title">한 줄 치트키 — 모든 카드의 모태</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col" style="grid-template-columns: 1fr 1fr;">
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">⚡ 핵심 한 줄</span>
+        <p><strong>경구 곡선 = (입력함수) ⊛ (disposition)</strong>. 즉 <strong>합성곱 구조</strong>임. 그래서 같은 곡선이 입력만 다르게, \(F\)만 다르게, 둘 다 다르게 — 여러 조합으로 만들어질 수 있음. <strong>모든 게 apparent가 되는 근원이 바로 이 합성곱 구조</strong>임.</p>
+      </div>
+      <div class="card-soft">
+        <h3 class="sub-title">이 한 줄의 따름정리(corollary)</h3>
+        <ul class="bullet-list">
+          <li>\(V\)와 \(F\)가 분리 안 됨 → <strong>\(V/F\)</strong>만 추정 가능</li>
+          <li>\(CL\)과 \(F\)가 분리 안 됨 → <strong>\(CL/F\)</strong>만 추정 가능</li>
+          <li>terminal slope가 \(k_a\)인지 \(k_{el}\)인지 라벨이 뒤집힐 수 있음 → <strong>flip-flop</strong></li>
+          <li>fitted \(k_a\)가 진짜 흡수속도가 아닐 수 있음 → \(k_{a,app} = k_{a,true} + k_d\)</li>
+          <li>"좋은 fit"이 "진짜 메커니즘"의 증명이 아님 → numerical vs structural identifiability</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="dark-card">
+        <span class="dark-label">⚠ 실무에서 위험한 다섯 줄</span>
+        <ol class="num-list" style="margin-top: 6px;">
+          <li>"\(V/F\)"를 "\(V\)"로 적기</li>
+          <li>"\(CL/F\)"를 "\(CL\)"로 적기</li>
+          <li>"terminal slope \(= k_{el}\)"로 단정하기</li>
+          <li>"\(k_a\) 감소 \(=\) 흡수 저하"로 단정하기</li>
+          <li>"AIC 더 좋음 \(=\) 진짜 0차 흡수"로 단정하기</li>
+        </ol>
+        <p style="margin-top: 12px; font-size: 13.5px;">이 다섯 줄을 보고서에 적는 순간 임상·규제 양쪽에서 일이 터짐. <strong>이걸 어떻게 피하는가 — 이 챕터 전체가 그 답.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — 임상 오프닝
+============================================================ -->
+<section class="slide" data-title="임상 오프닝">
+  <div class="slide-header">
+    <span class="sec-badge">OPENING</span>
+    <h1 class="slide-title">임상 오프닝 — 같은 숫자, 완전히 다른 결론</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body">
+    <div class="card">
+      <p>R&amp;T 6장에 이런 사례가 있음. 같은 약물을 <strong>i.m.으로 주면 \(F = 97\%\)</strong>, <strong>경구 용액으로 주면 \(F = 46\%\)</strong>로 나옴 <span class="chip">R&amp;T Table 6-1 / Fig.6-14, pp.183–184</span>.</p>
+      <p style="margin-top: 10px;">이 두 숫자를 보고 "경구는 흡수가 느린 거구나"라고 말하는 순간 — <strong>속도(\(k_a\), 얼마나 빨리)와 양(\(F\), 얼마나 많이)이 머릿속에서 섞이기 시작</strong>함. \(F\)는 속도가 아님. <span class="mark-coral">\(F\)는 도달한 양</span>임.</p>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-title">더 위험한 상황 하나 더</span>
+      <p>경구만 가지고 있는 데이터에서 \(V/F\), \(CL/F\), terminal slope를 각각 \(V\), \(CL\), \(k_{el}\)처럼 보고하는 경우. <strong>이 한 줄의 보고 문장이 임상 판단과 규제 판단을 통째로 흔들 수 있음.</strong> 오늘 다룰 게 그 한 줄을 어떻게 정직하게 쓰는지임.</p>
+    </div>
+
+    <div class="card-soft card-tight">
+      <p style="font-size: 13px;"><strong>📚 출처 및 범위 노트.</strong> <strong>Source A (G&amp;W):</strong> Gabrielsson &amp; Weiner, <em>Pharmacokinetic and Pharmacodynamic Data Analysis</em>, 5th ed., Ch.2 §§2.2.4–2.2.12 (pp.28–47), §2.7.1 (p.40), PK2 (pp.476–482), PK3 (pp.483–486). <strong>Source B (R&amp;T):</strong> Rowland &amp; Tozer, <em>Clinical Pharmacokinetics and Pharmacodynamics</em>, 5th ed., Ch.6 (pp.169–195), Ch.7 (pp.197–220), Appendix F (pp.781–784). <strong>기호 약속:</strong> \(k_a\) = 흡수 속도상수, \(k_{el}\) = 소실 속도상수, \(V/F\) = 겉보기 분포용적, \(CL/F\) = 겉보기 청소율.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — §0 BIG PICTURE
+============================================================ -->
+<section class="slide" data-title="§0 빅 픽처">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">빅 픽처 — 다섯 카드의 위치</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body dense">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:48px;">#</th><th style="width:180px;">카드</th><th>한 줄 메시지</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color: var(--coral);">1</strong></td><td><strong>\(C(t)\) Master Equation</strong></td><td>경구 곡선은 두 지수함수의 차이임. 상승부 = 흡수, 하강부 = 소실이라는 단순한 라벨은 위험함</td></tr>
+          <tr><td><strong style="color: var(--coral);">2</strong></td><td><strong>\(t_{max}\) / \(C_{max}\)</strong></td><td>\(t_{max}\)는 "흡수 완료 시점"이 아니라 <strong>rate balance의 시점</strong>임</td></tr>
+          <tr><td><strong style="color: var(--coral);">3</strong></td><td><strong>생체이용률 \(F\)</strong></td><td>\(F\)는 "얼마나 많이"임. <strong>\(AUC\)가 읽는 extent</strong>임. 절대 속도 개념이 아님</td></tr>
+          <tr><td><strong style="color: var(--coral);">4</strong></td><td><strong>Apex — \(V/F\) + Flip-flop</strong></td><td>경구 단독 데이터는 <strong>합성곱 구조</strong> 때문에 원리적으로 분리 못 하는 게 있음</td></tr>
+          <tr><td><strong style="color: var(--coral);">5</strong></td><td><strong>\(k_{a,app}\) vs \(k_{a,true}\)</strong></td><td>fitted \(k_a\)는 흡수 + 장관손실의 합임. "진짜 흡수속도"가 아닐 수 있음</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row-two">
+      <div class="dark-card">
+        <span class="dark-label">📍 학습 위치</span>
+        <p style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.85; white-space: pre;">[IV bolus 1구획 PK]
+  → <strong>[이 세션: 경구/혈관외, F, ka, tmax, V/F, flip-flop]</strong>
+  → [multiple dosing · MR · BE / food effect]</p>
+      </div>
+      <div class="card-soft">
+        <h3 class="sub-title">🧭 읽는 순서</h3>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li><strong>Card 1:</strong> 경구 농도곡선은 왜 "두 지수함수의 차이"인가?</li>
+          <li><strong>Card 2:</strong> 최고농도 시점은 왜 "흡수 완료"가 아닌가?</li>
+          <li><strong>Card 3:</strong> \(F\)는 왜 "속도"가 아닌가?</li>
+          <li><strong>Card 4:</strong> 경구 단독으로는 왜 \(V\)·\(CL\)·terminal slope를 확정할 수 없는가?</li>
+          <li><strong>Card 5:</strong> 적합된 \(k_a\)는 왜 실제 흡수속도가 아닐 수 있는가?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 5 — §1 Card 1 Intro
+============================================================ -->
+<section class="slide" data-title="§1 Card 1 — 골격">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · CARD 1</span>
+    <h1 class="slide-title">\(C(t)\) Master Equation — 골격이 여기서 끝남</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">🎯 이 카드의 치트키</span>
+        <p><strong>"경구 곡선 = 흡수 지수 − 소실 지수." 그게 다임.</strong> 그리고 분모의 \((k_a - k_{el})\)이 두 과정이 시간축에서 얼마나 떨어져 보이는지를 정함.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sub-title">왜 이게 중요한가</h3>
+        <p>IV bolus에서는 약이 들어오자마자 \(C_0\)가 즉시 만들어졌음. 경구는 완전히 다름. <strong>농도가 0에서 시작해서 천천히 올라가는데, 이건 그냥 "약이 늦게 들어오는" 게 아님.</strong> 흡수와 소실이 <strong>동시에</strong> 일어나면서, 두 지수함수의 <strong>차이</strong>로 곡선이 만들어짐.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card-soft">
+        <h3 class="sub-title">이 구조 때문에 일어나는 일</h3>
+        <ul class="bullet-list">
+          <li>\(F\)와 \(V\)가 <strong>\(V/F\)로 묶임</strong></li>
+          <li>\(k_a\)와 \(k_{el}\)이 terminal slope에서 자리바꿈할 수 있음 (<strong>flip-flop</strong>)</li>
+          <li>"상승부 = 흡수, 하강부 = 소실"이라는 단순 라벨이 위험해짐</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-teal">
+        <span class="callout-title">🔑 한 줄 비유 — 두 모래시계</span>
+        <p><strong>두 모래시계가 겹쳐있다고 보면 됨.</strong> 장관에서 빠지는 모래시계가 \(k_a\), 중심구획에서 사라지는 모래시계가 \(k_{el}\). 우리가 보는 농도는 <strong>두 흐름의 차이</strong>임. 그래서 하강부가 보인다고 무조건 elimination phase가 아님 — \(k_a < k_{el}\)이면 terminal slope는 <strong>absorption-limited decline</strong>일 수 있음.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — Master Equation — Derivation
+============================================================ -->
+<section class="slide has-formula" data-title="§1 Master Eq 도출">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · DERIVATION</span>
+    <h1 class="slide-title">미분방정식 — 흡수부위와 중심구획</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-subtitle">가정: 1구획 · 1차 흡수 · 1차 소실 · 선형 PK (dose 비례성 유지)</div>
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          <div class="formula-label">흡수 부위 (장관)</div>
+          $$\underbrace{\frac{dA_g}{dt}}_{\text{장관 변화}} = -\underbrace{k_a}_{\text{장관 소실}}\,\underbrace{A_g}_{\text{장관 잔량}}$$
+          <div class="formula-source">G&amp;W Eq.2:32–2:34, p.30</div>
+        </div>
+      </div>
+      <div class="card-soft card-tight">
+        <p style="font-size: 13.5px;">장관 내 잔량이 1차 속도상수 \(k_a\)로 줄어듦. 입력 함수 자체는 단조 감소형.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          <div class="formula-label">혈장 / 중심구획</div>
+          $$\underbrace{\frac{dC}{dt}}_{\text{농도 변화}} = \underbrace{\frac{k_a F D_{po} e^{-k_a t}}{V}}_{\text{전신 입력}} - \underbrace{k_{el} C}_{\text{중심 소실}}$$
+          <div class="formula-source">R&amp;T Eq.6-2–6-3, pp.171–172</div>
+        </div>
+      </div>
+      <div class="card-soft card-tight">
+        <p style="font-size: 13.5px;">전신 입력 항은 흡수부위 잔량 \(\times\) \(k_a\) / V (전신 도달 분율 \(F\) 곱해서). 중심구획 소실은 \(k_{el} C\)의 1차 형태.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 7 — Master Equation — Integrated
+============================================================ -->
+<section class="slide has-formula" data-title="§1 적분해">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · MASTER EQ</span>
+    <h1 class="slide-title">적분해 — 이게 골격이다</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body">
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{C(t)}_{\text{혈장 농도}}=\frac{\overbrace{k_a F D_{po}}^{\text{전신 입력}}}{\underbrace{V(k_a-k_{el})}_{\text{희석·분리}}}\left(\underbrace{e^{-k_{el}t}}_{\text{소실 지수}}-\underbrace{e^{-k_a t}}_{\text{흡수 지수}}\right)$$
+        <div class="formula-source">Source: G&amp;W Eq.2:35, p.30 · R&amp;T Appendix F Eq.F-1, p.782</div>
+      </div>
+    </div>
+
+    <div class="row-two">
+      <div class="card-soft">
+        <h3 class="sub-title">파라미터 정의</h3>
+        <div class="table-wrap" style="margin-top: 6px;">
+          <table style="font-size: 12.5px;">
+            <thead><tr><th>파라미터</th><th>단위</th><th>의미</th></tr></thead>
+            <tbody>
+              <tr><td>\(F\)</td><td>fraction</td><td>전신 순환 도달 분율</td></tr>
+              <tr><td>\(D_{po}\)</td><td>amount</td><td>경구 투여량</td></tr>
+              <tr><td>\(V\)</td><td>volume</td><td>농도 희석 공간</td></tr>
+              <tr><td>\(k_a\)</td><td>\(t^{-1}\)</td><td>장관/흡수부위 소실 속도</td></tr>
+              <tr><td>\(k_{el}\)</td><td>\(t^{-1}\)</td><td>중심구획 소실 속도</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="callout callout-amber">
+          <span class="callout-title">💼 실무 인사이트</span>
+          <p>NONMEM ADVAN2 oral model에서 <strong>KA initial을 큰 값과 작은 값 둘 다 시도해봐야 함.</strong> 서로 다른 initial이 다른 해로 가거나 비슷한 OFV로 수렴하면 → <strong>flip-flop 또는 practical identifiability 문제 의심.</strong></p>
+        </div>
+        <div class="dark-card" style="padding: 14px 18px;">
+          <span class="dark-label">Card 1 요약</span>
+          <ul class="bullet-list" style="font-size: 13px;">
+            <li>경구 \(C(t)\)는 "<strong>흡수 지수 − 소실 지수</strong>"</li>
+            <li>\(F\)·\(V\)는 진폭, \(k_a\)·\(k_{el}\)은 모양·terminal slope</li>
+            <li>"하강부 \(=\) elimination" 단정 위험 (flip-flop)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — Lag-time & Zero-order Input
+============================================================ -->
+<section class="slide has-formula" data-title="§1 Lag·Zero-order">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · EXTENSIONS</span>
+    <h1 class="slide-title">Lag-time과 0차 입력 — 같은 골격, 다른 입력함수</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <h3 class="sub-title">Lag-time — 흡수 시작 전 지연</h3>
+      <p style="font-size: 14px;">투여 시각이 아니라 <strong>실제 흡수 시작 이후</strong>의 시간만 식에 들어감.</p>
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          $$C(t)=0 \quad (t<t_{lag})$$
+          $$\underbrace{C(t)}_{\text{지연 후 농도}}=\frac{k_a F D_{po}}{V(k_a-k_{el})}\left(e^{-k_{el}(t-t_{lag})}-e^{-k_a(t-t_{lag})}\right)$$
+          <div class="formula-source">\((t \geq t_{lag})\) · G&amp;W Eq.2:39–2:42, pp.32–33</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 class="sub-title">0차 입력 — 다른 입력 함수</h3>
+      <p style="font-size: 14px;">0차 흡수는 중심 소실은 그대로, <strong>입력 함수만 바꾼 경우</strong>. 흡수 중에는 입력이 거의 일정하다가, 흡수가 끝나면 washout만 남음 <span class="chip">G&amp;W p.38</span> <span class="chip">R&amp;T Fig.6-2, p.171</span>.</p>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">⚠️ PK3 함정</span>
+        <p>G&amp;W PK3 사례에서 zero-order model의 AIC가 first-order보다 좋게 나왔음. <strong>근데 AIC가 더 좋다고 "이건 진짜 0차 흡수다"가 증명되는 건 아님.</strong> 진짜 기전 확정은 dose range, 반복투여, IV 비교 같은 추가 evidence가 필요함 <span class="chip">G&amp;W pp.483–486</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 9 — §2 Card 2 tmax Intro
+============================================================ -->
+<section class="slide" data-title="§2 Card 2 — tmax">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · CARD 2</span>
+    <h1 class="slide-title">\(t_{max}\) — 흡수 완료가 아니라 <em>Rate Balance</em></h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">🎯 이 카드의 치트키</span>
+        <p><strong>\(t_{max}\)는 "흡수가 가장 많이 끝난 시간"이 아님.</strong> \(t_{max}\)는 <strong>"\(dC/dt = 0\)이 되는 시간"</strong> — 즉, 흡수 속도와 소실 속도가 같아지는 순간임. 한국말로는 <span class="mark-coral">"순유입이 0이 되는 시점"</span> <span class="chip">R&amp;T p.173</span> <span class="chip">G&amp;W pp.34–35</span>.</p>
+      </div>
+
+      <div class="callout callout-teal">
+        <span class="callout-title">🔑 한 줄 비유 — 저수지 수위</span>
+        <p>\(t_{max}\)는 <strong>저수지 수위가 가장 높은 순간</strong>임. 수도꼭지(흡수)로 들어오는 속도와 배수구(소실)로 빠지는 속도가 같아지는 시점임. <strong>물이 다 들어온 시점이 아님.</strong> linear 1구획에서는 \(F\)와 dose가 높이를 바꾸지만 \(t_{max}\) 위치는 안 바꿈.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">왜 이게 중요한가</h3>
+        <p>학생들이 가장 많이 잘못 외우는 게 <strong>"\(t_{max}\) 도달 \(=\) 흡수 완료"</strong>임.</p>
+        <p style="margin-top: 8px;"><strong class="mark-coral">틀림.</strong> \(t_{max}\) 이후에도 흡수는 계속 진행 중임. 단지 소실이 더 빨라서 농도가 내려가는 것뿐임.</p>
+      </div>
+      <div class="dark-card">
+        <span class="dark-label">기억 고리</span>
+        <p style="font-size: 14px;"><strong>"흡수 완료 시각"이 아니라 "흡수율과 소실율이 만나는 시각."</strong></p>
+        <p style="margin-top: 6px; font-size: 13px;">\(t_{max}\) 이후에도 흡수는 계속, 단지 제거가 더 빠를 뿐.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — tmax 도출
+============================================================ -->
+<section class="slide has-formula" data-title="§2 tmax 도출">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · DERIVATION</span>
+    <h1 class="slide-title">\(t_{max}\) 식 도출 — \(dC/dt = 0\)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body">
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        <div class="formula-label">Master equation을 미분 → \(dC/dt = 0\)</div>
+        $$\underbrace{\frac{dC}{dt}}_{\text{농도 기울기}}=\frac{k_a F D_{po}}{V(k_a-k_{el})}\left(\overbrace{-k_{el}e^{-k_{el}t}+k_a e^{-k_a t}}^{\text{속도 균형}}\right)=\underbrace{0}_{\text{peak 조건}}$$
+      </div>
+    </div>
+
+    <div class="formula-card-wrap" style="margin-top: 8px;">
+      <div class="formula-card tight">
+        <div class="formula-label">정리하면</div>
+        $$\underbrace{t_{max}}_{\text{peak 시간}}=\frac{\underbrace{\ln(k_a/k_{el})}_{\text{속도 로그비}}}{\underbrace{k_a-k_{el}}_{\text{속도 차}}}$$
+        <div class="formula-source">G&amp;W Eq.2:49–2:52, pp.34–35 · R&amp;T Eq.F-6, p.783</div>
+      </div>
+    </div>
+
+    <div class="callout callout-coral">
+      <span class="callout-title">🔑 핵심 — 왜 \(t_{max}\) 식에 \(F\), \(V\), \(D\)가 없는가?</span>
+      <p>\(F\), dose, \(V\)는 곡선의 <strong>높이를 위아래로 scale만</strong> 함. <strong>기울기가 0이 되는 시간 위치는 안 바꿈.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — tmax 진단표 + Residual + 극한
+============================================================ -->
+<section class="slide has-formula" data-title="§2 진단·잔차·극한">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · DIAGNOSTICS</span>
+    <h1 class="slide-title">파라미터 변화 진단표와 잔차법</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <h3 class="sub-title">파라미터 변화 → 곡선 반응</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>변화</th><th>\(C_{max}\)</th><th>\(AUC\)</th><th>\(t_{max}\)</th></tr></thead>
+          <tbody>
+            <tr><td>dose ↑ 또는 \(F\) ↑</td><td>↑</td><td>↑</td><td><strong>그대로</strong></td></tr>
+            <tr><td>\(CL\) 변화</td><td>같이 ↕</td><td>같이 ↕</td><td>같이 ↕</td></tr>
+            <tr><td>\(V\) 변화</td><td>↕</td><td>—</td><td>반대로 ↕</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size: 13.5px;">→ <strong>"\(F\)·dose만 변했을 때"의 패턴과 "disposition(\(CL/V\))이 변했을 때"의 패턴이 다름.</strong> 흡수 변화와 disposition 변화를 가르는 첫 단서 <span class="chip">R&amp;T Figs.6-10–6-11</span>.</p>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">\(k_a \gg k_{el}\)일 때</div>
+          $$C_{max}\approx \frac{F D_{po}}{V}\,e^{-k_{el}t_{max}}$$
+          <div class="formula-source">G&amp;W Eq.2:53, p.35</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 class="sub-title">잔차법 (Method of Residuals)</h3>
+      <p style="font-size: 13.5px;">말기 직선 구간에서 \(k_{el}\) 먼저 추정 → 그 직선을 역외삽해서 관찰 농도를 뺌 → 잔차 직선이 나옴 → 그 기울기가 \(-k_a\). 두 직선의 교점은 lag-time 추정 <span class="chip">G&amp;W pp.31–33</span>.</p>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">⚠️ 중요한 함정</span>
+        <p>잔차법은 <strong>"terminal slope가 진짜 elimination을 반영한다"</strong>는 전제 위에 있음. <strong>flip-flop 상황에서는 이 전제가 깨짐.</strong></p>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">극한 — \(k_a = k_{el}\)</div>
+          $$C(t)=\frac{k' F D_{po}}{V}\,t\,e^{-k't}$$
+          <div class="formula-source">G&amp;W Eq.2:58, p.37</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — §3 Card 3 F intro
+============================================================ -->
+<section class="slide" data-title="§3 Card 3 — F">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · CARD 3</span>
+    <h1 class="slide-title">\(F\) "얼마나 많이" vs \(k_a\) "얼마나 빨리"</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">🎯 이 카드의 치트키</span>
+        <p><strong>\(k_a\)는 속도계(순간 속도), \(F\)는 적산계(누적 도달량).</strong> 두 개를 섞는 순간 food effect / BE / formulation effect 해석이 다 무너짐. \(F\)를 "<strong>\(AUC\)가 읽는 extent</strong>"로 박아 놓으면 rate와 extent가 완전히 분리됨.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sub-title">왜 이게 중요한가</h3>
+        <p><strong>"\(AUC\) 변화 \(=\) 흡수속도 변화"라는 한 줄</strong> — 이게 가장 위험한 혼동임. extent와 rate를 섞는 순간 food effect 보고서, formulation 비교 보고서, BE 보고서 모두 실패함.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="dark-card">
+        <span class="dark-label">속도계 vs 적산계</span>
+        <p><strong>\(k_a\) = 속도계.</strong> 순간 속도. 시간에 따른 흐름의 빠르기.</p>
+        <p style="margin-top: 8px;"><strong>\(F\) = 적산계.</strong> 누적 도달량. 시간 전체에 걸쳐 도달한 총량.</p>
+        <p style="margin-top: 10px; font-size: 13.5px;">\(k_a\)를 키워도 \(F\)가 그대로면 \(AUC\)는 그대로. <strong>이게 핵심.</strong></p>
+      </div>
+
+      <div class="callout callout-amber">
+        <span class="callout-title">R&amp;T 사례 앵커</span>
+        <p>i.m. dose \(F = 97\%\), oral solution \(F = 46\%\) — route별 extent 차이의 anchor <span class="chip">R&amp;T Table 6-1, p.183</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 13 — F 수식 (절대·상대·기전적)
+============================================================ -->
+<section class="slide has-formula" data-title="§3 F 수식">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · FORMULAS</span>
+    <h1 class="slide-title">절대 · 상대 · 기전적 생체이용률</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">절대 생체이용률 (IV reference 있음)</div>
+          $$\underbrace{F}_{\text{절대 F}}=\underbrace{\frac{AUC_{po}}{AUC_{iv}}}_{\text{노출 비율}}\cdot\underbrace{\frac{D_{iv}}{D_{po}}}_{\text{용량 보정}}$$
+          <div class="formula-source">G&amp;W Eq.2:74, p.42 · R&amp;T Eq.6-11, p.183</div>
+        </div>
+      </div>
+      <p style="font-size: 13.5px;">전제: <strong>두 투여 사이에 clearance가 같다</strong>는 가정 <span class="chip">R&amp;T p.183</span>.</p>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">상대 생체이용률 — IV 없이</div>
+          $$\underbrace{F_{rel}}_{\text{상대 F}}=\underbrace{\frac{AUC_B}{AUC_A}}_{\text{B/A 노출}}\cdot\underbrace{\frac{D_A}{D_B}}_{\text{용량 보정}}$$
+          <div class="formula-source">R&amp;T Eq.6-15, p.185</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">기전적 \(F\) — 세 관문의 곱</div>
+          $$\underbrace{F}_{\text{전체 F}}\approx\underbrace{F_F}_{\text{흡수·제형}}\cdot\underbrace{F_G}_{\text{장관 생존}}\cdot\underbrace{F_H}_{\text{간 생존}}$$
+          <div class="formula-source">R&amp;T Ch.7 context, pp.197–220</div>
+        </div>
+      </div>
+
+      <div class="card-soft">
+        <p style="font-size: 14px;">\(F\)는 "용해되어 들어온 양"이 아니라 <strong>장관 → 장벽 → 간을 차례로 통과한 결과</strong>임.</p>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">BE 맥락 — \(F_{rel}\)만 같으면 충분?</span>
+        <p>R&amp;T는 시험/기준 ratio의 90% CI와 0.80–1.25 기준을 설명 <span class="chip">R&amp;T Fig.6-13</span>. <strong>핵심:</strong> \(F_{rel}\)이 같아서 \(AUC\)가 비슷해도, \(k_a\)가 다르면 \(C_{max}\)·\(t_{max}\)가 다름. <strong>extent와 rate는 항상 같이.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 14 — §3 소변 데이터 + Card 3 요약
+============================================================ -->
+<section class="slide" data-title="§3 소변·요약">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · CLOSE</span>
+    <h1 class="slide-title">소변 데이터와 Card 3 요약</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">소변 데이터</h3>
+        <p>요중 배설로도 \(F\), \(F_{rel}\), 신장 청소율 추정 가능. <strong>단 미변화체 배설 분율 + 신장 처리가 비교 조건에서 일정</strong>해야 함 <span class="chip">R&amp;T Eq.6-18–6-21, pp.187–188</span>.</p>
+      </div>
+
+      <div class="callout callout-coral">
+        <span class="callout-title">\(F\) vs \(k_a\) 한 표</span>
+        <div class="table-wrap" style="margin-top: 6px; background: transparent; border: none;">
+          <table style="font-size: 12.5px;">
+            <thead><tr><th style="width:55px;"></th><th>\(F\)</th><th>\(k_a\)</th></tr></thead>
+            <tbody>
+              <tr><td>의미</td><td>extent (적산)</td><td>rate (순간)</td></tr>
+              <tr><td>읽는 지표</td><td>\(AUC\)</td><td>\(C_{max}\)·\(t_{max}\) 모양</td></tr>
+              <tr><td>단위</td><td>fraction</td><td>\(t^{-1}\)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="dark-card">
+        <span class="dark-label">Card 3 요약</span>
+        <ul class="bullet-list">
+          <li>\(F\) = extent, \(k_a\) = rate. <strong>절대 섞지 말 것</strong></li>
+          <li>\(AUC = F \cdot \text{Dose} / CL\). 단, oral-only에서는 \(CL\)이 아니라 <strong>\(CL/F\)</strong>가 추정됨</li>
+          <li>"\(AUC\) 변화 \(=\) 흡수속도 변화" 단정 → 위험. extent와 rate를 섞는 순간 망함</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-teal">
+        <span class="callout-title">기억 고리</span>
+        <p>\(F_{rel} = 1.0\)이라도 임상적으로 완전히 같지 않음. \(k_a\)가 다르면 \(C_{max}\)·\(t_{max}\)가 다르고, peak-related safety가 중요한 약물에서는 임상적 차이가 분명히 남음 <span class="chip">R&amp;T pp.181–183</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — §4 Card 4 APEX intro
+============================================================ -->
+<section class="slide" data-title="§4 APEX intro">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · APEX</span>
+    <h1 class="slide-title">APEX — 합성곱 구조와 식별불가능성</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">🎯 이 카드의 치트키 — 챕터 전체의 중심</span>
+        <p><strong>경구 농도-시간 곡선 = (입력함수) ⊛ (\(F\)) ⊛ (disposition)의 합성곱.</strong></p>
+        <p style="margin-top: 8px;">세 가지가 합쳐져서 곡선이 만들어지므로, <strong>같은 곡선이 서로 다른 조합으로 나올 수 있음.</strong> 이게 <strong>\(V/F\)로 묶이는 이유, terminal slope label이 뒤집힐 수 있는 이유, fitted \(k_a\)가 실제 흡수가 아닐 수 있는 이유</strong> — 이 세 가지를 한꺼번에 설명해줌.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="callout callout-warn">
+        <span class="callout-title">🚨 가장 중요한 한 줄</span>
+        <p><strong>좋은 OFV · 작은 RSE = "이 모델이 이 데이터를 잘 설명한다"는 뜻일 뿐임. "\(V\)와 \(F\)가 원리적으로 따로 추정 가능하다"는 뜻이 아님.</strong></p>
+      </div>
+
+      <div class="dark-card">
+        <span class="dark-label">⚡ Apex Concept</span>
+        <p style="font-size: 14.5px;"><strong>수치적 식별가능성 (numerical identifiability)</strong>과 <strong>구조적 식별가능성 (structural identifiability)</strong>은 완전히 다른 문제임.</p>
+        <p style="margin-top: 8px; font-size: 13px;">좋은 fit은 첫 번째일 뿐. 두 번째는 모델 구조 자체에서 결정됨.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — V/F 대수적 증명 + R&T 4-part
+============================================================ -->
+<section class="slide has-formula" data-title="§4 V/F 증명">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · ALGEBRA</span>
+    <h1 class="slide-title">\(V/F\)가 분리 안 되는 진짜 이유</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="card">
+        <p>Master equation을 다시 보면 \(F\)와 \(V\)는 <strong>항상 \(F/V\) 형태로만 등장함.</strong> 즉 경구 단독으로는 \(V/F\)만 추정 가능, clearance도 \(CL/F\)로 보고해야 함 <span class="chip">G&amp;W p.32</span> <span class="chip">R&amp;T p.185</span>.</p>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          $$\underbrace{AUC}_{\text{전신 노출}}=\underbrace{\frac{F\cdot Dose}{CL}}_{\text{도달량/CL}}=\underbrace{\frac{Dose}{CL/F}}_{\text{경구 관찰형}}$$
+        </div>
+      </div>
+
+      <div class="callout callout-teal">
+        <span class="callout-title">🔑 한 줄 비유 — 안개 낀 유리창</span>
+        <p>방이 큰 건지(\(V\)가 큰지) 창문이 덜 열린 건지(\(F\)가 작은지) — 같은 농도 하나로는 가를 수 없음. <strong>\(V/F = 50\ \text{L}\)라는 숫자는 절대 "\(V = 50\ \text{L}\)"라는 뜻이 아님.</strong></p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="dark-card">
+        <span class="dark-label">R&amp;T 저자의 4-part 결론 — 외워둘 것</span>
+        <p style="font-size: 13.5px; margin-bottom: 6px;">단일 oral dose만 있을 때:</p>
+        <ol class="num-list">
+          <li><strong>\(AUC\)</strong> — 사다리꼴법으로 계산 가능</li>
+          <li><strong>\(CL\)</strong> — \(F\)를 모르므로 계산 불가</li>
+          <li><strong>terminal half-life</strong> — 무엇이 rate-limiting인지 모르면 elimination/absorption 어느 쪽에도 확정 할당 불가</li>
+          <li><strong>\(V\)</strong> — 추정 불가</li>
+        </ol>
+        <p style="margin-top: 10px; font-size: 12.5px;"><span class="chip">R&amp;T p.185</span> &nbsp;이 네 줄이 Apex의 핵심 메시지.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table style="font-size: 12px;">
+          <thead><tr><th>파라미터</th><th>의미</th><th>변화 원인</th></tr></thead>
+          <tbody>
+            <tr><td>\(V/F\)</td><td>apparent volume</td><td>\(V\) 또는 \(F\)</td></tr>
+            <tr><td>\(CL/F\)</td><td>apparent clearance</td><td>\(CL\) 또는 \(F\)</td></tr>
+            <tr><td>terminal slope</td><td>관찰 말기 감소율</td><td>\(k_{el}\) 또는 \(k_a\) 병목</td></tr>
+            <tr><td>\(AUC\)</td><td>총 전신 노출</td><td>\(F\cdot Dose/CL\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — Flip-flop + 사례
+============================================================ -->
+<section class="slide has-formula" data-title="§4 Flip-flop">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · FLIP-FLOP</span>
+    <h1 class="slide-title">Flip-flop — 실용적 식별불가능성</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="card">
+        <ul class="bullet-list">
+          <li><strong>일반적:</strong> \(k_a > k_{el}\) → 경구 말기 기울기는 <strong>소실</strong>을 반영</li>
+          <li><strong>Flip-flop:</strong> \(k_a < k_{el}\) → 남은 흡수 과정이 더 느린 과정 → 관찰 말기 기울기는 <strong>흡수</strong>를 반영 <span class="chip">G&amp;W Fig.2.17</span> <span class="chip">R&amp;T Case C, pp.175–176</span></li>
+        </ul>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">⚠ 핵심 경고</span>
+        <p><strong>"상승부 = 흡수, 하강부 = 소실" 라벨은 flip-flop에서 통째로 뒤집힘</strong> <span class="chip">G&amp;W pp.29–30</span> <span class="chip">R&amp;T pp.173–176</span>.</p>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">장기지속형 주사 제형(LAI/Depot) — flip-flop의 끝판왕</div>
+          $$\underbrace{\lambda_z}_{\text{관찰 terminal}} \approx \underbrace{k_a}_{\text{느린 흡수 ← 율속}} \ll \underbrace{k_{el}}_{\text{빠른 소실}}$$
+          $$\Rightarrow\quad t_{1/2,obs} = \frac{\ln 2}{k_a}\;(\text{not}\;k_{el})$$
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card-soft">
+        <h3 class="sub-title">사례 앵커 — 외워둘 것</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+          <div><strong style="color: var(--coral);">1. Fluticasone propionate</strong> — \(t_{max}\) 90분, 흡수 반감기 <strong>3.8–4시간</strong> → 빠른 \(t_{max}\)가 빠른 흡수를 증명하지 않음 <span class="chip">R&amp;T Fig.6-7</span></div>
+          <div><strong style="color: var(--coral);">2. Theophylline</strong> — 음식·물 같은 흡수 조건을 바꿔도 말기 반감기는 약 <strong>6.3 hr 유지</strong> → 흡수 변화와 disposition 변화는 다르게 보임 <span class="chip">R&amp;T Fig.6-8</span></div>
+          <div><strong style="color: var(--coral);">3. Penicillin G</strong> — 난용성 근육주사. 흡수가 rate-limiting이 될 수 있음 → flip-flop의 전형 <span class="chip">R&amp;T Fig.6-9</span></div>
+          <div><strong style="color: var(--coral);">4. Depot 제형 군</strong> — Sandostatin LAR (4주), Zoladex (3개월), Mirena (5년). 흡수가 수 주~수 년 단위로 율속 <span class="chip">R&amp;T p.170</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 18 — PK2/PK3 사례 + 그럴듯한 오류
+============================================================ -->
+<section class="slide has-formula" data-title="§4 PK2/PK3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · CASES</span>
+    <h1 class="slide-title">PK2 충돌 사례와 그럴듯한 오류</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="card-soft">
+        <h3 class="sub-title">5. PK2 사례 <span class="chip">G&amp;W p.480</span></h3>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>lag-time model: \(K_a = 0.043\ \text{min}^{-1}\), \(K = 0.0088\ \text{min}^{-1}\), \(V/F = 32\ \text{L}\), \(t_{lag} = 16\ \text{min}\)</li>
+          <li>같은 사례에 \(F = 82\%\), \(\text{true}\ V = 20\ \text{L}\)도 함께</li>
+          <li>산술: \(32 \times 0.82 \approx 26\ \text{L}\) — 원문 20 L와 맞지 않음</li>
+        </ul>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">충돌의 가능한 출처 — \(V\) 환산</div>
+          $$\underbrace{V_{est}}_{\text{환산 V}}=\underbrace{(V/F)_{NLR}}_{\text{solution별 다름}}\times\underbrace{F_{?}}_{\text{NCA or deconv}}$$
+        </div>
+      </div>
+
+      <p style="font-size: 12.5px;">→ <strong>IV reference의 dose linearity가 \(F\) 산정에 sneaky하게 들어간다</strong>는 점이 핵심. NCA → NLR 전환 단계에서 가장 흔한 systematic bias 출처.</p>
+    </div>
+
+    <div class="col">
+      <div class="card-soft">
+        <h3 class="sub-title">6, 7. PK2 Solution III &amp; PK3</h3>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li><strong>PK2 Solution III</strong> <span class="chip">G&amp;W pp.481–482</span>: 역전된 초기 추정치가 다른 \(k_a/k_{el}/V/F\) 해로 수렴 → <strong>flip-flop의 살아있는 증거</strong></li>
+          <li><strong>PK3</strong> <span class="chip">G&amp;W Table 3.1, p.486</span>: 1차 모델은 \(K_a \approx K_e\)로 큰 CV/RSE. 0차 모델 AIC 더 낮음(85.2 → 76.2). <strong>BUT "better AIC ≠ 진짜 0차 흡수의 증명."</strong></li>
+        </ul>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">⚠ 가장 흔한 그럴듯한 오류</span>
+        <p>"<strong>\(C_{max}\)가 내려가고 \(T_{max}\)가 늘어났으니까 흡수가 느려진 거구나</strong>" → <strong>이 단정이 위험.</strong></p>
+        <p style="margin-top: 8px; font-size: 13px;">이 단정 따라 가면 제형 재조제 또는 transit compartment로 복잡화. <strong>만약 진짜 원인이 first-pass 증가, 용해도 저하, 또는 flip-flop이면</strong> → 임상: 노출·독성·치료실패 예측 통째로 어긋남. 규제: BE 의사결정 오류 → 재분석 요구.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 19 — NONMEM 보고 + 3 함정 + Card 4 요약
+============================================================ -->
+<section class="slide" data-title="§4 NONMEM·함정·요약">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · REPORTING</span>
+    <h1 class="slide-title">정직한 NONMEM 보고와 세 가지 함정</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">D. NONMEM 보고 — 정직한 형식</h3>
+        <p>경구 단독 PopPK에서는:</p>
+        <ul class="bullet-list" style="margin-top: 4px;">
+          <li><strong>\(F\)를 1로 고정</strong></li>
+          <li><strong>\(V/F\), \(CL/F\)로 보고</strong></li>
+        </ul>
+        <p style="margin-top: 8px;"><code>F1</code>을 추정하거나 임의 값으로 고정한 다음 \(V\)·\(CL\)을 absolute 값처럼 보고하면 → <strong>사전 가정이 추정된 파라미터처럼 보이는 위험.</strong></p>
+      </div>
+
+      <div class="dark-card">
+        <span class="dark-label">Card 4 요약</span>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>경구 단독은 \(V\)와 \(F\)를 <strong>원리적으로 못 가림</strong></li>
+          <li>flip-flop에서는 terminal slope도 \(k_{el}\)로 확정 불가</li>
+          <li><strong>좋은 fit은 진짜 parameter의 증거가 아님</strong></li>
+          <li>정직한 보고 = \(V/F\) + \(CL/F\) + terminal slope ambiguity 명시</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card-soft">
+        <h3 class="sub-title">💼 실무 인사이트 — 세 가지 함정</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+          <div style="border-left: 3px solid var(--coral); padding-left: 12px;">
+            <strong style="color: var(--coral); font-size: 13.5px;">① 쌍둥이 억제 (Twin Suppression)</strong>
+            <p style="font-size: 13px; margin-top: 2px;">\(k_a\)·\(k_{el}\)의 두 해가 모두 그럴듯할 때 ETA(KA)와 ETA(KEL)가 서로 강하게 보상하면서 OFV가 안정되어 보임.</p>
+          </div>
+
+          <div style="border-left: 3px solid var(--coral); padding-left: 12px;">
+            <strong style="color: var(--coral); font-size: 13.5px;">② \(V/F\) 드리프트 (V/F Drift)</strong>
+            <p style="font-size: 13px; margin-top: 2px;">같은 covariate가 \(V/F\)와 \(CL/F\)에 비례적으로 들어가면 → <strong>\(F\)-driven 변화 의심.</strong> 진짜 분포·청소율 변화 아닐 수 있음.</p>
+          </div>
+
+          <div style="border-left: 3px solid var(--coral); padding-left: 12px;">
+            <strong style="color: var(--coral); font-size: 13.5px;">③ 가상 분포용적 (Phantom Volume)</strong>
+            <p style="font-size: 13px; margin-top: 2px;">\(V/F\) 변화를 \(V\) 변화로 그냥 보고. 핵심 식: \(AUC = F\cdot\text{Dose}/CL = \text{Dose}/(CL/F)\).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 20 — §5 Card 5 ka_app intro
+============================================================ -->
+<section class="slide has-formula" data-title="§5 Card 5 — ka_app">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5 · CARD 5</span>
+    <h1 class="slide-title">\(k_{a,app}\) vs \(k_{a,true}\) — \(k_a\) 자체를 의심하라</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">🎯 이 카드의 치트키</span>
+        <p><strong>장관 구획은 "출구가 두 개인 싱크대"임.</strong> 하나는 전신 순환으로 가는 출구 (\(k_{a,true}\)), 다른 하나는 손실 출구 (\(k_d\)). <strong>fitted \(k_a\)는 두 출구의 합</strong>임.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sub-title">왜 이게 중요한가</h3>
+        <p>fitted \(k_a\)가 변했다고 곧바로 "<strong>흡수가 빨라/느려졌다</strong>"고 보고하는 순간 — 장관 손실, 분해, site heterogeneity, food effect를 모두 단일 흡수속도로 뭉뚱그리는 <strong>오독</strong>이 됨.</p>
+      </div>
+
+      <div class="callout callout-amber">
+        <span class="callout-title">진단의 키 — \(AUC\)가 같이 변했는가?</span>
+        <ul class="bullet-list" style="font-size: 13.5px; margin-top: 4px;">
+          <li><strong>\(AUC\)가 변하지 않음</strong> → onset/rate 변화 (extent 일정)</li>
+          <li><strong>\(AUC\)도 같이 변함</strong> → <strong>extent 변화가 동반된 것</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">겉보기 \(k_a\)의 분해</div>
+          $$\underbrace{k_{a,app}}_{\text{겉보기 소실}}=\underbrace{k_{a,true}}_{\text{실제 흡수}}+\underbrace{k_d}_{\text{장관 손실}}$$
+          <div class="formula-source">G&amp;W Fig.2.24 and text, pp.40–41</div>
+        </div>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">\(F\)의 분해 — 도달 분율</div>
+          $$\underbrace{F}_{\text{도달 분율}}=\frac{\underbrace{k_{a,true}}_{\text{흡수 경로}}}{\underbrace{k_{a,true}+k_d}_{\text{전체 소실}}}$$
+          <div class="formula-source">G&amp;W Eq.2:70, p.41</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 21 — §5 nonlinear absorption + summary
+============================================================ -->
+<section class="slide has-formula" data-title="§5 비선형·요약">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5 · NONLINEAR</span>
+    <h1 class="slide-title">비선형 흡수 — Capacity-Limited Input</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <p style="font-size: 13.5px;">지금까지의 \(k_{a,app}\) 분해는 <strong>선형 1차 입력</strong> 안에서의 이야기. 흡수 자체가 <strong>수송체 매개</strong>일 때는 dose가 올라가면 \(F\)가 <strong>dose-dependent하게 떨어지는</strong> 또 다른 비선형성이 나타남.</p>
+
+      <div class="card-soft">
+        <h3 class="sub-title">대표 사례: Gabapentin</h3>
+        <p>L-amino acid transporter (LAT/OATP3)에 의한 능동 흡수. transporter 포화 → \(F\) 명시적 감소 <span class="chip">R&amp;T p.203</span>.</p>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          $$\underbrace{\text{Input rate}}_{\text{유입속도}}=\underbrace{\frac{V_{max,abs}\cdot A_g}{K_{m,abs}+A_g}}_{\text{Michaelis-Menten 입력}}$$
+        </div>
+      </div>
+
+      <p style="font-size: 13px;">dose ↑ → \(A_g\) ↑ → input rate가 \(V_{max,abs}\) 근처에서 plateau → <strong>\(F\) 감소</strong></p>
+    </div>
+
+    <div class="col">
+      <div class="callout callout-coral">
+        <span class="callout-title">진단 신호 — 외워둘 것 <span class="chip">G&amp;W p.40</span></span>
+        <p style="font-size: 13.5px;">"<strong>dose-normalized \(AUC\) vs dose 그림이 dose 증가에 따라 감소하는 직선을 보이면, decreasing bioavailability / saturable input / zero-order input을 의심한다.</strong>"</p>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">⚠️ 혼동 주의</span>
+        <p>dose-normalized AUC ↓ at high dose는 <strong>saturable input뿐 아니라 decreasing \(F\) / zero-order input과도 혼동</strong>됨. IV 없이는 이 셋을 분리 불가 — <strong>G&amp;W: "Unless intravenous dosing data are also available, zero-order input and capacity limited elimination confound each other"</strong> <span class="chip">G&amp;W p.40</span>.</p>
+      </div>
+
+      <div class="dark-card">
+        <span class="dark-label">Card 5 요약</span>
+        <ul class="bullet-list" style="font-size: 12.5px;">
+          <li>fitted \(k_a\) 변했으면 \(k_{a,app} = k_{a,true} + k_d\) 구조 먼저 의심</li>
+          <li>\(AUC\) 변화 동반 여부 = rate vs extent 가르기</li>
+          <li>"\(k_a\) 감소 = 흡수 저하" 단정 = 장관손실·다중부위·food effect를 단일 속도로 뭉침</li>
+          <li>Dose escalation에서 \(F\)↓ → saturable absorption 두 축이 한꺼번에 보임</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 22 — §6 BCS 매트릭스
+============================================================ -->
+<section class="slide" data-title="§6 BCS 매트릭스">
+  <div class="slide-header">
+    <span class="sec-badge teal">§ 6 · BCS / BDDCS</span>
+    <h1 class="slide-title">BCS·BDDCS — 수식 이전의 좌표계</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <div class="callout callout-teal">
+        <span class="callout-title">🎯 이 섹션의 치트키</span>
+        <p><strong>약물 만나면 BCS class부터 묻기.</strong> 매트릭스 한 표로 식사효과·biowaiver·DDI 우선순위가 미리 정해짐. <strong>수식 한 줄 쓰기 전에 답의 절반은 이미 결정됨.</strong></p>
+      </div>
+
+      <div class="card-soft">
+        <h3 class="sub-title">A. BCS 두 축 <span class="chip">R&amp;T Table 7-8</span></h3>
+        <div class="table-wrap" style="margin-top: 6px;">
+          <table style="font-size: 12.5px;">
+            <thead><tr><th></th><th>High Perm</th><th>Low Perm</th></tr></thead>
+            <tbody>
+              <tr><td><strong>High Sol</strong></td><td><strong style="color: var(--coral);">Class I</strong></td><td><strong style="color: var(--coral);">Class III</strong></td></tr>
+              <tr><td><strong>Low Sol</strong></td><td><strong style="color: var(--coral);">Class II</strong></td><td><strong style="color: var(--coral);">Class IV</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size: 12px; margin-top: 6px;"><strong>용해도:</strong> 최고 강도가 pH 1–7.5 범위에서 250 mL 물에 녹는가. <strong>투과도:</strong> 장관 흡수 완전 또는 in vitro highly permeable. BCS는 <strong>즉방형(15분 내 85% 용출)</strong>에만 적용.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="table-wrap">
+        <table style="font-size: 11.5px;">
+          <thead><tr><th>Class</th><th>흡수 율속</th><th>식사 효과</th><th>Biowaiver</th></tr></thead>
+          <tbody>
+            <tr><td><strong>I</strong> high·high</td><td>위배출</td><td>작거나 무시</td><td><strong style="color: var(--success);">가능</strong></td></tr>
+            <tr><td><strong>II</strong> low·high</td><td>Dissolution</td><td>고지방식 → \(F\)↑</td><td>불가</td></tr>
+            <tr><td><strong>III</strong> high·low</td><td>Permeability</td><td>transit·transporter</td><td>불가(조건부)</td></tr>
+            <tr><td><strong>IV</strong> low·low</td><td>두 축 모두</td><td>변동성 큼</td><td>불가</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-soft card-tight">
+        <p style="font-size: 12.5px;"><strong>Class I 예시</strong> <span class="chip">R&amp;T Table 7-9</span>: acetaminophen, caffeine, diazepam, theophylline, metoprolol, propranolol, verapamil, valproic acid, midazolam, fluoxetine, levodopa, zidovudine 등. → <strong>biowaiver 대상</strong>임.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sub-title">B. BDDCS — Disposition까지 더한 보완</h3>
+        <p style="font-size: 12.5px;">Benet 그룹의 BDDCS는 같은 두 축 + <strong>disposition route</strong> (대사 vs 미변화체 신/담즙 배설). <strong>Transporter 영향 예측까지 가능.</strong> Card 5의 gabapentin saturable absorption (LAT/OATP3) = BDDCS Class 3의 전형.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 23 — §6 BCS 의사결정
+============================================================ -->
+<section class="slide" data-title="§6 BCS 의사결정">
+  <div class="slide-header">
+    <span class="sec-badge teal">§ 6 · DECISIONS</span>
+    <h1 class="slide-title">BCS가 미리 답을 알려주는 자리</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-teal">
+        <span class="callout-title">💼 신약 개발 초기 의사결정의 절반</span>
+        <p>BCS class만 알아도 다음 의사결정의 절반이 정해짐:</p>
+        <ol class="num-list" style="margin-top: 6px;">
+          <li><strong>식사 효과 시험을 priority로 할지</strong> → Class II·IV는 필수</li>
+          <li><strong>Biowaiver를 노릴지</strong> → Class I만 가능</li>
+          <li><strong>Transporter DDI 시험을 어디까지 할지</strong> → BDDCS Class 2·3 우선</li>
+          <li><strong>Controlled-release 개발 적합성</strong> → Class I에 가장 적합 <span class="chip">R&amp;T p.220</span></li>
+        </ol>
+      </div>
+
+      <div class="dark-card">
+        <span class="dark-label">한 줄 결론</span>
+        <p style="font-size: 14.5px;"><strong>모델링 한 줄로 풀 수 없는 답을 BCS는 한 표로 줌.</strong></p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">BDDCS Class별 transporter 효과</h3>
+        <div class="table-wrap" style="margin-top: 6px;">
+          <table style="font-size: 12.5px;">
+            <thead><tr><th>BDDCS</th><th>BCS</th><th>Transporter</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>I</td><td>수동확산 우세, transporter 영향 미미</td></tr>
+              <tr><td>2</td><td>II</td><td>장관 efflux (P-gp), intestinal metabolism 중요</td></tr>
+              <tr><td>3</td><td>III</td><td>장관 uptake transporter 의존, efflux도 큼</td></tr>
+              <tr><td>4</td><td>IV</td><td>모든 transporter 영향 가능</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-soft">
+        <h3 class="sub-title">C. BCS와 MR 연결</h3>
+        <p style="font-size: 13px;">Class I의 즉방형은 위배출 의존이지만, <strong>non-disintegrating controlled-release</strong>는 위배출 영향을 덜 받음 — 위에 머물러 있어도 약물은 계속 십이지장으로 빠져나감 <span class="chip">R&amp;T p.220</span>. 다만 식사 습관·복약 시간 변동성, 대장 도달(12–16 hr) 후 압축에 의한 release 신뢰성 저하가 한계.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 24 — §7 Transit / Erlang / Weibull
+============================================================ -->
+<section class="slide has-formula" data-title="§7 Transit·Weibull">
+  <div class="slide-header">
+    <span class="sec-badge amber">§ 7 · EXTENSION</span>
+    <h1 class="slide-title">1차 입력이 안 맞을 때 — Transit / Erlang / Weibull</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <div class="callout callout-amber">
+        <span class="callout-title">🎯 이 섹션의 치트키</span>
+        <p><strong>1차 흡수로 fit 안 되고 lag-time이 비현실적으로 커지거나 sigmoidal rise가 보이면 → 1차 강제 적합 말고 transit/Weibull로 옮길 것.</strong> Card 4의 식별가능성 논리 그대로 — 새 좌표계로 옮기는 순간 새 apparent parameter가 또 등장함.</p>
+      </div>
+
+      <h3 class="sub-title">A. Transit Compartment / Erlang</h3>
+      <p style="font-size: 13px;">흡수 부위에서 중심까지를 <strong>n개의 직렬 통과 단계</strong>로 모델링:</p>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          $$\frac{dA_i}{dt} = k_{tr}\cdot A_{i-1} - k_{tr}\cdot A_i \quad(i=1,\ldots,n)$$
+        </div>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">중심구획 유입 — Erlang 분포 곡선</div>
+          $$\text{Input}_{\text{central}}(t) = F\cdot D\cdot \frac{(k_{tr}\,t)^n\, e^{-k_{tr}\,t}}{n!}\cdot k_{tr}$$
+        </div>
+      </div>
+
+      <p style="font-size: 12px;"><strong>특성:</strong> NTR \(= 1\) → 1차 흡수와 동일. NTR \(\gg 1\) → sigmoidal 입력 + 자연스러운 lag (별도 \(t_{lag}\) 불필요). MTT \(= (n+1)/k_{tr}\). <span class="chip">Savic et al. JPKPD 2007</span></p>
+    </div>
+
+    <div class="col">
+      <h3 class="sub-title">B. Weibull — 서방형·용해도 제한</h3>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card tight">
+          <div class="formula-label">누적 흡수 분율</div>
+          $$F(t) = 1 - \exp\!\left[-\left(\frac{t}{T_d}\right)^\beta\right]$$
+        </div>
+      </div>
+
+      <ul class="bullet-list" style="font-size: 12.5px;">
+        <li><strong>\(\beta < 1\)</strong>: 초반 빠른 release, 점차 둔화 (burst release)</li>
+        <li><strong>\(\beta = 1\)</strong>: 1차 흡수와 등가 (\(k_a = 1/T_d\))</li>
+        <li><strong>\(\beta > 1\)</strong>: sigmoidal release (controlled-release, osmotic pump)</li>
+      </ul>
+
+      <div class="card-soft card-tight">
+        <h3 class="sub-title" style="font-size: 14px;">C. 어느 모델을 언제 — 진단표</h3>
+        <div class="table-wrap" style="margin-top: 4px;">
+          <table style="font-size: 11px;">
+            <thead><tr><th>곡선 특징</th><th>권장 입력</th></tr></thead>
+            <tbody>
+              <tr><td>step function처럼 lag 후 시작</td><td>Transit (NTR 작은 정수)</td></tr>
+              <tr><td>sigmoidal rise</td><td>Transit(큰 NTR) or Weibull(β&gt;1)</td></tr>
+              <tr><td>MR release shape 어긋남</td><td>Weibull (β fit)</td></tr>
+              <tr><td>다중 peak / 비정형 상승부</td><td>Multiple absorption sites</td></tr>
+              <tr><td>dose escalation에서 dose-norm AUC↓</td><td>Card 5 §D saturable input</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p style="font-size: 11.5px;"><strong>💼 Lag vs Transit Trade-off:</strong> 같은 sigmoidal 시작을 lag로도, transit으로도 잡을 수 있음. 두 파라미터 동시 추정은 식별가능성 떨어짐. <strong>일반적으로 lag = 0 고정 + transit으로만 흡수 시작 잡는 게 안전.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 25 — §8 혼동쌍 1·2·3
+============================================================ -->
+<section class="slide has-formula" data-title="§8 혼동쌍 1-3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8 · CONFUSION PAIRS (1–3)</span>
+    <h1 class="slide-title">라벨이 뒤집히는 다섯 페어 — 전반부</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body dense">
+    <div class="row-three" style="gap: 12px;">
+      <div class="card">
+        <h3 class="sub-title" style="font-size: 15px;">① \(k_a\) vs \(k_{el}\) <span style="color: var(--coral); font-size: 11px;">결정타</span></h3>
+        <div class="table-wrap" style="margin-top: 4px;">
+          <table style="font-size: 11px;">
+            <thead><tr><th>기준</th><th>\(k_a\)</th><th>\(k_{el}\)</th></tr></thead>
+            <tbody>
+              <tr><td>단위</td><td>\(t^{-1}\), 흡수</td><td>\(t^{-1}\), 중심</td></tr>
+              <tr><td>위치</td><td>\(e^{-k_a t}\) input</td><td>\(e^{-k_{el}t}\) disp.</td></tr>
+              <tr><td>혼동 결과</td><td colspan="2">flip-flop terminal slope label 오류, 축적·washout 오류</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-coral" style="margin-top: 6px; padding: 8px 12px;">
+          <p style="font-size: 11.5px;"><strong>⚡ 어느 쪽이 병목인가:</strong><br>
+          Flip-flop: \(k_a < k_{el}\) → terminal \(= k_a\)<br>
+          Disp-limited: \(k_{el} < k_a\) → terminal \(= k_{el}\)<br>
+          <strong>IV crossover 없이는 두 메커니즘 가를 수 없음.</strong></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="sub-title" style="font-size: 15px;">② \(F\) vs \(k_a\) — extent vs rate</h3>
+        <div class="table-wrap" style="margin-top: 4px;">
+          <table style="font-size: 11px;">
+            <thead><tr><th>기준</th><th>\(F\)</th><th>\(k_a\)</th></tr></thead>
+            <tbody>
+              <tr><td>단위</td><td>fraction</td><td>\(t^{-1}\)</td></tr>
+              <tr><td>위치</td><td>\(F\cdot D/CL\)</td><td>\(t_{max}\) rate</td></tr>
+              <tr><td>혼동 결과</td><td colspan="2">AUC·peak timing 원인 혼동, food/formulation 오류</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap" style="margin-top: 6px;">
+          <div class="formula-card tight" style="padding: 22px 10px 14px;">
+            $$\underbrace{\frac{k_a}{K}}_{\text{속도 비율}}=\underbrace{\frac{k_a}{CL\cdot V}}_{\text{원문 대비}}$$
+          </div>
+        </div>
+        <p style="font-size: 11.5px; margin-top: 4px;"><strong>⚡ 속도계 vs 적산계:</strong> \(k_a\)를 키워도 \(F\)가 그대로면 \(AUC\)는 그대로.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sub-title" style="font-size: 15px;">③ \(V/F\) vs \(V\) <span style="color: var(--coral); font-size: 11px;">결정타</span></h3>
+        <div class="table-wrap" style="margin-top: 4px;">
+          <table style="font-size: 11px;">
+            <thead><tr><th>기준</th><th>\(V/F\)</th><th>\(V\)</th></tr></thead>
+            <tbody>
+              <tr><td>의미</td><td>apparent</td><td>true distribution</td></tr>
+              <tr><td>요건</td><td>oral-only OK</td><td>IV 또는 \(F\) 근거</td></tr>
+              <tr><td>혼동 결과</td><td colspan="2">\(F\) 변화가 분포 변화처럼 보임 → phantom interpretation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warn" style="margin-top: 6px; padding: 8px 12px;">
+          <p style="font-size: 11.5px;"><strong>결정타:</strong> \(V/F\)를 \(V\)로 바꿔 쓰는 순간 → <strong>흡수율 변화가 분포용적 변화처럼 보이는 phantom interpretation 발생.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 26 — §8 혼동쌍 4·5 + 요약
+============================================================ -->
+<section class="slide" data-title="§8 혼동쌍 4-5">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8 · CONFUSION PAIRS (4–5)</span>
+    <h1 class="slide-title">라벨이 뒤집히는 다섯 페어 — 후반부</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">④ First-order \(k_a\) vs Zero-order Input</h3>
+        <div class="table-wrap" style="margin-top: 6px;">
+          <table style="font-size: 11.5px;">
+            <thead><tr><th>기준</th><th>First-order \(k_a\)</th><th>Zero-order Input</th></tr></thead>
+            <tbody>
+              <tr><td>단위</td><td>\(t^{-1}\), 잔량 비례</td><td>amount/time, 일정</td></tr>
+              <tr><td>위치</td><td>\(e^{-k_a t}\) 지수</td><td>일정 입력률, 종료 후 washout</td></tr>
+              <tr><td>원인</td><td>속방형 용액/정제</td><td>controlled-release, 삼투펌프</td></tr>
+              <tr><td>혼동 결과</td><td colspan="2">PK3처럼 AIC 우월이 기전 증명을 뜻하지 않음 <span class="chip">G&amp;W pp.483–486</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">⑤ Linear vs Saturable Absorption</h3>
+        <div class="table-wrap" style="margin-top: 6px;">
+          <table style="font-size: 11.5px;">
+            <thead><tr><th>기준</th><th>Linear 1st-order</th><th>Saturable</th></tr></thead>
+            <tbody>
+              <tr><td>위치</td><td>\(-k_a A_g\)</td><td>\(-V_{max}A_g/(K_m+A_g)\)</td></tr>
+              <tr><td>원인</td><td>수동확산</td><td>능동 수송체 포화</td></tr>
+              <tr><td>진단</td><td>dose-norm \(AUC\) 일정</td><td>dose-norm \(AUC\)↓ at high</td></tr>
+              <tr><td>사례</td><td>대부분 small-molecule</td><td>gabapentin, L-dopa, amoxicillin</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-coral" style="margin-top: 8px; padding: 8px 12px;">
+          <p style="font-size: 12px;"><strong>⚡ Superposition 검사:</strong> Dose 2배 → \(AUC\)가 2배 안 나오면 비선형 의심.</p>
+          <ul class="bullet-list" style="font-size: 11.5px; margin-top: 4px;">
+            <li>dose-norm \(AUC\) ↓ → saturable input / decreasing \(F\) / zero-order (IV 없이 분리 불가)</li>
+            <li>dose-norm \(AUC\) ↑ → saturable first-pass <span class="chip">R&amp;T Table 7-5</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 27 — §9 Self test Q1-Q4
+============================================================ -->
+<section class="slide has-formula" data-title="§9 자기 테스트 1-4">
+  <div class="slide-header">
+    <span class="sec-badge amber">§ 9 · SELF-TEST (1–4)</span>
+    <h1 class="slide-title">능동 회상 — 마스터 식과 식별가능성</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q1. Master equation과 각 항</h3>
+        <div class="formula-card-wrap">
+          <div class="formula-card tight" style="padding: 24px 10px 14px;">
+            $$C(t)=\frac{\overbrace{k_a F D_{po}}^{\text{전신 입력}}}{V(k_a-k_{el})}\left(e^{-k_{el}t}-e^{-k_a t}\right)$$
+          </div>
+        </div>
+        <p style="font-size: 12px;">\(k_a\) = 흡수부위 소실 속도, \(F\) = 도달 분율, \(D_{po}\) = 투여량, \(V\) = 분포용적, \(k_{el}\) = 소실 속도 <span class="chip">G&amp;W p.30</span>.</p>
+      </div>
+
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q2. 왜 \(t_{max}\) 식에 \(F\), \(V\), dose가 없는가?</h3>
+        <p style="font-size: 12.5px;">\(t_{max}\)는 \(dC/dt = 0\)이 되는 시점. linear system에서 \(F\)·\(V\)·dose는 곡선의 <strong>높이만 scale</strong>, 기울기가 0이 되는 시간 위치는 안 바꿈. \(t_{max} = \ln(k_a/k_{el})/(k_a - k_{el})\) <span class="chip">G&amp;W p.35</span>.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q3. \(F_{rel} = 1.0\)이면 임상적으로 같은가?</h3>
+        <p style="font-size: 12.5px;"><strong>아님.</strong> \(F_{rel} = 1.0\) = extent가 같다는 뜻일 뿐. \(k_a\)가 다르면 \(C_{max}\)·\(t_{max}\)가 다름. <strong>onset이나 peak-related safety가 중요한 약물에서는 임상적 차이가 분명히 남음</strong> <span class="chip">R&amp;T pp.181–183</span>.</p>
+      </div>
+
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q4. PK2: \(V/F=32\), \(F=0.82\)일 때 진짜 \(V\)?</h3>
+        <p style="font-size: 12px;">산술: \(V = 32 \times 0.82 \approx 26\ \text{L}\). <strong>단</strong> 원문 \(\text{true}\ V = 20\ \text{L}\) — 산술값과 충돌. 본 handout은 26 L를 확정값으로 쓰지 않고 <strong>"원문 수치 충돌 [확인 필요]"</strong>로 표시.</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card tight" style="padding: 22px 10px 14px;">
+            $$\underbrace{V}_{\text{true V}}=(V/F)\times F=32\times0.82\approx 26\ \text{L}$$
+          </div>
+        </div>
+        <p style="font-size: 11px;"><strong>충돌 가설:</strong> IV reference dose range가 oral과 다르면 linearity violation systematic bias가 들어가고, 그게 \(V\) 환산값으로 흘러감 — <strong>NCA → NLR 전환 단계의 가장 흔한 systematic bias 출처</strong> <span class="chip">G&amp;W pp.480–482</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 28 — §9 Self test Q5-Q9
+============================================================ -->
+<section class="slide has-formula" data-title="§9 자기 테스트 5-9">
+  <div class="slide-header">
+    <span class="sec-badge amber">§ 9 · SELF-TEST (5–9)</span>
+    <h1 class="slide-title">능동 회상 — Flip-flop과 비선형성</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q5. \(k_a = 0.05\), \(k_{el} = 0.5\). \(t_{1/2}\) = 1.4 h?</h3>
+        <p style="font-size: 12px;"><strong>안 됨.</strong> \(k_a < k_{el}\) → 관찰 terminal slope가 더 작은 \(k_a\)를 따를 수 있음. 따라서 terminal half-life는 약 \(\ln 2 / 0.05 = 13.9\ \text{h}\)로 나옴. \(k_{el} = 0.5\)가 진짜 elimination일 가능성도 있지만 <strong>oral-only로는 확정 불가.</strong></p>
+        <div class="formula-card-wrap">
+          <div class="formula-card tight" style="padding: 20px 8px 12px;">
+            $$t_{1/2,obs}=\frac{\ln 2}{0.05}\approx 13.9\ \text{h}\quad\text{(flip-flop)}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q6. PK3 zero-order AIC↓. 진짜 0차 흡수?</h3>
+        <p style="font-size: 12px;"><strong>불가.</strong> PK3는 zero-order input model이 해당 dataset을 더 잘 설명한다는 것만 보여줌. 진짜 기전 확정은 용량 범위, 반복 투여, IV 데이터 같은 <strong>추가 evidence 필요</strong> <span class="chip">G&amp;W pp.483–486</span>.</p>
+      </div>
+
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q7. \(k_{a,app} = 1.0\), \(k_d = 0.4\). \(k_{a,true}\)와 \(F\)?</h3>
+        <p style="font-size: 12px;">\(k_{a,true} = 1.0 - 0.4 = 0.6\ \text{hr}^{-1}\).</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card tight" style="padding: 22px 8px 12px;">
+            $$F=\frac{k_{a,true}}{k_{a,true}+k_d}=\frac{0.6}{1.0}=0.6\;(60\%)$$
+          </div>
+        </div>
+        <p style="font-size: 11px;">실데이터에서는 \(k_d\)를 별도 evidence 없이 분리하기 어려움 <span class="chip">G&amp;W p.41</span>.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q8. Boss Dilemma — terminal \(0.18\ \text{hr}^{-1}\), \(k_{el} = 0.69\ \text{hr}^{-1}\)도 가능</h3>
+        <p style="font-size: 12px;">관찰 terminal half-life = \(\ln 2 / 0.18 \approx 3.85\ \text{h}\). <strong>단</strong> flip-flop 가능성이 있으면 0.18이 \(k_{el}\)인지 \(k_a\)인지 확정 불가.</p>
+        <div class="callout callout-amber" style="margin-top: 6px; padding: 8px 12px;">
+          <p style="font-size: 11.5px;"><strong>안전한 보고:</strong> "Oral-only data에서 terminal slope는 \(0.18\ \text{hr}^{-1}\)로 관찰되었으나, IV 또는 route·formulation comparison 없이는 이를 elimination rate로 확정할 수 없다. Dose recommendation은 두 해석에 대한 <strong>sensitivity analysis로 방어</strong>한다."</p>
+        </div>
+      </div>
+
+      <div class="card-soft card-tight">
+        <h3 class="sub-title">Q9. Dose escalation 100/300/900 mg → AUC 50/100/150</h3>
+        <div class="formula-card-wrap">
+          <div class="formula-card tight" style="padding: 22px 8px 12px;">
+            $$\frac{AUC}{Dose}=\begin{cases}0.50&(100\text{ mg})\\ 0.33&(300\text{ mg})\\ 0.17&(900\text{ mg})\end{cases}\ \text{h/L}$$
+          </div>
+        </div>
+        <p style="font-size: 11.5px;"><strong>dose ↑일수록 dose-norm AUC ↓</strong> → G&amp;W §2.7.1 진단: <strong>decreasing \(F\) / saturable input / zero-order input 중 하나</strong> (IV 없이 분리 불가) <span class="chip">G&amp;W p.40</span>. Gabapentin 같은 transporter-mediated absorption (LAT/OATP3) 의심되면 saturable input 가설 우선. <strong>반대 패턴이면</strong> saturable first-pass — alprenolol, propranolol, verapamil <span class="chip">R&amp;T Table 7-5</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 29 — §10 Boss Dilemma Capstone
+============================================================ -->
+<section class="slide" data-title="§10 보스 딜레마">
+  <div class="slide-header">
+    <span class="sec-badge dark">§ 10 · CAPSTONE</span>
+    <h1 class="slide-title">⚡ 보스 딜레마 — 제형 변경 후 \(C_{max}\)↓ · \(T_{max}\)↑</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">시나리오</h3>
+        <p>경구 단독 Phase 1 결과에서 \(C_{max}\) 내려가고 \(T_{max}\) 늘어남. 제형 팀은 "<strong>흡수가 느려졌다 (\(k_a\) 감소)</strong>"고 결론. 모델러 입장에서는 <strong>방어 가능한 해석이 두 개</strong> 있음.</p>
+      </div>
+
+      <div class="row-two" style="gap: 10px;">
+        <div class="card-soft card-tight">
+          <h3 class="sub-title" style="font-size: 14px;">(A) \(k_a\) 감소 해석</h3>
+          <ul class="bullet-list" style="font-size: 12px;">
+            <li>absorption model을 first-order → transit compartment로</li>
+            <li>\(T_{max}\) 지연 재현에 집중</li>
+            <li><strong>약점:</strong> IV 없이는 \(F\)와 \(k_a\)의 confounding 풀 수 없음</li>
+          </ul>
+        </div>
+        <div class="card-soft card-tight">
+          <h3 class="sub-title" style="font-size: 14px;">(B) \(F\) 감소 해석</h3>
+          <ul class="bullet-list" style="font-size: 12px;">
+            <li>first-pass 효율 감소 또는 apparent \(CL\) 증가 → \(AUC\) 감소</li>
+            <li>\(F\)에 영향을 주는 공변량 탐색 우선</li>
+            <li><strong>약점:</strong> \(k_a\) 변화가 진짜 원인이면 곡선 형태가 어긋남</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="dark-card">
+        <span class="dark-label">규제 방어 — 어떻게 가르는가</span>
+        <p style="font-size: 13px;"><strong>1단계.</strong> "\(AUC\)가 같은가, 다른가"로 가설 분리</p>
+        <ul class="bullet-list" style="font-size: 12px;">
+          <li>\(AUC\) 변화 없음 + \(C_{max}\)↓·\(T_{max}\)↑ → <strong>(A) \(k_a\) 감소 우세</strong></li>
+          <li>\(AUC\) 감소 + \(C_{max}\)↓·\(T_{max}\)↑ → <strong>(B) \(F\) 감소</strong>, 또는 <strong>(A+B) 복합</strong></li>
+        </ul>
+        <p style="font-size: 13px; margin-top: 8px;"><strong>2단계.</strong> IV crossover 요청, 안 되면 <strong>두 모델 모두 적합 + sensitivity analysis 명시</strong></p>
+        <p style="font-size: 13px; margin-top: 6px;"><strong>3단계.</strong> 단일 가설 채택 금지. "두 해석 모두 데이터와 정합적이며, 임상 dosing이 두 해 모두에서 안전 영역인가" 평가</p>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-title">⚠️ 가장 위험한 자세</span>
+        <p><strong>"\(k_a\) 감소 = 흡수 불량 = 제형 재조제"</strong>라는 단순 추론. Card 4의 그럴듯한 오류 단락이 경고한 함정이고, BE trial의 의사결정 사슬을 잘못 만듦.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 30 — §11 Meta-frame
+============================================================ -->
+<section class="slide" data-title="§11 메타프레임">
+  <div class="slide-header">
+    <span class="sec-badge dark">§ 11 · META-FRAME</span>
+    <h1 class="slide-title">한 바느질로 꿰기 — 네 질문, 다섯 실패 모드</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <h3 class="sub-title">A. 이 세션의 위치 — 네 질문</h3>
+      <p style="font-size: 13px;">다회투여·MR·food effect·BE·PopPK 흡수 모델로 가더라도, 판단 기준은 결국 다섯 질문으로 회귀.</p>
+      <div class="table-wrap">
+        <table style="font-size: 11px;">
+          <thead><tr><th>변화 상황</th><th>1차 파라미터</th><th>임상 결과</th></tr></thead>
+          <tbody>
+            <tr><td>입력 함수가 1차 아님</td><td>\(k_a\), lag, input</td><td>\(C_{max}\)·\(t_{max}\) 재현 실패</td></tr>
+            <tr><td>\(F\)가 제형·식사로 변함</td><td>\(F\), \(CL/F\)</td><td>AUC + apparent CL 변화</td></tr>
+            <tr><td>Terminal slope 라벨 불명확</td><td>\(k_a\) or \(k_{el}\)</td><td>반감기·축적 판단 오류</td></tr>
+            <tr><td>\(V\), \(CL\)을 absolute처럼 보고</td><td>\(V/F\), \(CL/F\)</td><td>covariate 오해</td></tr>
+            <tr><td>Dose 비례성 위배</td><td>흡수·대사 비선형</td><td>dose escalation 예측 실패</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 class="sub-title">B. 의존성 — 놓치면 어떻게 무너지는가</h3>
+      <div class="table-wrap">
+        <table style="font-size: 11px;">
+          <thead><tr><th>실패 모드</th><th>실제 결과</th></tr></thead>
+          <tbody>
+            <tr><td>\(V/F\) → \(V\)로 보고</td><td>covariate를 분포 변화로 오해</td></tr>
+            <tr><td>\(CL/F\) → \(CL\)로 보고</td><td>\(F\) 변화가 clearance 변화처럼 보임</td></tr>
+            <tr><td>말기 기울기 \(= k_{el}\) 단정</td><td>flip-flop에서 반감기·축적 오류</td></tr>
+            <tr><td>\(k_a\) 변화 = extent 변화 단정</td><td>food/formulation effect 메시지 오류</td></tr>
+            <tr><td>\(t_{max}\)의 dose 의존성 무시</td><td>포화성 흡수·초회통과 포화 누락</td></tr>
+            <tr><td>0차 better AIC = 기전 증명</td><td>서방형 근사를 생리학 확정으로 과장</td></tr>
+            <tr><td>Superposition 위배를 noise로</td><td>saturable absorption 신호 누락</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-coral">
+        <span class="callout-title">💼 C. 전문가가 실제로 보는 지점</span>
+        <p style="font-size: 13px;"><strong>30년 차 pharmacometrics 연구자가 경구 모델 결과를 볼 때 가장 먼저 묻는 질문은 "모델이 맞았는가?"가 아님. "무엇이 식별되었는가?"임.</strong></p>
+        <p style="font-size: 12.5px; margin-top: 6px;">Phase 1 SAD 회의 senior의 한 줄: <strong>"FIH 단계에서 IV arm이나 absolute \(F\) 확인 가능성을 평가했는가?"</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 31 — §11 후속 + Ch.7 + Final
+============================================================ -->
+<section class="slide" data-title="§11 후속·최종">
+  <div class="slide-header">
+    <span class="sec-badge dark">§ 11 · NEXT &amp; FINAL</span>
+    <h1 class="slide-title">후속 세션과 최종 한 줄</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col dense">
+    <div class="col">
+      <h3 class="sub-title">D. 후속 세션 — 이 세션에서 무엇이 열리는가</h3>
+      <div class="table-wrap">
+        <table style="font-size: 11.5px;">
+          <thead><tr><th>후속</th><th>열리는 개념</th><th>없으면 실패하는 것</th></tr></thead>
+          <tbody>
+            <tr><td>Multiple dosing / accumulation</td><td>terminal slope label, \(k_{el}\) vs \(k_a\)</td><td>축적계수·washout 오류</td></tr>
+            <tr><td>MR / zero-order input</td><td>input function 구분</td><td>better fit을 기전 증명으로 과장</td></tr>
+            <tr><td>Oral PopPK absorption</td><td>\(V/F\), \(CL/F\), \(k_{a,app}\)</td><td>apparent를 true로 보고</td></tr>
+            <tr><td>BE / food effect</td><td>rate vs extent 분리</td><td>\(AUC\), \(C_{max}\), \(t_{max}\) 메시지 혼동</td></tr>
+            <tr><td>Nonlinear absorption / TDM</td><td>superposition test</td><td>saturable input/first-pass 누락</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-teal">
+        <span class="callout-title">E. Ch.7 맥락</span>
+        <p style="font-size: 13px;">BCS, 위배출, 용출, 수송체, 장관·간 초회 통과 같은 생리·물리화학적 요인. 이 세션의 수식들은 그 복잡성을 <strong>1차 입력과 \(F\)라는 두 개의 apparent 축</strong>으로 한꺼번에 다루는 첫 단계 <span class="chip">R&amp;T pp.197–220</span>.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="dark-card">
+        <span class="dark-label">F. 최종 한 줄 — 외워둘 것</span>
+        <p style="font-family: var(--font-display); font-style: italic; font-size: 18px; line-height: 1.4; color: var(--on-dark);"><strong style="color: var(--coral); font-weight: 500;">경구 PK의 핵심은 \(C(t)\)를 잘 맞추는 데서 끝나지 않음.</strong></p>
+        <p style="font-family: var(--font-display); font-style: italic; font-size: 17px; line-height: 1.4; color: var(--on-dark-soft); margin-top: 10px;">더 중요한 건 — \(C(t)\)에서 실제로 <strong style="color: var(--on-dark);">분리 가능한 것과 분리 불가능한 것을 정직하게 가르는 일.</strong></p>
+      </div>
+
+      <div class="card-soft">
+        <h3 class="sub-title">경구 단독 데이터가 남기는 네 가지</h3>
+        <ol class="num-list">
+          <li>\(V/F\)</li>
+          <li>\(CL/F\)</li>
+          <li>겉보기 \(k_a\)</li>
+          <li>Terminal slope ambiguity</li>
+        </ol>
+        <p style="font-size: 12.5px; margin-top: 8px;"><strong>이 네 가지를 명시하면 handout은 안전. 생략하면 모델은 그럴듯하지만 위험.</strong></p>
+      </div>
+
+      <p style="font-size: 12px; color: var(--muted);">+ 마지막 두 축: <strong>BCS/BDDCS</strong>는 수식 이전 좌표계 framework. <strong>Transit/Erlang/Weibull</strong>은 1차 입력 가정이 깨질 때 확장 framework.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 32 — 부록 한 페이지 치트시트
+============================================================ -->
+<section class="slide" data-title="📌 부록 치트시트">
+  <div class="slide-header">
+    <span class="sec-badge">APPENDIX</span>
+    <h1 class="slide-title">한 페이지 치트시트 — 절대 / 반드시</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body two-col">
+    <div class="col">
+      <div class="callout callout-warn">
+        <span class="callout-title">❌ 보고서에 절대 쓰면 안 되는 다섯 문장</span>
+        <ol class="num-list" style="margin-top: 6px;">
+          <li>"\(V/F = 50\ \text{L}\) → \(V = 50\ \text{L}\)"</li>
+          <li>"\(CL/F = 10\ \text{L/hr}\) → \(CL = 10\ \text{L/hr}\)"</li>
+          <li>"Terminal slope = elimination rate"</li>
+          <li>"\(k_a\) 감소했으므로 흡수가 저하됨"</li>
+          <li>"AIC가 더 좋으므로 0차 흡수가 맞음"</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="callout callout-teal">
+        <span class="callout-title">✅ 보고서에 항상 같이 봐야 할 다섯 쌍</span>
+        <ol class="num-list" style="margin-top: 6px;">
+          <li>\(AUC\) 변화 ↔ \(C_{max}\)/\(t_{max}\) 변화 (extent vs rate 가르기)</li>
+          <li>Dose 변화 ↔ Dose-normalized \(AUC\) 변화 (linearity 검사)</li>
+          <li>Terminal slope ↔ flip-flop 시나리오 (IV crossover 있나?)</li>
+          <li>\(V/F\) · \(CL/F\) ↔ covariate (\(F\)-driven인지 확인)</li>
+          <li>Fitted \(k_a\) ↔ \(AUC\) 동반 변화 (\(k_{a,app}\) 분해 의심)</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 33 — CLOSER
+============================================================ -->
+<section class="slide" data-title="Closer">
+  <div class="slide-header">
+    <span class="sec-badge">CLOSER</span>
+    <h1 class="slide-title">Phase 1 Senior가 던질 한 줄</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="slide-body" style="justify-content: center;">
+    <div class="closer-card">
+      <div class="closer-label">The One Question</div>
+      <p class="closer-body">"IV arm이나 absolute \(F\) 확인 가능성을 평가했는가?"</p>
+      <p class="closer-body" style="margin-top: 18px; font-size: 16px;">이 한 줄의 질문이 <strong>\(F\), \(V/F\), \(CL/F\), flip-flop, \(k_{a,app}\)</strong>의 모든 위험을 앞으로 끌어냄. <strong>이 한 줄을 미리 답할 수 있으면 이 챕터를 완전히 체화한 것임.</strong></p>
+    </div>
+
+    <div class="card-soft card-tight" style="margin-top: 14px;">
+      <p style="font-size: 12.5px; font-style: italic; color: var(--muted);">이 문서는 v4.0 보강본_final의 콘텐츠를 보존하면서 narrative flow와 학습 효율성을 위해 재구성한 remastered edition. 모든 출처 표기, 수식 annotation, SLIDE_START 마커, 약물 사례, 수치 anchor는 원본과 동일하게 유지됨. <strong style="color: var(--coral);">Document ID:</strong> <code style="font-size: 11px;">C-260518-064237-9XQ</code></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     NAVIGATION BAR
+============================================================ -->
+<nav class="navbar">
+  <button class="nav-btn" id="btn-prev">← 이전</button>
+  <div class="nav-center">
+    <div class="prog-text" id="prog-text">1 / 33</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+  <button class="nav-btn" id="btn-next">다음 →</button>
+</nav>
+
+<!-- KaTeX SCRIPTS — synchronous, no defer/async -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+/* ============ TOC GENERATION ============ */
+var tocData = [
+  { num: '01', label: 'Cover', section: '' },
+  { num: '02', label: '치트키', section: '' },
+  { num: '03', label: '임상 오프닝', section: '' },
+  { num: '04', label: '빅 픽처', section: '§0' },
+  { num: '05', label: 'Card 1 — 골격', section: '§1' },
+  { num: '06', label: '미분방정식', section: '§1' },
+  { num: '07', label: '적분해', section: '§1' },
+  { num: '08', label: 'Lag · 0차', section: '§1' },
+  { num: '09', label: 'Card 2 — t_max', section: '§2' },
+  { num: '10', label: 't_max 도출', section: '§2' },
+  { num: '11', label: '진단·잔차', section: '§2' },
+  { num: '12', label: 'Card 3 — F', section: '§3' },
+  { num: '13', label: 'F 수식', section: '§3' },
+  { num: '14', label: '소변·요약', section: '§3' },
+  { num: '15', label: 'APEX — 합성곱', section: '§4' },
+  { num: '16', label: 'V/F 증명', section: '§4' },
+  { num: '17', label: 'Flip-flop', section: '§4' },
+  { num: '18', label: 'PK2 / PK3', section: '§4' },
+  { num: '19', label: 'NONMEM · 함정', section: '§4' },
+  { num: '20', label: 'Card 5 — k_a,app', section: '§5' },
+  { num: '21', label: '비선형 흡수', section: '§5' },
+  { num: '22', label: 'BCS 매트릭스', section: '§6' },
+  { num: '23', label: 'BCS 의사결정', section: '§6' },
+  { num: '24', label: 'Transit·Weibull', section: '§7' },
+  { num: '25', label: '혼동쌍 1-3', section: '§8' },
+  { num: '26', label: '혼동쌍 4-5', section: '§8' },
+  { num: '27', label: '자기 테스트 1-4', section: '§9' },
+  { num: '28', label: '자기 테스트 5-9', section: '§9' },
+  { num: '29', label: '보스 딜레마', section: '§10' },
+  { num: '30', label: '메타프레임', section: '§11' },
+  { num: '31', label: '후속·최종', section: '§11' },
+  { num: '32', label: '치트시트', section: 'Appendix' },
+  { num: '33', label: 'Closer', section: '' }
+];
+
+var tocContainer = document.getElementById('toc-list');
+var currentSection = '';
+tocData.forEach(function(item, idx) {
+  if (item.section && item.section !== currentSection) {
+    currentSection = item.section;
+  }
+  var btn = document.createElement('button');
+  btn.className = 'toc-btn';
+  btn.setAttribute('data-idx', idx);
+  btn.innerHTML = '<span class="toc-num">' + item.num + '</span>' + item.label;
+  btn.addEventListener('click', function() {
+    goTo(parseInt(btn.getAttribute('data-idx'), 10));
+  });
+  tocContainer.appendChild(btn);
+});
+
+/* ============ NAVIGATION LOGIC ============ */
+var slides = document.querySelectorAll('.slide');
+var TOTAL = slides.length;
+var tocBtns = document.querySelectorAll('.toc-btn');
+var cur = 0;
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  if (tocBtns[cur]) tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  if (tocBtns[cur]) {
+    tocBtns[cur].classList.add('active');
+    tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(cur - 1); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); goTo(cur + 1); }
+});
+
+/* ============ KATEX RENDER ============ */
+function renderMath() {
+  if (typeof renderMathInElement !== 'function') {
+    console.warn('KaTeX auto-render not loaded yet');
+    return;
+  }
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false,
+    trust: false
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    renderMath();
+    goTo(0);
+  });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>
