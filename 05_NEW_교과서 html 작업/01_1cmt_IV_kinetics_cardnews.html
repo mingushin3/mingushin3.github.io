@@ -1170,15 +1170,58 @@ li::marker { color: var(--coral); }
     <hr class="header-rule">
 
     <div class="content">
-      <div class="hierarchy-diagram">
-        <span class="hier-pill">CL</span>
-        <span class="hier-arrow">─ ─ ─ ─ ─ ─→</span>
-        <span class="hier-pill secondary">K = CL/V</span>
-        <span class="hier-arrow">─ ─ ─→ <em>t<sub>½</sub></em> = 0.693·V/CL</span>
-        <span class="hier-pill">V</span>
-        <span class="hier-arrow">─ ─ ─ ─ ─ ─↗</span>
-        <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); text-align: center;">생리·해부학이 직접 결정</span>
-        <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); padding-left: 4px;">반로그 도표가 보여주는 시간 표지 · MRT = 1/K (1구획 IV)</span>
+      <!-- ── 위계 SVG 다이어그램 ── -->
+      <div style="background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;padding:14px 18px 10px;">
+        <svg viewBox="0 0 700 148" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-height:148px;display:block;">
+          <defs>
+            <marker id="hm-coral" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0,0.5 7,4 0,7.5" fill="#cc785c"/>
+            </marker>
+            <marker id="hm-muted" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0,0.5 7,4 0,7.5" fill="#8e8b82"/>
+            </marker>
+          </defs>
+
+          <!-- ── 일차 레이블 ── -->
+          <text x="80" y="14" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#8e8b82" letter-spacing="0.5">일차 파라미터</text>
+          <!-- ── CL pill ── -->
+          <rect x="22" y="22" width="116" height="36" rx="18" fill="#cc785c"/>
+          <text x="80" y="45" text-anchor="middle" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#ffffff">CL</text>
+          <!-- ── V pill ── -->
+          <rect x="22" y="88" width="116" height="36" rx="18" fill="#cc785c"/>
+          <text x="80" y="111" text-anchor="middle" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#ffffff">V</text>
+          <!-- 일차 설명 -->
+          <text x="80" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#a09d96">생리·해부학이 직접 결정</text>
+
+          <!-- ── CL → K 화살표 ── -->
+          <path d="M138,40 C200,40 215,73 265,73" stroke="#cc785c" stroke-width="1.8" fill="none" stroke-dasharray="5,3.5" marker-end="url(#hm-coral)"/>
+          <!-- ── V → K 화살표 ── -->
+          <path d="M138,106 C200,106 215,79 265,79" stroke="#cc785c" stroke-width="1.8" fill="none" stroke-dasharray="5,3.5" marker-end="url(#hm-coral)"/>
+
+          <!-- ── K 이차 레이블 ── -->
+          <text x="330" y="14" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#8e8b82" letter-spacing="0.5">이차 파라미터 (결과)</text>
+          <!-- ── K pill (secondary) ── -->
+          <rect x="270" y="56" width="120" height="36" rx="10" fill="#efe9de" stroke="#cc785c" stroke-width="1.8"/>
+          <text x="330" y="79" text-anchor="middle" font-family="Inter,sans-serif" font-size="13.5" font-weight="500" fill="#141413">K = CL / V</text>
+
+          <!-- ── K → t½ 화살표 ── -->
+          <path d="M390,66 C425,66 435,48 462,46" stroke="#8e8b82" stroke-width="1.6" fill="none" stroke-dasharray="4,3" marker-end="url(#hm-muted)"/>
+          <!-- ── K → MRT 화살표 ── -->
+          <path d="M390,86 C425,86 435,102 462,104" stroke="#8e8b82" stroke-width="1.6" fill="none" stroke-dasharray="4,3" marker-end="url(#hm-muted)"/>
+
+          <!-- ── 이차 시간 표지 레이블 ── -->
+          <text x="582" y="14" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#8e8b82" letter-spacing="0.5">반로그 도표의 시간 표지</text>
+          <!-- ── t½ 블록 ── -->
+          <rect x="462" y="22" width="230" height="36" rx="9" fill="#f5f0e8" stroke="#e6dfd8" stroke-width="1.2"/>
+          <text x="577" y="39" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#252523" font-weight="500">t½ = 0.693 · V / CL</text>
+          <text x="577" y="53" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#8e8b82">= ln 2 / K</text>
+          <!-- ── MRT 블록 ── -->
+          <rect x="462" y="88" width="230" height="36" rx="9" fill="#f5f0e8" stroke="#e6dfd8" stroke-width="1.2"/>
+          <text x="577" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#252523" font-weight="500">MRT = 1 / K</text>
+          <text x="577" y="119" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#8e8b82">1구획 IV 전용</text>
+          <!-- 시간 표지 설명 -->
+          <text x="577" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#a09d96">AUMC/AUC · 평균 체류 시간 환산</text>
+        </svg>
       </div>
 
       <div class="table-wrap">
@@ -2235,7 +2278,7 @@ AUC 외삽 → CL = Dose/AUC
 
       <div class="formula-card-wrap">
         <div class="formula-card compact compact-formula">
-          $$\underbrace{\mathcal{L}_{M3}}_{\text{우도}} = \underbrace{\prod_{C_i\geq LLOQ} \phi(C_i\mid \hat C_i, \sigma)}_{\text{정량값: 확률밀도}} \cdot \underbrace{\prod_{C_j<LLOQ} \Phi\!\left(\frac{LLOQ-\hat C_j}{\sigma}\right)}_{\text{BLQ: 누적확률 (censoring)}}$$
+          $$\underbrace{\mathcal{L}_{M3}}_{\text{우도}} = \underbrace{\prod_{C_i\geq LLOQ} \phi(C_i\mid \hat C_i, \sigma)}_{\text{정량값: 확률밀도}} \cdot \underbrace{\prod_{C_j &lt; LLOQ} \Phi\!\left(\frac{LLOQ-\hat C_j}{\sigma}\right)}_{\text{BLQ: 누적확률 (censoring)}}$$
         </div>
       </div>
 
