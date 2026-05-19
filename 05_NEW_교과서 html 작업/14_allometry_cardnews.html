@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 14 — 알로메트릭 스케일링: 종간 환율표 한 장</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<style>
+  :root{
+    --canvas:#faf9f5;
+    --surface-soft:#f5f0e8;
+    --surface-card:#efe9de;
+    --surface-cream-strong:#e8e0d2;
+    --surface-dark:#181715;
+    --surface-dark-elevated:#252320;
+    --surface-dark-soft:#1f1e1b;
+    --hairline:#e6dfd8;
+    --hairline-soft:#ebe6df;
+    --coral:#cc785c;
+    --coral-active:#a9583e;
+    --coral-pale:#f4e4dc;
+    --accent-teal:#5db8a6;
+    --accent-amber:#e8a55a;
+    --ink:#141413;
+    --body-strong:#252523;
+    --body:#3d3d3a;
+    --muted:#6c6a64;
+    --muted-soft:#8e8b82;
+    --on-primary:#ffffff;
+    --on-dark:#faf9f5;
+    --on-dark-soft:#a09d96;
+    --warn-bg:#fcf0ef;
+    --warn-border:#c64545;
+    --amber-bg:#fdf4e0;
+    --amber-border:#d4a017;
+    --teal-bg:#e6f4f0;
+    --teal-border:#5db8a6;
+    --font-display:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --font-body:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-mono:'JetBrains Mono','Courier New',monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--canvas); color:var(--body); font-family:var(--font-body); font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{
+    position:fixed; top:0; left:0; width:260px; height:100vh;
+    background:var(--surface-soft); border-right:1px solid var(--hairline);
+    overflow-y:auto; padding:22px 16px 24px;
+    z-index:20;
+  }
+  .wordmark{
+    display:flex; align-items:center; gap:9px; margin-bottom:24px;
+    padding:0 6px 18px; border-bottom:1px solid var(--hairline);
+  }
+  .wordmark-text{
+    font-family:var(--font-display); font-size:18px; color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .wordmark-sub{
+    margin-top:3px; font-family:var(--font-mono); font-size:9.5px;
+    color:var(--muted-soft); letter-spacing:1.2px; text-transform:uppercase;
+  }
+  .toc-label{
+    font-family:var(--font-mono); font-size:9.5px; color:var(--muted-soft);
+    letter-spacing:1.5px; text-transform:uppercase; padding:0 6px; margin-bottom:8px;
+  }
+  .toc-list{ list-style:none; padding:0; margin:0; }
+  .toc-btn{
+    display:block; width:100%; text-align:left;
+    background:transparent; border:none; border-left:2px solid transparent;
+    padding:7px 12px; font-family:var(--font-body); font-size:12.5px; color:var(--body);
+    cursor:pointer; line-height:1.4; transition:all 140ms ease;
+    border-radius:0 4px 4px 0;
+  }
+  .toc-btn:hover{ background:var(--surface-card); color:var(--ink); }
+  .toc-btn.active{ border-left-color:var(--coral); color:var(--coral); font-weight:500; }
+  .toc-btn .toc-num{ font-family:var(--font-mono); font-size:10.5px; margin-right:8px; opacity:0.75; }
+  .toc-btn.sub{ padding-left:28px; font-size:12px; color:var(--muted); }
+  .toc-btn.sub.active{ color:var(--coral); }
+
+  /* ============ VIEWER ============ */
+  .viewer{
+    position:fixed; left:260px; top:0; right:0; bottom:52px;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .slide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    padding:28px 44px 22px;
+    overflow:hidden;
+    opacity:0; pointer-events:none;
+    transition:opacity 220ms ease;
+  }
+  .slide.active{ opacity:1; pointer-events:auto; }
+  .slide.has-formula{ padding-top:46px; }
+
+  /* formula card overflow override */
+  .slide .formula-card-wrap,
+  .slide .formula-card{ overflow:visible !important; }
+
+  /* ============ SLIDE HEADER ============ */
+  .slide-header{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:8px;
+  }
+  .sec-badge{
+    display:inline-block; background:var(--coral); color:var(--on-primary);
+    font-family:var(--font-mono); font-size:11px; font-weight:500;
+    letter-spacing:1px; padding:4px 10px; border-radius:9999px;
+    text-transform:uppercase; white-space:nowrap;
+  }
+  .slide-title{
+    font-family:var(--font-display); font-weight:400;
+    font-size:clamp(22px, 2.4vw, 34px); color:var(--ink);
+    letter-spacing:-0.02em; line-height:1.15; margin:0;
+  }
+  .header-rule{
+    height:1.5px; background:var(--hairline); border:none; margin:6px 0 14px;
+  }
+
+  /* ============ CONTENT REGION ============ */
+  .slide-body{
+    flex:1; min-height:0; overflow:hidden;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .slide-body.compact{ gap:8px; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; flex:1; min-height:0; }
+  .grid-2.compact{ gap:12px; }
+
+  .col{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .col.compact{ gap:8px; }
+
+  /* ============ CARDS ============ */
+  .card{
+    background:var(--surface-card); border:1px solid var(--hairline);
+    border-radius:12px; padding:18px 22px;
+  }
+  .card-soft{
+    background:var(--surface-soft); border:1px solid var(--hairline);
+    border-radius:12px; padding:18px 22px;
+  }
+  .card.compact, .card-soft.compact{ padding:12px 16px; }
+
+  .card h2.sub-title, .card-soft h2.sub-title{
+    font-family:var(--font-body); font-weight:500; font-size:clamp(15px, 1.4vw, 18px);
+    color:var(--ink); margin:0 0 8px; letter-spacing:0;
+  }
+  .card h3.sub-sub, .card-soft h3.sub-sub{
+    font-family:var(--font-body); font-weight:600; font-size:13px;
+    color:var(--body-strong); margin:8px 0 4px; letter-spacing:0;
+  }
+  .card p, .card-soft p{
+    margin:0 0 6px; color:var(--body); font-size:clamp(12px,1.05vw,14px);
+  }
+  .card p:last-child, .card-soft p:last-child{ margin-bottom:0; }
+  .card strong, .card-soft strong{ color:var(--body-strong); font-weight:600; }
+  .card em, .card-soft em{ font-style:italic; color:var(--body-strong); }
+
+  ul.bullets, ol.bullets{ margin:6px 0 0; padding-left:20px; }
+  ul.bullets li, ol.bullets li{ margin-bottom:4px; font-size:clamp(12px,1.05vw,14px); color:var(--body); }
+  ul.bullets li::marker{ color:var(--coral); }
+
+  /* ============ FORMULA CARD ============ */
+  .formula-card-wrap{ display:flex; flex-direction:column; gap:6px; }
+  .formula-card{
+    background:var(--surface-soft); border:1px solid var(--hairline);
+    border-radius:12px;
+    padding:36px 20px 28px;
+    text-align:center;
+    overflow-x:auto;
+    overflow-y:visible;
+  }
+  .formula-card.compact{ padding:30px 16px 22px; }
+  .formula-source{
+    font-family:var(--font-mono); font-size:11px; color:var(--muted);
+    text-align:center; margin:0;
+  }
+
+  /* KaTeX overrides */
+  .katex-display{
+    overflow-y:visible !important;
+    margin:0 !important;
+    padding:4px 0 !important;
+  }
+  .katex-display > .katex{ overflow-y:visible !important; }
+  .katex{ font-size:1.0em; }
+  .formula-card .katex{ font-size:1.05em; }
+
+  /* ============ DARK CARD ============ */
+  .dark-card{
+    background:var(--surface-dark); border-radius:12px; padding:18px 22px;
+    color:var(--on-dark);
+  }
+  .dark-card.compact{ padding:12px 16px; }
+  .dark-card p{ color:var(--on-dark-soft); margin:0 0 6px; font-size:clamp(12px,1.05vw,14px); }
+  .dark-card p:last-child{ margin-bottom:0; }
+  .dark-card strong{ color:var(--on-dark); font-weight:600; }
+  .dark-card em{ color:var(--on-dark-soft); font-style:italic; }
+  .dark-card li{ color:var(--on-dark-soft); margin-bottom:4px; font-size:clamp(12px,1.05vw,14px); }
+  .dark-card li::marker{ color:var(--coral); }
+  .dark-card h2, .dark-card h3, .dark-card .sub-title, .dark-card .sub-sub{ color:var(--on-dark); }
+
+  /* ============ ALGORITHM BOX ============ */
+  .algo-box{
+    background:var(--surface-dark); color:var(--on-dark-soft);
+    font-family:var(--font-mono); font-size:11.5px; line-height:1.75;
+    white-space:pre; overflow-x:auto; overflow-y:auto;
+    border-radius:12px; padding:16px 20px;
+    flex:1; min-height:0;
+  }
+  .algo-box.tight{ padding:12px 16px; font-size:11px; line-height:1.65; }
+  .algo-box .arr{ color:var(--coral); }
+  .algo-box .hl{ color:var(--on-dark); font-weight:500; }
+
+  /* ============ CALLOUT ============ */
+  .callout{
+    border-left:3px solid var(--coral);
+    background:var(--coral-pale);
+    border-radius:0 8px 8px 0;
+    padding:11px 16px;
+  }
+  .callout.warn{ border-left-color:var(--warn-border); background:var(--warn-bg); }
+  .callout.amber{ border-left-color:var(--amber-border); background:var(--amber-bg); }
+  .callout.teal{ border-left-color:var(--teal-border); background:var(--teal-bg); }
+  .callout p{ margin:0 0 4px; font-size:clamp(12px,1.05vw,13.5px); color:var(--body-strong); }
+  .callout p:last-child{ margin-bottom:0; }
+  .callout .callout-label{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--coral-active); display:block; margin-bottom:3px;
+  }
+  .callout.warn .callout-label{ color:var(--warn-border); }
+  .callout.amber .callout-label{ color:#a87a05; }
+  .callout.teal .callout-label{ color:#2f8a78; }
+
+  /* ============ CITATION CHIP ============ */
+  .cite{
+    display:inline-block; font-family:var(--font-mono); font-size:10.5px;
+    background:var(--surface-card); color:var(--muted);
+    padding:1px 6px; border-radius:4px; margin:0 2px;
+    white-space:nowrap;
+  }
+
+  /* ============ TABLE ============ */
+  .table-wrap{
+    border:1px solid var(--hairline); border-radius:12px;
+    overflow:clip; background:var(--surface-soft);
+  }
+  table.data{
+    width:100%; border-collapse:collapse; font-size:12.5px;
+  }
+  table.data thead{ background:var(--surface-card); }
+  table.data thead th{
+    padding:12px 12px; text-align:left; font-weight:600; color:var(--body-strong);
+    font-size:12px; letter-spacing:0;
+    border-bottom:1px solid var(--hairline);
+  }
+  table.data thead tr:first-child th{ padding-top:14px; }
+  table.data tbody td{
+    padding:9px 12px; border-bottom:1px solid var(--hairline-soft); color:var(--body);
+  }
+  table.data tbody tr:last-child td{ border-bottom:none; }
+  table.data td.num, table.data th.num{ text-align:right; font-variant-numeric:tabular-nums; }
+  table.data td.center, table.data th.center{ text-align:center; }
+  table.data tbody tr:hover{ background:var(--surface-cream-strong); }
+
+  /* ============ CLOSER CARD ============ */
+  .closer-card{
+    background:var(--surface-dark); border-radius:12px; padding:32px 36px;
+    display:flex; flex-direction:column; gap:14px;
+    flex:1; min-height:0; justify-content:center;
+  }
+  .closer-label{
+    font-family:var(--font-mono); font-size:10px; color:var(--coral);
+    letter-spacing:1.5px; text-transform:uppercase;
+  }
+  .closer-card p{
+    font-family:var(--font-display); font-style:italic; font-weight:400;
+    font-size:clamp(17px, 1.7vw, 22px); line-height:1.5; color:var(--on-dark-soft);
+    margin:0;
+  }
+  .closer-card p.lead{
+    color:var(--on-dark); font-style:normal; font-family:var(--font-body); font-weight:500;
+    font-size:clamp(14px,1.2vw,16px);
+  }
+  .closer-card .signoff{
+    font-family:var(--font-mono); font-size:11px; color:var(--coral);
+    letter-spacing:0.5px; margin-top:8px;
+  }
+
+  /* ============ NAV BAR ============ */
+  .navbar{
+    position:fixed; bottom:0; left:260px; right:0; height:52px;
+    background:var(--canvas); border-top:1px solid var(--hairline);
+    display:flex; align-items:center; padding:0 28px;
+    z-index:15;
+  }
+  .nav-btn{
+    background:transparent; border:1px solid var(--hairline);
+    color:var(--ink); font-family:var(--font-body); font-size:13px; font-weight:500;
+    padding:7px 16px; border-radius:8px; cursor:pointer;
+    transition:all 140ms ease;
+  }
+  .nav-btn:hover:not(:disabled){ background:var(--surface-card); border-color:var(--coral); color:var(--coral); }
+  .nav-btn:disabled{ opacity:0.35; cursor:default; }
+  .nav-center{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;
+    padding:0 24px;
+  }
+  .prog-text{
+    font-family:var(--font-mono); font-size:11px; color:var(--muted);
+    letter-spacing:0.5px;
+  }
+  .prog-bar{
+    width:100%; max-width:340px; height:3px; background:var(--hairline);
+    border-radius:9999px; overflow:hidden;
+  }
+  .prog-fill{
+    height:100%; background:var(--coral); width:0%;
+    transition:width 220ms ease;
+  }
+
+  /* ============ INLINE TYPOGRAPHY HELPERS ============ */
+  code{
+    font-family:var(--font-mono); font-size:0.92em;
+    background:var(--surface-cream-strong); color:var(--body-strong);
+    padding:1px 5px; border-radius:4px;
+  }
+  .dark-card code{ background:var(--surface-dark-elevated); color:var(--on-dark); }
+  .lead-text{ font-size:clamp(13px,1.15vw,15px); color:var(--body-strong); }
+  .micro{ font-size:11.5px; color:var(--muted); }
+  .accent-coral{ color:var(--coral); font-weight:500; }
+  .accent-teal{ color:var(--accent-teal); font-weight:500; }
+  .accent-amber{ color:#b07c1f; font-weight:500; }
+
+  .two-col-list{ columns:2; column-gap:24px; }
+  .two-col-list li{ break-inside:avoid; margin-bottom:4px; }
+
+  details summary{
+    cursor:pointer; font-family:var(--font-mono); font-size:11px;
+    color:var(--coral); letter-spacing:0.5px; padding:4px 0;
+  }
+  details[open] summary{ color:var(--coral-active); }
+
+  /* responsive minor */
+  @media (max-width:1100px){
+    .slide{ padding:24px 32px 18px; }
+    .grid-2{ gap:12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================= SIDEBAR ============================= -->
+<aside class="sidebar">
+  <div class="wordmark">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78"
+            stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="wordmark-text">Allometry · 14</div>
+      <div class="wordmark-sub">Session Cardnews</div>
+    </div>
+  </div>
+
+  <div class="toc-label">Contents</div>
+  <ul class="toc-list" id="toc-list">
+    <li><button class="toc-btn" data-target="0"><span class="toc-num">§0</span>도입 — 7.4배 사고</button></li>
+    <li><button class="toc-btn" data-target="1"><span class="toc-num">§1</span>The Big Idea — 환율표</button></li>
+    <li><button class="toc-btn" data-target="2"><span class="toc-num">§2</span>CL의 b ≈ 0.75</button></li>
+    <li><button class="toc-btn" data-target="4"><span class="toc-num">§3</span>V의 d ≈ 1.0</button></li>
+    <li><button class="toc-btn" data-target="6"><span class="toc-num">§4</span>Dedrick Superposition</button></li>
+    <li><button class="toc-btn" data-target="8"><span class="toc-num">§5</span>Equal-AUCu Backbone</button></li>
+    <li><button class="toc-btn" data-target="9"><span class="toc-num">§6</span>마스터 공식 (Intro)</button></li>
+    <li><button class="toc-btn sub" data-target="10"><span class="toc-num">6-1</span>Maturation</button></li>
+    <li><button class="toc-btn sub" data-target="11"><span class="toc-num">6-2</span>LBW / TBW</button></li>
+    <li><button class="toc-btn sub" data-target="12"><span class="toc-num">6-3</span>Organ Function</button></li>
+    <li><button class="toc-btn sub" data-target="13"><span class="toc-num">6-4</span>Dosing Strategy</button></li>
+    <li><button class="toc-btn sub" data-target="14"><span class="toc-num">6-5</span>Pregnancy</button></li>
+    <li><button class="toc-btn" data-target="16"><span class="toc-num">§7</span>5가지 분기점</button></li>
+    <li><button class="toc-btn" data-target="18"><span class="toc-num">§8</span>자기점검 13문항</button></li>
+    <li><button class="toc-btn" data-target="19"><span class="toc-num">§9</span>최종 마인드맵</button></li>
+    <li><button class="toc-btn" data-target="20"><span class="toc-num">§10</span>한 줄로 닫기</button></li>
+  </ul>
+</aside>
+
+<!-- ============================= VIEWER ============================= -->
+<main class="viewer" id="viewer">
+
+<!-- =================== SLIDE 0 — §0 도입 =================== -->
+<section class="slide" data-toc="0">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">왜 이 챕터 하나로 Phase 1 회의실 분위기가 갈리는지</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <p>화이트보드 한 장을 상상해봄. 좌측엔 <strong>23 g mouse</strong>에서 잰 청소율, 우측엔 <strong>70 kg human</strong>으로 옮긴 추정값. 그 사이를 잇는 건 거듭제곱 한 줄. 그런데 그 거듭제곱의 지수를 <span class="accent-coral">b=1</span>로 쓰느냐 <span class="accent-coral">b=0.75</span>로 쓰느냐만으로 —</p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Species pair</th><th class="num">b=1 vs b=0.75 격차</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Mouse 23 g → Human 70 kg</td><td class="num"><strong>약 7.4배</strong> <span class="cite">G&amp;W PK28 p.611–614</span></td></tr>
+            <tr><td>Mouse 20 g → Human 70 kg</td><td class="num"><strong>3500 vs 455 = 7.7배</strong> <span class="cite">R&amp;T p.733</span></td></tr>
+            <tr><td>Rat 250 g → Human 70 kg</td><td class="num"><strong>약 4.1배</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="callout-label">치명타</span>
+        <p>이게 단순 산수 차이가 아님. <strong>Target AUC를 맞추려고 dose를 잡는 순간 CL을 과대평가하면 dose도 그만큼 과대 산출됨.</strong> 규제 심사자가 표 한 칸을 짚고 "이 지수 어떻게 정당화하셨어요?"라고 물으면 그 자리에서 답해야 함. 이 챕터가 그 한 칸을 방어하는 도구임.</p>
+      </div>
+    </div>
+
+    <p class="lead-text" style="margin:2px 0 0;">이 챕터를 다 읽고 나면 머릿속에 이런 단일 다이어그램이 자동 작동해야 함:</p>
+
+    <div class="algo-box tight" style="flex:1 1 auto;">
+<span class="hl">[Step 1]</span> 이 변수가 흐름인가, 공간인가, 시간인가?
+              <span class="arr">↓</span>
+<span class="hl">[Step 2]</span> 그래서 환율(지수)이 뭐임? — flow면 0.75, extent면 1
+              <span class="arr">↓</span>
+<span class="hl">[Step 3]</span> 그 환율이 이 약물에서 진짜 버티는가? — 6가지 예외 체크
+              <span class="arr">↓</span>
+<span class="hl">[Step 4]</span> Dedrick으로 곡선이 진짜 겹치는가? — Elementary or Complex?
+              <span class="arr">↓</span>
+<span class="hl">[Step 5]</span> Equal-AUCu backbone으로 dose 환산 — 단, 이건 "다리의 철골"임
+              <span class="arr">↓</span>
+<span class="hl">[Step 6]</span> 사람 안 보정 5층 — Maturation × LBW/TBW × Organ × Strategy × Pregnancy
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 1 — §1 The Big Idea =================== -->
+<section class="slide has-formula" data-toc="1">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1</span>
+    <h1 class="slide-title">The Big Idea — 알로메트리는 회귀식이 아니라 "환율표"임</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h2 class="sub-title">1-1. 마스터식을 다시 보기</h2>
+        <p>회귀선처럼 읽는 순간 함정에 빠짐. "fitting이 잘 됐으니까 OK"로 넘어가게 됨. <strong>이 식의 진짜 의미는 "체중 배율을 바꿔도 같은 법칙이 그대로 유지된다"는 주장임.</strong> 즉 환율식임 — 마우스 1 kg과 사람 1 kg을 잇는 통화 변환 규칙 그 자체.</p>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{Y}_{\text{대상 변수}}=\underbrace{a}_{\text{절편}}\cdot \underbrace{BW}_{\text{체중}}^{\overbrace{b}^{\text{지수}}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:374, p.173</span> <span class="cite">R&amp;T Eq.22-2, p.732</span></p>
+        <div class="formula-card compact">
+          $$\underbrace{\ln(Y)}_{\text{로그 }Y}=\underbrace{\ln(a)}_{\text{로그 절편}}+\overbrace{\underbrace{b}_{\text{기울기=환율}}\cdot\underbrace{\ln(BW)}_{\text{로그 }BW}}^{\text{log-log}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:379, p.176</span> <span class="cite">R&amp;T Eq.22-1, p.732</span></p>
+      </div>
+    </div>
+
+    <div class="card-soft compact">
+      <h2 class="sub-title">1-2. 변수별로 환율이 다름 — 이게 전부임</h2>
+      <div class="table-wrap" style="margin-top:6px;">
+        <table class="data">
+          <thead>
+            <tr><th>변수 종류</th><th>대표 변수</th><th class="num">환율(지수)</th><th>직관</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>흐름/속도</strong></td><td>CL, GFR, 장기 혈류, 대사율</td><td class="num">\(b\approx 0.75\)</td><td>단위 시간당 처리량</td></tr>
+            <tr><td><strong>공간/범위</strong></td><td>V, 혈액량, 조직량, 체수분</td><td class="num">\(d\approx 1.0\)</td><td>퍼질 수 있는 부피</td></tr>
+            <tr><td><strong>시간</strong></td><td>\(t_{1/2}=\ln2\cdot V/CL\)</td><td class="num">\(d-b\approx 0.25\)</td><td>큰 동물 = 긴 반감기</td></tr>
+            <tr><td><strong>속도상수</strong></td><td>\(k_{el}=CL/V\)</td><td class="num">\(b-d\approx -0.25\)</td><td>큰 동물 = 작은 fraction/시간</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="callout">
+        <span class="callout-label">💡 한 줄 멘트</span>
+        <p><strong>"흐름은 0.75, 공간은 1, 시간은 그 차이 0.25, 속도상수는 그 부호 뒤집기."</strong> 이 네 줄이 안 외워지면 뒤 §전체가 흔들림.</p>
+      </div>
+      <div class="card-soft compact">
+        <h3 class="sub-sub">1-3. 왜 흐름은 1이 아니고 0.75인가</h3>
+        <p>G&amp;W가 두 줄로 정리함 <span class="cite">G&amp;W §2.10, p.173</span> — <strong>대사율 ∝ \(BW^{0.75}\)</strong>, <strong>에너지 함량 ∝ \(BW^1\)</strong> → turnover time ∝ \(BW^{0.25}\). 코끼리가 쥐보다 100만 배 무거워도 100만 배 먹지 않음. 약 <span class="accent-coral">\(100{,}000^{0.75}\approx 178{,}000\)배</span>만 더 먹음. CL도 동일.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 2 — §2-a CL b≈0.75 (1) =================== -->
+<section class="slide has-formula" data-toc="2">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · 1/2</span>
+    <h1 class="slide-title">첫 번째 환율 — CL의 b ≈ 0.75 (가장 위험한 카드)</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h2 class="sub-title">2-1. 가장 흔한 임상 사고는 "kg당 사고"임</h2>
+        <p>임상의의 머리는 mg/kg 처방에 길들여져 있음. "30 mg/kg 줘"라는 말이 입에 붙어있으니 자연스럽게 <strong>"CL도 kg당 선형 비례"</strong> 즉 \(b=1\)이라고 무의식적으로 가정함. 이게 가장 흔한 사고임.</p>
+        <p>근데 CL은 kg당 변수가 아님. CL은 <em>"단위 시간당 약물을 처리해 비워내는 부피"</em> — 즉 <strong>흐름 변수</strong>. 흐름 변수의 환율은 자연이 0.75로 정해놨음 <span class="cite">G&amp;W Eq.2:380, p.176</span>.</p>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{CL_i}_{\text{개체 CL}}=\underbrace{a}_{\text{CL 절편}}\cdot\underbrace{BW_i}_{\text{개체 BW}}^{\overbrace{b}^{\text{CL 지수}\,\approx\, 0.75}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:380, p.176</span></p>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">2-2. 0.75와 1의 차이가 임상에서 얼마나 큰지 — 자릿수 감각</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{\left(\frac{BW_{human}}{BW_{animal}}\right)^{1-0.75}}_{=\,(BW_{ratio})^{0.25}}=\text{환율 오류로 발생하는 배수}$$
+          </div>
+        </div>
+        <ul class="bullets" style="margin:0;">
+          <li>Mouse 25 g → Human 70 kg에서 CL 예측: \(b=0.75\)면 약 <strong>4.6 L/hr</strong>, \(b=1\)이면 약 <strong>33.6 L/hr</strong>. <strong class="accent-coral">7.3배 차이</strong>.</li>
+          <li>Phase 1 starting dose에서 \(b=1\)로 잘못 계산하면 "안전하게 낮게"가 아니라 <strong>target AUC 대비 dose를 7배쯤 과대 산출</strong>할 수 있음.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 3 — §2-b CL b≈0.75 (2) =================== -->
+<section class="slide has-formula" data-toc="2">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · 2/2</span>
+    <h1 class="slide-title">CL의 b ≈ 0.75 — 보스 딜레마와 6가지 실패 트리거</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h2 class="sub-title">2-3. 그렇다고 0.75를 법칙처럼 박으면 안 됨</h2>
+        <p>G&amp;W Fig.2.159는 91개 화합물 CL 지수를 다 그려봤더니 <strong>0.5~1.0 범위에 흩어져 있음</strong> <span class="cite">G&amp;W p.191</span>. 즉 0.75는 <strong>prior</strong>일 뿐 자연상수가 아님.</p>
+        <p>이 중 하나라도 강하게 의심되면 — <strong>\(b=0.75\)를 primary로 두되, \(b\in\{0.5,\,0.62,\,0.75,\,1.0\}\)를 sensitivity로 동시 제시</strong>. FIH 문서에서 단일 지수를 박는 건 가장 깨지기 쉬운 진술임.</p>
+      </div>
+      <div class="callout warn">
+        <span class="callout-label">🚨 실패 트리거 6가지 (입에 붙여둘 것)</span>
+        <ol class="bullets" style="margin-top:4px;">
+          <li>종간 혈장 단백 결합(\(f_u\)) 차이</li>
+          <li>CYP isoform 조성 차이 (예: CYP3A4 vs CYP3A8)</li>
+          <li>비선형 Michaelis-Menten 동태</li>
+          <li>장간 순환 (enterohepatic recirculation)</li>
+          <li>투여 경로·제형 차이</li>
+          <li>중심/말초 V 비율 종간 drift</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h2 class="sub-title">2-4. \(f_u\)가 종간 크게 다르면 → \(CL_u\) scaling으로 갈아탐</h2>
+        <p>대표 예시 — <strong>cefazolin</strong> (1세대 cephalosporin, 단백 결합 큼, 신장 배설) <span class="cite">R&amp;T Table 22-1, p.740</span>. 사람과 동물 간 단백 결합 차이가 의미 있게 다르면 total CL scaling 결과가 어긋남. 이 경우 \(f_u\) 측정은 <strong>같은 농도·buffer·온도·assay</strong>에서 비교해야 의미가 있음.</p>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{CL_{u,man}}_{\text{human }CL_u}=\underbrace{CL_{u,rat}}_{\text{rat }CL_u}\cdot\left(\frac{\overbrace{BW_{man}}^{\text{human BW}}}{\overbrace{BW_{rat}}^{\text{rat BW}}}\right)^{\overbrace{b}^{\text{CLu 지수}}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:421, p.190</span></p>
+      </div>
+    </div>
+
+    <div class="callout teal">
+      <span class="callout-label">🎯 C2 한 줄로 닫기</span>
+      <p><em>"kg당 사고는 dose 과대로, 0.75 과신은 기전 예외 누락으로 감. 둘 다 위험. 답은 '0.75 prior + sensitivity 표'."</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 4 — §3-a V d≈1.0 (1) =================== -->
+<section class="slide has-formula" data-toc="3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · 1/2</span>
+    <h1 class="slide-title">두 번째 환율 — V의 d ≈ 1.0 (그리고 시간은 거기서 떨어져 나옴)</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h2 class="sub-title">3-1. V는 공간이지 흐름이 아님</h2>
+        <p>V를 CL처럼 흐름 변수로 읽는 순간 모든 게 꼬임. V는 <strong>약물이 분포할 수 있는 부피의 크기</strong> — 그러니까 체수분, 혈액량, 조직량을 따라감.</p>
+        <p>G&amp;W Table 2.22가 못 박아줌 — 혈액량 지수 0.99, 골격근량 1.09, \(V_d\)≈1.0 <span class="cite">G&amp;W p.180</span>. 공간 변수들은 거의 다 체중에 비례함.</p>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{V_i}_{\text{개체 }V}=\underbrace{c}_{\text{V 절편}}\cdot\underbrace{BW_i}_{\text{개체 BW}}^{\overbrace{d}^{\text{V 지수}\,\approx\, 1.0}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:382, p.179</span></p>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">3-2. 시간축은 환율 차이에서 자동으로 나옴 — 외울 게 아니라 떨어져 나오는 것</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{t_{1/2}}_{\text{반감기}}=\underbrace{\ln2}_{\text{반감 상수}}\cdot\frac{\overbrace{V}^{\text{공간}}}{\overbrace{CL}^{\text{흐름}}}\propto \underbrace{BW^{d-b}}_{\text{시간지수}\,\approx\, 0.25}$$
+          </div>
+          <p class="formula-source"><span class="cite">G&amp;W §2.10</span></p>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{k_{el}}_{\text{제거속도}}=\frac{\overbrace{CL}^{\text{흐름}}}{\overbrace{V}^{\text{공간}}}\propto\underbrace{BW^{b-d}}_{\text{속도지수}\,\approx\, -0.25}$$
+          </div>
+          <p class="formula-source"><span class="cite">유도식</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 5 — §3-b V d≈1.0 (2) =================== -->
+<section class="slide" data-toc="3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · 2/2</span>
+    <h1 class="slide-title">"큰 동물 = 느린 시계" — Methadone Data Anchor</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <h2 class="sub-title">3-3. "큰 동물 = 느린 시계" 직관</h2>
+      <p>코끼리 심박은 분당 30회, 쥐 심박은 분당 600회. 코끼리는 시간이 천천히 흐르고 쥐는 빨리 흐르는 것처럼 보임. <strong>약동학적으로도 동일</strong> — 큰 동물은 약물 반감기가 김.</p>
+      <p>근데 헷갈리지 말 것 — 이건 <strong>단위 시간당 fraction 제거가 작다</strong>는 뜻이지 절대 CL이 작다는 게 아님. 절대 CL은 코끼리가 쥐보다 훨씬 큼. 비유하자면 — 코끼리는 거대한 정수기, 쥐는 작은 정수기. 코끼리 정수기가 1분에 처리하는 물의 절대량은 훨씬 많지만, 코끼리 몸 전체 물의 비율로 보면 쥐가 1분에 더 큰 비율을 처리함.</p>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">3-4. 데이터 anchor — Methadone <span class="cite">PK28</span></h2>
+      <p>저추출 μ-opioid 작용제. 간 추출률 &lt;10%니까 CL이 효소 활성에 직접 반응하고 알로메트리 신호가 깨끗하게 나옴 <span class="cite">G&amp;W p.186</span> <span class="cite">PK28 p.613</span>.</p>
+      <div class="table-wrap" style="margin-top:8px;">
+        <table class="data">
+          <thead>
+            <tr><th>종</th><th class="num">BW</th><th class="num">Dose</th><th class="num">\(t_{1/2}\) (§2.10.6 set)</th><th class="num">\(t_{1/2}\) (PK28 case set)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Mouse</td><td class="num">23 g</td><td class="num">25 µg IV</td><td class="num">1.5 h</td><td class="num">1.5 h</td></tr>
+            <tr><td>Rat</td><td class="num">250 g</td><td class="num">500 µg IV</td><td class="num"><strong class="accent-coral">2.9 h</strong></td><td class="num"><strong class="accent-coral">3.9 h</strong></td></tr>
+            <tr><td>Man</td><td class="num">70 kg</td><td class="num">100 mg IV</td><td class="num">35 h</td><td class="num">35 h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="callout amber">
+        <span class="callout-label">⚠️ 출처 무결성</span>
+        <p>Rat \(t_{1/2}\)가 출처에 따라 다름. <strong>보고서 인용 시 <code>[§2.10.6 set]</code> 또는 <code>[PK28 case set]</code>을 반드시 명시.</strong> 둘 중 하나로 임의 고정은 무결성 위반임.</p>
+      </div>
+      <div class="callout teal">
+        <span class="callout-label">🎯 C3 한 줄로 닫기</span>
+        <p><em>"\(t_{1/2}\propto BW^{0.25}\)만 외우면 절반만 본 것. 더 중요한 건 \(k_{el}\propto BW^{-0.25}\) — 큰 동물은 fraction 제거 속도가 작음."</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 6 — §4-a Dedrick (1) =================== -->
+<section class="slide has-formula" data-toc="4">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · 1/2</span>
+    <h1 class="slide-title">환율 검증 도구 — Dedrick Superposition</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <h2 class="sub-title">4-1. Dedrick이 하는 일 — "프레임 동기화"</h2>
+      <p>서로 다른 속도로 재생되는 동영상 5개를 같은 프레임 속도로 맞춰서 겹쳐보는 작업이 Dedrick임. 시간축을 정규화해서 mouse·rat·dog·monkey·human의 PK 곡선을 한 그래프에 올렸을 때 <strong>진짜로 겹치면</strong> → 환율 가정이 그 자료에서 통한다는 진단. 안 겹치고 fan-out하면 → 환율이 깨졌거나 다른 기전이 작동 중.</p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:1 1 auto;">
+      <div class="col compact">
+        <div class="card compact">
+          <h2 class="sub-title">4-2. Elementary (d=1 가정) — 가장 흔한 형태</h2>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{y}_{\text{농도축}}=\frac{\overbrace{C}^{\text{농도}}}{\underbrace{Dose/BW}_{\text{kg당 용량}}},\quad \underbrace{x}_{\text{시간축}}=\frac{\overbrace{t}^{\text{시간}}}{\underbrace{BW^{1-b}}_{\text{기본 시간}}}$$
+          </div>
+        </div>
+        <div class="callout">
+          <p>이름이 <strong>Kallynochron</strong> ("kg당 생리학적 시간"). <strong class="accent-coral">K는 kg으로 외움.</strong></p>
+        </div>
+      </div>
+      <div class="col compact">
+        <div class="card compact">
+          <h2 class="sub-title">4-3. Complex (d ≠ 1) — V가 비례를 벗어날 때</h2>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{y}_{\text{농도축}}=\frac{\overbrace{C}^{\text{농도}}\cdot\overbrace{BW^d}^{\text{공간 보정}}}{\underbrace{Dose}_{\text{투여량}}},\quad \underbrace{x}_{\text{시간축}}=\frac{\overbrace{t}^{\text{시간}}}{\underbrace{BW^{d-b}}_{\text{복합 시간}}}$$
+          </div>
+        </div>
+        <div class="callout teal">
+          <p>이름이 <strong>Apolysichron</strong> ("anyspace 생리학적 시간"). <strong class="accent-teal">A는 anyspace로 외움.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 7 — §4-b Dedrick (2) =================== -->
+<section class="slide" data-toc="4">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · 2/2</span>
+    <h1 class="slide-title">전환 규칙과 PK28 / PK29 벤치마크</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="callout">
+      <span class="callout-label">4-4. 전환 규칙 — 한 줄로 결정</span>
+      <p><strong>log-log \(V\) vs \(BW\) 기울기가 0.9~1.1 안 → Elementary, 밖 → Complex.</strong></p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card compact">
+        <h3 class="sub-sub">벤치마크 쌍 (입에 붙여둘 것)</h3>
+        <div class="table-wrap" style="margin-top:6px;">
+          <table class="data">
+            <thead><tr><th>Case</th><th class="num">\(d\)</th><th>전환</th><th>의미</th></tr></thead>
+            <tbody>
+              <tr><td><strong>PK28 Methadone</strong></td><td class="num">≈1.0</td><td>Elementary 통과</td><td>저추출 + 공간 비례</td></tr>
+              <tr><td><strong>PK29 Compound X</strong></td><td class="num"><strong class="accent-coral">1.18~1.21</strong></td><td>Complex 필요</td><td>Elementary 쓰면 fan-out</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-soft compact">
+        <h3 class="sub-sub">PK29 자료 <span class="cite">G&amp;W §2.10.7 p.189</span> <span class="cite">PK29 case p.619</span></h3>
+        <div class="table-wrap" style="margin-top:6px;">
+          <table class="data">
+            <thead><tr><th>출처</th><th class="num">\(a\)</th><th class="num">\(b\)</th><th class="num">\(c\)</th><th class="num">\(d\)</th><th class="num">\(e\)</th><th class="num">\(g\)</th></tr></thead>
+            <tbody>
+              <tr><td>G&amp;W §2.10.7</td><td class="num">0.021</td><td class="num">0.74</td><td class="num">0.076</td><td class="num">1.18</td><td class="num">0.56</td><td class="num">0.075</td></tr>
+              <tr><td>PK29 case</td><td class="num">0.021</td><td class="num">0.75</td><td class="num">0.10</td><td class="num">1.21</td><td class="num">0.54</td><td class="num">0.071</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:6px;"><em>같은 약물인데 출처 내 수치가 미세하게 다름.</em> 인용 시 <strong>citation scope 표기 의무</strong>.</p>
+      </div>
+    </div>
+
+    <div class="card-soft compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">4-5. Curve fan-out을 "그림 문제"로 오독하지 말 것</h2>
+      <p>Dedrick plot에서 겹침이 깨졌을 때 흔한 오해 — "그림이 안 예쁘게 그려졌네"로 넘기는 것. 절대 아님. <strong>Fan-out은 기전 신호</strong>임. 의심 순위:</p>
+      <ol class="bullets two-col-list" style="margin-top:4px;">
+        <li>\(d=1\) 가정 실패 → Complex Dedrick으로 갈아탐</li>
+        <li>다구획성 → multi-compartment 모델</li>
+        <li>Model misspecification (분포상 평형 안 됨, dose level 부족)</li>
+        <li>비선형 PK (포화 대사 등)</li>
+      </ol>
+    </div>
+
+    <div class="callout teal">
+      <span class="callout-label">🎯 C4 한 줄로 닫기</span>
+      <p><em>"Dedrick은 환율 검증 도구. 겹치면 환율 OK, fan-out하면 기전 신호. PK28은 통과, PK29는 Complex로 갈아탐."</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 8 — §5 Equal-AUCu =================== -->
+<section class="slide has-formula" data-toc="5">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5</span>
+    <h1 class="slide-title">환율을 dose로 번역하는 다리 — Equal-AUCu Backbone</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h2 class="sub-title">5-1. 핵심 식 한 줄</h2>
+        <p>비결합 노출이 같으면 약리 효과가 같다는 전제 위에서 — Equal-AUCu가 dose 환산의 다리 역할.</p>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{AUC_{u,rat}}_{\text{rat }AUC_u}=\underbrace{AUC_{u,man}}_{\text{human }AUC_u}=\frac{\overbrace{Dose_{rat}}^{\text{rat dose}}}{\underbrace{CL_{u,rat}}_{\text{rat }CL_u}}=\frac{\overbrace{Dose_{man}}^{\text{human dose}}}{\underbrace{CL_{u,man}}_{\text{human }CL_u}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:417, p.190</span></p>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{Dose_{man}}_{\text{human dose}}=\underbrace{Dose_{rat}}_{\text{rat dose}}\cdot\left(\frac{\overbrace{BW_{man}}^{\text{human BW}}}{\overbrace{BW_{rat}}^{\text{rat BW}}}\right)^{\overbrace{b}^{\text{CL/AUC 지수}}}$$
+        </div>
+        <p class="formula-source"><span class="cite">G&amp;W Eq.2:420, p.190</span></p>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{\frac{Dose_{man}/BW_{man}}{Dose_{rat}/BW_{rat}}}_{\text{mg/kg 비}}=\left(\frac{\overbrace{BW_{man}}^{\text{큰 종 BW}}}{\overbrace{BW_{rat}}^{\text{작은 종 BW}}}\right)^{\overbrace{b-1}^{\text{kg당 지수}\,\approx\, -0.25}}$$
+        </div>
+        <p class="formula-source">5-2. <span class="cite">유도식</span> · \(b&lt;1\)이면 큰 동물의 mg/kg dose는 작은 동물보다 낮음 → rat에서 본 mg/kg을 사람에 그대로 적용하면 사람 dose가 과대</p>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">5-3. 🚨 이 식이 곧 FIH starting dose가 <em>아님</em> — "다리의 철골"임</h2>
+      <p style="margin-bottom:6px;">이 식 그대로 IND 문서에 박으면 안 됨. 이건 <strong>노출 backbone</strong>일 뿐이고, 그 위에 다음이 다 얹혀야 진짜 첫 사람 dose가 됨:</p>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th style="width:22%;">Layer</th><th>무엇을 하는가</th></tr></thead>
+          <tbody>
+            <tr><td>① <strong>PD metric</strong></td><td>AUC-driven? Cmax-driven? Time&gt;threshold?</td></tr>
+            <tr><td>② <strong>\(f_u\) 보정</strong></td><td>종간 \(f_u\) 다르면 total CL → \(CL_u\)로 갈아탐</td></tr>
+            <tr><td>③ <strong>PK 선형성</strong></td><td>선형 구간 검증, 비선형이면 별도 처리</td></tr>
+            <tr><td>④ <strong>Safety margin</strong></td><td>NOAEL/LOAEL 기반 toxicology margin</td></tr>
+            <tr><td>⑤ <strong>Route/formulation</strong></td><td>IV vs PO, BA 차이, formulation 효과</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="callout warn">
+        <span class="callout-label">⚠️ G&amp;W 직접 caveat</span>
+        <p><em>"동일 AUC라도 농도-시간 곡선의 모양은 상당히 다를 수 있음"</em> <span class="cite">G&amp;W p.190</span>. Equal-AUCu가 같은 PD 효과 또는 같은 곡선 모양을 보장하지 <strong>않음</strong>.</p>
+      </div>
+      <div class="callout teal">
+        <span class="callout-label">🎯 C5 한 줄로 닫기</span>
+        <p><em>"Eq.2:420은 종간 환율의 마무리식이지 FIH dose 공식이 아님. backbone 위에 5 layer 얹혀야 처방이 됨."</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 9 — §6-intro Master Formula =================== -->
+<section class="slide has-formula" data-toc="6">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · INTRO</span>
+    <h1 class="slide-title">사람 안에서는 backbone 위에 다섯 층을 또 얹어야 함</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="col compact">
+        <div class="card-soft compact">
+          <p>여기서부터가 보강본_final의 핵심임. C5까지는 <em>종간</em>의 이야기였음. 이제 <em>사람 안에서</em> — 신생아·소아·노인·비만·신부전·간부전·임신부에게 dose를 줄 때 — <strong>backbone만으로는 안 되는 이유들</strong>임.</p>
+        </div>
+        <div class="callout">
+          <span class="callout-label">한 줄 마스터 공식</span>
+          <p>곱셈 하나라도 빼면 한 자릿수씩 어긋날 수 있음. 하나씩 봄.</p>
+        </div>
+        <div class="dark-card compact">
+          <h3 class="sub-sub" style="color:var(--on-dark);">5층의 정체</h3>
+          <ul class="bullets" style="margin-top:4px;">
+            <li><strong>Maturation</strong> — \(F_{mat}(PMA)\), 신생아·영아</li>
+            <li><strong>Body composition</strong> — LBW vs TBW (약물 극성)</li>
+            <li><strong>Organ function</strong> — \(RF\cdot fe + (1{-}fe)\cdot\text{age factor}\)</li>
+            <li><strong>Dosing strategy</strong> — mg/kg vs mg/m² vs \(BW^{0.75}\)</li>
+            <li><strong>Pregnancy</strong> — albumin↓·태반·분만 후</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col compact" style="justify-content:center;">
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\underbrace{Dose_{patient}}_{\text{환자 dose}}=\overbrace{\underbrace{Dose_{std}}_{\text{표준}}\cdot\left(\frac{BW}{70}\right)^{0.75}}^{\text{C5 backbone}}\cdot\overbrace{F_{mat}}^{\text{성숙}}\cdot\overbrace{f_{size}}^{\text{LBW/TBW}}$$
+          </div>
+          <p class="formula-source">backbone × 성숙 × 체조성</p>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\cdot\;\overbrace{[RF\cdot fe+(1-fe)\cdot\text{age factor}]}^{\text{장기 기능}}\cdot\overbrace{f_{strategy}}^{\text{전략}}\cdot\overbrace{f_{preg}}^{\text{임신}}$$
+          </div>
+          <p class="formula-source">× 장기 기능 × 표기 전략 × 임신 보정</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 10 — §6-1 Maturation =================== -->
+<section class="slide has-formula" data-toc="7">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · 1</span>
+    <h1 class="slide-title">Maturation Layer — 신생아·영아의 핵심</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="col compact">
+        <div class="callout">
+          <span class="callout-label">R&amp;T 본문 직접 [R&amp;T p.420]</span>
+          <p><em>"creatinine clearance in this age range can be thought of as the product of an adjustment based on body size and a maturation component"</em></p>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{CL_{neonate}}_{\text{신생아 CL}}=\overbrace{\underbrace{Adjustment(BW)}_{\text{체격 보정}}}^{\text{allometric}}\cdot\overbrace{\underbrace{Maturation}_{\text{출생 후 성숙도}}}^{\text{maturation}}$$
+          </div>
+          <p class="formula-source"><span class="cite">R&amp;T p.420</span></p>
+        </div>
+      </div>
+      <div class="col compact">
+        <div class="card-soft compact">
+          <h3 class="sub-sub">결정적 자료 — R&amp;T Fig.14-9</h3>
+          <p>미숙아 conceptional age 28주 → 40주 사이 BSA-정규화 \(CL_{cr}\)이 <strong>지수적으로 약 8배 증가</strong>:</p>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{CL_{cr}\left(\tfrac{mL}{min\cdot 1.73m^2}\right)}_{\text{BSA-정규화 }CL_{cr}}=\underbrace{0.373}_{\text{절편}}\cdot\overbrace{e^{\,0.111\cdot Age_{wk}}}^{\text{지수 성장}}$$
+          </div>
+          <p class="formula-source"><span class="cite">R&amp;T Fig.14-9, p.421</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{F_{mat}(PMA)}_{\text{성숙 분율}}=\frac{\overbrace{PMA^{\,Hill}}^{\text{post-menstrual age 지수}}}{\underbrace{TM_{50}^{\,Hill}}_{\text{50\% 성숙 PMA}}+\overbrace{PMA^{\,Hill}}^{\text{PMA 지수}}}$$
+        </div>
+        <p class="formula-source">함수형 sigmoid (Anderson-Holford형, <span class="cite">교과서 외 구현</span>)</p>
+      </div>
+      <div class="card-soft compact">
+        <ul class="bullets" style="margin:0;">
+          <li>\(PMA\) = 수태 후 주수 (= 40 + 출생 후 주수)</li>
+          <li>\(TM_{50}\) = 50% 성숙 도달 PMA, 약물·효소마다 다름</li>
+          <li>완전 성숙이면 \(F_{mat}\to 1\)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="flex:0 0 auto;">
+      <table class="data">
+        <thead><tr><th>연령대</th><th>\(F_{mat}\)</th><th>임상 조치</th></tr></thead>
+        <tbody>
+          <tr><td><strong>신생아 (0~28일)</strong></td><td>매우 낮음. 미숙아일수록 더 낮음</td><td><strong class="accent-coral">TDM 거의 필수</strong> <span class="cite">R&amp;T p.430</span></td></tr>
+          <tr><td><strong>영아 (1개월~2세)</strong></td><td>빠르게 변함, 며칠 단위</td><td>모니터링 지속 업데이트</td></tr>
+          <tr><td><strong>소아 (2세~12세)</strong></td><td>≈ 1</td><td>\(BW^{0.75}\) backbone 직접 적용 가능 <span class="cite">R&amp;T p.424</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-label">⚠️ R&amp;T 직접 경고</span>
+      <p><em>"the lack of maturation of renal and hepatic function necessitates that the rate of administration of drugs to both neonates and young infants be reduced, <strong>even on a body-weight basis</strong>, if toxicity is to be avoided"</em> <span class="cite">R&amp;T p.430</span>. <strong>mg/kg 그대로 신생아에 적용하면 toxic할 수 있음.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 11 — §6-2 LBW/TBW =================== -->
+<section class="slide has-formula" data-toc="8">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · 2</span>
+    <h1 class="slide-title">Body Composition Layer — LBW vs TBW</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <p>비만 환자에게 어떤 체중 단위를 쓸지가 <strong>약물의 극성(친수성 vs 친지질)</strong>에 따라 갈림.</p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="col compact">
+        <div class="card compact">
+          <h3 class="sub-sub">친수성·극성 약물</h3>
+          <p><em>"digoxin and polar drugs, for example, do not partition well into fat. Accordingly, <strong>for these drugs, \(V_u\) correlates better with lean body mass</strong>"</em> <span class="cite">R&amp;T p.418, p.434</span></p>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{LBW_{male}}_{\text{남성 LBW (kg)}}=\underbrace{1.10}_{\text{선형}}\cdot Wt-\underbrace{\frac{128\cdot Wt^2}{(100\cdot Ht)^2}}_{\text{지방 보정}}$$
+          </div>
+          <p class="formula-source"><span class="cite">R&amp;T Eq.14-10, p.434</span></p>
+        </div>
+      </div>
+      <div class="col compact">
+        <div class="card compact">
+          <h3 class="sub-sub">친지질 약물</h3>
+          <p>R&amp;T Table 14-7에서 <strong>diazepam</strong>은 비만에서 V가 2.81 L/kg, 정상에서 1.53 L/kg → <strong class="accent-coral">체중 보정 후에도 비만에서 더 큼</strong> <span class="cite">R&amp;T p.439</span>.</p>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{LBW_{female}}_{\text{여성 LBW (kg)}}=\underbrace{1.07}_{\text{선형}}\cdot Wt-\underbrace{\frac{148\cdot Wt^2}{(100\cdot Ht)^2}}_{\text{지방 보정}}$$
+          </div>
+          <p class="formula-source"><span class="cite">R&amp;T Eq.14-11, p.434</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <span class="callout-label">⚠️ R&amp;T 단서</span>
+      <p><em>"these relationships do not apply to highly muscular individuals"</em> <span class="cite">R&amp;T p.434</span>. 보디빌더·운동선수에는 안 맞음.</p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:1 1 auto;">
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>약물</th><th>극성</th><th class="num">V/kg (obese)</th><th class="num">V/kg (control)</th><th>선택</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Theophylline</td><td>친수성</td><td class="num">0.32</td><td class="num">0.47</td><td><strong class="accent-coral">LBW</strong></td></tr>
+            <tr><td>Digoxin</td><td>친수성</td><td class="num">10.7</td><td class="num">14.3</td><td><strong class="accent-coral">LBW</strong></td></tr>
+            <tr><td>Diazepam</td><td>친지질</td><td class="num">2.81</td><td class="num">1.53</td><td><strong class="accent-teal">TBW</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <span class="callout-label">한 줄 의사결정</span>
+        <p><strong>친수성/극성 → LBW. 친지질 → TBW.</strong> 약물 극성을 먼저 묻지 않으면 같은 식에 두 약물군이 섞임.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 12 — §6-3 Organ Function =================== -->
+<section class="slide has-formula" data-toc="9">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · 3</span>
+    <h1 class="slide-title">Organ Function Layer — 신장공장 vs 간공장 분기</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <p>Total CL은 사실 <strong>두 공장의 합</strong> — 신장공장(\(CL_R\), GFR 의존)과 간공장(\(CL_H\), 효소·혈류 의존). 두 공장의 알로메트릭 거동이 다름.</p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$R_d=\underbrace{RF\cdot fe(t)}_{\text{신장 경로}}+\underbrace{\left[1-fe(t)\right]\cdot\frac{(140-Age)\cdot Wt^{0.75}}{1936}}_{\text{간 경로}}$$
+        </div>
+        <p class="formula-source"><span class="cite">R&amp;T Eq.15-7, p.453</span> · \(R_d=CL_u(d)/CL_u(t)\), 표준=60세/70kg</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>기호</th><th>의미</th></tr></thead>
+          <tbody>
+            <tr><td>\(RF\)</td><td>renal function (표준 대비 비)</td></tr>
+            <tr><td>\(fe(t)\)</td><td>표준 환자 신장 배설 분율 (= \(CL_R/CL_{total}\))</td></tr>
+            <tr><td>\(140-Age\)</td><td>Cockcroft-Gault형 연령 보정</td></tr>
+            <tr><td>\(Wt^{0.75}\)</td><td>간 청소율 backbone</td></tr>
+            <tr><td>\(1936\)</td><td>\((140-60)\cdot 70^{0.75}\approx 1936\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card compact">
+        <h3 class="sub-sub">정량 예시 — 75세, 60 kg, RF=0.6 환자</h3>
+        <div class="table-wrap" style="margin-top:6px;">
+          <table class="data">
+            <thead><tr><th>약물</th><th class="num">\(fe\)</th><th>\(R_d\) 계산</th><th class="num">결과</th></tr></thead>
+            <tbody>
+              <tr><td>A (신장 dominant)</td><td class="num">0.85</td><td>\(0.6\cdot 0.85 + 0.15\cdot 0.726\)</td><td class="num"><strong>≈ 0.62</strong></td></tr>
+              <tr><td>B (간 dominant)</td><td class="num">0.10</td><td>\(0.6\cdot 0.10 + 0.90\cdot 0.726\)</td><td class="num"><strong>≈ 0.71</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="micro" style="margin-top:4px;">연령·체중 항: \((140-75)\cdot 60^{0.75}/1936 \approx 0.726\)</p>
+      </div>
+      <div class="col compact">
+        <div class="callout">
+          <p><strong>약물 A</strong>: RF가 \(R_d\)를 직접 끌어내림 → 신부전 환자에서 dose 감량 결정적</p>
+          <p><strong>약물 B</strong>: 연령·체중 항이 거의 다 결정 → RF 변화에 거의 무관</p>
+        </div>
+        <div class="callout warn">
+          <span class="callout-label">⚠️ R&amp;T 직접 권고</span>
+          <p><em>"ideally, <strong>renal clearance should be correlated with creatinine clearance, and the nonrenal clearance should be examined separately</strong>"</em> <span class="cite">R&amp;T p.455</span>. \(fe\) 정보가 있으면 분리하는 게 R&amp;T 직접 권고.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="card-soft compact">
+        <h3 class="sub-sub">노인의 신·간 분리 진술</h3>
+        <ul class="bullets" style="margin:0;">
+          <li><strong>신장</strong>: ~ <strong class="accent-coral">1%/yr 감소</strong> (성인기 크레아티닌 청소율) <span class="cite">R&amp;T p.422</span></li>
+          <li><strong>간 (CYP3A)</strong>: 노인(65~75세) 평균 CL이 청년(25~35세)의 <strong class="accent-coral">약 60~70%</strong> <span class="cite">R&amp;T p.424, Fig.14-13</span></li>
+        </ul>
+      </div>
+      <div class="callout warn">
+        <span class="callout-label">🚨 단정 금지</span>
+        <p><em>"CYP3A4가 60세 이상에서 매년 1%씩 감소한다"는 단정 진술은 R&amp;T가 직접 뒷받침하지 않음.</em> R&amp;T가 적은 건 ① 신장 1%/yr, ② CYP3A 청소율이 노인에서 감소함, 두 가지. 두 사실을 합쳐서 "CYP3A도 1%/yr"라고 적으면 안 됨.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 13 — §6-4 Dosing Strategy =================== -->
+<section class="slide has-formula" data-toc="10">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · 4</span>
+    <h1 class="slide-title">Dosing Strategy Layer — mg/kg vs mg/m² vs BW<sup>0.75</sup></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <p>같은 환자에게 같은 약을 처방해도 표기 단위 하나로 dose가 달라짐. 이게 임상에서 가장 무의식적으로 지나가는 결정임.</p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:1 1 auto;">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+$$\begin{aligned}
+&\overbrace{\underbrace{Dose_{mg/kg}}_{\text{체중 비례}}=k_1\cdot BW}^{\text{Strategy 1: 항암·항생 관행}}\\[1.2em]
+&\overbrace{\underbrace{Dose_{mg/m^2}}_{\text{BSA 비례}}=k_2\cdot BSA}^{\text{Strategy 2: 소아 신장배설}}\\[1.2em]
+&\overbrace{\underbrace{Dose_{allom}}_{\text{알로메트릭}}=k_3\cdot BW^{0.75}}^{\text{Strategy 3: 현대 PopPK}}
+\end{aligned}$$
+        </div>
+        <p class="formula-source">세 strategy를 한 줄에</p>
+      </div>
+
+      <div class="dark-card compact">
+        <h3 class="sub-sub">같은 환자, 같은 약, 다른 dose — 정량 비교</h3>
+        <p style="color:var(--on-dark);"><strong>성인 60 kg → 4세 소아 15 kg에 600 mg/일 적용</strong></p>
+        <div class="table-wrap" style="margin-top:6px; background:var(--surface-dark-elevated); border-color:#2c2a26;">
+          <table class="data" style="background:var(--surface-dark-elevated);">
+            <thead style="background:#2c2a26;">
+              <tr><th style="color:var(--on-dark); border-color:#3a3833;">Strategy</th><th style="color:var(--on-dark); border-color:#3a3833;">계산</th><th class="num" style="color:var(--on-dark); border-color:#3a3833;">Dose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style="color:var(--on-dark-soft); border-color:#3a3833;">mg/kg</td><td style="color:var(--on-dark-soft); border-color:#3a3833;">\(600\cdot(15/60)\)</td><td class="num" style="color:var(--on-dark); border-color:#3a3833;"><strong>150 mg</strong></td></tr>
+              <tr><td style="color:var(--on-dark-soft); border-color:#3a3833;">mg/1.73 m²</td><td style="color:var(--on-dark-soft); border-color:#3a3833;">\(600\cdot(15/60)^{0.75}\)</td><td class="num" style="color:var(--on-dark); border-color:#3a3833;"><strong>약 213 mg</strong></td></tr>
+              <tr><td style="color:var(--on-dark-soft); border:none;">BW<sup>0.75</sup></td><td style="color:var(--on-dark-soft); border:none;">\(600\cdot(15/60)^{0.75}\)</td><td class="num" style="color:var(--on-dark); border:none;"><strong>약 213 mg</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:6px;">mg/m²와 BW<sup>0.75</sup>은 R&amp;T Eq.14-2가 \(BSA\propto BW^{0.75}\)를 쓰기 때문에 수학적으로 <strong>동일</strong>. mg/kg만 약 30% 낮은 dose를 내놓음.</p>
+        <p style="margin-top:8px; color:var(--on-dark);"><strong>BMI 40, 140 kg 비만 환자 적용</strong> — mg/kg: <strong>1400 mg</strong>, mg/1.73 m²: <strong>약 1130 mg</strong></p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-label">⚠️ R&amp;T 직접 경고 [p.435]</span>
+      <p><em>"Does a grossly obese patient really need more of a drug because of his or her extra body fat? ... In these cases, there is a danger that too high a dose is calculated adopting this procedure."</em></p>
+      <p style="margin-top:6px;"><em>"Expressing dosage in mg/kg or mg/1.73 m² is reasonable if the limits (age, body composition, renal function) of its application are specified. However, <strong>the broader use of such rules is suspect</strong>. ... A more reasonable approach is one that takes the pharmacokinetics ... and pharmacodynamics into account."</em> → <strong>표기 strategy를 쓰면 적용 한계(연령·체조성·신기능)를 반드시 명시. 단순 일률 적용 대신 PK/PD 기반 개별화가 R&amp;T 권장.</strong></p>
+    </div>
+
+    <div class="callout amber">
+      <span class="callout-label">항암제 BSA dosing — R&amp;T 직접 정당화 조건 [Ch.22, p.738]</span>
+      <p><em>"for the alkylating agents ... the dosing rate needed to achieve a steady-state concentration was directly proportional to body surface area. ... <strong>Obviously, this adjustment is only warranted if surface area explains variability in clearance better than body weight</strong>."</em> → "항암제니까 BSA"는 자동 적용 아님. <strong>약물별로 BSA가 BW보다 CL 변동성을 더 잘 설명하는지</strong> 자료로 보여야 함.</p>
+    </div>
+
+    <details>
+      <summary>▼ 임상 의사결정 트리 펼치기</summary>
+      <div class="algo-box tight" style="margin-top:8px;">
+환자 dose 표기 결정
+   <span class="arr">│</span>
+   <span class="arr">├──</span> 신장 배설 우세 + 소아 <span class="arr">→</span> <span class="hl">mg/1.73 m² 또는 BW^0.75</span> (R&amp;T 권장)
+   <span class="arr">│</span>
+   <span class="arr">├──</span> 항암제 alkylating-type <span class="arr">→</span> <span class="hl">mg/m²</span> (Ch.22 p.738, BSA 우세 검증 시)
+   <span class="arr">│</span>
+   <span class="arr">├──</span> 비만 + 친수성 <span class="arr">→</span> <span class="hl">LBW 기반</span> (R&amp;T p.418, p.434)
+   <span class="arr">│</span>
+   <span class="arr">├──</span> 비만 + 친지질 <span class="arr">→</span> <span class="hl">TBW 기반</span> (Table 14-7)
+   <span class="arr">│</span>
+   <span class="arr">└──</span> 좁은 TI + 근육질/왜소/소아 <span class="arr">→</span> <span class="hl">PK·PD 개별화</span> (R&amp;T p.435 최우선)
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- =================== SLIDE 14 — §6-5-a Pregnancy (1) =================== -->
+<section class="slide has-formula" data-toc="11">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · 5 · 1/2</span>
+    <h1 class="slide-title">Pregnancy Layer — 임신부의 두 함정 (Albumin & 태반)</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card-soft compact">
+      <p>임신부는 <strong>모체 + 태아</strong> 두 시스템이 PK에 동시 관여함. R&amp;T Ch.14가 직접 적은 두 명제가 임상 의사결정의 핵심임.</p>
+    </div>
+
+    <div class="card compact" style="flex:0 0 auto;">
+      <h2 class="sub-title">함정 ①: Albumin 감소 → Total ↓이지만 Unbound는 보존됨</h2>
+      <div class="callout amber" style="margin-top:6px;">
+        <span class="callout-label">R&amp;T 직접 [p.429]</span>
+        <p><em>"By the time of parturition, the serum albumin drops to about 50% to 60% of the value before pregnancy. ... Lower total exposures are therefore seen during pregnancy, but <strong>the unbound drug concentration does not generally seem to be affected</strong>. <strong>There is, therefore, no need to adjust dosage because of the reduction in plasma albumin</strong>."</em></p>
+      </div>
+    </div>
+
+    <div class="grid-2 compact" style="flex:0 0 auto;">
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{C_u^{ss}}_{\text{정상상태 unbound}}=\underbrace{f_u}_{\uparrow\,(\text{albumin}\downarrow)}\cdot \underbrace{C_{total}^{ss}}_{\downarrow\,(\text{albumin}\downarrow)}=\overbrace{\frac{Dosing\ rate}{CL_u}}^{\text{불변}}$$
+        </div>
+        <p class="formula-source">왜 unbound가 보존되는가 · <span class="cite">R&amp;T p.429</span></p>
+      </div>
+      <div class="callout warn">
+        <p>\(f_u\uparrow\)와 \(C_{total}\downarrow\)가 서로 상쇄. <strong>임신부 TDM에서 total이 낮아 보인다고 dose 올리는 게 가장 흔한 임상 오류임.</strong></p>
+        <p style="margin-top:6px;"><strong>🎯 Phenytoin 임상 예시</strong> — 임신 35주 환자에서 total phenytoin 5 mg/L (비임신 정상범위 10~20 mg/L 하한 미달) 측정. <strong class="accent-coral">Dose 올리지 말 것.</strong> Albumin 감소가 fu를 보상 → unbound는 거의 그대로. Total만 보고 증량하면 unbound가 진짜로 올라가 toxicity(소뇌 증후군, 안진, 운동 실조) 위험.</p>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">함정 ②: 태반 통과 약물의 모체-태아 unbound 평형</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="callout amber">
+          <span class="callout-label">R&amp;T 직접 [p.430]</span>
+          <p><em>"For those drugs that can pass the placenta, <strong>the unbound plateau concentration in the fetus is likely to equal that in the pregnant mother</strong> receiving chronic therapy. With eliminating capacity generally poorly developed, the fetus acts for the most part as an additional 'tissue' of distribution, with half-life in the fetus being virtually the same as that in the mother."</em></p>
+        </div>
+        <div class="col compact">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">
+              $$\underbrace{C_u^{fetus,\,ss}}_{\text{태아 fu 정상상태}}\approx\underbrace{C_u^{mother,\,ss}}_{\text{모체 fu 정상상태}},\quad \underbrace{t_{1/2}^{fetus}}_{\text{태아 반감기}}\approx \underbrace{t_{1/2}^{mother}}_{\text{모체 반감기}}$$
+            </div>
+            <p class="formula-source"><span class="cite">R&amp;T p.430</span></p>
+          </div>
+          <div class="callout teal">
+            <p>→ <strong>모체 unbound 모니터링이 fetus 노출의 surrogate.</strong> 태아는 자체 청소 기관이 없고 모체의 distribution tissue처럼 작동.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 15 — §6-5-b Pregnancy (2) =================== -->
+<section class="slide" data-toc="11">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6 · 5 · 2/2</span>
+    <h1 class="slide-title">함정 ③ 분만 직후 신생아 + 모유 수유 + 의사결정 골격</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card compact" style="flex:0 0 auto;">
+      <h2 class="sub-title">함정 ③: 분만 직후 신생아의 급변</h2>
+      <div class="callout warn" style="margin-top:6px;">
+        <span class="callout-label">R&amp;T 직접 [p.430]</span>
+        <p><em>"<strong>A drastic change occurs, however, on delivery.</strong> Deprived of access to the fully developed eliminating organs of the mother, elimination of drug from the newborn child, especially the premature, can be very slow."</em></p>
+      </div>
+    </div>
+
+    <div class="algo-box tight" style="flex:0 0 auto;">
+임신 중                  분만 순간                분만 후
+─────────                ───────                  ─────────
+<span class="hl">fetus = 모체 tissue</span>       탯줄 단절                <span class="hl">신생아 = 독립 PK</span>
+C_u(fetus) ≈ mother      CL_mother 차단            자기 F_mat로만 작동
+t1/2 ≈ mother            약물 잔류                 <span class="hl">t1/2 급격히 길어짐</span>
+                                                  <span class="arr">→ TDM 필수</span>
+    </div>
+
+    <div class="card-soft compact" style="flex:0 0 auto;">
+      <p>분만 직전까지 fetus는 모체 CL에 "기생". 탯줄이 끊어지는 순간 신생아는 <strong>자기 \(F_{mat}\)로만</strong> 작동 — 그런데 §6-1에서 본 것처럼 신생아 \(F_{mat}\ll 1\). 모체로부터 받은 약물이 매우 천천히 빠짐. <strong class="accent-coral">미숙아일수록 더 느림.</strong></p>
+    </div>
+
+    <div class="grid-2 compact" style="flex:1 1 auto;">
+      <div class="col compact">
+        <div class="card compact">
+          <h3 class="sub-sub">모유 수유 — 두 위험 인자</h3>
+          <p><em>"The risks are greatest for drugs that are (i) <strong>poorly cleared by the infant</strong> and (ii) have a <strong>narrow therapeutic index</strong>."</em> <span class="cite">R&amp;T p.430</span></p>
+          <p style="margin-top:4px;">두 조건 겹치면 모유로도 영아 축적 가능. 시각 예시 — bupropion 모유-혈장 농도 비 <span class="cite">R&amp;T Fig.14-21, p.431</span>.</p>
+        </div>
+      </div>
+      <div class="dark-card compact">
+        <h3 class="sub-sub">임신부 의사결정 골격</h3>
+<div class="algo-box tight" style="margin-top:4px; background:var(--surface-dark-elevated); padding:10px 12px;">
+임신부 약물 처방
+   <span class="arr">│</span>
+   <span class="hl">Step 1:</span> Albumin binding 강한가?
+       예 <span class="arr">→</span> total ↓ 보고 dose 증량 금지 [p.429]
+       아니오 <span class="arr">→</span> albumin 변화에 둔감
+   <span class="arr">│</span>
+   <span class="hl">Step 2:</span> 태반 통과? (lipophilicity·MW·ionization)
+       예 <span class="arr">→</span> fetus unbound ≈ mother unbound [p.430]
+       아니오 <span class="arr">→</span> fetus 노출 무시 가능
+   <span class="arr">│</span>
+   <span class="hl">Step 3:</span> 분만 직후 신생아 PK
+       대부분 F_mat ≪ 1 <span class="arr">→</span> <span class="hl">TDM 필수</span> [p.430]
+   <span class="arr">│</span>
+   <span class="hl">Step 4:</span> 수유 시
+       영아 CL 낮 + 좁은 TI <span class="arr">→</span> 모유 노출 모니터링 [p.430]
+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 16 — §7-a Pairs 1, 2, 3 =================== -->
+<section class="slide" data-toc="12">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7 · 1/2</span>
+    <h1 class="slide-title">가장 헷갈리는 5가지 분기점 — Pair 1~3</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card compact" style="flex:0 0 auto;">
+      <h2 class="sub-title">Pair 1. CL 지수 \(b\) vs V 지수 \(d\)</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th></th><th>\(b\) (CL)</th><th>\(d\) (V)</th></tr></thead>
+            <tbody>
+              <tr><td>변수 성격</td><td>흐름/속도</td><td>공간/범위</td></tr>
+              <tr><td>전형값</td><td>0.75</td><td>1.0</td></tr>
+              <tr><td>식</td><td>\(CL=a\cdot BW^b\)</td><td>\(V=c\cdot BW^d\)</td></tr>
+              <tr><td>혼동 시</td><td>mg/kg 선형 사고로 dose 과대</td><td>시간축 부호 뒤집힘</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn" style="align-self:center;">
+          <span class="callout-label">치명타</span>
+          <p>Mouse → Human에서 <strong class="accent-coral">7.4~7.7배 격차</strong>. 종 pair와 fold를 같이 외울 것.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:0 0 auto;">
+      <h2 class="sub-title">Pair 2. Kallynochron vs Apolysichron</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th></th><th>Kallynochron</th><th>Apolysichron</th></tr></thead>
+            <tbody>
+              <tr><td>시간축</td><td>\(t/BW^{1-b}\)</td><td>\(t/BW^{d-b}\)</td></tr>
+              <tr><td>가정</td><td>\(d=1\)</td><td>\(d\ne 1\) 허용</td></tr>
+              <tr><td>사용</td><td>Elementary Dedrick</td><td>Complex Dedrick</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout teal" style="align-self:center;">
+          <span class="callout-label">기억 고리</span>
+          <p>K는 <strong>k</strong>g, A는 <strong>a</strong>nyspace.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">Pair 3. BW Allometry vs BSA Scaling</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th></th><th>\(BW^b\) allometry</th><th>BSA scaling</th></tr></thead>
+            <tbody>
+              <tr><td>식</td><td>\(Y=a\cdot BW^b\)</td><td>\(BSA\approx 1.73(BW/70)^{0.75}\)</td></tr>
+              <tr><td>본질</td><td>자연 환율식</td><td>\(BW^{0.75}\)의 임상 근사 표기</td></tr>
+              <tr><td>R&amp;T 단서</td><td>—</td><td>적용 한계(age, composition, renal) 명시 의무 <span class="cite">R&amp;T p.435</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout amber">
+          <span class="callout-label">⚠️ R&amp;T가 BSA 식을 두 개 제시</span>
+          <p>Eq.14-1(BW+Height형)과 Eq.14-2(BW-only 0.75형). 0.75는 <em>"BSA의 진짜 알로메트릭 지수"가 아님</em> — 실제 종간 BSA 지수는 약 2/3 (0.67). R&amp;T가 0.75로 채택한 건 <strong>알로메트리 챕터의 CL/GFR prior와 매칭하는 편의식</strong> <span class="cite">R&amp;T Ch.22 p.734</span>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 17 — §7-b Pairs 4, 5 =================== -->
+<section class="slide" data-toc="12">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7 · 2/2</span>
+    <h1 class="slide-title">가장 헷갈리는 5가지 분기점 — Pair 4 & 5</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="card compact" style="flex:0 0 auto;">
+      <h2 class="sub-title">Pair 4. mg/kg vs mg/1.73 m² vs BW<sup>0.75</sup></h2>
+      <div class="table-wrap" style="margin-top:6px;">
+        <table class="data">
+          <thead><tr><th></th><th>mg/kg</th><th>mg/1.73 m²</th><th>BW<sup>0.75</sup></th></tr></thead>
+          <tbody>
+            <tr><td>관행 분야</td><td>항암·항생제</td><td>소아 신장배설</td><td>현대 PopPK</td></tr>
+            <tr><td>R&amp;T 권장 조건</td><td>적용 한계 명시 시 <span class="cite">p.435</span></td><td>신장배설 약물 <span class="cite">p.435</span></td><td>기본 backbone <span class="cite">Eq.14-6</span></td></tr>
+            <tr><td>비만 환자 위험</td><td>dose 과대</td><td>—</td><td>\(F_{mat}\) 누락</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout" style="margin-top:8px;">
+        <span class="callout-label">기억 고리</span>
+        <p>같은 15 kg 소아에 60 kg 성인 600 mg → mg/kg은 150 mg, 다른 둘은 213 mg. <strong class="accent-coral">약 30% 차이</strong>가 매번 발생.</p>
+      </div>
+    </div>
+
+    <div class="card compact" style="flex:1 1 auto;">
+      <h2 class="sub-title">Pair 5. 임신부 Total vs Unbound</h2>
+      <div class="grid-2 compact" style="margin-top:6px;">
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th></th><th>Total exposure</th><th>Unbound exposure</th></tr></thead>
+            <tbody>
+              <tr><td>임신 후반기 변화</td><td><strong>감소</strong> (albumin 50~60%)</td><td><strong>거의 불변</strong></td></tr>
+              <tr><td>약리 효과 결정</td><td>간접</td><td><strong>직접</strong></td></tr>
+              <tr><td>Dose 조정 권고</td><td>total만 보고 증량 = <strong class="accent-coral">toxic 위험</strong></td><td>albumin만으로는 조정 불필요</td></tr>
+              <tr><td>Fetus 노출 surrogate</td><td>무효</td><td><strong>모체 unbound와 평형</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn" style="align-self:center;">
+          <span class="callout-label">치명타</span>
+          <p><em>"눈에 보이는 total은 줄어도 약리 효과를 만드는 unbound는 그대로."</em></p>
+          <p style="margin-top:6px;">R&amp;T <span class="cite">p.429</span>를 외울 것.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 18 — §8 Self-check 13 Questions =================== -->
+<section class="slide" data-toc="13">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8</span>
+    <h1 class="slide-title">자기점검 — 압축 핵심 13문항</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="grid-2 compact" style="flex:1 1 auto;">
+      <div class="col compact">
+        <div class="card-soft compact">
+          <ol class="bullets" style="margin:0;">
+            <li><strong>회상</strong> — \(Y=a\cdot BW^b\)에서 \(a\), \(b\)의 의미와 CL/V 전형 지수</li>
+            <li><strong>회상</strong> — Mouse 23g → Human 70kg, Rat 250g → Human에서 \(b=1\) vs \(b=0.75\) 격차</li>
+            <li><strong>도출</strong> — \(t_{1/2}\propto BW^{d-b}\)와 \(k_{el}\propto BW^{b-d}\)를 한 줄로</li>
+            <li><strong>Dedrick</strong> — Elementary vs Complex 변환, 전환 규칙 (log-log V vs BW slope 0.9~1.1)</li>
+            <li><strong>출처 무결성</strong> — PK28 rat \(t_{1/2}\) 불일치(2.9 vs 3.9 h), PK29 두 set 인용 방식</li>
+            <li><strong>적용</strong> — Mouse 25g, CL=0.012 L/hr → Human CL (\(b=0.75\) vs \(b=1\)), 차이 약 7.3배</li>
+            <li><strong>소아·노인</strong> — 왜 \(BW^{0.75}\)만으론 부족한가 (chronologic ≠ functional age)</li>
+          </ol>
+        </div>
+      </div>
+      <div class="col compact">
+        <div class="card compact">
+          <ol class="bullets" start="8" style="margin:0;">
+            <li><strong>보스 딜레마</strong> — Two-species 회귀 \(b=0.62\) vs prior \(b=0.75\), primary는 prior + sensitivity 표</li>
+            <li><strong>[보강본] BSA 식</strong> — Eq.14-1 vs Eq.14-2, 0.75 지수의 R&amp;T 편의 매칭 의미</li>
+            <li><strong>[보강본] 두 환자</strong> — 미숙아(maturation), 비만 여성 130 kg(LBW vs TBW, 약물 극성)</li>
+            <li><strong>[보강본] 신장·간 분기</strong> — \(fe=0.85\) vs \(fe=0.10\) 약물의 75세·60kg·RF=0.6 환자 \(R_d\)</li>
+            <li><strong>[보강본_final] Dosing strategy</strong> — 600 mg/60 kg 성인 → 15 kg 소아, 140 kg 비만에서 세 strategy 정량 비교</li>
+            <li><strong>[보강본_final] 임신부 phenytoin</strong> — Total 5 mg/L 시 (i) dose 증량? (ii) fetus 노출? (iii) 분만 직후?</li>
+          </ol>
+        </div>
+        <div class="callout teal">
+          <span class="callout-label">학습 흐름</span>
+          <p>13문항이 §1~§6의 모든 핵심 결정점을 한 번씩 짚음. 한 번 풀어보고 막히는 곳이 곧 다시 봐야 할 §.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 19 — §9 Final Mindmap =================== -->
+<section class="slide" data-toc="14">
+  <div class="slide-header">
+    <span class="sec-badge">§ 9</span>
+    <h1 class="slide-title">최종 마인드맵 — 7단계 의사결정 알고리즘</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body compact">
+    <div class="algo-box" style="flex:1 1 auto; font-size:11px; line-height:1.65;">
+<span class="hl">Step 1.</span> 변수의 종류부터 물음
+    - flow/rate? (CL, GFR, 혈류)        <span class="arr">→</span> b ≈ 0.75
+    - space/extent? (V, 혈액량, 조직량)  <span class="arr">→</span> d ≈ 1.0
+    - time? (V/CL)                     <span class="arr">→</span> d-b ≈ 0.25
+    - rate constant? (CL/V)            <span class="arr">→</span> b-d ≈ -0.25
+
+<span class="hl">Step 2.</span> Prior 타당성 — 6개 실패 트리거 체크
+    f_u 차이 / CYP isoform / 비선형 / 장간순환 / route 차이 / V 비율 drift
+
+<span class="hl">Step 3.</span> 시간축 도출 — t1/2와 k_el 부호 둘 다 동시에
+
+<span class="hl">Step 4.</span> Dedrick 진단
+    log-log V vs BW slope:
+      0.9~1.1 안 <span class="arr">→</span> Elementary (PK28 type)
+      밖         <span class="arr">→</span> Complex (PK29 type)
+
+<span class="hl">Step 5.</span> Equal-AUCu backbone 적용 (Eq.2:420)
+    + PD metric, f_u 보정, 선형성, safety margin, route/formulation 5 layer
+
+<span class="hl">Step 6.</span> [보강본] 사람 안 보정 3 layer
+    A. Maturation: F_mat(PMA) — 신생아·영아 핵심
+    B. Body composition: 약물 극성으로 LBW vs TBW 선택
+    C. Organ function: fe·RF + (1-fe)·(140-Age)·Wt^0.75/1936
+
+<span class="hl">Step 7.</span> [보강본_final] 표기·임신부 2 layer
+    D. Dosing strategy: mg/kg vs mg/m² vs BW^0.75
+       — R&amp;T 요구 "limits of application" 명시 의무
+       — 항암제 BSA는 "surface area explains variability better" 검증 시만
+    E. Pregnancy:
+       - Albumin ↓ <span class="arr">→</span> total ↓이지만 unbound 보존 <span class="arr">→</span> dose 증량 금지 [R&amp;T p.429]
+       - 태반 통과 약물 <span class="arr">→</span> fetus unbound ≈ mother unbound [R&amp;T p.430]
+       - 분만 직후 신생아 <span class="arr">→</span> 자기 F_mat로만 작동, TDM 필수 [R&amp;T p.430]
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 20 — §10 Closer =================== -->
+<section class="slide" data-toc="15">
+  <div class="slide-header">
+    <span class="sec-badge">§ 10</span>
+    <h1 class="slide-title">한 줄로 닫기</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="closer-card">
+      <span class="closer-label">The real message</span>
+      <p class="lead">이 챕터의 진짜 메시지는 <em>"0.75를 외워라"</em>가 아님. 진짜 메시지는 다음 한 줄임:</p>
+      <p>"<strong style="color:var(--on-dark);">0.75를 자연 환율 prior로 두고</strong>, 그게 언제 깨지는지 <strong style="color:var(--on-dark);">6가지 트리거</strong>로 진단하며, <strong style="color:var(--on-dark);">Dedrick</strong>으로 자료에서 검증하고, <strong style="color:var(--on-dark);">Equal-AUCu backbone</strong>으로 dose에 옮기되, 사람 안에서는 그 위에 <strong style="color:var(--on-dark);">maturation × body composition × organ function × dosing strategy × pregnancy</strong> 다섯 층을 곱해서 처방에 도달한다."</p>
+      <p class="lead" style="margin-top:8px;">알로메트리는 공식 암기가 아니라 — <span style="color:var(--coral);">종간 환율표 → 노출 backbone → 사람 안 dose 결정 엔진</span>으로 이어지는 단일 사고 흐름임. 이 흐름이 자동 작동하면 Phase 1 회의실 화이트보드 앞에서, NDA 심사 질의 자리에서, 신생아·임신부 처방 결정 자리에서 — 같은 한 장의 환율표를 꺼내서 답할 수 있음.</p>
+      <div class="signoff">Session 14 · Allometric Scaling · End</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================= NAV BAR ============================= -->
+<nav class="navbar">
+  <button class="nav-btn" id="btn-prev">← 이전</button>
+  <div class="nav-center">
+    <div class="prog-text"><span id="prog-text">1 / 21</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+  <button class="nav-btn" id="btn-next">다음 →</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+  // ===== KaTeX render =====
+  function renderMath() {
+    if (typeof renderMathInElement === 'undefined') return;
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$',  right: '$$',  display: true  },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false,
+      strict: false,
+      trust: false,
+      macros: {}
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMath);
+  } else {
+    renderMath();
+  }
+
+  // ===== Slide navigation =====
+  var slides = document.querySelectorAll('.slide');
+  var TOTAL = slides.length;
+  var tocBtns = document.querySelectorAll('.toc-btn');
+  var cur = 0;
+  var progText = document.getElementById('prog-text');
+  var progFill = document.getElementById('prog-fill');
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+
+  function setActiveTocForSlide(slideIdx) {
+    // Read the data-toc attribute on the slide
+    var tocIdx = parseInt(slides[slideIdx].getAttribute('data-toc'), 10);
+    tocBtns.forEach(function(btn, i) { btn.classList.remove('active'); });
+    if (!isNaN(tocIdx) && tocBtns[tocIdx]) {
+      tocBtns[tocIdx].classList.add('active');
+      try { tocBtns[tocIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e){}
+    }
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= TOTAL) return;
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    setActiveTocForSlide(cur);
+    progText.textContent = (cur + 1) + ' / ' + TOTAL;
+    progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+    btnPrev.disabled = (cur === 0);
+    btnNext.disabled = (cur === TOTAL - 1);
+  }
+
+  btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+  btnNext.addEventListener('click', function() { goTo(cur + 1); });
+  document.addEventListener('keydown', function(e) {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.key === 'ArrowLeft')  goTo(cur - 1);
+    if (e.key === 'ArrowRight') goTo(cur + 1);
+  });
+
+  // TOC click handlers — each button has data-target with slide index
+  tocBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var target = parseInt(btn.getAttribute('data-target'), 10);
+      if (!isNaN(target)) goTo(target);
+    });
+  });
+
+  // initialize
+  goTo(0);
+</script>
+</body>
+</html>
