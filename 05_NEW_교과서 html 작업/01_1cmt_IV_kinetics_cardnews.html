@@ -1,0 +1,2631 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>세션 01 · 1구획 IV 동력학 — 같은 기울기, 다른 결정</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<style>
+/* ─────────────────────────────────────────────────────────
+   Anthropic / Claude Design Tokens
+   ───────────────────────────────────────────────────────── */
+:root {
+  --canvas: #faf9f5;
+  --surface-soft: #f5f0e8;
+  --surface-card: #efe9de;
+  --surface-cream-strong: #e8e0d2;
+  --surface-dark: #181715;
+  --surface-dark-elevated: #252320;
+  --surface-dark-soft: #1f1e1b;
+  --hairline: #e6dfd8;
+  --hairline-soft: #ebe6df;
+
+  --coral: #cc785c;
+  --coral-active: #a9583e;
+  --coral-pale: #f4e4dc;
+  --accent-teal: #5db8a6;
+  --accent-amber: #e8a55a;
+
+  --ink: #141413;
+  --body-strong: #252523;
+  --body: #3d3d3a;
+  --muted: #6c6a64;
+  --muted-soft: #8e8b82;
+  --on-primary: #ffffff;
+  --on-dark: #faf9f5;
+
+  --warn-bg: #fcf0ef;
+  --warn-border: #c64545;
+  --amber-bg: #fdf4e0;
+  --amber-border: #d4a017;
+  --teal-bg: #e6f4f0;
+  --teal-border: #5db8a6;
+
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--canvas);
+  color: var(--body);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Sidebar
+   ───────────────────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 260px;
+  background: var(--surface-soft);
+  border-right: 1px solid var(--hairline);
+  overflow-y: auto;
+  padding: 24px 18px 24px 22px;
+  z-index: 10;
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d8d0c2; border-radius: 3px; }
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.wordmark .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 500;
+}
+.session-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.toc-heading {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 1.8px;
+  color: var(--muted-soft);
+  text-transform: uppercase;
+  margin: 4px 0 10px 4px;
+}
+.toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.toc-btn {
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 7px 12px 7px 12px;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--body);
+  cursor: pointer;
+  transition: all 140ms ease;
+  display: block;
+  width: 100%;
+  line-height: 1.4;
+  border-radius: 0 4px 4px 0;
+}
+.toc-btn:hover { background: #ede7dc; color: var(--ink); }
+.toc-btn.indent { padding-left: 24px; font-size: 12.5px; color: var(--muted); }
+.toc-btn.active {
+  border-left-color: var(--coral);
+  color: var(--coral);
+  background: #f0e7dc;
+  font-weight: 500;
+}
+.toc-btn.active.indent { color: var(--coral); }
+.toc-group-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  color: var(--muted-soft);
+  text-transform: uppercase;
+  padding: 12px 12px 4px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Viewer + Slides
+   ───────────────────────────────────────────────────────── */
+.viewer {
+  position: fixed;
+  left: 260px;
+  top: 0;
+  right: 0;
+  bottom: 56px;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 48px 22px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.slide.has-formula { padding-top: 44px; }
+
+/* allow KaTeX overbrace labels to escape */
+.slide .formula-card,
+.slide .formula-card-wrap {
+  overflow: visible !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Header
+   ───────────────────────────────────────────────────────── */
+.slide-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+.sec-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--coral);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  padding: 5px 11px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.sec-badge.teal { background: var(--accent-teal); }
+.sec-badge.amber { background: var(--accent-amber); color: #1f1e1b; }
+.sec-badge.dark { background: var(--surface-dark); color: var(--coral); }
+
+.slide-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(24px, 2.7vw, 38px);
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.15;
+}
+.slide-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(13px, 1.05vw, 15px);
+  color: var(--muted);
+  font-weight: 400;
+  margin: 2px 0 0;
+}
+.header-rule {
+  border: none;
+  height: 1px;
+  background: var(--hairline);
+  margin: 12px 0 16px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Content / Cards
+   ───────────────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+.content.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.content.two-col-asym {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+p { margin: 0; color: var(--body); font-size: clamp(13.5px, 1.05vw, 16px); line-height: 1.65; }
+p + p { margin-top: 4px; }
+strong { color: var(--ink); font-weight: 600; }
+em { font-style: italic; color: var(--body-strong); }
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 16px 22px;
+}
+.card.compact { padding: 12px 18px; }
+.card-soft {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 16px 22px;
+}
+.card-soft.compact { padding: 12px 18px; }
+.card-cream {
+  background: var(--surface-cream-strong);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 16px 22px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 1.4px;
+  color: var(--coral);
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.sub-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(15px, 1.25vw, 18px);
+  color: var(--ink);
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.sub-title-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(17px, 1.5vw, 22px);
+  color: var(--ink);
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Dark Card — text MUST be light/amber/coral (NEVER gray)
+   ───────────────────────────────────────────────────────── */
+.dark-card {
+  background: var(--surface-dark);
+  border-radius: 12px;
+  padding: 16px 22px;
+  color: var(--on-dark);
+}
+.dark-card.compact { padding: 12px 18px; }
+.dark-card p,
+.dark-card li,
+.dark-card div,
+.dark-card span:not(.katex-inner) {
+  color: #f5f0e8;
+}
+.dark-card strong { color: #ffffff; font-weight: 600; }
+.dark-card em { color: var(--accent-amber); font-style: italic; font-weight: 500; }
+.dark-card .accent { color: var(--coral); font-weight: 500; }
+.dark-card .teal { color: var(--accent-teal); font-weight: 500; }
+.dark-card .amber { color: var(--accent-amber); font-weight: 500; }
+.dark-card h2, .dark-card h3, .dark-card .sub-title { color: #ffffff; }
+.dark-card .sub-title-display { color: var(--on-dark); }
+.dark-card .section-label { color: var(--coral); }
+.dark-card li::marker { color: var(--coral); }
+.dark-card ul, .dark-card ol { color: #f5f0e8; }
+
+/* algorithm block within dark card */
+.algo-box {
+  background: var(--surface-dark);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: #f5f0e8;
+  white-space: pre;
+  overflow-x: auto;
+}
+.algo-box .comment { color: var(--accent-amber); }
+.algo-box .accent { color: var(--coral); }
+
+/* ─────────────────────────────────────────────────────────
+   Callout strips
+   ───────────────────────────────────────────────────────── */
+.callout {
+  border-left: 3px solid var(--coral);
+  background: var(--coral-pale);
+  border-radius: 0 8px 8px 0;
+  padding: 11px 16px;
+  color: var(--body-strong);
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.6;
+}
+.callout strong { color: var(--ink); }
+.callout-warn {
+  background: var(--warn-bg);
+  border-left-color: var(--warn-border);
+}
+.callout-amber {
+  background: var(--amber-bg);
+  border-left-color: var(--amber-border);
+}
+.callout-teal {
+  background: var(--teal-bg);
+  border-left-color: var(--teal-border);
+}
+
+.callout-icon {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Tables
+   ───────────────────────────────────────────────────────── */
+.table-wrap {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: clip;
+  background: var(--canvas);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(12.5px, 1vw, 14.5px);
+}
+thead { background: var(--surface-card); }
+thead th {
+  text-align: left;
+  padding: 11px 12px;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: clamp(12px, 0.95vw, 13.5px);
+  border-bottom: 1px solid var(--hairline);
+}
+tbody td {
+  padding: 9px 12px;
+  border-top: 1px solid var(--hairline-soft);
+  color: var(--body);
+  vertical-align: middle;
+}
+tbody tr:first-child td { border-top: none; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: clamp(12px, 0.95vw, 13.5px); }
+td.center, th.center { text-align: center; }
+td strong { color: var(--ink); font-weight: 600; }
+.tag-coral { color: var(--coral); font-weight: 500; }
+.tag-warn { color: var(--warn-border); font-weight: 600; }
+
+/* ─────────────────────────────────────────────────────────
+   Formula cards
+   ───────────────────────────────────────────────────────── */
+.formula-card-wrap { overflow: visible !important; }
+.formula-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 36px 18px 24px;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: visible !important;
+  position: relative;
+}
+.formula-card.compact { padding: 28px 14px 18px; }
+.formula-card .formula-source {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+}
+.formula-card.dark {
+  background: var(--surface-dark);
+  border-color: var(--surface-dark);
+}
+.formula-card.dark .formula-source { color: var(--accent-amber); }
+
+/* KaTeX global */
+.katex {
+  font-size: 1.06em;
+}
+.katex .text,
+.katex .mord.text {
+  font-family: 'Noto Sans KR', 'Inter', sans-serif !important;
+  font-size: 0.85em;
+}
+.katex-display {
+  overflow-y: visible !important;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+}
+.katex-display > .katex { overflow-y: visible !important; }
+
+/* inline math in body */
+.katex-inline { font-size: 1em; }
+
+/* ─────────────────────────────────────────────────────────
+   Source chip
+   ───────────────────────────────────────────────────────── */
+.chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  background: var(--surface-card);
+  color: var(--muted);
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin: 0 2px;
+  line-height: 1.5;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.dark-card .chip {
+  background: var(--surface-dark-elevated);
+  color: var(--accent-amber);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Closer card
+   ───────────────────────────────────────────────────────── */
+.closer-card {
+  background: var(--surface-dark);
+  border-radius: 16px;
+  padding: 32px 36px;
+  text-align: center;
+}
+.closer-card .label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.closer-card .body {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(17px, 1.5vw, 22px);
+  color: #f5f0e8;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.closer-card .body strong {
+  color: var(--coral);
+  font-style: normal;
+  font-weight: 500;
+}
+.closer-card .body em {
+  color: var(--accent-amber);
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Lists & key-pair
+   ───────────────────────────────────────────────────────── */
+ul, ol {
+  margin: 6px 0;
+  padding-left: 22px;
+  color: var(--body);
+}
+li {
+  margin: 4px 0;
+  font-size: clamp(13px, 1vw, 15.5px);
+  line-height: 1.6;
+}
+li::marker { color: var(--coral); }
+
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  font-size: clamp(13px, 1vw, 15px);
+  align-items: baseline;
+}
+.kv dt {
+  font-family: var(--font-mono);
+  font-size: clamp(11.5px, 0.9vw, 13px);
+  color: var(--muted);
+  font-weight: 500;
+}
+.kv dd { margin: 0; color: var(--body); }
+
+/* ─────────────────────────────────────────────────────────
+   Title slide
+   ───────────────────────────────────────────────────────── */
+.title-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 80px;
+}
+.title-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.title-main {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(38px, 5vw, 64px);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+.title-main em {
+  font-style: italic;
+  color: var(--coral);
+  font-weight: 500;
+}
+.title-sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(18px, 1.8vw, 26px);
+  color: var(--muted);
+  line-height: 1.4;
+  margin-bottom: 32px;
+  max-width: 760px;
+}
+.title-meta {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.title-meta strong {
+  color: var(--ink);
+  font-weight: 500;
+  display: block;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Diagram boxes
+   ───────────────────────────────────────────────────────── */
+.bathtub-svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.hierarchy-diagram {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 18px 22px;
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: clamp(12px, 1vw, 14px);
+}
+.hier-pill {
+  background: var(--coral);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-weight: 500;
+  text-align: center;
+  font-size: clamp(13px, 1.1vw, 15px);
+}
+.hier-pill.secondary {
+  background: var(--surface-card);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+}
+.hier-arrow {
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Bottom Navigation
+   ───────────────────────────────────────────────────────── */
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 260px;
+  right: 0;
+  height: 56px;
+  background: var(--canvas);
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  z-index: 10;
+}
+.nav-btn {
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--surface-card);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.nav-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0 24px;
+}
+.prog-text {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.prog-bar {
+  width: 280px;
+  max-width: 100%;
+  height: 3px;
+  background: var(--hairline);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--coral);
+  border-radius: 9999px;
+  transition: width 240ms ease;
+}
+
+/* tight rows for dense slides */
+.tight-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tight-row > * { flex: 1; min-width: 0; }
+
+.qa-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.qa-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 11px 14px;
+}
+.qa-num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 1.2px;
+  color: var(--coral);
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.qa-q {
+  font-size: clamp(12.5px, 0.95vw, 14px);
+  color: var(--ink);
+  font-weight: 500;
+  margin-bottom: 5px;
+  line-height: 1.45;
+}
+.qa-a {
+  font-size: clamp(12px, 0.92vw, 13.5px);
+  color: var(--body);
+  line-height: 1.55;
+}
+
+.failure-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.failure-list li {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--coral);
+  border-radius: 0 8px 8px 0;
+  padding: 9px 13px;
+  font-size: clamp(12px, 0.92vw, 13.5px);
+  margin: 0;
+  line-height: 1.5;
+  color: var(--body);
+}
+.failure-list li strong { color: var(--ink); font-weight: 600; }
+
+/* Hide scrollbars inside slides except formula */
+.formula-card::-webkit-scrollbar { height: 6px; }
+.formula-card::-webkit-scrollbar-thumb { background: #d8d0c2; border-radius: 3px; }
+
+/* extra utility */
+.muted { color: var(--muted); }
+.coral { color: var(--coral); font-weight: 500; }
+.amber { color: #a76b18; font-weight: 500; }
+.teal { color: #2e7d6f; font-weight: 500; }
+.warn { color: var(--warn-border); font-weight: 600; }
+.tight { line-height: 1.45; }
+.no-margin { margin: 0; }
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.mini-formula {
+  background: var(--surface-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+/* keep formulas slightly smaller on dense cards */
+.compact-formula .katex-display > .katex { font-size: 0.95em; }
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     SIDEBAR
+     ═══════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="wordmark">
+    <svg width="20" height="20" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78"
+            stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span class="label">Anthropic · Claude</span>
+  </div>
+
+  <div class="session-label">Session 01 · Remastered</div>
+
+  <div class="toc-heading">목차</div>
+  <nav class="toc-list" id="toc-list">
+    <button class="toc-btn" data-slide="0">표지</button>
+    <button class="toc-btn" data-slide="1">§0 시작 전</button>
+    <button class="toc-btn" data-slide="2">§1 함정 — S1 vs S4</button>
+    <button class="toc-btn" data-slide="3">§1 K = CL/V 비밀</button>
+    <button class="toc-btn" data-slide="4">§2 욕조 모델</button>
+    <button class="toc-btn" data-slide="5">§3 위계 규칙</button>
+
+    <div class="toc-group-label">§4 다섯 장 카드</div>
+    <button class="toc-btn indent" data-slide="6">C1 청소율 CL — 정의</button>
+    <button class="toc-btn indent" data-slide="7">C1 — V가 사라지는 두 식</button>
+    <button class="toc-btn indent" data-slide="8">C1 — S1 vs S4 결정</button>
+    <button class="toc-btn indent" data-slide="9">C2 분포용적 V — 정의</button>
+    <button class="toc-btn indent" data-slide="10">C2 — Quinacrine 겉보기</button>
+    <button class="toc-btn indent" data-slide="11">C2 — LD vs MD</button>
+    <button class="toc-btn indent" data-slide="12">C3 소실속도 K — ODE</button>
+    <button class="toc-btn indent" data-slide="13">C3 — 분율제거·S1 vs S4</button>
+    <button class="toc-btn indent" data-slide="14">C4 반감기 t½ — 정의</button>
+    <button class="toc-btn indent" data-slide="15">C4 — Creatinine vs Inulin</button>
+    <button class="toc-btn indent" data-slide="16">C4 — 항정 도달·부하용량</button>
+    <button class="toc-btn indent" data-slide="17">C4 — Midazolam vs Gentamicin</button>
+    <button class="toc-btn indent" data-slide="18">C5 MRT — 정의·비유</button>
+    <button class="toc-btn indent" data-slide="19">C5 — 1구획 IV 서명</button>
+
+    <div class="toc-group-label">§5 혼동쌍 3개</div>
+    <button class="toc-btn indent" data-slide="20">CL vs K</button>
+    <button class="toc-btn indent" data-slide="21">V vs V_ss</button>
+    <button class="toc-btn indent" data-slide="22">t½ vs MRT</button>
+
+    <div class="toc-group-label">§6 PopPK 보강</div>
+    <button class="toc-btn indent" data-slide="23">M1 BLQ — NCA 규칙</button>
+    <button class="toc-btn indent" data-slide="24">M1 — Beal M3 likelihood</button>
+    <button class="toc-btn indent" data-slide="25">M2 Allometric (성인)</button>
+    <button class="toc-btn indent" data-slide="26">M2 — 소아 maturation</button>
+
+    <div class="toc-group-label">§7–§8 마무리</div>
+    <button class="toc-btn" data-slide="27">§7 자기 테스트 Q1–Q5</button>
+    <button class="toc-btn" data-slide="28">§7 자기 테스트 Q6–Q9</button>
+    <button class="toc-btn" data-slide="29">§8 메타프레임 · Closer</button>
+  </nav>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════
+     VIEWER
+     ═══════════════════════════════════════════════════════ -->
+<main class="viewer" id="viewer">
+
+  <!-- ═══════ SLIDE 0 · TITLE ═══════ -->
+  <section class="slide title-slide active">
+    <div class="title-eyebrow">Session 01 · Remastered</div>
+    <h1 class="title-main">1구획 IV 동력학<br>같은 기울기, <em>다른 결정</em></h1>
+    <p class="title-sub">반로그 도표 하나만 보고 "유지용량 권고"를 절대 안 쓰게 되는, 한 세션짜리 위계 체화 훈련.</p>
+    <div class="title-meta">
+      <div>
+        <strong>원재료</strong>
+        Gabrielsson &amp; Weiner 5e Ch.2 §2.2.1–2.2.5 + Case Study PK1<br>
+        Rowland &amp; Tozer 5e Ch.3
+      </div>
+      <div>
+        <strong>페이지</strong>
+        G&amp;W p.14–32, p.469–475<br>
+        R&amp;T p.53–76
+      </div>
+      <div>
+        <strong>대상</strong>
+        계량약리학 박사과정<br>
+        PopPK 입문–중급
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 1 · §0 시작 전 ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge">§ 0</span>
+      <h1 class="slide-title">시작 전 — 이 세션이 끝까지 메아리치는 한 줄</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="dark-card" style="padding: 26px 30px;">
+        <div class="section-label">Anchor Statement</div>
+        <p class="sub-title-display" style="font-size: clamp(18px, 1.8vw, 26px); margin-bottom: 8px; font-family: var(--font-display); font-style: italic; line-height: 1.45;">
+          약물의 체내 처리는 <strong class="accent">CL</strong>과 <strong class="accent">V</strong> 두 개가 정한다.<br>
+          <em>K</em>랑 <em>t<sub>½</sub></em>는 그 둘이 만든 <em>결과</em>지, 독립적인 원인이 아니다.
+        </p>
+      </div>
+
+      <div class="card-soft">
+        <p style="font-size: clamp(14px, 1.1vw, 16.5px); line-height: 1.7;">
+          이 한 줄을 진짜로 체화하면, 앞으로 받는 모든 IV 보고서에서 같은 질문 두 개를 자동으로 던지게 됨 —
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+          <div class="callout callout-amber" style="text-align: center; font-family: var(--font-display); font-style: italic; font-size: clamp(17px, 1.5vw, 22px); padding: 14px;">
+            <strong>AUC</strong>는 어떻게 변했는가?
+          </div>
+          <div class="callout callout-teal" style="text-align: center; font-family: var(--font-display); font-style: italic; font-size: clamp(17px, 1.5vw, 22px); padding: 14px;">
+            <strong>C⁰</strong>는 어떻게 변했는가?
+          </div>
+        </div>
+        <p style="margin-top: 12px; font-size: clamp(13px, 1vw, 15px);">
+          이 두 질문이 안 던져진 보고서는 그 자체로 다시 돌려보내는 거임. 다른 거 다 잊어도 이거 하나면 됨.
+        </p>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>🎯 약속:</strong> 이 세션 끝나면 반로그 도표 하나만 보고 "유지용량 권고"를 절대 안 쓰게 됨.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 2 · §1 함정 표 ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge">§ 1</span>
+      <h1 class="slide-title">함정 — 같은 기울기 뒤에 두 배 다른 청소율</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col-asym">
+      <div class="col">
+        <div class="card-soft compact">
+          <p>월요일 아침. <strong>Compound A 10 mg IV bolus</strong>, 4명 데이터를 받음. 반로그 도표를 그림. Subject 1이랑 Subject 4를 봄. <strong>말단 기울기가 거의 똑같음.</strong></p>
+          <p style="margin-top: 6px;">자연스럽게 머릿속에 떠오르는 결론 —<br><em>"아, 둘 다 약물 처리 능력이 비슷하네. 같은 유지용량 권고 가능."</em></p>
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>⚠️ 이게 함정임.</strong> 같은 주입속도 R<sub>in</sub>을 두 사람에게 주면 항정 농도 C<sub>ss</sub>가 정확히 <strong>두 배 차이</strong>가 남.<br>
+          한 명은 독성역, 한 명은 sub-therapeutic. <strong>보고서 한 장이 두 환자를 동시에 망가뜨림.</strong>
+        </div>
+
+        <p style="font-size: clamp(12.5px, 0.95vw, 14px); color: var(--muted); margin-top: 4px;">
+          출처: <span class="chip">G&amp;W 5e, Case Study PK1, Tables 1.2/1.3, p.473–474</span>
+        </p>
+      </div>
+
+      <div class="col">
+        <div class="sub-title">📊 Compound A 4-subject 데이터</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">Subject</th>
+                <th class="num">K (min⁻¹)</th>
+                <th class="num">V (L)</th>
+                <th class="num">CL (L/min)</th>
+                <th class="num">AUC (µg·min·L⁻¹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="center"><strong>1</strong></td>
+                <td class="num">0.01</td>
+                <td class="num">10</td>
+                <td class="num"><strong class="tag-coral">0.1</strong></td>
+                <td class="num">98,000</td>
+              </tr>
+              <tr>
+                <td class="center">2</td>
+                <td class="num">0.02</td>
+                <td class="num">9.8</td>
+                <td class="num">0.2</td>
+                <td class="num">49,000</td>
+              </tr>
+              <tr>
+                <td class="center">3</td>
+                <td class="num">0.02</td>
+                <td class="num">10</td>
+                <td class="num">0.2</td>
+                <td class="num">51,000</td>
+              </tr>
+              <tr>
+                <td class="center"><strong>4</strong></td>
+                <td class="num">0.01</td>
+                <td class="num"><strong class="tag-coral">20</strong></td>
+                <td class="num"><strong class="tag-coral">0.2</strong></td>
+                <td class="num">51,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <strong>S1 ≈ S4</strong>: K, t<sub>½</sub> 거의 같음<br>
+          <strong>S1 vs S4</strong>: <span class="tag-coral">CL이 두 배 차이</span> (0.1 → 0.2 L/min)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 3 · §1 K = CL/V 비밀 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">§ 1</span>
+      <h1 class="slide-title">왜 같아 보였는가? — 답은 한 줄</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{K}_{\text{기울기}} \;=\; \frac{\underbrace{CL}_{\text{정화능}}}{\underbrace{V}_{\text{분포공간}}}$$
+          <div class="formula-source">G&amp;W 5e Eq.2:7, p.17 · R&amp;T 5e Eq.3-7, p.56</div>
+        </div>
+      </div>
+
+      <div class="content two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="col">
+          <div class="card">
+            <div class="sub-title">📐 S4의 산수</div>
+            <p>S4는 <strong class="coral">CL도 두 배</strong>(0.2 L/min), <strong class="coral">V도 두 배</strong>(20 L)임.</p>
+            <p style="margin-top: 8px;">분자랑 분모가 동시에 두 배니까 비율은 보존됨.</p>
+            <div class="mini-formula" style="margin-top: 10px;">
+              \(\dfrac{0.2}{20} = \dfrac{0.1}{10} = 0.01 \;\text{min}^{-1}\)
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="callout callout-amber">
+            <strong>💡 핵심 통찰</strong><br>
+            반로그 기울기는 <strong>비율만</strong> 보여준다.<br>
+            <strong>절대값을 안 보여준다.</strong>
+          </div>
+          <div class="dark-card compact" style="margin-top: 10px;">
+            <p style="font-family: var(--font-display); font-style: italic; font-size: clamp(15px, 1.3vw, 19px); line-height: 1.5;">
+              이 함정이 세션 전체의 <strong class="accent">spine</strong>이다. 앞으로 나오는 모든 카드가 <em>"그래서 S1 vs S4가 어떻게 갈리는지"</em>에 한 번씩 등장한다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 4 · §2 욕조 모델 ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge teal">§ 2</span>
+      <h1 class="slide-title">욕조 모델 — 이 세션의 마스터 비유</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="card" style="padding: 14px;">
+          <svg class="bathtub-svg" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">
+            <!-- bathtub -->
+            <rect x="60" y="40" width="240" height="130" rx="8" fill="#f5f0e8" stroke="#cc785c" stroke-width="2"/>
+            <!-- water -->
+            <rect x="68" y="62" width="224" height="100" rx="4" fill="#e6f4f0" stroke="#5db8a6" stroke-width="1.5"/>
+            <!-- labels -->
+            <text x="180" y="105" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#181715" font-weight="500">욕조 V = 분포공간</text>
+            <text x="180" y="128" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#a9583e">농도 C = D / V</text>
+            <text x="180" y="148" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#6c6a64">(총량 D)</text>
+            <!-- drain pipe -->
+            <rect x="170" y="170" width="20" height="30" fill="#181715"/>
+            <path d="M180 200 L 180 220" stroke="#181715" stroke-width="3" fill="none"/>
+            <polygon points="172,218 180,232 188,218" fill="#181715"/>
+            <text x="220" y="195" font-family="JetBrains Mono" font-size="12" fill="#cc785c" font-weight="500">배수구 = CL</text>
+            <text x="220" y="212" font-family="JetBrains Mono" font-size="10" fill="#6c6a64">(부피/시간)</text>
+            <!-- top label -->
+            <text x="60" y="28" font-family="JetBrains Mono" font-size="10" fill="#6c6a64" letter-spacing="1.5">DOSE D INPUT ↓</text>
+            <!-- bottom label -->
+            <text x="180" y="235" text-anchor="middle" font-family="Inter" font-size="11" fill="#cc785c" font-weight="500" font-style="italic">제거됨</text>
+          </svg>
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>⚠️ 사라지지 않는 한 줄</strong><br>
+          수위가 떨어지는 속도(<em>K</em>)만 보고 배수구 크기(<em>CL</em>)를 알 수 없다.
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="sub-title">🛁 욕조 좌표 ↔ PK 파라미터</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>욕조 좌표</th>
+                <th>PK 파라미터</th>
+                <th>직관</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>배수구 크기</strong></td>
+                <td><strong class="coral">CL</strong> (부피/시간)</td>
+                <td>단위 시간당 깨끗해지는 혈액 부피</td>
+              </tr>
+              <tr>
+                <td><strong>욕조 크기</strong></td>
+                <td><strong class="coral">V</strong> (부피)</td>
+                <td>같은 약물량의 묽어짐 정도</td>
+              </tr>
+              <tr>
+                <td>수위 떨어지는 속도</td>
+                <td><em>K</em> = CL/V (1/시간)</td>
+                <td>남은 양 중 매 시간 빠지는 비율</td>
+              </tr>
+              <tr>
+                <td>수위가 반 되는 시간</td>
+                <td><em>t<sub>½</sub></em> = ln 2 / K</td>
+                <td>절반 시간</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-teal">
+          <strong>🎯 좌표 사용법</strong><br>
+          앞으로 모든 카드 — <em>CL</em>=배수구, <em>V</em>=욕조, <em>K</em>=수위 속도, <em>t<sub>½</sub></em>=절반 시간으로 읽는다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 5 · §3 위계 규칙 ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge teal">§ 3</span>
+      <h1 class="slide-title">위계 규칙 — 일차(원인) vs 이차(결과)</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="hierarchy-diagram">
+        <span class="hier-pill">CL</span>
+        <span class="hier-arrow">─ ─ ─ ─ ─ ─→</span>
+        <span class="hier-pill secondary">K = CL/V</span>
+        <span class="hier-arrow">─ ─ ─→ <em>t<sub>½</sub></em> = 0.693·V/CL</span>
+        <span class="hier-pill">V</span>
+        <span class="hier-arrow">─ ─ ─ ─ ─ ─↗</span>
+        <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); text-align: center;">생리·해부학이 직접 결정</span>
+        <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); padding-left: 4px;">반로그 도표가 보여주는 시간 표지 · MRT = 1/K (1구획 IV)</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>파라미터</th>
+              <th>위계</th>
+              <th>무엇이 정함</th>
+              <th>임상에서 결정</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong class="coral">CL</strong></td>
+              <td><strong>일차</strong></td>
+              <td>혈류·추출·대사·배설</td>
+              <td>AUC, C<sub>ss</sub>, <strong>유지용량</strong></td>
+            </tr>
+            <tr>
+              <td><strong class="coral">V</strong></td>
+              <td><strong>일차</strong></td>
+              <td>조직 결합, 체수분, 측정 공간</td>
+              <td>C⁰, <strong>부하용량</strong></td>
+            </tr>
+            <tr>
+              <td><em>K</em></td>
+              <td><span class="muted">이차</span></td>
+              <td>CL/V 비율</td>
+              <td>반로그 기울기, ODE 시상수</td>
+            </tr>
+            <tr>
+              <td><em>t<sub>½</sub></em></td>
+              <td><span class="muted">이차</span></td>
+              <td>ln 2 / K = 0.693·V/CL</td>
+              <td>항정 도달 시간, 채혈 창</td>
+            </tr>
+            <tr>
+              <td><em>MRT</em></td>
+              <td><span class="muted">이차</span></td>
+              <td>AUMC/AUC</td>
+              <td>평균 체류 시간, V<sub>ss</sub> 환산</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>⚡ 위계가 깨지는 순간 일어나는 일</strong> — NONMEM에서 K에 공변량 붙임 → 신기능 변화(CL) vs 부종 변화(V)가 한 변수에 섞임 → 잔차가 체중·CrCl이랑 같이 움직이는 이유를 설명 못함 → 규제 리뷰에서 재분석 요구.
+      </div>
+
+      <p style="font-size: clamp(12px, 0.92vw, 13.5px); color: var(--muted);">
+        📖 <span class="chip">R&amp;T 5e p.54–55, Fig.3-1·3-2</span> — Drugs A/B는 V 같고 CL 다름(→ 기울기·AUC 다름, 절편 같음). Drugs C/D는 CL/V 비율 같음(→ 반감기 같음, 절편·AUC 다름). 이 그림 안 보고 가면 절편·기울기·AUC를 한 덩어리 '노출 지표'로 묶어 읽게 됨.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 6 · C1 CL 정의 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 1</span>
+      <h1 class="slide-title">청소율 <em>CL</em> — AUC·유지용량의 일차 결정자 <span style="color: var(--coral); font-size: 0.7em; font-family: var(--font-mono); margin-left: 6px;">⚡ APEX</span></h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col-asym">
+      <div class="col">
+        <div class="card-soft compact">
+          <div class="section-label">한 줄 정의</div>
+          <p>
+            <em>CL</em>은 <strong>단위 시간당 약물이 완전히 비워지는 가상의 혈장 부피</strong>임. 단위는 <strong>L/min</strong>.
+          </p>
+          <p style="margin-top: 6px;">
+            <strong class="coral">속도(rate)가 아니라 유량(flow)</strong>임.
+            <span class="chip">G&amp;W p.16</span>
+            <span class="chip">R&amp;T p.56</span>
+          </p>
+        </div>
+
+        <div class="card compact">
+          <div class="sub-title">CL = Q · E 분해</div>
+          <div class="table-wrap" style="margin-top: 4px;">
+            <table>
+              <tbody>
+                <tr><td><em>Q</em></td><td>장기로 약물을 운반하는 혈류량</td></tr>
+                <tr><td><em>E</em></td><td>장기 통과 중 제거되는 분율</td></tr>
+                <tr><td><strong class="coral">CL</strong></td><td>Q·E의 곱 (얼마나 지나가고 얼마를 빼내는가)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="callout callout-amber">
+          <strong>💡</strong> CL = Q·E를 단순 공식이 아니라 <strong>"얼마나 많은 혈액이 지나가고 그중 얼마를 빼내는가"</strong>로 읽으면, 간/신 청소율 후속 세션에서 고추출·저추출 약물 분기가 자연스럽게 이어진다.
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\underbrace{\text{Rate of elim.}}_{\text{제거속도}} = \underbrace{CL}_{\text{정화부피/시간}} \cdot \underbrace{C}_{\text{현재농도}}$$
+            <div class="formula-source">R&amp;T Eq.3-4, p.56 · G&amp;W Eq.2:2, p.16</div>
+          </div>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\underbrace{CL}_{\text{정화부피/시간}} = \underbrace{Q}_{\text{혈류}} \cdot \underbrace{E}_{\text{추출분율}}$$
+            <div class="formula-source">R&amp;T Eq.3-5, p.56</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 7 · C1 V 사라짐 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 1</span>
+      <h1 class="slide-title">왜 <em>CL</em>이 일차인가 — "<em>V</em>가 사라지는" 두 식</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="row-2" style="gap: 14px;">
+        <div class="col">
+          <div class="section-label">식 1 — 노출량 식 (전체 투약 사건의 한 번 적분)</div>
+          <div class="formula-card-wrap">
+            <div class="formula-card">
+              $$\underbrace{CL}_{\text{정화능}} = \frac{\underbrace{Dose}_{\text{투여량}}}{\underbrace{AUC_0^\infty}_{\text{총노출}}}$$
+              <div class="formula-source">G&amp;W p.19 · R&amp;T p.59–60</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="section-label">식 2 — 항정상태 식 (constant infusion)</div>
+          <div class="formula-card-wrap">
+            <div class="formula-card">
+              $$\underbrace{\frac{dC}{dt}}_{\text{변화}} = \underbrace{\frac{R_{in}}{V}}_{\text{입력}} - \underbrace{\frac{CL}{V}\cdot C}_{\text{제거}}$$
+              $$\xrightarrow{\;dC/dt\,=\,0\;}\quad \underbrace{C_{ss}}_{\text{항정}} = \frac{\underbrace{R_{in}}_{\text{주입속도}}}{\underbrace{CL}_{\text{정화능}}}$$
+              <div class="formula-source">G&amp;W Eq.2:22, p.23</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dark-card">
+        <div class="section-label">🎯 두 식이 가르치는 한 가지</div>
+        <p style="font-family: var(--font-display); font-style: italic; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.55;">
+          <strong>두 식 모두 <em class="amber">V</em>가 깨끗하게 사라진다.</strong> 이게 핵심이다. 분포공간은 곡선 출발점(<em class="amber">C⁰</em>)이랑 시상수(<em class="amber">K</em>)는 바꾸지만,<br>
+          한 번 적분해버리거나(=AUC) 시간을 무한히 늘려버리면(=C<sub>ss</sub>), <strong>노출·항정의 중심에는 <em class="accent">CL</em>만 남는다.</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 8 · C1 S1 vs S4 ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge">C 1</span>
+      <h1 class="slide-title">S1 vs S4 — 함정 카드를 숫자로 깨뜨림</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="sub-title">같은 R<sub>in</sub> = 10 µg/min 줄 때</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="center">Subject</th>
+                <th class="num">K</th>
+                <th class="num">t<sub>½</sub></th>
+                <th class="num">CL</th>
+                <th class="num">→ C<sub>ss</sub></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="center"><strong>1</strong></td>
+                <td class="num">0.01</td>
+                <td class="num">68 min</td>
+                <td class="num">0.1 L/min</td>
+                <td class="num"><strong class="tag-coral">100</strong> µg/L</td>
+              </tr>
+              <tr>
+                <td class="center"><strong>4</strong></td>
+                <td class="num">0.01</td>
+                <td class="num">71 min</td>
+                <td class="num">0.2 L/min</td>
+                <td class="num"><strong class="tag-coral">50</strong> µg/L</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          기울기(=K)·반감기 거의 같음.<br>
+          <strong>항정 농도는 정확히 두 배 차이.</strong><br>
+          CL이 정한 거임.
+        </div>
+
+        <p style="font-size: clamp(12px, 0.92vw, 13.5px); color: var(--muted);">
+          <span class="chip">G&amp;W Eq.2:22, p.23</span>
+          <span class="chip">G&amp;W Case Study PK1, p.473–474</span>
+        </p>
+      </div>
+
+      <div class="col">
+        <div class="dark-card">
+          <div class="section-label">💼 실무 인사이트 (PopPK 모수화)</div>
+          <p>NONMEM에서 공변량을 <em class="amber">K</em>에 직접 붙이면 안 됨.</p>
+          <p style="margin-top: 6px;">신기능이 좋아져서 <em class="accent">CL</em>이 올라간 건지, 부종이 빠져서 <em class="accent">V</em>가 줄어든 건지 식별 안 됨.</p>
+          <p style="margin-top: 6px;"><strong><code style="font-family: var(--font-mono); background: var(--surface-dark-elevated); padding: 1px 6px; border-radius: 4px; color: var(--accent-amber);">TRANS2</code>로 <em class="accent">CL</em>과 <em class="accent">V</em>를 따로 두는 게 단순 코딩 관습이 아니라 위계 보존 안전장치임.</strong></p>
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>C1 핵심 한 줄</strong><br>
+          ① 노출(AUC)·유지용량 질문 → 무조건 <em>CL</em><br>
+          ② <em>K</em> 같음 ≠ <em>CL</em> 같음 (S1 vs S4)<br>
+          ⚡ <em>K</em>로 건너뛰는 순간 유지용량 권고가 두 배 어긋남
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 9 · C2 V 정의 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 2</span>
+      <h1 class="slide-title">분포용적 <em>V</em> — C⁰·부하용량의 일차 결정자</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="card-soft compact">
+          <div class="section-label">한 줄 정의</div>
+          <p>
+            <em>V</em>는 실제 부피가 아니라, <strong class="coral">체내 총량을 혈장 농도 하나로 환산하는 겉보기 공간</strong>임.
+          </p>
+          <p style="margin-top: 4px;">
+            <span class="chip">G&amp;W p.20</span>
+            <span class="chip">R&amp;T p.63</span>
+          </p>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{V}_{\text{환산공간}} = \frac{\underbrace{A_b}_{\text{체내총량}}}{\underbrace{C}_{\text{측정농도}}}$$
+            <div class="formula-source">G&amp;W Eq.2:14, p.20 · R&amp;T Eq.3-26, p.63</div>
+          </div>
+        </div>
+
+        <p style="font-size: clamp(12.5px, 0.95vw, 14px); color: var(--body); margin-top: 2px;">
+          <strong>IV bolus</strong>에서는 시간 0으로 외삽한 절편으로 계산:
+        </p>
+      </div>
+
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{V}_{\text{초기희석}} = \frac{\underbrace{D_{iv}}_{\text{IV 용량}}}{\underbrace{C^0}_{\text{외삽초기농도}}}$$
+            <div class="formula-source">G&amp;W Eq.2:13, p.20</div>
+          </div>
+        </div>
+
+        <p style="font-size: clamp(12.5px, 0.95vw, 14px); color: var(--body); margin-top: 4px;">
+          말단 정보가 있으면 우회식도 씀:
+        </p>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{V}_{\text{말단용적}} = \frac{\underbrace{CL}_{\text{정화능}}}{\underbrace{K}_{\text{말단기울기}}} = \underbrace{1.44}_{1/\ln 2} \cdot CL \cdot \underbrace{t_{1/2}}_{\text{반감기}}$$
+            <div class="formula-source">R&amp;T Eq.3-27/3-28, p.63</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 10 · C2 Quinacrine ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 2</span>
+      <h1 class="slide-title">"겉보기" — 이 한 단어가 안 박히면 게임 끝남</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="dark-card">
+          <div class="section-label">⚗️ Quinacrine 사례</div>
+          <p>항말라리아제, 조직 결합이 극단적으로 강함.</p>
+          <p style="font-family: var(--font-display); font-style: italic; font-size: clamp(20px, 1.8vw, 28px); margin-top: 8px; text-align: center; color: var(--accent-amber);">
+            V ≈ 40,000 L
+          </p>
+          <p style="margin-top: 4px; text-align: center;">체중 70 kg 사람한테 <strong>40,000 L 부피가 어디 있는가?</strong></p>
+          <p style="text-align: center; color: var(--coral); font-weight: 600; margin-top: 4px;">없다. 그게 포인트다.</p>
+        </div>
+
+        <div class="card-soft compact">
+          <div class="sub-title">V가 큰 이유를 정확히 풀면</div>
+          <ul style="margin: 4px 0;">
+            <li>약물 <strong>총량은 그대로</strong> (분자 A<sub>b</sub>)</li>
+            <li>측정 <strong>농도 C가 낮음</strong> — 약물 대부분이 조직에 묶여 혈장에 잘 안 나옴</li>
+            <li>V = A<sub>b</sub>/C 식에서 <strong>분모가 작아지니까 V가 커 보임</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\underbrace{V}_{\text{관찰용적}} = \underbrace{V_u}_{\text{비결합용적}} \cdot \underbrace{f_u}_{\text{유리분율}}$$
+            <div class="formula-source">G&amp;W Eq.2:15, p.20</div>
+          </div>
+        </div>
+
+        <div class="callout callout-amber">
+          📖 <strong>G&amp;W 5e, p.15, Fig.2.3</strong> — 두 양동이 그림. 실제 물 부피는 같은데 측정 농도가 다르면 <strong>겉보기 용적이 10 L vs 100 L로 갈라지는</strong> 장면을 직접 그려서 보여줌. 이 그림 안 보고 가면 V를 해부학적 부피로 오해함.
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>⚠️ S1 vs S4 적용</strong><br>
+          Compound A에서 S1–3는 V≈10 L, S4만 20 L임. <strong>S4의 절편(=C⁰)이 다른 사람들보다 낮음.</strong> 같은 10 mg인데 보이는 농도가 절반 → 환산 공간이 두 배.
+          <span class="chip">G&amp;W p.470, p.473</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 11 · C2 LD vs MD ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 2</span>
+      <h1 class="slide-title">부하용량 ↔ 유지용량 — 임상 결정의 80%</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{LD}_{\text{부하용량}} = \underbrace{V}_{\text{분포공간}} \cdot \underbrace{C_{target}}_{\text{목표농도}} \qquad\qquad \underbrace{MD}_{\text{유지용량/시간}} = \underbrace{CL}_{\text{정화능}} \cdot \underbrace{C_{ss,target}}_{\text{목표 } C_{ss}}$$
+          <div class="formula-source">부하용량은 V의 함수, 유지용량은 CL의 함수</div>
+        </div>
+      </div>
+
+      <div class="row-2" style="gap: 14px;">
+        <div class="dark-card compact">
+          <div class="section-label">⚖️ V가 커지면</div>
+          <p>→ C⁰ = D/V가 낮아짐</p>
+          <p>→ <strong class="amber">부하용량을 더 줘야 같은 초기 농도</strong>에 도달</p>
+          <p style="margin-top: 4px;"><em class="amber">⚠ 주의</em> — V가 두 배 됐다고 AUC가 두 배 되는 건 아님 (AUC는 CL이 정함, C1 참조)</p>
+        </div>
+
+        <div class="callout callout-amber">
+          <strong>💼 실무 인사이트</strong><br>
+          반로그 도표에 명백한 꺾임점(break point)이 보이면, 1구획 V를 그대로 부하용량에 쓰기 전에 점검 — <strong>중심 구획 V<sub>c</sub>인지, 항정 상태 V<sub>ss</sub>인지</strong>. 초기 빠른 효과 목적이면 V<sub>c</sub>, 평형 후 농도 유지가 목적이면 V<sub>ss</sub>. <em>(다구획 세션 예고편)</em>
+        </div>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>C2 핵심 한 줄</strong><br>
+        ① C⁰ 질문, 부하용량 질문 → 무조건 <em>V</em><br>
+        ② "V가 크다" = "혈장에 보이는 농도가 낮다" (조직에 숨어 있음)<br>
+        ⚡ V를 해부학적 부피로 읽으면 부하용량 판단이 무너짐
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 12 · C3 K ODE ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 3</span>
+      <h1 class="slide-title">소실속도상수 <em>K</em> — 반로그 기울기는 결과</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="card-soft compact">
+        <div class="section-label">한 줄 정의</div>
+        <p><em>K</em>는 단위 시간당 남은 양 중 제거되는 분율임. 구조적으로는 <strong class="coral">CL/V</strong>임.
+        <span class="chip">G&amp;W p.17</span>
+        <span class="chip">R&amp;T Eq.3-7, p.56</span></p>
+      </div>
+
+      <div class="sub-title" style="margin-top: 4px;">ODE에서 반로그 직선까지 — 한 호흡에 끝냄</div>
+
+      <div class="row-3" style="gap: 10px;">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px;">① 미분방정식</div>
+            $$\underbrace{\frac{dC}{dt}}_{\text{변화}} = -\underbrace{K}_{\text{속도}} \cdot \underbrace{C}_{\text{농도}}$$
+            <div class="formula-source">G&amp;W Eq.2:1, p.16</div>
+          </div>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px;">② 적분</div>
+            $$\underbrace{C(t)}_{\text{농도}} = \underbrace{C^0}_{\text{초기}} \cdot \underbrace{e^{-Kt}}_{\text{지수감소}}$$
+            <div class="formula-source">G&amp;W Eq.2:4, p.17</div>
+          </div>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px;">③ 양변 로그</div>
+            $$\underbrace{\ln C}_{\text{로그농도}} = \underbrace{\ln C^0}_{\text{절편}} - \underbrace{K\cdot t}_{\text{기울기 }(-K)}$$
+            <div class="formula-source">R&amp;T Eq.3-11, p.58</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dark-card compact">
+        <p style="font-family: var(--font-display); font-style: italic; font-size: clamp(15px, 1.3vw, 19px); line-height: 1.5; text-align: center;">
+          <strong>반로그 도표에서 직선의 기울기가 <em class="accent">−K</em></strong>임.<br>
+          그 이상도, 그 이하도 아님.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 13 · C3 분율제거 + S1 vs S4 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 3</span>
+      <h1 class="slide-title">분율 제거의 직관 + S1 vs S4 적용</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="callout callout-amber">
+          <strong>🛁 욕조 비유 다시</strong> — 지수감소가 헷갈리는 이유는 "매 시간 똑같은 양을 퍼낸다"고 착각해서임. 아님. <strong>남은 양의 같은 비율을 계속 퍼냄.</strong>
+        </div>
+
+        <div class="card compact">
+          <div class="sub-title">R&amp;T Table 3-1 (K = 0.1 hr⁻¹, 시작 100 mg)</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>시간</th><th class="num">남은 양</th><th class="num">사라진 양</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>0 hr</td><td class="num">100 mg</td><td class="num muted">—</td></tr>
+                <tr><td>1 hr</td><td class="num">90 mg</td><td class="num">10 mg (10%)</td></tr>
+                <tr><td>2 hr</td><td class="num">81 mg</td><td class="num">9 mg (10%)</td></tr>
+                <tr><td>3 hr</td><td class="num">72.9 mg</td><td class="num">8.1 mg (10%)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size: 12px; color: var(--muted); margin-top: 6px;"><strong>매 시간 10 mg이 아니라, 남은 양의 10%가 사라지는 거임.</strong> <span class="chip">R&amp;T p.57</span></p>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{\frac{A}{Dose}}_{\text{남은분율}} = \underbrace{e^{-Kt}}_{\text{지수잔존}} = \left(\frac{1}{2}\right)^{n}, \quad n = t/t_{1/2}$$
+            <div class="formula-source">R&amp;T Eq.3-19, p.59</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <div class="sub-title">⚠️ S1 vs S4 — 핵심 적용</div>
+          <p><strong>K = 0.01이 같다</strong>는 건 CL/V 비율이 같다는 뜻일 뿐임.</p>
+          <div class="mini-formula" style="margin-top: 8px;">
+            S1: <strong>0.1/10 = 0.01</strong><br>
+            S4: <strong>0.2/20 = 0.01</strong>
+          </div>
+          <p style="margin-top: 8px;"><strong class="coral">같은 비율을 만드는 (CL, V) 조합은 무한히 많음.</strong> K만 봐서는 어느 조합인지 알 수 없음.</p>
+        </div>
+
+        <div class="dark-card">
+          <div class="section-label">💼 TRANS1 vs TRANS2</div>
+          <p><code style="font-family: var(--font-mono); background: var(--surface-dark-elevated); padding: 1px 6px; border-radius: 4px; color: var(--accent-amber);">ADVAN1 TRANS1</code>은 <em class="amber">K</em>를 직접 추정함. 적합 자체는 됨.</p>
+          <p style="margin-top: 4px;">그런데 신기능 covariate를 어디에 붙임? <em class="amber">K</em>에 붙이면 <em class="accent">CL</em> 변화인지 <em class="accent">V</em> 변화인지 모름.</p>
+          <p style="margin-top: 4px;"><strong><code style="font-family: var(--font-mono); background: var(--surface-dark-elevated); padding: 1px 6px; border-radius: 4px; color: var(--accent-amber);">TRANS2</code>는 <em class="accent">CL</em>·<em class="accent">V</em> 따로 추정</strong> → 공변량 위치 분리 가능.</p>
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>C3 핵심 한 줄</strong><br>
+          ① 반로그 기울기 = K = CL/V. <strong>표면 표지일 뿐, 일차 파라미터 아님.</strong><br>
+          ⚡ K를 일차로 모델링하면 공변량 위치가 섞임
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 14 · C4 t½ 정의 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 4</span>
+      <h1 class="slide-title">반감기 <em>t<sub>½</sub></em> — 가장 자주 오해받는 파라미터</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="row-2" style="gap: 14px;">
+        <div class="callout callout-warn">
+          <strong>⚠️ 흔한 실수</strong><br>
+          "반감기가 늘었다 → 신기능 저하 → 용량 감량"
+        </div>
+
+        <div class="callout callout-teal">
+          <strong>✓ 진실</strong><br>
+          <em>t<sub>½</sub></em> = 0.693·V/CL. <strong>V가 늘어도 t<sub>½</sub>가 길어진다.</strong> 부종 환자에서 반감기가 늘었다고 신장 용량 감량을 권고하면, 실제로는 분포공간만 늘어난 것일 수도 있음.
+        </div>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{t_{1/2}}_{\text{반감기}} = \frac{\underbrace{\ln 2}_{\text{절반조건}}}{\underbrace{K}_{\text{분율속도}}} = \frac{\underbrace{0.693}_{\ln 2} \cdot \underbrace{V}_{\text{분포공간}}}{\underbrace{CL}_{\text{정화능}}}$$
+          <div class="formula-source">G&amp;W Eq.2:3/2:6, p.17–18 · R&amp;T Eq.3-15, p.58</div>
+        </div>
+      </div>
+
+      <div class="dark-card compact">
+        <p style="font-family: var(--font-display); font-style: italic; font-size: clamp(15px, 1.3vw, 19px); line-height: 1.5; text-align: center;">
+          <em>t<sub>½</sub></em>는 <em class="amber">CL</em>과 <em class="amber">V</em> 두 일차 파라미터가 동시에 만든 <strong class="accent">이차 표지값</strong>.<br>
+          한 변수의 변화를 다른 변수와 분리하려면 — <em class="amber">AUC</em>와 <em class="amber">C⁰</em>를 함께 봐라.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 15 · C4 Creatinine vs Inulin ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge">C 4</span>
+      <h1 class="slide-title">Creatinine vs Inulin — 같은 <em>CL</em>, 다른 <em>t<sub>½</sub></em></h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="card-soft">
+        <p>R&amp;T가 두 생리학 marker로 직접 보여줌 — <strong>creatinine</strong>(근육 대사산물, total body water에 가까운 분포)과 <strong>inulin</strong>(다당류, extracellular water에 가까운 분포). <span class="chip">R&amp;T p.58</span></p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Compound</th>
+              <th class="num">CL (L/hr)</th>
+              <th class="num">V (L)</th>
+              <th class="num">t<sub>½</sub> (hr)</th>
+              <th>분포 특성</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Creatinine</strong></td>
+              <td class="num">4.5</td>
+              <td class="num">42</td>
+              <td class="num"><strong class="tag-coral">6.5</strong></td>
+              <td>TBW 근접 (세포 안까지 들어감)</td>
+            </tr>
+            <tr>
+              <td><strong>Inulin</strong></td>
+              <td class="num">4.5</td>
+              <td class="num">16</td>
+              <td class="num"><strong class="tag-coral">2.5</strong></td>
+              <td>ECW 근접 (세포 안 못 들어감)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dark-card">
+        <p style="font-family: var(--font-display); font-style: italic; font-size: clamp(18px, 1.6vw, 24px); text-align: center; line-height: 1.45;">
+          <strong class="accent">CL이 똑같이 4.5</strong>인데 <strong class="amber">반감기가 2.5배 차이.</strong><br>
+          <em>V</em>가 다르니까.
+        </p>
+        <p style="text-align: center; margin-top: 8px; color: #f5f0e8;">
+          → "긴 반감기 ≠ 낮은 청소율"의 깔끔한 증거.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 16 · C4 항정 도달 + 부하용량 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 4</span>
+      <h1 class="slide-title">항정 도달 시간 — <em>V</em>가 C<sub>ss</sub>는 안 바꾸지만 시간은 바꿈</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="sub-title">반감기 수 ↔ 항정 도달 분율</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th class="num">반감기 수</th><th class="num">항정 도달 분율</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="num">1</td><td class="num">50%</td></tr>
+              <tr><td class="num">2</td><td class="num">75%</td></tr>
+              <tr><td class="num">3</td><td class="num">87.5%</td></tr>
+              <tr><td class="num">4</td><td class="num">~94%</td></tr>
+              <tr><td class="num"><strong>6.64</strong></td><td class="num"><strong class="tag-coral">~99%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size: 12px; color: var(--muted); margin-top: 6px;"><span class="chip">G&amp;W p.22</span> <span class="chip">R&amp;T p.59</span></p>
+
+        <div class="callout callout-amber">
+          <strong>C<sub>ss</sub> = R<sub>in</sub>/CL</strong>에서 <em>V</em>는 사라지지만, <strong>t<sub>½</sub> = 0.693V/CL</strong>을 통해 <strong>항정 도달 시간은 V에 비례.</strong>
+          부종 환자(큰 V)는 같은 C<sub>ss</sub>에 도달하는 데 더 오래 걸림.
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="sub-title">실무 응용 — 부하용량 근사 (1구획 IV, 투약 간격 τ)</div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\underbrace{LD}_{\text{부하용량}} \approx \underbrace{MD}_{\text{유지용량}} \cdot \frac{\underbrace{\tau}_{\text{투약간격}}}{\underbrace{0.693\cdot t_{1/2}}_{\text{반감기 단위}}}$$
+          </div>
+        </div>
+
+        <div class="dark-card compact">
+          <p>반감기 긴 약물 (digoxin이 전형 예) → <strong class="amber">부하용량 없으면 항정 도달까지 며칠씩 걸림.</strong></p>
+          <p style="margin-top: 6px;"><em class="accent">유지용량 결정 ≠ 부하용량/도달시간 결정.</em> 분리해서 해야 함.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 17 · C4 Midazolam vs Gentamicin ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 4</span>
+      <h1 class="slide-title">말단 단계가 진짜 소실 단계인가? — Midazolam vs Gentamicin</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="callout callout-warn">
+        <strong>⚠️ C4에서 가장 위험한 함정</strong> — "말단 직선 = 소실 단계"는 자동 성립이 아님.
+      </div>
+
+      <div class="row-2" style="gap: 14px;">
+        <div class="card">
+          <div class="section-label" style="color: var(--accent-teal);">✓ Midazolam (안전 케이스)</div>
+          <p>79 kg 성인, 7.5 mg base IV bolus. 반로그 프로파일이 <strong>이상성(biphasic)</strong>. 처음 ~1시간 분포 단계, 그 뒤 소실 단계.</p>
+          <p style="margin-top: 4px;">5분 시점 혈장 0.61 mg, <strong>나머지 6.9 mg (92%)는 이미 혈장 밖.</strong></p>
+          <p style="margin-top: 4px;">R&amp;T Fig.3-5: 2시간까지 누적 AUC가 전체의 <strong class="teal">48%</strong>.</p>
+          <p style="margin-top: 6px; color: var(--muted); font-size: 12.5px;">→ 분포 단계 AUC 비율이 절반 정도라 일부 목적에서 1구획 근사 안전. <span class="chip">R&amp;T p.61–65</span></p>
+        </div>
+
+        <div class="card" style="border-left: 3px solid var(--warn-border);">
+          <div class="section-label" style="color: var(--warn-border);">✗ Gentamicin (위험 케이스)</div>
+          <p>Aminoglycoside, 신장 청소가 매우 빠른 친수성 약물, 조직 침투는 매우 느림 (특히 신피질).</p>
+          <p style="margin-top: 4px;">R&amp;T Fig.3-7: <em>"More than <strong class="warn">95%</strong> of an IV dose ... is eliminated into the urine before distribution equilibrium has occurred."</em></p>
+        </div>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card compact">
+          $$\underbrace{t_{\alpha}}_{\text{혈장↔말초 빠른 평형}} \approx \underbrace{30\,\text{min}}_{\alpha\text{-phase 시상수}} \;\;\ll\;\; \underbrace{t_{\beta\text{-deep}}}_{\text{깊은 조직 분포 평형}} \approx \underbrace{36\,\text{hr}}_{\text{R\&T Fig.3-7}}$$
+          <div class="formula-source">R&amp;T가 말하는 "분포 평형"은 빠른 α-phase가 아니라 <strong>깊은 조직 분포 평형(≈36시간)</strong></div>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>🎯 결정 기준 — 한 줄로</strong><br>
+        "<strong>분포 단계 AUC가 전체 AUC의 몇 %를 차지하는가</strong>"가 모든 걸 정함. Midazolam ≈ 48% → 1구획 근사 안전. Gentamicin > 95%가 분포 평형 도달 전 빠져나감 → 말단 기울기 신뢰 위험.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 18 · C5 MRT 정의 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 5</span>
+      <h1 class="slide-title">평균체류시간 <em>MRT</em> — 1구획 IV의 수학적 서명</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="card-soft compact">
+          <div class="section-label">한 줄 정의</div>
+          <p><em>MRT</em>는 약물 분자가 체내에 머무는 시간의 평균값임. <strong class="coral">시간가중 평균.</strong> <span class="chip">G&amp;W Eq.2:11, p.19</span></p>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{AUC_0^\infty}_{\text{총노출}} = \int_0^\infty \underbrace{C(t)}_{\text{농도함수}}\, dt$$
+            $$\underbrace{AUMC_0^\infty}_{\text{시간가중노출}} = \int_0^\infty \underbrace{t}_{\text{시간가중}} \cdot C(t)\, dt$$
+          </div>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{MRT}_{\text{평균체류}} = \frac{\underbrace{AUMC_0^\infty}_{\text{시간가중면적}}}{\underbrace{AUC_0^\infty}_{\text{총면적}}}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="dark-card">
+          <div class="section-label">💡 비유 — 중위 vs 무게중심</div>
+          <p><em>t<sub>½</sub></em>이 "농도가 반이 되는 한 시점 (<strong class="amber">중위값</strong>)"이라면,</p>
+          <p style="margin-top: 8px;"><em>MRT</em>는 <strong>모든 분자가 머문 시간을 평균낸 출석부 (<span class="accent">무게중심</span>)</strong>.</p>
+          <p style="margin-top: 10px; font-family: var(--font-display); font-style: italic; color: #f5f0e8;">한 분자는 5분 머물고 다른 분자는 5시간 머물면, 이걸 다 평균낸 값이 <em class="accent">MRT</em>.</p>
+        </div>
+
+        <div class="callout callout-teal">
+          <strong>🎯 박사과정 실무 가치</strong> — NCA에서 MRT를 보고하는 진짜 이유는 다음 슬라이드에서 <em>V<sub>ss</sub> 환산</em>을 통해 드러난다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 19 · C5 1구획 서명 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge">C 5</span>
+      <h1 class="slide-title">1구획 IV bolus의 수학적 서명 — <em>MRT/t<sub>½</sub></em> ≈ 1.443</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{MRT}_{\text{평균체류}} = \frac{1}{\underbrace{K}_{\text{분율속도}}} = \frac{\underbrace{t_{1/2}}_{\text{반감기}}}{\underbrace{\ln 2}_{\text{절반조건}}} \approx \underbrace{1.443}_{1/\ln 2} \cdot t_{1/2}$$
+          <div class="formula-source">R&amp;T Eq.3-25, p.60 — 1구획 IV bolus 한정</div>
+        </div>
+      </div>
+
+      <div class="row-2" style="gap: 14px;">
+        <div class="col">
+          <div class="sub-title">Compound A 4명 데이터로 확인</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center">Subj</th>
+                  <th class="num">K</th>
+                  <th class="num">t<sub>½</sub></th>
+                  <th class="num">MRT</th>
+                  <th class="num">MRT/t<sub>½</sub></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="center">1</td><td class="num">0.01</td><td class="num">68</td><td class="num">98</td><td class="num"><strong>1.44</strong></td></tr>
+                <tr><td class="center">2</td><td class="num">0.02</td><td class="num">34</td><td class="num">48</td><td class="num">1.41</td></tr>
+                <tr><td class="center">3</td><td class="num">0.02</td><td class="num">36</td><td class="num">53</td><td class="num">1.47</td></tr>
+                <tr><td class="center">4</td><td class="num">0.01</td><td class="num">71</td><td class="num">100</td><td class="num">1.41</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size: 11px; color: var(--muted); margin-top: 4px;"><span class="chip">G&amp;W 5e, Case Study PK1, Table 1.3, p.474</span></p>
+        </div>
+
+        <div class="col">
+          <div class="callout callout-amber">
+            <strong>📌 표 값 vs 이론값</strong><br>
+            이론적으로 <em>MRT/t<sub>½</sub></em> = <strong>1/ln 2 ≈ 1.4427</strong>. 표에서 1.41~1.47로 흩어진 건 <strong>측정 노이즈가 아니라 표 원본이 분 단위로 반올림됐기 때문</strong> (S1: 98/68=1.441, S4: 100/71=1.408).
+          </div>
+
+          <div class="dark-card compact">
+            <div class="section-label">📦 NCA의 무기 — V<sub>ss</sub> 환산</div>
+            <p style="text-align: center; font-family: var(--font-display); font-style: italic; font-size: clamp(17px, 1.5vw, 22px); color: var(--accent-amber); margin-top: 6px;">
+              V<sub>ss</sub> = CL · MRT
+            </p>
+            <p style="margin-top: 4px;">구획 모델 없이 (model-independent) <em class="accent">V<sub>ss</sub></em>를 뽑을 수 있음.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>C5 핵심</strong> — MRT/t<sub>½</sub> ≈ 1.443이 무너지면 1구획 가정 재검토 (다구획성·혈관외·외삽 품질 의심).
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 20 · §5 혼동쌍 1 CL vs K ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge amber">§ 5</span>
+      <h1 class="slide-title">혼동쌍 1: <em>CL</em> vs <em>K</em> — 일차 vs 이차</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>비교</th>
+              <th><strong class="coral">CL</strong></th>
+              <th><em>K</em></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>단위</strong></td>
+              <td>L/min (<strong>유량</strong>)</td>
+              <td>1/min (속도)</td>
+            </tr>
+            <tr>
+              <td><strong>위계</strong></td>
+              <td><strong class="coral">일차</strong></td>
+              <td><span class="muted">이차</span></td>
+            </tr>
+            <tr>
+              <td><strong>식 위치</strong></td>
+              <td>Dose/AUC · R<sub>in</sub>/C<sub>ss</sub> · Q·E</td>
+              <td>CL/V · ln 2 / t<sub>½</sub></td>
+            </tr>
+            <tr>
+              <td><strong>변화 원인</strong></td>
+              <td>혈류·추출·대사·배설</td>
+              <td>CL/V <strong>비율</strong> 변화</td>
+            </tr>
+            <tr>
+              <td><strong>혼동 시 결과</strong></td>
+              <td>(없음 — 일차임)</td>
+              <td><span class="warn">유지용량·공변량 위치 모두 망가짐</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dark-card">
+        <div class="section-label">⚡ 기억 고리 — 배수구 vs 수위 속도</div>
+        <p><em class="accent">CL</em> = 배수구 크기, <em class="amber">K</em> = 수위가 떨어지는 상대 속도. <strong>배수구가 커도 욕조가 크면 수위는 천천히 떨어짐</strong> → K 같아도 CL은 두 배 다를 수 있음 (S1 vs S4).</p>
+        <p style="margin-top: 8px; font-family: var(--font-display); font-style: italic; font-size: clamp(15px, 1.3vw, 19px); color: #f5f0e8;">
+          공변량이 붙는 자리는 <strong class="accent">배수구(CL)와 욕조(V)</strong>지, 그 비율(<em class="amber">K</em>)이 아니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 21 · §5 혼동쌍 2 V vs Vss ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge amber">§ 5</span>
+      <h1 class="slide-title">혼동쌍 2: <em>V</em> vs <em>V<sub>ss</sub></em> — 겉보기 bolus 용적 vs 항정 분포 용적</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>비교</th>
+              <th><em>V</em> (bolus)</th>
+              <th><em>V<sub>ss</sub></em></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>식</strong></td>
+              <td>D/C⁰ 또는 CL/K</td>
+              <td>CL·MRT, 조직 분배 합</td>
+            </tr>
+            <tr>
+              <td><strong>시점</strong></td>
+              <td>분포 평형 직후 외삽</td>
+              <td>항정 평형</td>
+            </tr>
+            <tr>
+              <td><strong>다구획에서</strong></td>
+              <td>중심 구획 V<sub>c</sub>와 구분 필요</td>
+              <td>NCA에서 모델-독립적</td>
+            </tr>
+            <tr>
+              <td><strong>혼동 시 결과</strong></td>
+              <td><span class="warn">부하용량에 말단 용적 잘못 적용</span></td>
+              <td><span class="warn">1구획처럼 단순화</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dark-card">
+        <div class="section-label">⚡ 기억 고리 — 실제 vs 외관상 용기</div>
+        <p><em class="accent">V</em>는 "약이 실제로 어디 있는가"가 아님. 관측 농도 설명을 위해 <strong>가정해야 하는 겉보기 공간 크기</strong>임.</p>
+        <p style="margin-top: 6px;">조직 결합 강할수록 V가 실제 체적을 훨씬 초과 — <strong class="amber">Quinacrine: 40,000 L</strong>.</p>
+      </div>
+
+      <div class="callout callout-amber">
+        본 세션 범위는 "<em>V</em>가 겉보기 파라미터"라는 사실까지. <em>V<sub>ss</sub></em> 본격 해석은 다구획 분포 세션. <span class="chip">G&amp;W p.20–21</span> <span class="chip">R&amp;T p.63–64</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 22 · §5 혼동쌍 3 t½ vs MRT ═══════ -->
+  <section class="slide">
+    <div class="slide-header">
+      <span class="sec-badge amber">§ 5</span>
+      <h1 class="slide-title">혼동쌍 3: <em>t<sub>½</sub></em> vs <em>MRT</em> — 절반시간 vs 평균체류</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>비교</th>
+              <th><em>t<sub>½</sub></em></th>
+              <th><em>MRT</em></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>정의</strong></td>
+              <td>ln 2 / K</td>
+              <td>AUMC/AUC</td>
+            </tr>
+            <tr>
+              <td><strong>직관</strong></td>
+              <td>농도 반감의 <strong>한 시점 (중위)</strong></td>
+              <td>분자 체류시간의 <strong>평균 (무게중심)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>1구획 IV에서 관계</strong></td>
+              <td class="muted">—</td>
+              <td>= 1/K = 1.443 · t<sub>½</sub></td>
+            </tr>
+            <tr>
+              <td><strong>다구획·혈관외에서</strong></td>
+              <td>말단 기울기 의존</td>
+              <td>분포·흡수 구조까지 반영</td>
+            </tr>
+            <tr>
+              <td><strong>혼동 시 결과</strong></td>
+              <td><span class="warn">항정 시간·청소 능력 혼동</span></td>
+              <td><span class="warn">NCA 체류시간·V<sub>ss</sub> 해석 오류</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dark-card">
+        <div class="section-label">⚡ 기억 고리 — 중위값 vs 무게중심</div>
+        <p><em class="amber">t<sub>½</sub></em>은 농도가 반으로 줄어드는 <strong>한 시점</strong>. <em class="accent">MRT</em>는 모든 분자의 체류시간을 <strong>평균낸 값</strong>.</p>
+        <p style="margin-top: 6px;">1구획 IV에서만 MRT = 1.443 × t<sub>½</sub>가 깔끔하게 성립.</p>
+        <p style="margin-top: 6px; font-family: var(--font-display); font-style: italic; font-size: clamp(15px, 1.3vw, 19px); color: #f5f0e8;">
+          분포 지연·흡수 지연 더해지면 <em class="accent">MRT</em>가 <em class="amber">t<sub>½</sub></em>보다 훨씬 길어질 수 있다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 23 · M1 BLQ NCA ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge dark">M 1</span>
+      <h1 class="slide-title">BLQ (정량 한계 미만) — NCA 위치별 처리</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="row-2" style="gap: 14px;">
+        <div class="col">
+          <div class="card-soft compact">
+            <div class="section-label">한 줄 정의</div>
+            <p><strong>BLQ</strong>는 LLOQ 미만이라 정량값 보고가 불가능한 농도 구간. 보고서엔 "BLQ", "&lt;LLOQ", 또는 missing 표기.</p>
+          </div>
+
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">
+              $$\underbrace{C_{obs}}_{\text{관측농도}} < \underbrace{LLOQ}_{\text{정량하한}} \;\;\Rightarrow\;\; \underbrace{\text{BLQ tag}}_{\text{보고 분류}}$$
+            </div>
+          </div>
+
+          <div class="callout callout-warn">
+            <strong>왜 1구획 IV 세션에서 짚어야 함?</strong><br>
+            <strong>말단 영역 = 농도 낮은 영역 = BLQ 점들이 모이는 자리.</strong> 그리고 그 자리가 <em>K</em>를 결정하는 자리임.
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="algo-box">BLQ 처리 규칙
+   ↓
+말단 회귀 직선
+   ↓
+K 추정 → t½
+   ↓
+AUC 외삽 → CL = Dose/AUC
+   ↓
+<span class="accent">유지용량 권고</span>
+   ↑
+<span class="comment"># 한 단계라도 흔들리면
+# 사슬 끝이 어긋남</span></div>
+        </div>
+      </div>
+
+      <div class="sub-title" style="margin-top: 4px;">NCA 단계 — 위치별 결정론적 규칙</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>위치</th><th>표준 처리</th><th>영향</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>첫 정량값 이전 BLQ</strong></td><td>0 처리</td><td>AUC 시작점 미미</td></tr>
+            <tr><td><strong>정량값 사이 끼인 BLQ</strong></td><td>선형 보간 또는 결측</td><td>log-linear 회귀 가중치</td></tr>
+            <tr><td><strong class="coral">말단 BLQ</strong></td><td><strong>0 또는 결측 후 외삽</strong></td><td><strong class="warn">K·말단 V·AUC<sub>t</sub><sup>∞</sup>에 직접</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>💼 실무 게이트</strong> — NCA 보고서엔 <strong>% AUC extrapolated</strong>가 항상 같이 와야 함. <strong>20% 넘으면 그 보고서는 신뢰 약함으로 분류.</strong> 1차 질문 — "말단 BLQ 어떻게 처리했음? 외삽 비율 몇 %임?"
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 24 · M1 Beal M3 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge dark">M 1</span>
+      <h1 class="slide-title">PopPK 단계 — Beal M3 likelihood가 표준인 이유</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="card-soft compact">
+        <p>NCA는 한 환자 곡선의 결정론적 규칙. NONMEM은 다름 — <strong>BLQ 점을 likelihood에 어떻게 반영하는가</strong>가 분기점.</p>
+        <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+          <span class="chip">Beal SL. J Pharmacokinet Pharmacodyn 2001;28:481–504</span>
+          <span class="chip">Ahn JE et al. 2008;35:401–421</span>
+          <span class="chip">Bergstrand &amp; Karlsson. AAPS J 2009;11:371–380</span>
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>방법</th><th>처리 방식</th><th>적합 상황</th><th>한계</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>M1</strong></td><td>BLQ 점 결측 처리 후 제외</td><td>BLQ 비율 &lt; 10%</td><td>비율 늘면 K 편향</td></tr>
+            <tr><td><strong class="coral">M3</strong></td><td><strong>누적분포 Φ(LLOQ|Ĉ,σ)를 likelihood에 추가</strong></td><td><strong>표준 권고, BLQ 10–60%</strong></td><td>계산 비용 ↑</td></tr>
+            <tr><td><strong>M5</strong></td><td>LLOQ/2 치환 후 정량값처럼 처리</td><td>빠른 비교용</td><td>편향 발생</td></tr>
+            <tr><td><strong>M6</strong></td><td>연속 BLQ 중 첫 점만 LLOQ/2 보존</td><td>말단 tail 긴 경우</td><td>이론적 근거 약함</td></tr>
+            <tr><td><strong>M7</strong></td><td>0 치환 후 정량값처럼 처리</td><td><span class="warn">사용 비권장</span></td><td>가장 큰 편향</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card compact compact-formula">
+          $$\underbrace{\mathcal{L}_{M3}}_{\text{우도}} = \underbrace{\prod_{C_i\geq LLOQ} \phi(C_i\mid \hat C_i, \sigma)}_{\text{정량값: 확률밀도}} \cdot \underbrace{\prod_{C_j<LLOQ} \Phi\!\left(\frac{LLOQ-\hat C_j}{\sigma}\right)}_{\text{BLQ: 누적확률 (censoring)}}$$
+        </div>
+      </div>
+
+      <div class="dark-card compact">
+        <div class="section-label">🎯 핵심 직관</div>
+        <p>"BLQ 점은 '<strong class="amber">측정값이 LLOQ보다 작다는 사실(censoring event)</strong>'만 알고 있음"을 likelihood에 그대로 반영. 0으로 깎거나(M7) 절반값으로 미는 것(M5)이 아니라, "<strong class="accent">이 시점엔 농도가 LLOQ 이하라는 확률 한 덩어리</strong>"를 그 자리에 넣는 것.</p>
+        <p style="margin-top: 6px; font-family: var(--font-mono); font-size: 12px;">NONMEM 구현: <code style="background: var(--surface-dark-elevated); padding: 1px 6px; border-radius: 4px; color: var(--accent-amber);">F_FLAG=1</code> 또는 <code style="background: var(--surface-dark-elevated); padding: 1px 6px; border-radius: 4px; color: var(--accent-amber);">YLO</code> 구문 + <code style="background: var(--surface-dark-elevated); padding: 1px 6px; border-radius: 4px; color: var(--accent-amber);">LAPLACE</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 25 · M2 Allometric 성인 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge dark">M 2</span>
+      <h1 class="slide-title">Allometric Scaling — 체중 표준화의 0.75 vs 1.0</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content two-col">
+      <div class="col">
+        <div class="card-soft compact">
+          <div class="section-label">한 줄 정의</div>
+          <p>생리학적 파라미터를 <strong>체중의 거듭제곱 함수</strong>로 표준화하는 framework.</p>
+        </div>
+
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{P_i}_{\text{개체 i}} = \underbrace{P_{ref}}_{\text{기준 (70 kg)}} \cdot \left(\frac{\underbrace{BW_i}_{\text{개체 체중}}}{\underbrace{BW_{ref}}_{\text{70 kg}}}\right)^{\underbrace{\theta}_{\text{지수}}}$$
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>파라미터</th><th class="num">표준 지수</th><th>직관</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong class="coral">CL</strong></td><td class="num"><strong>0.75</strong></td><td>대사·열 손실 (표면적·활동 절충)</td></tr>
+              <tr><td><strong class="coral">V</strong></td><td class="num"><strong>1.0</strong></td><td>체수분·세포외액·조직 부피 (선형)</td></tr>
+              <tr><td>Q</td><td class="num">0.75</td><td>CL과 같은 유량 차원</td></tr>
+              <tr><td>t<sub>½</sub> (예측)</td><td class="num">0.25</td><td>V<sup>1.0</sup>/CL<sup>0.75</sup> = BW<sup>0.25</sup></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="algo-box">; NONMEM 코드 (가장 빈번한 형태)
+<span class="comment">; -----------------------------</span>
+CL = THETA(1)*(WT/70)**<span class="accent">0.75</span> * EXP(ETA(1))
+V  = THETA(2)*(WT/70)       * EXP(ETA(2))
+<span class="comment">                            ↑ 0.75 vs 1.0</span></div>
+
+        <div class="callout callout-warn">
+          <strong>💼 PopPK 1주차 흔한 실수</strong><br>
+          ① 체중 covariate 누락 → 잔차 패턴이 체중과 같이 움직임<br>
+          ② 체중을 <strong>선형</strong>으로 넣음 (CL ∝ BW<sup>1.0</sup>) → 큰 체중 환자에서 CL 과대추정<br>
+          <strong>CL엔 0.75, V엔 1.0 — 이게 표준 출발점.</strong>
+        </div>
+
+        <div class="dark-card compact">
+          <p>C1·C2에서 CL·V가 유지/부하용량 결정. 환자 체중이 50–100 kg 범위로 흩어진 자료에서 <strong class="amber">CL·V를 raw 값으로 환자별 비교하는 게 의미 없음.</strong></p>
+          <p style="margin-top: 4px;">→ <strong class="accent">체중을 먼저 표준화한 뒤 남는 잔차</strong>를 봐야 진짜 covariate 신호.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 26 · M2 소아 maturation ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge dark">M 2</span>
+      <h1 class="slide-title">소아·신생아 — size × maturation 분리</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="card-soft compact">
+        <p>성인에서 잘 되는 ¾제곱이 신생아에서 깨지는 이유 한 줄 — <strong class="coral">체중이 작아진다는 사실(size)과 효소·신기능이 미성숙하다는 사실(maturation)의 시간 척도가 다름.</strong>
+        체중은 출생부터 단조 증가, CYP3A·UGT·신사구체 여과율은 발달의 sigmoid 궤적으로 늦게 성숙.
+        <span class="chip">Anderson BJ, Holford NHG. Annu Rev Pharmacol Toxicol 2008;48:303–332</span></p>
+      </div>
+
+      <div class="row-2" style="gap: 14px;">
+        <div class="col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px;">표준형 — 두 항의 곱</div>
+              $$\underbrace{CL_i}_{\text{개체 CL}} = \underbrace{CL_{std}}_{\text{성인 표준}} \cdot \underbrace{\left(\frac{BW_i}{70}\right)^{0.75}}_{\text{size 항}} \cdot \underbrace{F_{mat}(PMA_i)}_{\text{maturation 항}}$$
+            </div>
+          </div>
+
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">
+              $$\underbrace{F_{mat}(PMA)}_{\text{성숙 분율}} = \frac{\underbrace{PMA^{Hill}}_{\text{현재 성숙}}}{\underbrace{TM_{50}^{Hill}}_{\text{50\% PMA}} + PMA^{Hill}} \;\in\; [0,\,1]$$
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>기호</th><th>의미</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>PMA</strong></td><td>post-menstrual age (수태 후 주수)</td></tr>
+                <tr><td><strong>TM<sub>50</sub></strong></td><td>F<sub>mat</sub>=0.5 PMA (신여과 ≈ 47.7주)</td></tr>
+                <tr><td><strong>Hill</strong></td><td>sigmoid 가팔기 (보통 3–5)</td></tr>
+                <tr><td><strong>F<sub>mat</sub></strong></td><td>무차원 분율 (0=미성숙 ~ 1=성숙)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-amber">
+            <strong>💡 왜 출생일이 아니라 PMA?</strong> 조산아(PMA 32주 출생)와 만삭아(PMA 40주 출생)를 출생 후 일자로 정렬하면 "생후 0일"의 청소 능력이 서로 완전히 다름. PMA로 정렬하면 같은 sigmoid 위에 놓임. <strong>출생이라는 사건이 결정점이 아니라 수태부터의 발달 시간이 결정점.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="dark-card compact">
+        <div class="section-label">💼 신생아 PopPK 보고서 흔한 코멘트</div>
+        <p>① "체중만 covariate, maturation 누락" → 신생아 CL <em class="amber">과대추정</em></p>
+        <p>② "출생 후 일자(postnatal age)를 maturation 시계로 사용" → 조산아·만삭아 정렬 실패</p>
+        <p style="margin-top: 6px;"><strong>표준 출발점:</strong> <strong class="accent">size × maturation 분리 + PMA-based F<sub>mat</sub> sigmoid.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 27 · §7 Q1-Q5 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge teal">§ 7</span>
+      <h1 class="slide-title">자기 테스트 Q1–Q5</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="qa-grid">
+        <div class="qa-card">
+          <div class="qa-num">Q1 · 회상 ★★</div>
+          <div class="qa-q">t<sub>½</sub>를 V, CL로 표현하고 왜 "이차"인지 설명</div>
+          <div class="qa-a">
+            <div class="mini-formula" style="padding: 6px; margin-bottom: 4px;">\(t_{1/2} = \dfrac{0.693\cdot V}{CL}\)</div>
+            t<sub>½</sub>만으로 CL↓인지 V↑인지 구분 불가. <strong>다른 두 변수가 만들어낸 표지값</strong>이라는 게 "이차"의 진짜 뜻. <span class="chip">G&amp;W p.17–18</span>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-num">Q2 · 회상 ★</div>
+          <div class="qa-q">V의 정의식 두 가지</div>
+          <div class="qa-a">
+            <div class="mini-formula" style="padding: 6px; margin-bottom: 4px;">\(V = \dfrac{A_b}{C}, \quad V = \dfrac{D_{iv}}{C^0}\)</div>
+            말단 정보 있으면 V = CL/K = 1.44·CL·t<sub>½</sub>. <span class="chip">G&amp;W p.20</span>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-num">Q3 · 회상 ★</div>
+          <div class="qa-q">C<sub>ss</sub> = R<sub>in</sub>/CL 도출</div>
+          <div class="qa-a">
+            <div class="mini-formula" style="padding: 6px; margin-bottom: 4px;">\(\dfrac{dC}{dt} = \dfrac{R_{in}}{V} - \dfrac{CL}{V}C \xrightarrow{dC/dt=0} C_{ss} = \dfrac{R_{in}}{CL}\)</div>
+            <strong>V가 사라짐.</strong> V는 도달 시간엔 영향, 최종 C<sub>ss</sub>엔 영향 없음. <span class="chip">G&amp;W p.22–23</span>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-num">Q4 · 회상 ○</div>
+          <div class="qa-q">MRT 정의와 1구획 IV와의 관계</div>
+          <div class="qa-a">
+            <div class="mini-formula" style="padding: 6px; margin-bottom: 4px;">\(MRT = \dfrac{AUMC}{AUC}, \quad MRT_{1cpt} = \dfrac{1}{K} = 1.443\cdot t_{1/2}\)</div>
+            두 번째 등식은 <strong>1구획 IV bolus 한정.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-card" style="border-left: 3px solid var(--coral);">
+        <div class="qa-num">Q5 · 적용 ★★ — §1 함정의 결정적 숫자</div>
+        <div class="qa-q">S1·S4에 같은 R<sub>in</sub> = 10 µg/min — C<sub>ss</sub> 같음?</div>
+        <div class="qa-a" style="display: flex; gap: 12px; align-items: center;">
+          <div class="mini-formula" style="padding: 8px 14px; flex: 1;">
+            \(C_{ss,1} = \dfrac{10}{0.1} = \textbf{100}\,\mu g/L\)
+          </div>
+          <div class="mini-formula" style="padding: 8px 14px; flex: 1;">
+            \(C_{ss,4} = \dfrac{10}{0.2} = \textbf{50}\,\mu g/L\)
+          </div>
+          <div style="flex: 1.2;"><strong class="coral">두 배 차이.</strong> K·t<sub>½</sub> 비슷해도 C<sub>ss</sub>는 CL이 정함. <span class="chip">G&amp;W Eq.2:22, p.23</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 28 · §7 Q6-Q9 ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge teal">§ 7</span>
+      <h1 class="slide-title">자기 테스트 Q6–Q9 — 적용 + Boss Dilemma</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="qa-grid">
+        <div class="qa-card">
+          <div class="qa-num">Q6 · 적용 ★★</div>
+          <div class="qa-q">t<sub>½</sub>가 늘었음 — CL↓ vs V↑ 어떻게 분리함?</div>
+          <div class="qa-a">
+            <strong>AUC와 C⁰를 분리해서 봄:</strong>
+            <ul style="margin: 4px 0 0 16px; padding: 0;">
+              <li>CL↓ → AUC = Dose/CL ↑</li>
+              <li>V↑ → C⁰ = D/V ↓</li>
+            </ul>
+            둘 다 변하면 t<sub>½</sub> 하나로는 분리 불가. <span class="chip">R&amp;T p.58–60</span>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-num">Q7 · 적용 ★ — Midazolam</div>
+          <div class="qa-q">79 kg, 7.5 mg IV, AUC = 287 µg·hr/L, t<sub>½</sub>=3.8 hr</div>
+          <div class="qa-a">
+            <div class="mini-formula" style="padding: 6px; margin: 4px 0;">\(CL = \dfrac{7500}{287} \approx \textbf{26}\,L/hr\)</div>
+            <div class="mini-formula" style="padding: 6px; margin: 4px 0;">\(V = 1.44 \times 26 \times 3.8 \approx \textbf{142}\,L\)</div>
+            5분 농도 180 µg/L → 혈장 내 = 180×3.4 = 612 µg. 혈장 밖 = 7.5−0.612 = 6.89 mg = <strong class="coral">약 92%</strong>. 빠른 조직 분포 직접 증거. <span class="chip">R&amp;T p.61–63</span>
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-num">Q8 · 적용 ★</div>
+          <div class="qa-q">MRT/t<sub>½</sub> = 1.85. 무엇을 의심함?</div>
+          <div class="qa-a">
+            1구획 IV bolus 단일지수 가정 <strong>위배</strong>. <strong>분포 동력학</strong> 또는 <strong>말단 외삽 품질</strong> 문제 의심. 구체적 NONMEM ADVAN 선택은 후속 실무 판단. <span class="chip">G&amp;W p.19</span> <span class="chip">R&amp;T p.60–66</span>
+          </div>
+        </div>
+
+        <div class="qa-card" style="border-left: 3px solid var(--coral);">
+          <div class="qa-num">Q9 · Boss Dilemma ★★</div>
+          <div class="qa-q">새 IV 약물 반로그 biphasic — 1구획 vs 2구획 방어?</div>
+          <div class="qa-a">
+            질문 자체가 잘못됨. "어느 모델이 항상 옳음?"이 아니라 <strong>"분포 단계가 임상적으로 중요한 시간대임?"</strong>임.
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card compact compact-formula">
+          $$\underbrace{\text{말단 = 소실 대표}}_{\text{1구획 안전}} \;\Leftrightarrow\; \underbrace{\text{분포 단계 AUC 비율 작음}}_{\text{midazolam }\approx 48\% \text{ OK}} \;\;\text{vs}\;\; \underbrace{\text{비율 매우 큼}}_{\text{gentamicin: > 95\% 신배설 (분포 평형 전)}}$$
+          <div class="formula-source">방어 시 함께 제시할 두 가지: (1) 분포 단계 AUC 비율, (2) 임상 의사결정 시점이 분포 단계인가 소실 단계인가 · R&amp;T p.61–66, Fig.3-5·3-6·3-7</div>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>§7 정리</strong> — 계산 문제 핵심은 수식 암기가 아니라 <strong>"어떤 식에서 어떤 파라미터가 사라지는가"</strong>임. C<sub>ss</sub>에선 V가 사라지고, t<sub>½</sub>엔 CL·V가 함께 남음. 이 사라짐과 남음의 패턴이 임상 결정의 일차 좌표를 알려줌.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SLIDE 29 · §8 메타프레임 · Closer ═══════ -->
+  <section class="slide has-formula">
+    <div class="slide-header">
+      <span class="sec-badge dark">§ 8</span>
+      <h1 class="slide-title">메타프레임 — 7가지 실패 + 최종 4식</h1>
+    </div>
+    <hr class="header-rule">
+
+    <div class="content">
+      <div class="sub-title">⚠️ 대충 넘기면 실제로 일어나는 7가지 실패</div>
+
+      <ol class="failure-list">
+        <li><strong>t<sub>½</sub> 단독 해석</strong> — "긴 반감기=신기능 저하" 자동 결론 → 부종 환자(V↑) 놓침. 정답: <em>AUC·C⁰ 함께 봄</em>.</li>
+        <li><strong>V를 해부학적 부피로 오해</strong> — Quinacrine 40,000 L 보고 "모델 틀림" 결론. 정답: <em>혈장 측정 농도와 총량의 환산률</em>.</li>
+        <li><strong>말단 단계 자동 신뢰</strong> — gentamicin trap (95% 신배설이 36 hr 도달 전). 정답: <em>분포 단계 AUC 비율 확인</em>.</li>
+        <li><strong>K 직접 모수화</strong> — TRANS1로 K에 공변량. CL/V 분리 불가. 정답: <em>TRANS2로 CL·V 분리</em>.</li>
+        <li><strong>BLQ 무시 (M1)</strong> — 말단 0 치환 → K↑ → t<sub>½</sub>↓ → AUC↓ → CL↑ 사슬 폭발. 정답: <em>NCA 위치별 규칙 + PopPK M3</em>.</li>
+        <li><strong>체중 표준화 누락 (M2)</strong> — raw CL·V 비교 → 체격 효과와 covariate 신호 혼재. 정답: <em>0.75/1.0 표준 출발</em>.</li>
+        <li><strong>소아 maturation 누락 (M2)</strong> — 체중만 ¾제곱 → 신생아 CL 과대. 정답: <em>size × maturation + PMA</em>.</li>
+      </ol>
+
+      <div class="formula-card-wrap">
+        <div class="formula-card compact compact-formula" style="background: var(--surface-dark); border-color: var(--surface-dark);">
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-amber); margin-bottom: 6px; letter-spacing: 1.2px;">최종 4식 — 1구획 IV bolus PK의 마무리</div>
+          <span style="color: #faf9f5;">$$\underbrace{CL}_{\text{노출결정}}=\frac{Dose}{AUC},\quad \underbrace{V}_{\text{초기농도}}=\frac{D}{C^0},\quad \underbrace{K}_{\text{시간기울기}}=\frac{CL}{V},\quad \underbrace{t_{1/2}}_{\text{시간척도}}=\frac{0.693\cdot V}{CL}$$</span>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="label">Session 01 · Closing Line</div>
+        <p class="body">
+          진짜 목표는 <strong>식 암기가 아니라 위계 체화</strong>.<br>
+          <em>CL·V를 먼저 보고, K·t<sub>½</sub>를 그 결과로 읽는다.</em><br>
+          <span style="color: #f5f0e8; font-size: 0.8em;">— S1 vs S4가 끝까지 가르쳐준 한 줄.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     BOTTOM NAVIGATION
+     ═══════════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <button class="nav-btn" id="btn-prev">← 이전</button>
+  <div class="nav-center">
+    <div class="prog-text" id="prog-text">1 / 30</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width: 3.33%;"></div></div>
+  </div>
+  <button class="nav-btn" id="btn-next">다음 →</button>
+</nav>
+
+<!-- KaTeX scripts (synchronous, in this order, NO defer/async) -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var slides = document.querySelectorAll('.slide');
+  var tocBtns = document.querySelectorAll('.toc-btn');
+  var TOTAL = slides.length;
+  var cur = 0;
+
+  var progText = document.getElementById('prog-text');
+  var progFill = document.getElementById('prog-fill');
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+
+  function goTo(n) {
+    if (n < 0 || n >= TOTAL) return;
+    slides[cur].classList.remove('active');
+    if (tocBtns[cur]) tocBtns[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    if (tocBtns[cur]) {
+      tocBtns[cur].classList.add('active');
+      try { tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e) {}
+    }
+    progText.textContent = (cur + 1) + ' / ' + TOTAL;
+    progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+    btnPrev.disabled = (cur === 0);
+    btnNext.disabled = (cur === TOTAL - 1);
+  }
+
+  // TOC clicks
+  for (var i = 0; i < tocBtns.length; i++) {
+    (function(idx) {
+      tocBtns[idx].addEventListener('click', function() {
+        var n = parseInt(tocBtns[idx].getAttribute('data-slide'), 10);
+        if (!isNaN(n)) goTo(n);
+      });
+    })(i);
+  }
+
+  // Nav buttons
+  btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+  btnNext.addEventListener('click', function() { goTo(cur + 1); });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') { goTo(cur - 1); }
+    else if (e.key === 'ArrowRight') { goTo(cur + 1); }
+  });
+
+  // KaTeX rendering
+  function renderMath() {
+    if (typeof renderMathInElement !== 'function') return;
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$',  right: '$$',  display: true  },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false,
+      strict: false,
+      trust: false,
+      macros: {
+        "\\R": "\\mathbb{R}"
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMath();
+      goTo(0);
+    });
+  } else {
+    renderMath();
+    goTo(0);
+  }
+})();
+</script>
+
+</body>
+</html>
