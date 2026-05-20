@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 05 · 2구획 모델 — 4개 의사결정 분기점</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+:root{
+  --canvas:#faf9f5;--surface-soft:#f5f0e8;--surface-card:#efe9de;--surface-cream-strong:#e8e0d2;
+  --surface-dark:#181715;--surface-dark-elev:#252320;--surface-dark-soft:#1f1e1b;
+  --hairline:#e6dfd8;--hairline-soft:#ebe6df;
+  --coral:#cc785c;--coral-active:#a9583e;--coral-pale:#f4e4dc;
+  --accent-teal:#5db8a6;--accent-amber:#e8a55a;
+  --ink:#141413;--body-strong:#252523;--body:#3d3d3a;--muted:#6c6a64;--muted-soft:#8e8b82;
+  --on-primary:#ffffff;--on-dark:#faf9f5;--on-dark-cream:#e8dccc;
+  --warn-bg:#fcf0ef;--warn-border:#c64545;--amber-bg:#fdf4e0;--amber-border:#d4a017;
+  --teal-bg:#e6f4f0;--teal-border:#5db8a6;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%}
+body{font-family:var(--sans);font-size:15px;color:var(--body);background:var(--canvas);line-height:1.55;-webkit-font-smoothing:antialiased;overflow:hidden}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--surface-soft);border-right:1px solid var(--hairline);overflow-y:auto;z-index:10;padding:24px 0 20px}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--hairline);border-radius:3px}
+.wordmark{display:flex;align-items:center;gap:9px;padding:0 22px 18px;border-bottom:1px solid var(--hairline);margin-bottom:14px}
+.wordmark .name{font-family:var(--serif);font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-0.02em}
+.wordmark .session{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
+.toc-list{list-style:none;padding:0 14px}
+.toc-btn{display:flex;align-items:center;gap:6px;width:100%;text-align:left;background:transparent;border:none;border-left:2px solid transparent;padding:5px 8px 5px 14px;font-family:var(--sans);font-size:12px;color:var(--muted);cursor:pointer;line-height:1.3;transition:all 160ms ease;border-radius:0 4px 4px 0;white-space:nowrap;overflow:hidden}
+.toc-btn:hover{color:var(--body-strong);background:rgba(204,120,92,0.05)}
+.toc-btn.active{border-left:2px solid var(--coral);color:var(--coral);background:rgba(204,120,92,0.06);font-weight:500}
+.toc-btn .toc-num{font-family:var(--mono);font-size:10px;color:var(--muted-soft);flex-shrink:0;white-space:nowrap;letter-spacing:0.3px;min-width:52px}
+.toc-btn.active .toc-num{color:var(--coral)}
+.toc-btn .toc-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:56px;display:flex;flex-direction:column;overflow:hidden;background:var(--canvas)}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:34px 56px 24px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 240ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:56px}
+.slide .formula-card,.slide .formula-card-wrap{overflow:visible !important}
+.slide-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.sec-badge{display:inline-flex;align-items:center;background:var(--coral);color:var(--on-primary);font-family:var(--mono);font-size:11px;font-weight:500;padding:4px 11px;border-radius:9999px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.slide-title{font-family:var(--serif);font-size:clamp(26px,2.6vw,38px);font-weight:500;color:var(--ink);letter-spacing:-0.02em;line-height:1.15}
+.header-rule{height:1.5px;border:none;background:var(--hairline);margin:10px 0 16px}
+h2.sub-title{font-family:var(--sans);font-size:clamp(17px,1.55vw,21px);font-weight:600;color:var(--body-strong);margin-bottom:10px;letter-spacing:-0.005em}
+h3.sub-sub{font-family:var(--sans);font-size:clamp(14px,1.2vw,16px);font-weight:600;color:var(--body-strong);margin-bottom:7px}
+p{font-size:clamp(13.5px,1.15vw,16px);color:var(--body);line-height:1.62;margin-bottom:9px}
+strong{color:var(--body-strong);font-weight:600}
+em{font-style:italic;color:var(--body-strong)}
+.slide-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1;min-height:0}
+.two-col.ratio-5-7{grid-template-columns:5fr 7fr}
+.two-col.ratio-7-5{grid-template-columns:7fr 5fr}
+.col{display:flex;flex-direction:column;gap:10px;min-height:0}
+.card{background:var(--surface-card);border:1px solid var(--hairline);border-radius:12px;padding:18px 22px}
+.card-soft{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;padding:18px 22px}
+.card-compact{padding:13px 16px}
+.formula-card-wrap{overflow:visible !important}
+.formula-card{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;padding:38px 22px 26px;text-align:center;overflow-x:auto;overflow-y:visible !important;position:relative}
+.formula-card.compact{padding:32px 18px 22px}
+.formula-source{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:14px;letter-spacing:0.2px}
+.formula-caption{font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:10px;font-style:italic}
+.dark-card{background:var(--surface-dark);border-radius:12px;padding:18px 22px;color:var(--on-dark-cream)}
+.dark-card p,.dark-card li,.dark-card span{color:var(--on-dark-cream)}
+.dark-card strong{color:var(--on-dark);font-weight:600}
+.dark-card em{color:var(--accent-amber);font-style:italic;font-weight:500}
+.dark-card h2,.dark-card h3,.dark-card h4,.dark-card .dc-title{color:var(--on-dark);font-weight:600}
+.dark-card li::marker{color:var(--coral)}
+.dark-card code{background:var(--surface-dark-soft);color:var(--coral-pale);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.9em}
+.dark-card .dc-label{font-family:var(--mono);font-size:10.5px;color:var(--coral);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block}
+.dark-card .dc-accent{color:var(--accent-amber);font-weight:600}
+.dark-card .dc-coral{color:var(--coral);font-weight:500}
+.algo-box{background:var(--surface-dark);color:var(--on-dark-cream);font-family:var(--mono);font-size:12.5px;line-height:1.85;padding:18px 22px;border-radius:12px;white-space:pre;overflow-x:auto}
+.algo-box .algo-num{color:var(--coral);font-weight:500}
+.algo-box .algo-key{color:var(--accent-amber);font-weight:500}
+.callout{border-left:3px solid var(--coral);background:var(--coral-pale);border-radius:0 8px 8px 0;padding:12px 16px;font-size:clamp(13px,1.1vw,15px);line-height:1.55}
+.callout-warn{border-left-color:var(--warn-border);background:var(--warn-bg)}
+.callout-amber{border-left-color:var(--amber-border);background:var(--amber-bg)}
+.callout-teal{border-left-color:var(--teal-border);background:var(--teal-bg)}
+.callout-label{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:500;display:block;margin-bottom:4px}
+.callout .callout-label{color:var(--coral-active)}
+.callout-warn .callout-label{color:var(--warn-border)}
+.callout-amber .callout-label{color:#b88812}
+.callout-teal .callout-label{color:#3d9985}
+.closer-card{background:var(--surface-dark);border-radius:12px;padding:30px 36px;text-align:center}
+.closer-card .cl-label{font-family:var(--mono);font-size:10.5px;color:var(--coral);letter-spacing:1.8px;text-transform:uppercase;margin-bottom:14px}
+.closer-card .cl-body{font-family:var(--serif);font-style:italic;font-size:clamp(18px,1.8vw,24px);color:var(--on-dark);font-weight:400;line-height:1.45}
+.closer-card .cl-accent{color:var(--accent-amber)}
+.table-wrap{border:1px solid var(--hairline);border-radius:12px;overflow:clip;background:var(--surface-soft)}
+table{width:100%;border-collapse:collapse;font-size:clamp(12.5px,1.05vw,14.5px)}
+thead{background:var(--surface-card)}
+thead th{padding:11px 12px;text-align:left;font-weight:600;color:var(--body-strong);font-size:0.95em;border-bottom:1px solid var(--hairline)}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--hairline-soft);color:var(--body);vertical-align:top;line-height:1.5}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(204,120,92,0.025)}
+td.num{text-align:right;font-family:var(--mono);font-size:0.92em}
+.table-tight tbody td{padding:7px 10px}
+.table-tight thead th{padding:9px 10px}
+.chip{display:inline-block;font-family:var(--mono);font-size:10.5px;background:var(--surface-card);color:var(--muted);padding:1.5px 7px;border-radius:4px;margin:0 2px;letter-spacing:0.2px;white-space:nowrap}
+ul.std{padding-left:18px;margin-bottom:8px}
+ul.std li,ol.std li{font-size:clamp(13px,1.1vw,15.5px);color:var(--body);line-height:1.6;margin-bottom:5px}
+ol.std{padding-left:20px}
+ul.std li::marker{color:var(--coral)}
+ol.std li::marker{color:var(--coral);font-weight:600;font-family:var(--mono)}
+.hi-coral{color:var(--coral-active);font-weight:600}
+.hi-amber{color:#a87a16;font-weight:600}
+.hi-teal{color:#3d9985;font-weight:600}
+.metric-big{font-family:var(--serif);font-size:clamp(38px,4.5vw,64px);font-weight:500;color:var(--coral);letter-spacing:-0.03em;line-height:1}
+.metric-label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px}
+.domino{background:var(--surface-dark);color:var(--on-dark-cream);border-radius:12px;padding:18px 22px;font-family:var(--mono);font-size:12.5px;line-height:1.95;white-space:pre;overflow-x:auto}
+.domino .d-arrow{color:var(--coral)}
+.domino .d-end{color:var(--accent-amber);font-weight:500}
+.branch-tree{background:var(--surface-dark);color:var(--on-dark-cream);border-radius:12px;padding:22px 26px;font-family:var(--mono);font-size:13px;line-height:1.9;white-space:pre;overflow-x:auto}
+.branch-tree .bt-curve{color:var(--accent-amber);font-weight:600}
+.branch-tree .bt-branch{color:var(--coral)}
+.branch-tree .bt-arrow{color:var(--on-dark-cream);opacity:0.6}
+.branch-tree .bt-apex{color:var(--accent-amber);font-weight:600}
+details{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:8px;padding:8px 14px;font-size:13.5px}
+details summary{font-weight:600;color:var(--body-strong);cursor:pointer;padding:4px 0;font-size:13px}
+details[open] summary{margin-bottom:8px}
+.qa-block{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:10px;padding:12px 16px}
+.qa-q{font-weight:600;color:var(--body-strong);margin-bottom:6px;font-size:clamp(13px,1.1vw,15px)}
+.qa-q .q-tag{display:inline-block;font-family:var(--mono);font-size:10.5px;background:var(--coral);color:var(--on-primary);padding:1.5px 7px;border-radius:4px;margin-right:7px;letter-spacing:0.5px;font-weight:500}
+.qa-a{font-size:clamp(12.5px,1.05vw,14.5px);color:var(--body);line-height:1.55;border-left:2px solid var(--coral-pale);padding-left:10px}
+.qa-a strong{color:var(--coral-active)}
+.metric-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.metric-card{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;padding:18px 16px;text-align:center}
+.metric-card.dark{background:var(--surface-dark)}
+.metric-card.dark .metric-big{color:var(--accent-amber)}
+.metric-card.dark .metric-label{color:var(--on-dark-cream)}
+.metric-card .metric-sub{font-size:12.5px;color:var(--body);margin-top:6px;line-height:1.4}
+.metric-card.dark .metric-sub{color:var(--on-dark-cream)}
+.metric-card.dark{color:var(--on-dark-cream)}
+.metric-card.dark .dc-label{color:var(--coral);font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:8px}
+.metric-card.dark em{color:var(--accent-amber);font-style:italic;font-weight:500}
+.metric-card.dark strong{color:var(--on-dark);font-weight:600}
+.navbar{position:fixed;bottom:0;left:260px;right:0;height:56px;background:var(--canvas);border-top:1px solid var(--hairline);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:5}
+.nav-btn{background:transparent;border:1px solid var(--hairline);border-radius:8px;padding:7px 16px;font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--body-strong);cursor:pointer;transition:all 150ms ease}
+.nav-btn:hover:not(:disabled){background:var(--surface-card);border-color:var(--coral);color:var(--coral-active)}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.nav-center{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:220px}
+#prog-text{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:1px}
+.prog-track{width:200px;height:3px;background:var(--hairline);border-radius:9999px;overflow:hidden}
+#prog-fill{height:100%;background:var(--coral);transition:width 220ms ease}
+.katex-display{overflow-y:visible !important;overflow-x:auto;margin:0 !important;padding:6px 0 !important}
+.katex-display > .katex{overflow-y:visible !important;white-space:nowrap}
+.katex{font-size:1.06em !important}
+.formula-card .katex-display{padding:8px 0 !important}
+.formula-card.large-eq .katex-display .katex{font-size:1.18em !important}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="wordmark">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="name">2구획 모델</div>
+      <div class="session">Session 05 · Remastered</div>
+    </div>
+  </div>
+  <nav>
+    <ul class="toc-list" id="toc">
+      <li><button class="toc-btn" data-idx="0"><span class="toc-num">§ 0 · A</span><span class="toc-label">핵심 한 문장</span></button></li>
+      <li><button class="toc-btn" data-idx="1"><span class="toc-num">§ 0 · B</span><span class="toc-label">4개 분기점 지도</span></button></li>
+      <li><button class="toc-btn" data-idx="2"><span class="toc-num">§ 1 · A</span><span class="toc-label">ODE & Eigenvalue</span></button></li>
+      <li><button class="toc-btn" data-idx="3"><span class="toc-num">§ 1 · B</span><span class="toc-label">이중지수 · 잔차법</span></button></li>
+      <li><button class="toc-btn" data-idx="4"><span class="toc-num">§ 1 · C</span><span class="toc-label">단위와 2차 파라미터</span></button></li>
+      <li><button class="toc-btn" data-idx="5"><span class="toc-num">§ 1 · D</span><span class="toc-label">α/β 메타포</span></button></li>
+      <li><button class="toc-btn" data-idx="6"><span class="toc-num">§ 2 · A</span><span class="toc-label">분기점 1 · Aspirin 44%</span></button></li>
+      <li><button class="toc-btn" data-idx="7"><span class="toc-num">§ 2 · B</span><span class="toc-label">1구획 함정 & 혼동쌍</span></button></li>
+      <li><button class="toc-btn" data-idx="8"><span class="toc-num">§ 3 · A</span><span class="toc-label">세 좌표계</span></button></li>
+      <li><button class="toc-btn" data-idx="9"><span class="toc-num">§ 3 · B</span><span class="toc-label">변환식 5종</span></button></li>
+      <li><button class="toc-btn" data-idx="10"><span class="toc-num">§ 3 · C</span><span class="toc-label">비식별성 & NONMEM</span></button></li>
+      <li><button class="toc-btn" data-idx="11"><span class="toc-num">§ 4 · A</span><span class="toc-label">분기점 2 · 세 Volume</span></button></li>
+      <li><button class="toc-btn" data-idx="12"><span class="toc-num">§ 4 · B</span><span class="toc-label">왜 Vβ ≥ Vss?</span></button></li>
+      <li><button class="toc-btn" data-idx="13"><span class="toc-num">§ 4 · C</span><span class="toc-label">Gentamicin 6배</span></button></li>
+      <li><button class="toc-btn" data-idx="14"><span class="toc-num">§ 4 · D</span><span class="toc-label">Volume 혼동쌍</span></button></li>
+      <li><button class="toc-btn" data-idx="15"><span class="toc-num">§ 5 · A</span><span class="toc-label">분기점 3 · PK8 5모델</span></button></li>
+      <li><button class="toc-btn" data-idx="16"><span class="toc-num">§ 5 · B</span><span class="toc-label">WRSS ≠ Condition #</span></button></li>
+      <li><button class="toc-btn" data-idx="17"><span class="toc-num">§ 5 · C</span><span class="toc-label">Socratic Dilemma</span></button></li>
+      <li><button class="toc-btn" data-idx="18"><span class="toc-num">§ 6 · A</span><span class="toc-label">분기점 4 · Plateau Eq</span></button></li>
+      <li><button class="toc-btn" data-idx="19"><span class="toc-num">§ 6 · B</span><span class="toc-label">Nicardipine & GM</span></button></li>
+      <li><button class="toc-btn" data-idx="20"><span class="toc-num">§ 6 · C</span><span class="toc-label">Half-life 혼동쌍</span></button></li>
+      <li><button class="toc-btn" data-idx="21"><span class="toc-num">§ 7 · A</span><span class="toc-label">3구획 진단</span></button></li>
+      <li><button class="toc-btn" data-idx="22"><span class="toc-num">§ 7 · B</span><span class="toc-label">1/k & Two-stage</span></button></li>
+      <li><button class="toc-btn" data-idx="23"><span class="toc-num">§ 7 · C</span><span class="toc-label">Non-stationary</span></button></li>
+      <li><button class="toc-btn" data-idx="24"><span class="toc-num">§ 8 · A</span><span class="toc-label">실패 모드</span></button></li>
+      <li><button class="toc-btn" data-idx="25"><span class="toc-num">§ 8 · B</span><span class="toc-label">전문가 해석 & 후속</span></button></li>
+      <li><button class="toc-btn" data-idx="26"><span class="toc-num">§ 9 · A</span><span class="toc-label">알고리즘 · Q1-4</span></button></li>
+      <li><button class="toc-btn" data-idx="27"><span class="toc-num">§ 9 · B</span><span class="toc-label">자기 테스트 Q5-9</span></button></li>
+      <li><button class="toc-btn" data-idx="28"><span class="toc-num">§ 10</span><span class="toc-label">한 줄 회수</span></button></li>
+    </ul>
+  </nav>
+</aside>
+
+<main class="viewer" id="viewer">
+
+<!-- SLIDE 0: §0-A -->
+<section class="slide active" data-idx="0">
+  <div class="slide-header"><span class="sec-badge">§ 0 · A</span><h1 class="slide-title">이 세션이 진짜로 하려는 한 문장</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>먼저 두 숫자만 보고 시작함.</p>
+    <div class="metric-pair">
+      <div class="metric-card">
+        <div class="metric-big">44%</div>
+        <div class="metric-label">Aspirin · CL bias</div>
+        <div class="metric-sub">650 mg IV bolus에서 early sampling 누락 후 1구획으로 해석하면 <strong>CL = 0.98 L/min</strong>. 이중지수로 다시 풀면 <strong>CL = 683 mL/min</strong>. 유지 용량도 그대로 <span class="hi-coral">44% 부풀어 나감</span>. <span class="chip">R&amp;T pp.615–620</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-big">6×</div>
+        <div class="metric-label">Gentamicin · Loading dose</div>
+        <div class="metric-sub">$V_\beta = 345$ L, $V_{ss} = 56$ L. 어느 volume을 loading dose 계산에 넣느냐로 <span class="hi-coral">첫 용량이 약 6배 흔들림</span>. <span class="chip">R&amp;T pp.630, 635–641</span></div>
+      </div>
+    </div>
+    <p>두 숫자가 <strong>같은 함정의 두 얼굴</strong>임. 같은 plasma 곡선, 같은 환자, 같은 데이터인데 — <em>곡선을 어떻게 분해하고, 어떤 좌표계로 옮기고, 어떤 volume을 고르고, 어떤 half-life로 dosing을 결정하느냐</em>에 따라 임상 결론이 통째로 갈림.</p>
+    <div class="closer-card">
+      <div class="cl-label">Session Thesis</div>
+      <div class="cl-body">하나의 IV bolus plasma 곡선은 <span class="cl-accent">4개의 의사결정 분기점</span>을 만들고,<br>각 분기점에서 잘못 가면 임상에서 <span class="cl-accent">정량화 가능한 손해</span>가 나옴.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 1: §0-B -->
+<section class="slide" data-idx="1">
+  <div class="slide-header"><span class="sec-badge">§ 0 · B</span><h1 class="slide-title">4개 분기점 미리보기 & PopPK 연결</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col ratio-7-5">
+      <div class="col">
+        <h2 class="sub-title">하나의 곡선이 만드는 4개의 갈림길</h2>
+        <div class="branch-tree"><span class="bt-curve">[Plasma curve C(t)]</span>
+     │
+     ├─ <span class="bt-branch">분기점 1:</span> Sampling adequacy <span class="bt-arrow">───→</span> CL 44% 부풀음 (Aspirin)
+     │
+     ├─ <span class="bt-branch">분기점 2:</span> Volume (V₁/Vss/Vβ) <span class="bt-arrow">─→</span> loading 6× (GM) <span class="bt-apex">⚡ Apex</span>
+     │
+     ├─ <span class="bt-branch">분기점 3:</span> Parameterization <span class="bt-arrow">───→</span> condition # 100× (PK8)
+     │
+     └─ <span class="bt-branch">분기점 4:</span> Half-life interpretation <span class="bt-arrow">→</span> multiple dosing (Nicardipine + GM)</div>
+        <div class="callout">
+          <span class="callout-label">M1 ~ M5 카드의 재배치</span>
+          원본의 M1~M5 카드는 사실 이 4개 분기점을 지나가는 데 필요한 도구들임. 본 핸드아웃은 분기점을 따라 도구를 꺼내쓰는 순서로 다시 배열했음.
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">PopPK forward inclusion 단계 연결</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>임상 결정 사항</th><th>어느 분기점이 답하나</th></tr></thead>
+            <tbody>
+              <tr><td>신기능 변화가 어느 phase를 흔드나?</td><td><span class="hi-coral">분기점 1</span> ($f_2$) + <span class="hi-coral">분기점 4</span></td></tr>
+              <tr><td>Covariate를 $CL$에 붙일까 $\beta$에?</td><td><span class="hi-coral">분기점 2</span> (좌표계)</td></tr>
+              <tr><td>체중·조직 amount는 어떻게 해석?</td><td><span class="hi-coral">분기점 2</span> ($V_{ss}/V_\beta$)</td></tr>
+              <tr><td>그 covariate model이 제출 가능한가?</td><td><span class="hi-coral">분기점 3</span> (cond # / RSE)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-soft card-compact">
+          <h3 class="sub-sub">선행 / 후속 연결</h3>
+          <p style="font-size:13px;margin-bottom:5px"><strong>선행:</strong> 1구획 IV bolus, $AUC=Dose/CL$, $V_d=CL/k$, MRT/AUMC, 선형 ODE.</p>
+          <p style="font-size:13px;margin:0"><strong>후속:</strong> NONMEM ADVAN3/4/11/12, sparse sampling, η-shrinkage, 3구획, tissue/target-site PK.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: §1-A · ODE -->
+<section class="slide has-formula" data-idx="2">
+  <div class="slide-header"><span class="sec-badge">§ 1 · A</span><h1 class="slide-title">곡선이 왜 두 phase로 갈라지는가 — ODE 구조</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col ratio-5-7">
+      <div class="col">
+        <div class="callout callout-teal">
+          <span class="callout-label">거장의 시각</span>
+          두 지수항을 <strong>"두 개의 제거 경로"</strong>로 읽는 순간 핵심을 놓침. <em>phase slope는 ODE eigenvalue임</em> — 두 사람이 따로 문 나가는 그림이 아니라, 하나의 시스템에서 관찰되는 <strong>두 회전 속도</strong>임.
+        </div>
+        <p>중앙·말초구획 ODE. 선형 상수계수 $2\times 2$ ODE의 해는 두 지수항의 합. 그래서 $\alpha, \beta$는 system matrix의 두 eigenvalue로 결정되고, 두 관계가 <strong>자동으로</strong> 따라옴. <span class="chip">G&amp;W pp.61–62</span> <span class="chip">R&amp;T pp.618–619</span></p>
+        <div class="callout">
+          <span class="callout-label">💡 한 줄로</span>
+          $\alpha, \beta$는 엔진 부품 하나하나가 아니라 <strong>여러 기어가 맞물린 뒤 바퀴에서 관찰되는 두 회전 속도</strong>. macro 4개 숫자($A,\alpha,B,\beta$)는 독립이 아니라 micro-parameter 공간의 수학적 제약을 받음.
+        </div>
+      </div>
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card">
+            $$\underbrace{\frac{dA_1}{dt}}_{\text{중앙 변화율}}=-\overbrace{\underbrace{(k_{12}+k_{10})}_{\text{말초+제거}}\underbrace{A_1}_{\text{중앙량}}}^{\text{중앙 유출}}+\overbrace{\underbrace{k_{21}}_{\text{말초→중앙}}\underbrace{A_2}_{\text{말초량}}}^{\text{중앙 회귀}}$$
+            $$\underbrace{\frac{dA_2}{dt}}_{\text{말초 변화율}}=\overbrace{\underbrace{k_{12}}_{\text{중앙→말초}}\underbrace{A_1}_{\text{중앙량}}}^{\text{말초 유입}}-\overbrace{\underbrace{k_{21}}_{\text{말초→중앙}}\underbrace{A_2}_{\text{말초량}}}^{\text{중앙 회귀}}$$
+          </div>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{\alpha+\beta}_{\text{고유값 합}}=\underbrace{k_{12}}_{\text{중앙→말초}}+\underbrace{k_{21}}_{\text{말초→중앙}}+\underbrace{k_{10}}_{\text{중앙 제거}},\qquad\underbrace{\alpha\beta}_{\text{고유값 곱}}=\underbrace{k_{21}k_{10}}_{\text{회귀×제거}}$$
+            <div class="formula-caption">Eigenvalue 관계식 (Vieta)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: §1-B · Biexp + Residuals -->
+<section class="slide has-formula" data-idx="3">
+  <div class="slide-header"><span class="sec-badge">§ 1 · B</span><h1 class="slide-title">이중지수식과 잔차법 — 곡선을 4개 숫자로 압축</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="formula-card-wrap">
+      <div class="formula-card large-eq">
+        $$\underbrace{C(t)}_{\text{혈장농도}}=\overbrace{\underbrace{A}_{\text{α절편}}e^{-\underbrace{\alpha}_{\text{빠른 slope}}t}}^{\text{α상 기여}}+\overbrace{\underbrace{B}_{\text{β절편}}e^{-\underbrace{\beta}_{\text{느린 slope}}t}}^{\text{β상 기여}},\qquad \alpha>\beta>0$$
+        <div class="formula-source">G&amp;W pp.59–60 · R&amp;T pp.615–617</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">4 파라미터의 생물학적 의미</h2>
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th>파라미터</th><th>의미</th><th>변화 원인</th></tr></thead>
+            <tbody>
+              <tr><td>$A$</td><td>빠른 α phase의 $t{=}0$ 외삽 절편</td><td>초기 분포상 크기, early sampling 민감</td></tr>
+              <tr><td>$B$</td><td>느린 β phase의 $t{=}0$ 외삽 절편</td><td>말단상 크기, terminal sampling 민감</td></tr>
+              <tr><td>$\alpha$</td><td>빠른 phase slope (time$^{-1}$)</td><td>분포속도, 일부 제거 영향</td></tr>
+              <tr><td>$\beta$</td><td>느린 phase slope (time$^{-1}$)</td><td>제거와 재분포가 결합</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">잔차법 (Method of Residuals)</h2>
+        <p style="font-size:13.5px">terminal β phase를 log-linear 회귀로 외삽해서 $Be^{-\beta t}$를 만들어두고, 초기 관측치에서 빼면 잔차가 나옴. 반로그 도표에 다시 놓고 직선이면 기울기 $-\alpha$, 절편 $A$.</p>
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th>단계</th><th>가정</th><th>수식</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>말단부 log-linear</td><td>$C_\beta(t)=Be^{-\beta t}$</td></tr>
+              <tr><td>2</td><td>말단 외삽값 제거</td><td>$C_{resid}(t)=C_{obs}(t)-Be^{-\beta t}$</td></tr>
+              <tr><td>3</td><td>잔차 semilog 재배치</td><td>slope $=-\alpha$, intercept $=A$</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-amber">
+          <span class="callout-label">💼 실무 인사이트</span>
+          잔차법은 NONMEM 실용 알고리즘이 아님. 손으로 curve-stripping하는 이유는 simultaneous nonlinear regression의 <strong>초기 추정치 감각</strong>을 기르기 위해서. 초기치가 자릿수부터 틀어지면 좌표계가 좋아도 condition number가 폭증함 (분기점 3에서 다시 나옴).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: §1-C · Units + Secondary -->
+<section class="slide has-formula" data-idx="4">
+  <div class="slide-header"><span class="sec-badge">§ 1 · C</span><h1 class="slide-title">단위 일관성과 2차 파라미터 — AUC, AUMC, f₁/f₂</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <h2 class="sub-title">G&amp;W Fig.2.43 직접 읽기 — 단위 audit 1단계</h2>
+    <p>$A\approx 70~\text{mg}\cdot\text{L}^{-1}$, $B=28~\text{mg}\cdot\text{L}^{-1}$, $\alpha,\beta$ 모두 $\text{min}^{-1}$. <span class="chip">G&amp;W p.60 Fig.2.43 직접 인용</span></p>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{\alpha}_{[\text{min}^{-1}]}=\frac{\overbrace{\ln(70/10)}^{\text{무차원}}}{\underbrace{130~[\text{min}]}_{\text{시간간격}}}\approx 0.0150~[\text{min}^{-1}],\qquad\underbrace{\beta}_{[\text{min}^{-1}]}=\frac{\overbrace{\ln(28/10)}^{\text{무차원}}}{\underbrace{450~[\text{min}]}_{\text{시간간격}}}\approx 0.00229~[\text{min}^{-1}]$$
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\begin{aligned}\underbrace{AUC_0^\infty}_{\text{총노출}}&=\overbrace{\frac{\underbrace{A}_{\text{α절편}}}{\underbrace{\alpha}_{\text{α감소}}}}^{\text{빠른 상 면적}}+\overbrace{\frac{\underbrace{B}_{\text{β절편}}}{\underbrace{\beta}_{\text{β감소}}}}^{\text{느린 상 면적}}\[2mm]\underbrace{AUMC_0^\infty}_{\text{시간가중노출}}&=\overbrace{\frac{A}{\alpha^2}}^{\text{빠른 시간가중}}+\overbrace{\frac{B}{\beta^2}}^{\text{느린 시간가중}}\end{aligned}$$
+          </div>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{t_{1/2,\alpha}}_{\text{빠른 반감기}}=\frac{\overbrace{\ln2}^{\text{반감상수}}}{\underbrace{\alpha}_{\text{빠른 slope}}},\qquad\underbrace{t_{1/2,\beta}}_{\text{느린 반감기}}=\frac{\overbrace{\ln2}^{\text{반감상수}}}{\underbrace{\beta}_{\text{느린 slope}}}$$
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{f_1}_{\text{α상 AUC분율}}=\frac{\overbrace{A/\alpha}^{\text{α상 AUC}}}{\underbrace{AUC}_{\text{총노출}}},\quad\underbrace{f_2}_{\text{β상 AUC분율}}=\frac{\overbrace{B/\beta}^{\text{β상 AUC}}}{\underbrace{AUC}_{\text{총노출}}},\quad f_1+f_2=1$$
+          </div>
+        </div>
+        <div class="callout">
+          <span class="callout-label">🔑 Terminal 해석 규칙</span>
+          <strong>$f_2$의 임상적 의미가 핵심임.</strong> $f_2 > 0.8$이면 terminal phase를 elimination 해석으로 끌고 가도 됨. <strong>$f_2$가 작으면</strong> terminal slope는 elimination보다 <em>재분포를 더 많이 반영</em>. 이게 분기점 4에서 다시 폭발함. <span class="chip">G&amp;W p.63</span> <span class="chip">R&amp;T pp.622–623</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted)">$AUC$ 단위 $[\text{mg}\cdot\text{min}\cdot\text{L}^{-1}]$, $AUMC$ 단위 $[\text{mg}\cdot\text{min}^2\cdot\text{L}^{-1}]$, $t_{1/2,\alpha}\approx 46.2$ min, $t_{1/2,\beta}\approx 302.6$ min. 단위 audit 1단계가 맞지 않으면 그 뒤 모든 계산이 통째로 의심받음.</p>
+  </div>
+</section>
+
+<!-- SLIDE 5: §1-D · Metaphor + Boundary -->
+<section class="slide" data-idx="5">
+  <div class="slide-header"><span class="sec-badge">§ 1 · D</span><h1 class="slide-title">⚡ "이사 vs 청소"는 근사 레이블임 — 경계 조건</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">메타포 정리</h2>
+        <p>α phase는 약이 혈장에서 조직으로 <strong>이사 가는</strong> 분포 단계, β phase는 주로 <strong>청소(제거)</strong>가 지배하는 단계로 부르는 게 보통임.</p>
+        <p>단, 두 단계가 분리된 게 아니라 <em>항상 동시에</em> 일어남 — α 단계에도 제거가 있고, β 단계에도 분포 평형 조정이 있음.</p>
+        <div class="dark-card">
+          <span class="dc-label">Critical Insight</span>
+          <p><span class="dc-accent">"α = 분포, β = 제거"는 근사 레이블이지 기계적 분리가 아님.</span> 이 레이블을 두 개의 elimination pathway로 곡해하는 순간 <strong>central elimination 가정이 무너짐.</strong></p>
+        </div>
+        <div class="callout callout-teal">
+          <span class="callout-label">📖 G&amp;W p.60, Fig.2.43</span>
+          IV bolus 후 이중지수 감소를 보여주는 반로그 도표. 관측 곡선이 하나의 말단선이 아니라 두 개의 외삽된 phase line의 합으로 보임. → 잔차법이 왜 한 그림을 두 직선으로 분리해서 보는지 한 장에 다 들어있음.
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">경계 조건 — 5가지 가정</h2>
+        <div class="card">
+          <p style="margin-bottom:8px">하나라도 깨지면 bi-exponential fit은 여전히 가능해도 생리학적 해석이 흔들림. <span class="chip">G&amp;W pp.57–65</span> <span class="chip">R&amp;T pp.617–619</span></p>
+          <ol class="std">
+            <li><strong>선형 약동학</strong> — 농도-비례 응답</li>
+            <li><strong>중앙구획 내 빠른 혼합</strong> — well-stirred 가정</li>
+            <li><strong>분포상 관측 확보</strong> — early sampling 존재</li>
+            <li><strong>Mammillary 배열</strong> — 중앙구획을 허브로 두는 방사형 다구획 구조</li>
+            <li><strong>중앙구획 제거 가정</strong> — elimination from central</li>
+          </ol>
+        </div>
+        <div class="callout">
+          <span class="callout-label">동선 정리</span>
+          이제 곡선 분해는 끝났음. <strong>진짜 의사결정 분기점으로 들어감.</strong> 다음 슬라이드부터 4개 분기점 순차적으로 통과.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: §2-A · Aspirin -->
+<section class="slide" data-idx="6">
+  <div class="slide-header"><span class="sec-badge">§ 2 · A</span><h1 class="slide-title">분기점 1: Sampling Adequacy — Aspirin Warning</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-teal">
+      <span class="callout-label">거장의 시각</span>
+      Early sampling을 놓치는 순간 곡선이 1구획처럼 보임. 1구획으로 fitting 하면 분포상의 빠른 감소가 다 elimination으로 흡수돼서 <strong>CL이 시스템적으로 과대 추정됨.</strong> 이건 데이터 양의 문제가 아니라 <em>데이터가 phase를 식별해 주는가</em>의 문제임.
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">Aspirin 650 mg IV bolus — 숫자로 못 박기</h2>
+        <div class="metric-pair">
+          <div class="metric-card">
+            <div class="metric-big" style="font-size:clamp(28px,3vw,42px)">0.98</div>
+            <div class="metric-label">L/min · 말단상 1구획</div>
+            <div class="metric-sub">분포상 정보 없이 terminal만 사용</div>
+          </div>
+          <div class="metric-card dark">
+            <div class="metric-big" style="font-size:clamp(28px,3vw,42px)">683</div>
+            <div class="metric-label">mL/min · 이중지수</div>
+            <div class="metric-sub">올바른 2구획 해석</div>
+          </div>
+        </div>
+        <div class="callout callout-warn">
+          <span class="callout-label">⚠️ 차이 약 44%</span>
+          1구획 해석이 $CL$을 <strong>과대 추정</strong>함. 유지 용량 공식이 $\text{Maintenance rate} = CL \cdot C_{ss,\text{target}}$이니까, <strong>유지 용량도 그대로 44% 부풀어 나감</strong>. <span class="chip">R&amp;T pp.615–620</span>
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">왜 1구획 해석이 CL을 과대 추정하는가</h2>
+        <p>1구획 가정에서는 $C(t) = C_0 e^{-kt}$로 놓고 $CL = k \cdot V$로 계산. 진짜 곡선은 두 phase의 합이라서 초기 농도가 빠르게 떨어지는 분포상이 있음. <strong>이걸 1구획에 우겨 넣으면</strong> $k$가 실제 elimination보다 크게 추정되고, $CL = k \cdot V$도 같이 부풀어 나옴.</p>
+        <div class="callout">
+          <span class="callout-label">💡 한 줄로</span>
+          분포상에서 약이 조직으로 빠지는 걸 <strong>"제거로 사라지는 것"</strong>으로 잘못 셈하는 게 1구획의 함정임.
+        </div>
+        <h3 class="sub-sub">그래프 3초 점검표</h3>
+        <ol class="std" style="margin-top:4px">
+          <li><strong>꺾임점(knee)이 어디인가?</strong> → $\alpha/\beta$ 비</li>
+          <li><strong>두 phase의 면적 비율이 어디로 기우는가?</strong> → $f_1/f_2$</li>
+          <li><strong>terminal 직선이 정말 직선인가?</strong> → 3구획 가능성</li>
+        </ol>
+        <p style="font-size:12px;color:var(--muted);margin-top:6px"><span class="chip">G&amp;W p.63</span> <span class="chip">R&amp;T p.632</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: §2-B · 1-comp trap + 혼동쌍 -->
+<section class="slide" data-idx="7">
+  <div class="slide-header"><span class="sec-badge">§ 2 · B</span><h1 class="slide-title">분기점 1의 함정 — 혼동쌍 & 자기 점검</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p style="font-size:11.5px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;margin-bottom:4px">상황별 결과 추적</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>상황</th><th>파라미터 변화</th><th>→ 임상 결과</th><th>조치</th></tr></thead>
+        <tbody>
+          <tr><td>early sampling 누락</td><td>$A,\alpha$ 정보 약화</td><td>terminal-only $CL$ 과대 추정</td><td>분포상 표본 확보</td></tr>
+          <tr><td>terminal line만 사용</td><td>$CL=0.98$ L/min로 계산</td><td>유지용량 과대 산정 위험</td><td>biexponential 가능성 점검</td></tr>
+          <tr><td>terminal 직선이 휘어짐</td><td>2구획 부족 가능</td><td>half-life 해석 불안정</td><td>3구획 또는 NCA 고려</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 class="sub-title" style="margin-top:8px">혼동쌍 #1 — Bi-exponential phase vs Two elimination processes</h2>
+    <p style="font-size:13.5px;color:var(--muted)">이 자리에서 가장 자주 깨지는 함정. 두 개의 지수항을 두 개의 제거 경로로 곡해하면 sampling adequacy 판단이 한꺼번에 실패함.</p>
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th>비교 기준</th><th>Bi-exponential phase ✓</th><th>"Two elimination processes" ✗</th></tr></thead>
+        <tbody>
+          <tr><td><strong>의미</strong></td><td>$Ae^{-\alpha t}+Be^{-\beta t}$ — 한 시스템의 두 eigenvalue</td><td>독립 제거 경로 2개가 따로 작동?</td></tr>
+          <tr><td><strong>수식 위치</strong></td><td>$\alpha,\beta$는 지수부 slope</td><td>제거경로라면 별도 clearance 항 필요</td></tr>
+          <tr><td><strong>변화 원인</strong></td><td>distribution + elimination 합성 ODE eigen-component</td><td>제거 장기 2개 작동? <em>(잘못된 직관)</em></td></tr>
+          <tr><td><strong>혼동 시 결과</strong></td><td>$f_2$가 작은데 terminal을 "elimination phase"로 부르면 위험</td><td>central elimination 가정과 sampling adequacy 판단이 한꺼번에 실패 <span class="chip">G&amp;W p.63</span> <span class="chip">R&amp;T pp.622–623</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="qa-block">
+      <div class="qa-q"><span class="q-tag">자기 점검 1</span>말단상 전용 1구획 해석은 실제 $CL$을 과소평가함, 과대평가함?</div>
+      <div class="qa-a"><strong>과대평가함.</strong> $0.98$ L/min은 683 mL/min보다 약 <strong>44% 높음.</strong> 유지 용량 계산이 그대로 따라 부풀어 나갈 위험이 있음. <span class="chip">R&amp;T pp.615–620</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: §3-A · Three coordinate systems -->
+<section class="slide" data-idx="8">
+  <div class="slide-header"><span class="sec-badge">§ 3 · A</span><h1 class="slide-title">같은 곡선, 세 개의 좌표계 — 지형도</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-teal">
+      <span class="callout-label">거장의 시각</span>
+      좌표계를 섞으면 자유도·가정·임상 해석이 한 문장 안에서 뒤엉킴. <strong>Fit은 macro로 이해하고, ODE는 micro로 점검하며, 보고와 covariate 해석은 physiological parameter로 마무리</strong>하면 reviewer 질문이 깨끗하게 정리됨.
+    </div>
+    <h2 class="sub-title">세 좌표계 한눈에</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>좌표계</th><th>파라미터 집합</th><th>역할</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Macro</strong></td><td>$A,\alpha,B,\beta$</td><td>관측 plasma 곡선의 두 지수항 표현</td></tr>
+          <tr><td><strong>Micro</strong></td><td>$V_1,k_{10},k_{12},k_{21}$</td><td>구획 ODE의 분율 속도 상수(fractional rate constant)</td></tr>
+          <tr><td><strong>Physiological</strong></td><td>$V_1,CL,Cld,V_t$</td><td>청소율, 분포 청소율, 중앙/말초 용적</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:6px"><span class="chip">G&amp;W pp.60–71</span> <span class="chip">R&amp;T pp.618–619</span></p>
+    <div class="dark-card">
+      <span class="dc-label">💡 메타포</span>
+      <p><span class="dc-coral">Macro</span>는 사진의 <em>픽셀 좌표</em>, <span class="dc-coral">Micro</span>는 카메라 내부 <em>렌즈 배치</em>, <span class="dc-coral">Physiological</span>은 의사가 읽는 <em>판독문</em>임. 같은 사진이라도 어떤 좌표로 말하느냐에 따라 <strong>책임지는 질문이 달라짐</strong>.</p>
+    </div>
+    <h2 class="sub-title">자유도가 왜 4개인가</h2>
+    <p>두 지수항은 곡선을 설명하는 <strong>4개 자유도</strong>임. 출처가 지원하는 4-파라미터 집합은:</p>
+    <ul class="std">
+      <li>micro $(V_1, k_{10}, k_{12}, k_{21})$, 또는</li>
+      <li>physiological $(V_1, CL, Cld, V_t)$</li>
+    </ul>
+    <div class="callout callout-warn">
+      <span class="callout-label">⚠️ 혼합 표현 금지</span>
+      <strong>혼합 표현 $(V_1, V_t, k_{10}, k_{12})$를 독립 자유도처럼 쓰는 건 안 됨</strong> — 종속 관계가 깨짐. <span class="chip">G&amp;W pp.60–62, 71</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9: §3-B · Conversion formulas -->
+<section class="slide has-formula" data-idx="9">
+  <div class="slide-header"><span class="sec-badge">§ 3 · B</span><h1 class="slide-title">좌표계 변환식 — 다리</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col">
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{CL}_{\text{전신 CL}}=\underbrace{k_{10}}_{\text{중앙 제거율}}\underbrace{V_1}_{\text{중앙 V}}$$
+        </div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{Cld}_{\text{분포 CL}}=\underbrace{k_{12}}_{\text{중앙→말초}}\underbrace{V_1}_{\text{중앙 V}}=\underbrace{k_{21}}_{\text{말초→중앙}}\underbrace{V_t}_{\text{말초 V}}$$
+        </div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{V_1}_{\text{중앙 V}}=\frac{\underbrace{D_{iv}}_{\text{IV 용량}}}{\underbrace{A+B}_{\text{초기 }C_0}}$$
+        </div></div>
+      </div>
+      <div class="col">
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{k_{21}}_{\text{말초→중앙}}=\frac{\overbrace{\underbrace{A}_{\text{α절편}}\underbrace{\beta}_{\text{느린 slope}}+\underbrace{B}_{\text{β절편}}\underbrace{\alpha}_{\text{빠른 slope}}}^{\text{절편가중 slope}}}{\underbrace{A+B}_{C_0}}$$
+        </div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{k_{10}}_{\text{중앙 제거율}}=\frac{\overbrace{\alpha\beta}^{\text{고유값 곱}}}{\underbrace{k_{21}}_{\text{말초→중앙}}},\quad\underbrace{k_{12}}_{\text{중앙→말초}}=\overbrace{\alpha+\beta}^{\text{slope 합}}-\underbrace{k_{21}}_{\text{말초→중앙}}-\underbrace{k_{10}}_{\text{중앙 제거}}$$
+        </div></div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th>파라미터</th><th>단위</th><th>생물학적 의미</th><th>변화 원인</th></tr></thead>
+        <tbody>
+          <tr><td>$CL$</td><td>volume/time</td><td>체내에서 완전히 제거되는 순 배출 능력</td><td>간·신장 제거능, 단백결합, 질병 상태</td></tr>
+          <tr><td>$Cld$ 또는 $Q$</td><td>volume/time</td><td>중앙↔말초 사이 왕복 분포 흐름</td><td>관류, 조직 투과성, 분배 특성</td></tr>
+          <tr><td>$V_1$</td><td>volume</td><td>bolus 직후 중앙 희석 공간</td><td>혈장량, 빠른 평형 조직</td></tr>
+          <tr><td>$V_t$</td><td>volume</td><td>말초구획 겉보기 공간</td><td>조직 결합, 지방/수분 분포</td></tr>
+          <tr><td>$k_{10},k_{12},k_{21}$</td><td>time$^{-1}$</td><td>amount 기준 분율 전이 속도</td><td>각 clearance를 해당 volume으로 나눈 값</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 10: §3-C · Non-identifiability + NONMEM + 혼동쌍 -->
+<section class="slide" data-idx="10">
+  <div class="slide-header"><span class="sec-badge">§ 3 · C</span><h1 class="slide-title">비식별성 · NONMEM 연결 · 좌표계 혼동쌍</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-warn">
+      <span class="callout-label">⚠️ Non-identifiability — plasma 데이터의 근본 한계</span>
+      plasma 이중지수 곡선만 보고 있으면 <strong>중앙구획 단독 제거, 말초구획 단독 제거, 양 구획 제거</strong>를 구별할 수 없음. 통상 중앙구획 단독 제거 모델을 쓰는 이유는 <em>생리적으로 그럴듯하기 때문</em>이지, plasma 데이터가 그걸 증명했기 때문이 아님. <strong>제거 위치는 자료가 증명한 사실이 아니라 모델 가정으로 보충되는 부분.</strong> <span class="chip">G&amp;W p.65</span> <span class="chip">R&amp;T pp.618–619</span>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">보고 시 명시할 것</h2>
+        <div class="card-soft">
+          <p style="font-size:13.5px">"중앙구획에서만 제거"라는 가정과 "말초구획 단순 통합" 가정을 보고서에 명시해야 함. 조직 PK, 거대 단백 약물, 표적 매개 제거(target-mediated)가 의심되면 이 가정에 대한 기전적 근거를 함께 제시해야 함. <span class="chip">R&amp;T pp.618–619</span></p>
+        </div>
+        <div class="callout callout-teal">
+          <span class="callout-label">📖 G&amp;W p.65, Fig.2.46</span>
+          동일한 plasma 이중지수 곡선에 적합되는 세 가지 2구획 모델(중앙 제거, 말초 제거, 양 구획 제거)을 한 그림에 겹쳐 놓음. → 같은 plasma curve가 elimination site를 식별해 준다는 잘못된 추론을 한 장으로 차단해 줌.
+        </div>
+        <div class="dark-card">
+          <span class="dc-label">💼 NONMEM 연결 · ADVAN3/TRANS4</span>
+          <p>ADVAN3 / TRANS4의 표준 표현이 바로 <span class="dc-accent">$CL, V_1, Q, V_2$</span>임. 내부에서 $K=CL/V_1$, $K_{12}=Q/V_1$, $K_{21}=Q/V_2$로 ODE 전이를 만듦.</p>
+          <p style="margin-top:5px"><strong>보고서 좌표와 추정 좌표가 같으니 reviewer가 즉시 읽을 수 있음.</strong> 이게 분기점 3에서 ODE 좌표계가 압승하는 첫 번째 이유.</p>
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">혼동쌍 #2 — Macro vs Physiological</h2>
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th></th><th>Macro</th><th>Physiological</th></tr></thead>
+            <tbody>
+              <tr><td><strong>단위</strong></td><td>$A,\alpha,B,\beta$ — 농도 + time$^{-1}$</td><td>$CL, Q, V_1, V_2$ — volume/time + volume</td></tr>
+              <tr><td><strong>수식 위치</strong></td><td>지수항 계수와 slope</td><td>ODE 전이 + 보고용</td></tr>
+              <tr><td><strong>변화 원인</strong></td><td>관측 curve geometry, sampling</td><td>제거능, 분포 흐름, 중앙·말초 용적</td></tr>
+              <tr><td><strong>혼동 시 결과</strong></td><td>curve description만 남음</td><td>covariate 보고와 dosing 해석 가능. 둘을 별개로 처리하면 condition number와 interpretability 판단이 한꺼번에 실패</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <span class="callout-label">⚡ 메타포 — 내부 고속도로 vs 나가는 출구</span>
+          <strong>$Q$ vs $CL$</strong>. $Q$(intercompartmental clearance)는 중앙·말초 사이를 오가는 <em>내부 순환량(고속도로 통행량)</em>, $CL$(systemic clearance)은 체내에서 완전히 빠져나가는 <em>순 배출량(출구)</em>. <strong>$Q \gg CL$이면 2구획 성격이 약해져서 1구획처럼 보일 수 있음</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: §4-A · Three Volumes -->
+<section class="slide has-formula" data-idx="11">
+  <div class="slide-header"><span class="sec-badge">§ 4 · A</span><h1 class="slide-title">분기점 2: Volume Choice — Gentamicin Disaster <span style="color:var(--accent-amber);font-family:var(--mono);font-size:14px;margin-left:8px">⚡ Apex</span></h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-teal">
+      <span class="callout-label">거장의 시각 — 체화할 단 하나의 직관</span>
+      💢 흔한 오해: terminal half-life가 길면 그 약은 넓게 분포한다고 생각하기 쉬움. <strong>$V_\beta$는 terminal slope geometry와 $CL$이 만든 겉보기 volume</strong>이라서, $V_{ss}$나 $V_1$이 답해주는 임상 질문엔 답을 못 함. <em>volume을 묻는 순간 먼저 "bolus 직후인가, steady state인가, terminal extrapolation인가"를 되물어야 함.</em>
+    </div>
+    <h2 class="sub-title">세 개의 Volume — 무엇이 다른가</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Volume</th><th>공식</th><th>의미</th><th>임상 질문</th></tr></thead>
+        <tbody>
+          <tr><td>$V_1$</td><td>$V_1=Dose/(A+B)$</td><td>초기 희석 / 중앙구획 용적</td><td>bolus 직후 peak은?</td></tr>
+          <tr><td>$V_{ss}$</td><td>$V_{ss}=MRT\cdot CL=Dose\cdot AUMC/AUC^2$</td><td>정상상태 체내량 / plasma 비율</td><td><strong>loading dose? 정상상태 amount?</strong></td></tr>
+          <tr><td>$V_\beta$</td><td>$V_\beta=CL/\beta=Dose/(AUC\cdot\beta)$</td><td>말단 기울기 기반 겉보기 용적</td><td>terminal extrapolation 시?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:4px"><span class="chip">R&amp;T pp.617, 628–630</span> <span class="chip">G&amp;W pp.63–65</span></p>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{V_1}_{\text{초기희석}}=\frac{\underbrace{Dose}_{\text{용량}}}{\underbrace{A+B}_{C_0}},\quad\underbrace{V_{ss}}_{\text{SS 체내량/C}}=\underbrace{MRT}_{\text{평균체류시간}}\cdot\underbrace{CL}_{\text{정화능}}=\frac{\underbrace{Dose}_{\text{용량}}\underbrace{AUMC}_{\text{시간가중노출}}}{\underbrace{AUC^2}_{\text{노출제곱}}},\quad\underbrace{V_\beta}_{\text{말단 V}}=\frac{\underbrace{CL}_{\text{정화능}}}{\underbrace{\beta}_{\text{β slope}}}=\frac{\underbrace{Dose}_{\text{용량}}}{\underbrace{AUC}_{\text{노출}}\underbrace{\beta}_{\text{β slope}}}$$
+      </div>
+    </div>
+    <div class="dark-card">
+      <span class="dc-label">💡 3단 메타포</span>
+      <p><span class="dc-accent">$V_1$</span>은 문을 열자마자 물이 찬 <em>첫 방</em>, <span class="dc-accent">$V_{ss}$</span>는 모든 방의 수위가 안정된 뒤의 <em>집 전체</em>, <span class="dc-accent">$V_\beta$</span>는 마지막 배수 속도를 보고 거꾸로 추정한 <em>집 크기</em>. "volume이 얼마입니까?"라는 질문 자체가 <strong>불완전한 질문</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 12: §4-B · Why Vβ ≥ Vss -->
+<section class="slide has-formula" data-idx="12">
+  <div class="slide-header"><span class="sec-badge">§ 4 · B</span><h1 class="slide-title">⭐ 왜 $V_\beta \ge V_{ss}$인가 — 기전적 직관</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <h2 class="sub-title">순서 관계와 R&amp;T Fig.19-9의 답</h2>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{V_1}_{\text{초기희석}}\le\underbrace{V_{ss}}_{\text{분포평형}}\le\underbrace{V_\beta}_{\text{말단 V}}$$
+        <div class="formula-caption">표준 중앙구획 제거 2구획 가정 · <span class="chip">R&amp;T pp.629–630</span></div>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="callout-label">📖 R&amp;T p.628 — 한 문장으로 답함</span>
+      <em>"the <strong>faster a drug is eliminated relative to distribution</strong>, the greater is the ratio of drug in slowly equilibrating tissues to that in plasma during the terminal phase, and correspondingly, the <strong>larger is the apparent volume of distribution</strong>"</em>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <h3 class="sub-sub">풀어서 한 줄로</h3>
+        <ul class="std">
+          <li><strong>이상적인 정상상태</strong>($CL=0$인 가상의 평형)에서는 조직과 혈장의 농도비가 진짜 분배계수 $K_p$에 정확히 일치. $V = V_B + K_p \cdot V_T$. 이게 $V_{ss}$의 개념적 기준.</li>
+          <li><strong>실제 elimination이 작동하는 terminal phase</strong>에서는 혈장 농도가 elimination에 의해 계속 떨어지는데, <em>slowly equilibrating tissue는 그 하락을 따라잡지 못함 (lag)</em>. 그래서 조직/혈장 농도비가 진짜 $K_p$보다 큰 <strong>겉보기 $K_{p,\text{app}}$</strong>가 됨.</li>
+          <li>$V_\beta = V_B + K_{p,\text{app}} \cdot V_T$이고 $K_{p,\text{app}} > K_p$이므로 <strong>$V_\beta > V_{ss}$</strong>.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">
+            $$\underbrace{V_{ss}}_{\text{진짜 평형 V}}=\underbrace{V_B}_{\text{혈장}}+\underbrace{K_p}_{\text{진짜 분배}}\cdot\underbrace{V_T}_{\text{조직}}$$
+            $$\;<\;$$
+            $$\underbrace{V_\beta}_{\text{말단 겉보기 V}}=\underbrace{V_B}_{\text{혈장}}+\overbrace{\underbrace{K_{p,\text{app}}}_{\text{lag로 부풀린 분배}}}^{\;>K_p\;}\cdot\underbrace{V_T}_{\text{조직}}$$
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-teal">
+      <span class="callout-label">💡 핵심 한 줄</span>
+      <strong>재분포 지연을 elimination 부족으로 흡수해 더 큰 부피처럼 보이는 게 $V_\beta$임.</strong> $V_\beta$는 terminal slope만 보고 역산하니까, 조직에서 혈장으로 돌아오는 속도가 느릴수록 (재분포 지연이 클수록) 그 지연을 "혈장이 천천히 빠진다"고 잘못 읽어 더 큰 부피로 환산함. <strong>Elimination이 distribution보다 빠를수록 $V_\beta/V_{ss}$ 비율이 커짐.</strong> <span class="chip">R&amp;T p.628 Fig.19-9</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 13: §4-C · Aspirin vs Gentamicin -->
+<section class="slide has-formula" data-idx="13">
+  <div class="slide-header"><span class="sec-badge">§ 4 · C</span><h1 class="slide-title">사례 — Aspirin (안전) vs Gentamicin (위험)</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">Aspirin — 안전한 사례</h2>
+        <div class="card-soft">
+          <p style="font-size:14px">$V_1=6.5$ L, $V_{ss}=10.4$ L, $V_\beta=13.7$ L. 세 값에 차이는 있지만 치명적이지 않음. <span class="chip">R&amp;T pp.617, 629–630</span></p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{\left(\frac{V_\beta}{V_{ss}}\right)_{aspirin}}_{\text{ASA 말단부풀림}}\approx\frac{13.7}{10.4}\approx 1.3$$
+        </div></div>
+        <div class="callout callout-teal">
+          <span class="callout-label">결론</span>
+          terminal volume 오용 위험 <strong>제한적</strong>. 그래도 volume 정의는 명시해야 함.
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">Gentamicin — 위험한 사례</h2>
+        <div class="dark-card">
+          <p>$V_1=14$ L, $V_{ss}=56$ L, <span class="dc-accent">$V_\beta=345$ L</span> — $V_\beta$가 $V_{ss}$보다 약 <span class="dc-accent">6배</span> 큼. <span class="chip" style="background:#252320;color:#cc785c">R&amp;T pp.630, 635–641</span></p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{\left(\frac{V_\beta}{V_{ss}}\right)_{gentamicin}}_{\text{GM 말단부풀림}}\approx\frac{345}{56}\approx 6.2$$
+        </div></div>
+        <div class="callout callout-warn">
+          <span class="callout-label">왜 폭발하는가</span>
+          Gentamicin은 distribution이 <em>permeability-limited</em>라서 distribution이 느림 ($k_{21}$ 작음). 그런데 elimination ($k_{10}$)은 신장으로 빠름. 결과: <strong>elimination ≫ distribution → $K_{p,\text{app}} \gg K_p$ → $V_\beta$ 부풀음.</strong>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11.5px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:6px;margin-bottom:4px">상황별 결과 추적</p>
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th>상황</th><th>파라미터 변화</th><th>임상 결과</th><th>조치</th></tr></thead>
+        <tbody>
+          <tr><td>Aspirin-like</td><td>$V_\beta/V_{ss}\approx 1.3$</td><td>terminal volume 오용 위험 제한적</td><td>그래도 volume 정의는 명시</td></tr>
+          <tr><td>Gentamicin-like</td><td>$V_\beta/V_{ss}\approx 6.2$</td><td>loading dose 과대 산정·peak 독성 위험</td><td><strong>$V_{ss}$ 중심으로 판단</strong></td></tr>
+          <tr><td>느린 재분포</td><td>$\beta$ 감소, $V_\beta$ 증가</td><td>terminal half-life가 plasma 조절 시간과 분리</td><td>초기 phase와 $f_2$ 확인</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-teal">
+      <span class="callout-label">📖 Thiopental 직관 — 친유성 약물의 사전 경고</span>
+      <strong>Thiopental</strong>(지용성 barbiturate, 정맥 마취유도제)에 대한 R&amp;T의 개 실험 예시에서는 지방으로의 분배가 크고 adipose tissue가 total apparent $V_d$의 큰 몫을 차지함. <strong>친유성·관류·분배 정보는 새 약물의 $V_{ss}/V_1$과 $V_\beta$ 부풀림을 사전에 의심하게 해 주는 단서</strong>. <span class="chip">R&amp;T pp.614–615</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 14: §4-D · Loading dose domino + 혼동쌍 -->
+<section class="slide has-formula" data-idx="14">
+  <div class="slide-header"><span class="sec-badge">§ 4 · D</span><h1 class="slide-title">치명적 타격 — Loading Dose 6배 도미노 & 혼동쌍</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">"Terminal half-life 길다 = 분포 넓다" 함정</h2>
+        <p style="font-size:13.5px">$t_{1/2,\beta}=0.693/\beta$이고 $V_\beta=CL/\beta$이니까 작은 $\beta$가 큰 volume처럼 보임. 이걸 그대로 두면 도미노가 시작됨.</p>
+        <div class="domino"><span class="d-arrow">▶</span> terminal half-life 길다고 인식
+  <span class="d-arrow">↓</span>
+"넓은 분포"로 직역
+  <span class="d-arrow">↓</span>
+$V_\beta$를 body amount나 loading dose에 사용
+  <span class="d-arrow">↓</span>
+gentamicin-like 약물에서 첫 dose <span class="d-end">6배 과대 산정</span>
+  <span class="d-arrow">↓</span>
+첫 60분 안에 plasma peak이 <span class="d-end">nephrotoxicity 임계 돌파</span>
+  <span class="d-arrow">↓</span>
+규제 측에서 <span class="d-end">Deficiency Letter 또는 재분석 요구</span></div>
+        <div class="callout">
+          <span class="callout-label">💡 메타포</span>
+          느린 재분포는 <strong>멀리 있는 창고에서 물건이 늦게 돌아오는 현상</strong>. <em>창고가 거대해서가 아니라 왕복 도로가 좁아서</em> 마지막 움직임이 길게 보일 수 있음.
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">임상 결과 — 두 가지 시나리오</h2>
+        <ol class="std">
+          <li>심사관이 dosing rationale의 volume 정의 일관성 결여를 <strong>FDA Deficiency Letter</strong> 사유로 지적</li>
+          <li>환자에게 nephrotoxicity/ototoxicity 임계 농도를 <strong>첫 60분 안에 plasma peak이 넘는</strong> 사건 발생</li>
+        </ol>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{\frac{V_\beta}{V_{ss}}}_{\text{말단V 오용}}\approx\frac{\underbrace{345}_{\text{GM }V_\beta}}{\underbrace{56}_{\text{GM }V_{ss}}}\approx 6.2$$
+        </div></div>
+        <div class="callout">
+          <span class="callout-label">🔑 Volume 선택 규칙</span>
+          loading dose와 steady-state amount에는 <strong>$V_{ss}$</strong>, bolus 직후 peak에는 <strong>$V_1$</strong>, terminal extrapolation에는 <strong>$V_\beta$</strong>.
+        </div>
+        <h3 class="sub-sub">다회투여 volume 규칙</h3>
+        <ul class="std">
+          <li>fluctuation 작고 true SS: <strong>$V_{ss}$</strong>가 amount estimate에 유용</li>
+          <li>interval 말기 distribution equilibrium 근처: <strong>$V_\beta$</strong> approximation 가능</li>
+          <li><strong>Gentamicin-like처럼 interval 내 distribution disequilibrium 크면 어느 volume도 단순 적용 어려움</strong> <span class="chip">R&amp;T pp.638–639</span></li>
+        </ul>
+      </div>
+    </div>
+    <h2 class="sub-title">혼동쌍 #3 — Volume Critical Blow</h2>
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th></th><th>$V_1, V_{ss}$</th><th>$V_\beta$</th></tr></thead>
+        <tbody>
+          <tr><td><strong>용도</strong></td><td>bolus 직후 또는 steady-state amount용</td><td>terminal slope 기반 apparent volume</td></tr>
+          <tr><td><strong>수식</strong></td><td>$V_1=Dose/(A+B)$, $V_{ss}=MRT\cdot CL$</td><td>$V_\beta=CL/\beta$</td></tr>
+          <tr><td><strong>혼동 시</strong></td><td>loading, amount-at-SS 직결</td><td>GM: $V_\beta=345, V_{ss}=56, V_1=14$. $V_\beta$를 "진짜 body volume"처럼 쓰면 tissue redistribution과 plasma dosing이 한 숫자에 섞임</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 15: §5-A · PK8 -->
+<section class="slide" data-idx="15">
+  <div class="slide-header"><span class="sec-badge">§ 5 · A</span><h1 class="slide-title">분기점 3: Parameterization Stability — PK8</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-teal">
+      <span class="callout-label">거장의 시각</span>
+      가장 낮은 WRSS를 고르는 습관이 문제임 — fit residual만 보고 covariance geometry는 못 보고 있는 것임. <strong>condition number, RSE, 상관성까지 같이 봐야</strong> "맞아 보이는 모델"과 "제출 가능한 모델"이 분리됨.
+    </div>
+    <h2 class="sub-title">PK8 사례 — 같은 데이터, 5개 parameterization, condition # 100배 차이</h2>
+    <p style="font-size:13.5px"><strong>Compound X</strong>(G&amp;W PK8의 가상 화합물) 100 µg IV bolus 데이터에서 G&amp;W는 5가지 parameterization을 비교함. Table 8.1의 condition number는:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>모델 계열</th><th style="text-align:right">Condition Number</th><th>핵심 파라미터화</th><th>판단</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(93,184,166,0.08)"><td><strong>ODE 생리학적</strong></td><td class="num"><strong>29.69</strong></td><td>$CL, V_1, Cld, V_t$</td><td><strong class="hi-teal">최저, 가장 안정 ✓</strong></td></tr>
+          <tr><td>Macro</td><td class="num">125.2</td><td>$A, \alpha, B, \beta$</td><td>절편/기울기 상관 가능성 큼</td></tr>
+          <tr><td>Colburn</td><td class="num">2,243</td><td>$V(t)$의 지수적 접근</td><td>시간 의존적 용적</td></tr>
+          <tr><td>재파라미터화 CL</td><td class="num">2,306</td><td>$D_{iv}, CL$ 포함</td><td>청소율 언어 연결</td></tr>
+          <tr style="background:rgba(198,69,69,0.06)"><td>Takada</td><td class="num"><strong>3,186</strong></td><td>시간 의존적 $V(t)$</td><td><strong class="hi-coral">WRSS는 낮지만 cond # 폭증 ✗</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="metric-pair">
+      <div class="metric-card">
+        <div class="metric-big" style="font-size:clamp(34px,3.5vw,52px)">107×</div>
+        <div class="metric-label">Max / Min Ratio</div>
+        <div class="metric-sub">최대(Takada 3,186) / 최소(ODE 29.69) <span class="chip">G&amp;W pp.513–517</span></div>
+      </div>
+      <div class="metric-card dark">
+        <div class="dc-label">💡 핵심 한 줄</div>
+        <p style="font-size:13.5px;color:var(--on-dark-cream);margin-top:6px">같은 데이터, 비슷한 fit이어도 좌표계 하나로 covariance geometry가 <span class="dc-accent">100배 단위로 흔들림.</span> Reparameterization은 표기를 치장하는 게 아니라 <em>estimation geometry를 바꾸는 preconditioning</em>. 같은 지도라도 접는 방향만 바꾸면 주머니에 잘 들어가거나 찢어질 수 있는 것처럼.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 16: §5-B · WRSS vs CN -->
+<section class="slide" data-idx="16">
+  <div class="slide-header"><span class="sec-badge">§ 5 · B</span><h1 class="slide-title">WRSS와 Condition Number는 다른 질문에 답함</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <h2 class="sub-title">세 지표 — 각각 무엇을 묻는가</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>지표</th><th>무엇을 묻나</th><th>단독으로 보면?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>WRSS</strong></td><td>"얼마나 잘 맞았나" (residual fit 크기)</td><td>fit 품질</td></tr>
+          <tr><td><strong>Condition Number</strong></td><td>"그 맞음이 안정적으로 추정되나" (정보 행렬 안정성)</td><td>covariance geometry</td></tr>
+          <tr><td><strong>RSE</strong></td><td>"각 파라미터 자체의 신뢰성" (relative standard error)</td><td>개별 추정의 정밀도</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-warn">
+      <span class="callout-label">⚠️ 핵심 메시지</span>
+      <strong>Takada model</strong>은 WRSS가 낮아도 condition number가 크고, <strong>ODE model</strong>은 condition number가 가장 낮음. 따라서 <strong>lowest WRSS = best model이 아님</strong>. <span class="chip">G&amp;W p.516</span>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <p style="font-size:11.5px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:6px;margin-bottom:4px">상황별 결과 추적</p>
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th>상황</th><th>→ 결과</th><th>조치</th></tr></thead>
+            <tbody>
+              <tr><td>WRSS만 최저</td><td>불안정 모델 채택 위험</td><td>condition #/RSE 병행</td></tr>
+              <tr><td>condition # 폭증</td><td>covariate 추가 시 결과 비재현</td><td>초기치·로그·좌표계 순서 점검</td></tr>
+              <tr><td>ODE 좌표 안정</td><td>reviewer 방어 용이</td><td>production 후보 우선</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-amber">
+          <span class="callout-label">⚠️ PK7 F-test 오용 경고</span>
+          G&amp;W PK7은 mono/bi/tri-exponential 판별에서 AIC/F-test, 정밀도, 상관성, 잔차, 최소 적절 모델 규칙을 같이 봄. <strong>가장 자주 잘못 쓰이는 게 F-test</strong> — <em>weighting scheme이 다른 두 모델을 단순 F-test로 비교하면 안 됨</em>. 두 모델의 likelihood가 서로 다른 측정오차 가정 위에 서 있기 때문. <span class="chip">G&amp;W pp.505–512</span>
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">디버깅 순서 — 위에서 아래로</h2>
+        <div class="dark-card">
+          <span class="dc-label">💼 실무 인사이트</span>
+          <p>condition number가 폭증하면 <strong>좌표계부터 바꾸기 전에 THETA 초기치를 먼저 확인</strong>해야 함. 초기치가 자릿수부터 틀어져 있으면 좌표계와 무관하게 정보 행렬이 나빠질 수 있음.</p>
+          <ol class="std" style="margin-top:8px">
+            <li style="color:var(--on-dark-cream)"><span class="dc-accent">초기 추정치 (THETA initial)</span> 점검 → 자릿수가 맞나?</li>
+            <li style="color:var(--on-dark-cream)"><span class="dc-accent">로그 영역 파라미터화</span> → 양수 제약을 자연스럽게 풀어줌</li>
+            <li style="color:var(--on-dark-cream)"><span class="dc-accent">재파라미터화</span> → 좌표계 자체를 바꿔봄</li>
+          </ol>
+        </div>
+        <div class="callout">
+          <span class="callout-label">NCA 선택 신호</span>
+          G&amp;W PK8: <strong>initial phase가 거의 안 보이지만 그렇다고 배제할 수도 없을 때 NCA가 제안</strong>될 수 있음. <em>2구획 fit을 무조건 강행하라는 세션이 아니라</em>, 데이터가 phase를 식별해 줄 때만 parametric 2구획 해석을 신뢰하라는 경고. <span class="chip">G&amp;W p.517</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 17: §5-C · Socratic Dilemma -->
+<section class="slide" data-idx="17">
+  <div class="slide-header"><span class="sec-badge">§ 5 · C</span><h1 class="slide-title">자기 점검 3 — Socratic Dilemma · NDA 1주 남음</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="qa-block">
+      <div class="qa-q"><span class="q-tag">Socratic Dilemma</span>NDA submission 마감이 1주일 남았음. PK8 데이터로 PopPK 모델 후보가 둘로 좁혀짐.</div>
+      <div class="metric-pair" style="margin-top:8px">
+        <div class="card-soft">
+          <h3 class="sub-sub"><span class="hi-coral">Model A · Takada parameterization</span></h3>
+          <p style="font-size:12.5px">WRSS 5개 parameterization 중 <strong>최저</strong>. 단, condition # <strong>3,186</strong>, $V_t(t)$ time-dependent 표현이 reviewer에게 익숙하지 않을 가능성 큼.</p>
+        </div>
+        <div class="card-soft" style="background:rgba(93,184,166,0.08);border-color:var(--accent-teal)">
+          <h3 class="sub-sub"><span class="hi-teal">Model B · ODE 생리학적</span></h3>
+          <p style="font-size:12.5px">condition # <strong>29.69</strong>로 압도적으로 안정적. WRSS는 Takada보다 약간 높지만 fit 자체는 시각적으로 충분히 양호. $CL, V_1, Cld, V_t$로 reviewer가 즉시 해석 가능.</p>
+        </div>
+      </div>
+    </div>
+    <div class="dark-card">
+      <span class="dc-label">정답: Model B 채택 · 방어 논리 5단계</span>
+      <ol class="std" style="margin-top:6px">
+        <li style="color:var(--on-dark-cream)"><strong style="color:var(--accent-amber)">WRSS는 fit residual 크기, condition #는 추정 geometry 안정성</strong> — 두 축은 서로 대체 못 함.</li>
+        <li style="color:var(--on-dark-cream)"><strong style="color:var(--accent-amber)">실용 모델의 첫째 조건은 재현성</strong> — 다른 시드/초기치/공변량에서 같은 결론. condition # 3,186은 covariance step instability와 covariate inclusion 시 비예측성.</li>
+        <li style="color:var(--on-dark-cream)"><strong style="color:var(--accent-amber)">Reviewer Defense 한 줄</strong>: "Takada는 lowest WRSS이지만 (a) covariance geometry가 100배 이상 불안정, (b) 시간 의존적 용적 표현은 공변량-용적 관계 해석에 추가 부담. ODE 생리학적 모델은 적합이 거의 동등하면서 (a) 정밀도/상관성이 안정적이고 (b) 청소율/용적 좌표계로 일반적 PopPK 보고 관행에 부합."</li>
+        <li style="color:var(--on-dark-cream)"><strong style="color:var(--accent-amber)">적합 차이가 임상적으로 유의미(AUC 차이 &gt;10%)하면</strong> 두 모델 모두를 sensitivity analysis로 보고하고 최종 dosing은 robust 영역에서 도출.</li>
+        <li style="color:var(--on-dark-cream)"><strong style="color:var(--accent-amber)">함정</strong>: "WRSS가 더 낮으니 Takada가 진짜 모델에 가깝다"는 추론은 <em>weighting scheme이 부적절한 두 모델을 직접 비교하는 실수</em>일 수 있음. 무가중 RSS와 가중 RSS는 직접 비교 대상 아님.</li>
+      </ol>
+    </div>
+    <div class="callout callout-teal">
+      <span class="callout-label">다음 깊이 질문</span>
+      Model B를 채택했는데 reviewer가 "그렇다면 Takada가 보여준 lower WRSS는 어떤 정보를 담고 있나"라고 묻는다면? → <strong>"lower WRSS는 시간 의존적 $V$ 가정이 적합 잔차를 약간 감소시킨다는 신호이지, 그 가정이 기전적으로 검증되었다는 의미는 아님. 기전적 검증 없이는 실용 모델로 채택할 수 없음."</strong>
+    </div>
+    <details>
+      <summary>혼동쌍 #4 — Better WRSS vs Better Deployable Model</summary>
+      <div class="table-wrap" style="margin-top:8px">
+        <table class="table-tight">
+          <thead><tr><th></th><th>Better WRSS</th><th>Better deployable model</th></tr></thead>
+          <tbody>
+            <tr><td><strong>무엇을 보나</strong></td><td>residual fit 품질 지표</td><td>fit + 안정성 + 해석 가능성</td></tr>
+            <tr><td><strong>위치</strong></td><td>목적함수/잔차 축</td><td>condition #, RSE, correlation, biological plausibility 병렬</td></tr>
+            <tr><td><strong>혼동 시</strong></td><td>WRSS 최저 parameterization 무조건 채택</td><td>PK8 ODE는 cond # 최저, Takada는 낮은 WRSS에 high cond #</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- SLIDE 18: §6-A · Plateau Equation -->
+<section class="slide has-formula" data-idx="18">
+  <div class="slide-header"><span class="sec-badge">§ 6 · A</span><h1 class="slide-title">분기점 4: Half-Life Trap — Plateau Equation</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-teal">
+      <span class="callout-label">거장의 시각</span>
+      half-life 숫자 하나를 듣자마자 dosing interval로 번역하면 terminal, effective, plasma, tissue가 한 단어 안에서 뒤섞임. <strong>$f_1/f_2$, input pattern, volume term을 같이 봐야</strong> terminal half-life가 유용한 경우와 위험한 경우가 갈림.
+    </div>
+    <h2 class="sub-title">정상상태 접근 방정식 — 진짜 답은 plateau equation</h2>
+    <div class="formula-card-wrap">
+      <div class="formula-card large-eq">
+        $$\underbrace{\frac{C(t)}{C_{ss}}}_{\text{SS 접근률}}=\overbrace{\underbrace{f_1}_{\text{α상 기여}}(1-e^{-\underbrace{\alpha}_{\text{빠른 slope}}t})}^{\text{빠른 접근}}+\overbrace{\underbrace{f_2}_{\text{β상 기여}}(1-e^{-\underbrace{\beta}_{\text{느린 slope}}t})}^{\text{느린 접근}}$$
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th>파라미터</th><th>의미</th><th>변화 원인</th></tr></thead>
+            <tbody>
+              <tr><td>$C(t)/C_{ss}$</td><td>정상상태 농도에 대한 접근률</td><td>phase별 접근률과 $f_1/f_2$</td></tr>
+              <tr><td>$f_1$</td><td>빠른 phase의 AUC 기여</td><td>early distribution 비중</td></tr>
+              <tr><td>$f_2$</td><td>느린 phase의 AUC 기여</td><td>terminal contribution, 재분포/제거</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <span class="callout-label">💡 메타포</span>
+          두 개의 수도꼭지가 동시에 차오르는 욕조. <strong>빠른 수도꼭지의 물량이 대부분이면</strong> 마지막 한 방울이 늦더라도 욕조 수위는 이미 거의 올라와 있음.
+        </div>
+      </div>
+      <div class="col">
+        <p>이 식의 핵심은 <strong>두 phase가 $C_{ss}$로 접근하는 정도를 $f_1/f_2$로 가중합한 것</strong>임. 따라서 <em>half-life 하나가 아니라 phase별 AUC 기여도가 plateau 해석을 결정</em>.</p>
+        <ul class="std">
+          <li>$f_2 > 0.8$이면 terminal half-life로 plateau 도달을 대체로 설명 가능</li>
+          <li><strong>$f_2$가 작으면 terminal half-life가 길어도 plasma plateau는 훨씬 빨리 접근</strong> <span class="chip">R&amp;T pp.631–633</span></li>
+        </ul>
+        <div class="callout">
+          <span class="callout-label">🔑 Half-life 분류 규칙</span>
+          half-life라는 말을 들으면 계산에 들어가기 전에 <strong>"terminal? effective? plasma? tissue?"</strong> 부터 물어야 함.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 19: §6-B · Nicardipine + GM -->
+<section class="slide" data-idx="19">
+  <div class="slide-header"><span class="sec-badge">§ 6 · B</span><h1 class="slide-title">Nicardipine & Gentamicin — 두 시간 척도의 분리</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">Nicardipine — "Terminal 길다 = loading 필요"의 함정</h2>
+        <div class="card">
+          <p style="font-size:13.5px"><strong>Nicardipine</strong>(디하이드로피리딘 계열 calcium channel blocker, IV로 빠르게 혈압을 떨어뜨리는 약물):</p>
+          <ul class="std">
+            <li>말단 반감기 약 <span class="hi-coral">12 hr</span> (길어 보임)</li>
+            <li>plasma 농도는 <span class="hi-coral">1 hr 안에 약 50% $C_{ss}$</span>, 약 15 hr에 90% $C_{ss}$ 도달</li>
+          </ul>
+        </div>
+        <div class="callout callout-warn">
+          <span class="callout-label">위험</span>
+          말단 반감기만 보고 loading dose 필요성을 판단하면 <strong>초기 과량 투여 위험</strong>. 실제로는 $f_1$이 커서 $C_{ss}$ 접근이 빠른 약물. <span class="chip">R&amp;T p.631</span>
+        </div>
+        <div class="callout callout-teal">
+          <span class="callout-label">📖 R&amp;T p.631, Fig.19-10</span>
+          긴 말단 반감기에도 불구하고 plateau에 빠르게 접근하는 Nicardipine 사례. → 반감기 하나만 보고 투여를 판단하지 말라는 경고를 한 장으로 받쳐 줌.
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">Gentamicin — Terminal Accumulation vs Plasma Fluctuation</h2>
+        <div class="dark-card">
+          <p>말단 반감기 <span class="dc-accent">87 hr</span>여도 plasma 치료적 거동은 <span class="dc-accent">초기상 약 4 hr</span>가 좌우함.</p>
+          <p style="margin-top:6px">말단항 기반 축적 지수는 <em>16배</em>가 될 수 있지만, 이건 plasma 최고/최저 농도 축적과 같은 게 아니라 <strong style="color:var(--on-dark)">서서히 평형에 도달하는 조직의 축적</strong>임.</p>
+          <p style="margin-top:6px;color:var(--accent-amber)">→ terminal accumulation과 plasma fluctuation은 같은 시간 척도가 아님. <span class="chip" style="background:#252320;color:#cc785c">R&amp;T pp.635–641</span></p>
+        </div>
+        <div class="callout callout-teal">
+          <span class="callout-label">📖 R&amp;T p.636, Fig.19-14</span>
+          Gentamicin의 plasma/tissue 다회투여 축적을 한 그림에 — <strong>말단항 축적과 치료적 plasma 변동을 분리해서 봐야 한다</strong>는 메시지를 시각적으로 못 박아 줌.
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11.5px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;margin-bottom:4px">상황별 결과 추적</p>
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th>상황</th><th>파라미터</th><th>임상 결과</th><th>조치</th></tr></thead>
+        <tbody>
+          <tr><td>Nicardipine-style</td><td>terminal $t_{1/2}\approx 12$ hr, 1 hr에 50% $C_{ss}$</td><td>loading dose 필요성 과대판단 위험</td><td>plateau eq로 effective time scale 확인</td></tr>
+          <tr><td>Gentamicin-like</td><td>terminal $t_{1/2}=87$ hr, 초기상 약 4 hr</td><td>terminal accumulation과 plasma fluctuation 혼동</td><td>plasma와 tissue accumulation 분리</td></tr>
+          <tr><td>$f_2 > 0.8$</td><td>terminal contribution 큼</td><td>terminal half-life가 time-course 대표 가능</td><td>그래도 phase/조직 구분은 명시</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="callout-label">조직 vs Plasma — 두 시간 척도</span>
+      plasma가 정상상태에 빨리 들어가도 <strong>서서히 평형에 도달하는 조직은 훨씬 늦게 들어옴</strong>. 반응 부위(response site)가 말초·조직 쪽이면 plasma 반감기만으로 작용 개시와 지속을 해석하면 안 됨. <span class="chip">R&amp;T pp.633–634</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 20: §6-C · Half-life 혼동쌍 -->
+<section class="slide has-formula" data-idx="20">
+  <div class="slide-header"><span class="sec-badge">§ 6 · C</span><h1 class="slide-title">혼동쌍 #5 — Terminal vs Effective Half-life</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="callout callout-amber">
+      <span class="callout-label">완화된 경고</span>
+      <strong>"terminal half-life는 항상 틀린다"는 게 아님.</strong> R&amp;T는 <em>많은 약물에서 $f_2>0.8$이면 terminal phase가 plateau/time-course를 잘 설명한다</em>고 말함. 핵심은 "terminal인지 effective인지, plasma인지 tissue인지, $f_2$가 얼마인지"를 묻는 습관. <span class="chip">R&amp;T pp.631–641</span>
+    </div>
+    <h2 class="sub-title">Half-life 혼동쌍 정리</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>비교 기준</th><th>Terminal half-life</th><th>Effective / Clinical half-life</th></tr></thead>
+        <tbody>
+          <tr><td><strong>단위</strong></td><td>시간</td><td>임상 농도 접근 시간 척도</td></tr>
+          <tr><td><strong>수식 위치</strong></td><td>$t_{1/2,\beta}=0.693/\beta$</td><td>$C(t)/C_{ss}=f_1(1-e^{-\alpha t})+f_2(1-e^{-\beta t})$</td></tr>
+          <tr><td><strong>변화 원인</strong></td><td>terminal slope, 느린 재분포</td><td>$f_1/f_2$, input pattern, plasma/tissue site</td></tr>
+          <tr><td><strong>혼동 시 결과</strong></td><td>논문 half-life 12 hr를 plateau에도 그대로 적용</td><td>Nicardipine: terminal 12 hr인데 1 hr에 50% $C_{ss}$ → loading dose 권하면 과량 투여</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <div class="dark-card">
+          <span class="dc-label">⚡ 메타포 · 마지막 페이지 vs 전체 이야기</span>
+          <p>Terminal $t_{1/2}$은 log-concentration 곡선의 마지막 직선 구간에서만 읽히는 <span class="dc-accent">마지막 페이지</span> — 재분포가 이미 끝나고 제거만 남은 단순화된 단계.</p>
+          <p style="margin-top:6px">그 앞에는 α phase의 빠른 분포와 초기 제거가 있었음. <strong>Terminal $t_{1/2}$만으로 투여 간격이나 체내 잔류를 판단하면 앞 페이지의 높은 초기 농도와 분포 지연 효과를 놓침.</strong></p>
+          <p style="margin-top:6px"><span class="dc-coral">Effective $t_{1/2}$</span>은 <em>$f_1/f_2$-가중 plateau equation</em>으로 읽어야 비로소 보이는 "전체 이야기"의 시간 척도.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">자기 점검 4</span>Nicardipine처럼 말단 반감기가 12 hr인데 1 hr에 50% $C_{ss}$에 도달하는 사례에서, 말단 반감기만으로 loading dose를 권하면 왜 위험한가?</div>
+          <div class="qa-a">plateau 접근이 terminal term만으로 결정되지 않고 <strong>$f_1/f_2$ 가중합으로 결정</strong>되기 때문. plasma는 이미 빠르게 올라가고 있는데 terminal half-life만 보면 "너무 늦게 도달한다"고 오판해서 <strong>과도한 loading을 권하게 됨</strong>. <span class="chip">R&amp;T pp.631–633</span></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{C(t)/C_{ss}}_{\text{Plateau 접근}}\;\neq\;\underbrace{1-e^{-\beta t}}_{\text{Terminal term 단독}}$$
+        </div></div>
+        <div class="callout">
+          <span class="callout-label">💼 회의실 실무 룰</span>
+          누가 "이 약물 half-life가 X시간"이라고 말하면 바로 되물어야 함 — <strong>"terminal인가요? effective인가요? plasma인가요? tissue인가요?"</strong> 이 네 글자가 달라지면 multiple-dosing simulation 결과가 통째로 달라짐.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 21: §7-A · 3-comp -->
+<section class="slide has-formula" data-idx="21">
+  <div class="slide-header"><span class="sec-badge">§ 7 · A</span><h1 class="slide-title">확장 framework — 3구획 모델 진단 신호</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>4개 분기점 너머에 있는 세 개의 정밀화 framework. 본문 동선이 자연스럽게 연결되는 곳에 배치. 2구획 fit을 끝내고 잔차를 봤는데 <strong>terminal phase가 또 휘면</strong> 3구획 가능성을 의심함.</p>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{C(t)}_{\text{혈장농도}}=\overbrace{\underbrace{A}_{\text{α절편}}e^{-\alpha t}}^{\text{α상}}+\overbrace{\underbrace{B}_{\text{β절편}}e^{-\beta t}}^{\text{β상(shallow tissue 회귀)}}+\overbrace{\underbrace{C_\gamma}_{\text{γ절편}}e^{-\gamma t}}^{\text{γ상(deep tissue 회귀)}}$$
+        <div class="formula-source">G&amp;W p.73 Fig.2.52 / Fig.2.53 · 6-parameter $V_c, V_{t1}, V_{t2}, Cld_1, Cld_2, Cl$</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <h2 class="sub-title">두 말초구획의 기전적 분리</h2>
+        <div class="card">
+          <ul class="std">
+            <li><strong>Shallow compartment</strong> — 빠르게 평형에 도달하는 조직 (예: renal, hepatic tissue)</li>
+            <li><strong>Deep compartment</strong> — 느리게 평형에 도달하는 조직 (예: adipose tissue, bone marrow)</li>
+          </ul>
+        </div>
+        <div class="dark-card">
+          <span class="dc-label">💡 3구획 직관</span>
+          <p>두 개의 말초 창고가 있고 그 둘이 회귀 속도가 다름. <span class="dc-accent">빠른 창고(shallow)</span>는 신장·간 같은 잘 관류되는 조직, <span class="dc-accent">느린 창고(deep)</span>는 지방·골수처럼 관류는 적은데 분배가 큰 조직.</p>
+          <p style="margin-top:6px">이중지수가 안 맞으면 <strong style="color:var(--on-dark)">창고 개수를 늘려야 하는지(모델 차수 ↑), 아니면 다른 비선형성인지</strong>를 먼저 분리해야 함. <span class="chip" style="background:#252320;color:#cc785c">G&amp;W p.73</span></p>
+        </div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">진단 신호 표</h2>
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th>진단 신호</th><th>어떻게 보이나</th><th>의심할 것</th></tr></thead>
+            <tbody>
+              <tr><td>2구획 fit 잔차의 terminal 영역에 S자 또는 다시 휘는 패턴</td><td>CWRES vs TIME plot이 말단에서 양의 systematic bias</td><td>3구획 또는 deep-tissue 구획</td></tr>
+              <tr><td>Terminal slope를 한참 늦게까지 잡아도 직선이 안 됨</td><td>semilog plot이 두 번 꺾임</td><td>shallow + deep 분리</td></tr>
+              <tr><td>친유성 약물 (thiopental, amiodarone)</td><td>지방·골수 분배가 큼</td><td>adipose deep compartment</td></tr>
+              <tr><td>단클론 항체(mAb)와 일부 펩타이드</td><td>FcRn-mediated recycling, slow lymphatic</td><td>deep compartment 또는 TMDD</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warn">
+          <span class="callout-label">⚠️ 단, 데이터가 phase를 식별해 줄 때만 3구획으로 감</span>
+          PK8의 교훈 ("initial phase가 안 보이면 NCA가 더 안전")이 그대로 확장됨. <span class="chip">G&amp;W pp.512, 517</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 22: §7-B · 1/k + Two-stage -->
+<section class="slide has-formula" data-idx="22">
+  <div class="slide-header"><span class="sec-badge">§ 7 · B</span><h1 class="slide-title">Optimal Sampling — 1/k 원칙 & Two-stage Cluster</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <h2 class="sub-title">D-optimality의 1/k 원칙 — G&amp;W p.512</h2>
+    <div class="callout">
+      <em>"place a sample at 1/(rate constant). According to experimental design theory, 1/(rate constant) is the optimal time point with respect to that particular parameter"</em> <span class="chip">G&amp;W p.512</span>
+    </div>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{t_{\text{optimal}}}_{\text{최적 sampling}}=\frac{\overbrace{1}^{\text{1 time-unit}}}{\underbrace{k_{\text{parameter}}}_{\text{관심 rate constant}}},\quad\text{e.g., }\underbrace{t_\alpha^*}_{\text{α상 최적}}\approx\frac{1}{\alpha},\;\underbrace{t_\beta^*}_{\text{β상 최적}}\approx\frac{1}{\beta},\;\underbrace{t_{k_{21}}^*}_{V_2\text{ 식별}}\approx\frac{1}{k_{21}}$$
+      </div>
+    </div>
+    <h2 class="sub-title">⭐ 2구획의 Two-stage Cluster Sampling</h2>
+    <p>1/k 원칙은 <strong>single-compartment 또는 단일 시간상수 가정 하의 D-optimal design</strong>임. 그런데 2구획 시스템은 두 개의 고유값 $\lambda_1=\alpha$와 $\lambda_2=\beta$를 <em>동시에</em> 식별해야 하니까, single-compartment의 1/k 원칙을 그대로 가져오면 한쪽 phase가 비어 식별성이 무너짐.</p>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{\text{2-comp sampling design}}_{\text{두 phase 동시 식별}}=\overbrace{\underbrace{\{t : t\approx 1/\lambda_1=1/\alpha\}}_{\text{α phase cluster}}}^{V_1,\,k_{12},\,k_{21}\text{ 식별}}\;\cup\;\overbrace{\underbrace{\{t : t\approx 1/\lambda_2=1/\beta\}}_{\text{β phase cluster}}}^{CL,\,\beta,\,AUC\text{ tail 식별}}$$
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <div class="table-wrap">
+          <table class="table-tight">
+            <thead><tr><th>단계</th><th>시점 cluster</th><th>식별 정보</th><th>표본</th></tr></thead>
+            <tbody>
+              <tr><td>Stage 1 — α</td><td>$t\approx 1/\alpha$ (분포상 중간)</td><td>$V_1, k_{12}, k_{21}$</td><td>3–5점 (5–30 min)</td></tr>
+              <tr><td>Stage 2 — β</td><td>$t\approx 1/\beta$ (말단상 중간)</td><td>$CL, \beta, AUC$ tail</td><td>3–5점 (1–3 t½)</td></tr>
+              <tr><td>Bridge</td><td>α와 β 사이 전이 영역</td><td>$Q/V_2$ 식별 보강</td><td>1–2점</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{n_\alpha}_{\text{α 표본}}+\underbrace{n_{\text{bridge}}}_{\text{전이 표본}}+\underbrace{n_\beta}_{\text{β 표본}}\overset{\text{D-criterion}}{=}\arg\max\overbrace{\det\bigl(\underbrace{\boldsymbol{M}(\boldsymbol{\theta})}_{\text{Fisher 정보행렬}}\bigr)}^{\text{정보량 최대화}}$$
+        </div></div>
+      </div>
+    </div>
+    <div class="callout callout-warn">
+      <span class="callout-label">💡 단일 cluster의 함정</span>
+      <strong>β cluster만 있으면</strong> $CL$과 terminal $\beta$는 잘 식별되지만 $V_1, k_{12}, k_{21}$이 <em>Phantom V2</em> 위험. <strong>α cluster만 있으면</strong> 분포상 파라미터는 잡히지만 $CL$ 정밀도가 무너짐. <strong>두 cluster가 모두 있어야 2구획 좌표계가 완전히 식별 가능함.</strong>
+    </div>
+    <details>
+      <summary>두 cluster의 비율과 PK7 연결</summary>
+      <p style="margin-top:6px;font-size:13px">"α cluster에 몇 점, β cluster에 몇 점?"은 $f_1/f_2$ AUC 분율과 covariate model 우선순위에 따라 달라짐. covariate를 $CL$에 붙이는 게 1차 목표라면 β cluster를 더 두텁게, <strong>distribution disequilibrium이 임상 핵심인 약물</strong>(예: gentamicin)이면 <strong>α cluster를 더 두텁게</strong>. 비율은 D-criterion 또는 ED-optimality로 정량 결정.</p>
+      <p style="margin-top:6px;font-size:13px"><strong>PK7과의 연결.</strong> PK7에서 "관측치를 10–20–30%씩 줄여 가며 정밀도와 상관성을 보라"는 G&amp;W의 권유는 사실 이 two-stage cluster 원리의 <em>inverse exercise</em>임 — 어느 cluster의 어느 표본이 정보 행렬에 가장 큰 기여를 하는지 확인하는 작업.</p>
+    </details>
+  </div>
+</section>
+
+<!-- SLIDE 23: §7-C · Non-stationary -->
+<section class="slide has-formula" data-idx="23">
+  <div class="slide-header"><span class="sec-badge">§ 7 · C</span><h1 class="slide-title">Non-stationary Kinetics — 시간 의존적 V의 경계</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>분기점 3에서 Takada model이 $V(t)$를 시간 의존적으로 두는 표기였음. G&amp;W p.513은 이 표기의 기원과 한계를 같이 적음 — Takada-Asada(1981)와 Colburn(1983)의 V(t)는 <strong>2구획 시스템에서 시간에 따라 분포가 확장되는 현상을 한 변수에 흡수한 수학적 reparameterization</strong>이지, 진짜로 분포 공간이 시간에 따라 변한다는 기전적 주장은 아님. <span class="chip">G&amp;W p.513</span></p>
+    <div class="formula-card-wrap">
+      <div class="formula-card compact">
+        $$\underbrace{V(t)}_{\text{시간의존 겉보기 V}}:\overbrace{\underbrace{V_1}_{t=0^+}}^{\text{초기 중앙}}\;\xrightarrow{\text{재분포 진행}}\;\overbrace{\underbrace{V_{ss}}_{\text{진짜 평형}}}^{\text{distribution eq.}}\;\xrightarrow{\text{terminal phase 안}}\;\overbrace{\underbrace{V_z\equiv V_\beta}_{\text{말단 V}}}^{\text{Vβ 부풀림 흡수}}$$
+      </div>
+    </div>
+    <h2 class="sub-title">표기 vs 기전 — 시간 의존성의 두 종류</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>분류</th><th>의미</th><th>처리</th></tr></thead>
+        <tbody>
+          <tr><td><strong>표기상 시간 의존성</strong><br>(Takada/Colburn V(t))</td><td>2구획의 정상적 재분포를 한 변수로 흡수한 reparameterization. 시스템 파라미터는 시간 불변</td><td>표준 2구획 fit과 동등하지만 covariance geometry가 나빠질 수 있음</td></tr>
+          <tr><td><strong>기전적 시간 의존성</strong><br>(true non-stationary)</td><td>input rate가 시간에 따라 변하는 depot 제형, 또는 시스템 파라미터가 시간 함수</td><td>별도 input function 또는 time-varying model</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dark-card">
+      <span class="dc-label">임상에서 진짜 non-stationary가 생기는 자리</span>
+      <p><strong style="color:var(--accent-amber)">Depot 제형</strong>(예: leuprolide microsphere, medroxyprogesterone acetate(DMPA) depot)에서는 약물 방출 속도 $k_a(t)$ 자체가 시간 의존적. 이런 경우는 <strong style="color:var(--on-dark)">2구획 disposition + 시간 의존적 absorption input</strong>으로 구조를 분리해야 하지, $V(t)$로 흡수하면 안 됨 — <em>두 시간 의존성이 한 변수에 합쳐지면 식별 불가능해짐</em>. <span class="chip" style="background:#252320;color:#cc785c">G&amp;W p.513</span></p>
+    </div>
+    <div class="two-col">
+      <div class="col">
+        <div class="callout">
+          <span class="callout-label">💡 경계 정리</span>
+          $V_1 \to V_{ss} \to V_\beta$로 시간에 따라 "겉보기 V가 확장"되는 현상은 <strong>2구획 disposition의 정상적 모습</strong>이지 진짜 시스템 변화가 아님. depot 제형이나 enzyme induction/inhibition으로 <em>시스템 파라미터 자체가 시간에 따라 변할 때만 진짜 non-stationary</em>.
+        </div>
+      </div>
+      <div class="col">
+        <div class="callout callout-warn">
+          <span class="callout-label">⚠️ PK8과 직접 연결</span>
+          PK8 Takada 모델이 reviewer에게 익숙하지 않다는 분기점 3의 문장과 직접 연결. Time-dependent V 표기는 covariate 해석을 어렵게 만듦 — "신기능이 어떤 시점의 V에 붙는가?"를 답하기가 어려워짐. <strong>진짜 non-stationary가 아닌 경우라면 ODE 생리학적 좌표계가 covariate 모델링에 훨씬 안전함.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 24: §8-A · Failure Modes -->
+<section class="slide" data-idx="24">
+  <div class="slide-header"><span class="sec-badge">§ 8 · A</span><h1 class="slide-title">실패 모드 — 분기점별 정리</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>실패 모드</th><th>분기점</th><th>어떻게 알아보나</th><th>예방 규칙</th></tr></thead>
+        <tbody>
+          <tr><td><strong>말단상 전용 CL 오류</strong></td><td>1</td><td>초기 표본 누락, 1구획 CL 과대 추정</td><td>분포상 표본 확보 + 이중지수 가능성 점검</td></tr>
+          <tr><td><strong>Vβ-as-Vss error</strong></td><td>2</td><td>$V_\beta/V_{ss}$가 큰데 loading/amount 계산에 $V_\beta$ 사용</td><td>amount·SS에는 $V_{ss}$ 우선, terminal에만 $V_\beta$</td></tr>
+          <tr><td><strong>Phantom V2</strong></td><td>2 / 7.3</td><td>sparse design, $V_2$ RSE &gt;100%, ETA(V2) shrinkage &gt;80%</td><td>"작은 $V_2$" 결론 전 distribution-phase identifiability 확인</td></tr>
+          <tr><td><strong>Pseudo-Stable V across renal function</strong></td><td>2 / 4</td><td>gentamicin-like에서 $V_\beta$ vs CrCl plot이 평탄해 보이는데, multiple-dose plasma trough VPC가 신부전군 underprediction. 신부전 시 $CL$과 β가 같이 떨어지면 $V_\beta=CL/\beta$의 비율이 안정해 보이는 착시</td><td>covariate를 $V_\beta$가 아니라 $V_{ss}/V_1$에 붙이고, plasma trough VPC와 tissue accumulation 예측을 분리 검증</td></tr>
+          <tr><td><strong>Macro Drift</strong></td><td>3</td><td>$A/B$ 사이 상관이 높고 covariance가 불안정</td><td>production에는 physiological parameterization 우선</td></tr>
+          <tr><td><strong>초기 추정치 함정</strong></td><td>3</td><td>condition number 폭증, 초기치만 바꿔도 결과 급변</td><td>초기 추정치 → 로그 영역 → 재파라미터화 순서</td></tr>
+          <tr><td><strong>WRSS 단독 선택</strong></td><td>3</td><td>최저 WRSS 모델이 높은 condition number</td><td>잔차·정밀도·condition #·생물학적 타당성 병행</td></tr>
+          <tr><td><strong>F-test 오용</strong></td><td>3</td><td>weighting scheme이 다른 모델을 단순 F-test로 비교</td><td>PK7 규칙: 잔차·정밀도·상관성·최소 적절 모델 함께 적용</td></tr>
+          <tr><td><strong>Half-life 단어 혼용</strong></td><td>4</td><td>"half-life 87 hr이니 plasma 16배 축적" 같은 단언</td><td>"terminal? effective? plasma? tissue?" 되묻기</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 25: §8-B · Professional Moat + 후속 -->
+<section class="slide" data-idx="25">
+  <div class="slide-header"><span class="sec-badge">§ 8 · B</span><h1 class="slide-title">전문가 해석 지점 — 30년차 모델러가 1분 안에 보는 것</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th>변화 상황</th><th>1차 파라미터</th><th>임상 결과</th><th>조치</th></tr></thead>
+        <tbody>
+          <tr><td>Semilog 꺾임점과 말단 직선성</td><td>$\alpha/\beta$ 구조</td><td>2·3구획 가능성 판단</td><td>terminal curvature 확인</td></tr>
+          <tr><td>$f_2$가 작거나 큼</td><td>$f_2$</td><td>terminal 반감기가 임상 시간 척도 대표 가능 여부</td><td>plateau equation과 함께 해석</td></tr>
+          <tr><td>$V_\beta/V_{ss}$ 비율 상승</td><td>$V_\beta, V_{ss}$</td><td>terminal volume 오용 위험</td><td>loading·amount에는 $V_{ss}$ 우선</td></tr>
+          <tr><td>WRSS 낮지만 condition #/RSE 나쁨</td><td>condition #, RSE</td><td>production model 불안정</td><td>모델 보류 또는 좌표계 재검토</td></tr>
+          <tr><td>CWRES vs TIME이 초기 양 또는 S자</td><td>CWRES</td><td>구조적 오설정 또는 분포상 누락</td><td>sampling·구획 수 재점검</td></tr>
+          <tr><td>η-shrinkage 높음</td><td>η-shrinkage</td><td>covariate effect 해석 가능성 낮음</td><td>covariate 결론 보수화</td></tr>
+          <tr><td>forward inclusion에서 공변량 추가</td><td>$CL, Q, V_{ss}, V_\beta$, condition #</td><td>covariate를 어디에 붙일지 결정</td><td>4개 분기점 동시 점검</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 class="sub-title">후속 세션 연결</h2>
+    <div class="table-wrap">
+      <table class="table-tight">
+        <thead><tr><th>후속 세션</th><th>이 세션에서 열리는 개념</th><th>이 세션 없으면 실패하는 것</th></tr></thead>
+        <tbody>
+          <tr><td>NONMEM ADVAN3/4/11/12</td><td>$CL,V_1,Q,V_2$ 좌표계와 macro/micro 연결</td><td>ADVAN parameter를 curve slope와 분리해 외우게 됨</td></tr>
+          <tr><td>Sparse sampling design</td><td>distribution phase sample 없으면 $V_2$, $Q$, α 식별 약화</td><td>Phantom V2를 실제 작은 $V_2$로 오판</td></tr>
+          <tr><td>Covariate model building</td><td>covariate는 보통 $CL,V,Q$ physiological parameter에 붙음</td><td>covariate를 β나 terminal half-life에 직접 붙여 해석 불능</td></tr>
+          <tr><td>Multiple-dosing simulation</td><td>terminal half-life 하나가 아니라 $f_1/f_2$, input duration, $V_{ss}/V_\beta$ 같이 봄</td><td>plateau와 tissue accumulation을 같은 시간 척도로 처리</td></tr>
+          <tr><td>3구획 모델</td><td>이중지수 잔차에서 다시 곡선이 휘면 삼중지수 또는 deep tissue 의심</td><td>2구획 미설명 terminal curvature를 노이즈로 처리</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 26: §9-A · Algorithm + Q1-4 -->
+<section class="slide" data-idx="26">
+  <div class="slide-header"><span class="sec-badge">§ 9 · A</span><h1 class="slide-title">최소 실무 알고리즘 & 자기 테스트 Q1–Q4</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col ratio-5-7">
+      <div class="col">
+        <h2 class="sub-title">9단계 실무 알고리즘</h2>
+        <div class="algo-box"><span class="algo-num">1.</span> Plot semilog C-time curve.
+<span class="algo-num">2.</span> Early sampling이 <span class="algo-key">distribution phase</span>를 잡았는지 확인.
+<span class="algo-num">3.</span> Bi-exponential 가능성이 있으면 <span class="algo-key">A, α, B, β</span>를 rough estimate.
+<span class="algo-num">4.</span> AUC, f1, f2, V1, Vss, Vβ를 계산.
+<span class="algo-num">5.</span> Vβ/Vss와 f2를 보고 terminal half-life 해석 가능성 평가.
+<span class="algo-num">6.</span> Physiological parameterization으로
+   <span class="algo-key">CL, Q/Cld, V1, V2</span>를 설정.
+<span class="algo-num">7.</span> Fit 후 residual, RSE, correlation,
+   <span class="algo-key">condition number</span>를 함께 확인.
+<span class="algo-num">8.</span> Sparse design 또는 high shrinkage이면
+   V2/Q/covariate 해석 보류.
+<span class="algo-num">9.</span> Multiple dosing은 terminal half-life 하나가 아니라
+   <span class="algo-key">f1/f2-weighted plateau equation</span>으로 점검.</div>
+      </div>
+      <div class="col">
+        <h2 class="sub-title">자기 테스트 — 통합 9문항 (1–4)</h2>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q1 · 분기점 1</span>G&amp;W Fig.2.43에서 말단상을 외삽해 $B=28$, $\beta=\ln(28/10)/450$을 얻음. 초기 관측치에서 무엇을 빼야 α 상이 나오나?</div>
+          <div class="qa-a">각 초기 관측치 $C_{obs}(t_i)$에서 $Be^{-\beta t_i}$를 뺌. 잔차를 반로그 도표에 다시 놓고 기울기/절편을 구하면 α와 $A$. <span class="chip">G&amp;W p.60</span></div>
+        </div>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q2 · 분기점 1</span>Aspirin 650 mg IV bolus, 말단 전용 1구획 = 0.98 L/min, 이중지수 = 683 mL/min. 말단 전용은 과소? 과대?</div>
+          <div class="qa-a"><strong>과대(약 44%)</strong>. 유지 용량 계산이 그대로 부풀음. <span class="chip">R&amp;T pp.615–620</span></div>
+        </div>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q3 · 분기점 2</span>Aspirin과 gentamicin 중 $V_\beta/V_{ss}$ 비율이 더 큰 약물은? 중요한 이유?</div>
+          <div class="qa-a"><strong>Gentamicin</strong>. Aspirin $\approx 1.3$, gentamicin $\approx 6.2$. 큰 비율은 <strong>말단 기울기에서 나온 용적을 정상상태 체내량 용적처럼 쓰면 안 된다</strong>는 경고. <span class="chip">R&amp;T pp.629–641</span></div>
+        </div>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q4 · 분기점 2</span>같은 이중지수 plasma 곡선을 중앙 제거, 말초 제거, 양 구획 제거 모델이 모두 설명함. plasma data만으로 무엇을 결론낼 수 없나?</div>
+          <div class="qa-a"><strong>제거 부위(elimination site)를 식별할 수 없음.</strong> 중앙구획 단독 제거는 보통 생리학적 타당성으로 선택되는 실무 가정. <span class="chip">G&amp;W p.65</span> <span class="chip">R&amp;T pp.618–619</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 27: §9-B · Q5-9 -->
+<section class="slide" data-idx="27">
+  <div class="slide-header"><span class="sec-badge">§ 9 · B</span><h1 class="slide-title">자기 테스트 Q5–Q9 · 통과 기준</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col">
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q5 · 분기점 4</span>Nicardipine처럼 말단 반감기 12 hr인데 1 hr에 50% $C_{ss}$ 도달하는 사례에서, 말단 반감기만으로 loading을 권하면 왜 위험한가?</div>
+          <div class="qa-a">plateau 접근이 terminal term만으로 결정되지 않고 <strong>$f_1/f_2$ 가중합</strong>으로 결정되기 때문. plasma가 이미 빠르게 올라가는데 terminal만 보면 "너무 늦는다"고 오판해서 <strong>과도한 loading</strong>을 권함. <span class="chip">R&amp;T pp.631–633</span></div>
+        </div>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q6 · 분기점 3</span>PK8에서 Takada는 WRSS 최저, ODE는 condition # 최저. 어느 하나만 보고 결정하면 안 되는 이유?</div>
+          <div class="qa-a">WRSS는 fit residual 크기, condition #는 parameter estimation geometry. <strong>둘 중 하나만 좋다고 deployable model이 되는 게 아님.</strong> 같은 데이터, 비슷한 fit이어도 좌표계가 condition #를 크게 바꿈. <span class="chip">G&amp;W pp.513–517</span></div>
+        </div>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q7 · 분기점 7.3</span>첫 표본이 분포상 이후에만 있는 sparse design에서 ADVAN3 TRANS4 적합 후 $V_2$ RSE &gt;100%, ETA(V2) shrinkage &gt;80%, 초기 CWRES 양의 경향. 가장 먼저 의심할 것은?</div>
+          <div class="qa-a">"약물의 $V_2$가 진짜 작다"가 아니라 <strong>distribution phase가 data에 없어서 $V_2$가 식별되지 않는 Phantom V2</strong> 상황.</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q8 · 분기점 4</span>누가 "half-life가 87 hr이니까 8시간 간격 투여하면 plasma가 16배 축적된다"고 함. 무엇을 되물어야 하나?</div>
+          <div class="qa-a"><strong>terminal half-life인지 effective/plasma half-life인지, $f_2$는 얼마인지, 축적이 plasma 구획인지 서서히 평형에 도달하는 조직인지</strong> 물어야 함. Gentamicin-like에서는 terminal accumulation과 plasma fluctuation 분리 필수. <span class="chip">R&amp;T pp.635–641</span></div>
+        </div>
+        <div class="qa-block">
+          <div class="qa-q"><span class="q-tag">Q9 · Socratic Dilemma</span>§5.7에서 다룬 NDA 마감 1주 남은 PK8 의사결정. Model B(ODE) 채택의 reviewer defense 논리는?</div>
+          <div class="qa-a">§5.7의 5단계 논리: (1) WRSS ≠ condition #, (2) 재현성이 1순위, (3) reviewer-friendly 좌표계, (4) sensitivity analysis 병행, (5) F-test 오용 함정. <span class="chip">G&amp;W pp.508–517</span></div>
+        </div>
+        <div class="closer-card">
+          <div class="cl-label">통과 기준</div>
+          <div class="cl-body" style="font-size:clamp(15px,1.4vw,18px);line-height:1.5">9개 질문 모두 답할 수 있으면<br>2구획 모델을 <span class="cl-accent">"공식"이 아니라</span><br>모델 선택·volume 해석·dosing simulation·<br>규제 방어 논리의 <span class="cl-accent">사고 도구</span>로<br>쓸 준비가 된 것임.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 28: §10 · 한 줄 회수 -->
+<section class="slide" data-idx="28">
+  <div class="slide-header"><span class="sec-badge">§ 10</span><h1 class="slide-title">한 줄 회수와 다음 세션 연결</h1></div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="closer-card">
+      <div class="cl-label">Session Thesis · One Sentence</div>
+      <div class="cl-body">하나의 IV bolus plasma 곡선은 <span class="cl-accent">4개의 의사결정 분기점</span>을 만들고,<br>각 분기점에서 잘못 가면 임상에서 <span class="cl-accent">정량화 가능한 손해</span>가 나옴.</div>
+    </div>
+    <h2 class="sub-title">4개 분기점 회수</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>분기점</th><th>핵심 함정</th><th>잘못 가면</th><th>옳게 가는 도구</th></tr></thead>
+        <tbody>
+          <tr><td>1. Sampling adequacy</td><td>early sampling 누락</td><td><span class="hi-coral">CL 44% 부풀음 (Aspirin)</span></td><td>$f_2$ 점검, 이중지수 가능성 확인</td></tr>
+          <tr><td>2. Volume choice <span style="color:var(--accent-amber)">⚡</span></td><td>"terminal 길다 = 분포 넓다" 직역</td><td><span class="hi-coral">loading dose 6배 (Gentamicin)</span></td><td>$V_1/V_{ss}/V_\beta$ 분리 + $K_{p,\text{app}}$ 기전</td></tr>
+          <tr><td>3. Parameterization</td><td>lowest WRSS만 추종</td><td><span class="hi-coral">condition # 100배 (PK8)</span></td><td>WRSS + condition # + RSE 병행</td></tr>
+          <tr><td>4. Half-life interpretation</td><td>terminal half-life 단독 사용</td><td><span class="hi-coral">multiple dosing 통째 (Nicardipine, GM)</span></td><td>plateau equation + $f_1/f_2$ 가중</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dark-card">
+      <span class="dc-label">최종 회수</span>
+      <p>2구획 모델의 mastery는 $C=Ae^{-\alpha t}+Be^{-\beta t}$를 외우는 게 아님. 좋은 모델러는 이 식을 보는 순간 <span class="dc-accent">sampling adequacy, CL bias 방향, volume choice, condition # risk, half-life 오용 가능성</span>을 <em>동시에</em> 읽음. 그리고 본 세션의 확장 framework(3구획 진단 신호, 1/k optimal sampling, two-stage cluster, non-stationary 경계)까지 갖춰지면, <strong style="color:var(--on-dark)">"2구획으로 충분한가, 더 가야 하는가"</strong>를 데이터 앞에서 빠르게 분리할 수 있음.</p>
+    </div>
+    <div class="callout callout-teal">
+      <span class="callout-label">다음 세션 연결</span>
+      NONMEM ADVAN3/4/11/12로 들어가면 이 세션의 좌표계가 그대로 ADVAN parameter로 옮겨가고, sparse sampling design에서는 7.3의 two-stage cluster가 protocol 결정 도구가 되며, covariate model building에서는 4개 분기점이 동시에 작동함. <strong>이 세션을 한 줄로 꿴 다음에야 후속 세션이 평면이 아닌 입체로 보이기 시작함.</strong>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar">
+  <button class="nav-btn" id="btn-prev">← 이전</button>
+  <div class="nav-center">
+    <span id="prog-text">1 / 29</span>
+    <div class="prog-track"><div id="prog-fill"></div></div>
+  </div>
+  <button class="nav-btn" id="btn-next">다음 →</button>
+</nav>
+
+<!-- ===================== KaTeX + APP ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+function renderMath(){
+  if(typeof renderMathInElement !== 'function') return;
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false },
+      { left: '$',   right: '$',   display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+
+var TOTAL = 29;
+var cur = 0;
+var slides  = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev  = document.getElementById('btn-prev');
+var btnNext  = document.getElementById('btn-next');
+
+function goTo(n){
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  if (tocBtns[cur]) tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  if (tocBtns[cur]) {
+    tocBtns[cur].classList.add('active');
+    tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function(){ goTo(cur - 1); });
+btnNext.addEventListener('click', function(){ goTo(cur + 1); });
+tocBtns.forEach(function(b){
+  b.addEventListener('click', function(){
+    var idx = parseInt(b.getAttribute('data-idx'), 10);
+    if (!isNaN(idx)) goTo(idx);
+  });
+});
+document.addEventListener('keydown', function(e){
+  var tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){
+    renderMath();
+    goTo(0);
+  });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+
+</body>
+</html>
