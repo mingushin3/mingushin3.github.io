@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Sprint · 모델링 철학·용어 (Remastered)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--canvas:#faf9f5;--surface-soft:#f5f0e8;--surface-card:#efe9de;--cream-strong:#e8e0d2;--dark:#181715;--dark-elev:#252320;--hairline:#e6dfd8;--hairline-soft:#ebe6df;--coral:#cc785c;--coral-active:#a9583e;--coral-pale:#f4e4dc;--teal:#5db8a6;--teal-bg:#e6f4f0;--amber:#e8a55a;--amber-bg:#fdf4e0;--amber-border:#d4a017;--warn-bg:#fcf0ef;--warn-border:#c64545;--ink:#141413;--body-strong:#252523;--body:#3d3d3a;--muted:#6c6a64;--muted-soft:#8e8b82;--on-dark:#faf9f5;--on-dark-warm:#f0e6dc}
+html,body{height:100%;overflow:hidden;background:var(--canvas)}
+body{font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.6;color:var(--body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--surface-soft);border-right:1px solid var(--hairline);overflow-y:auto;padding:22px 16px 28px;z-index:10}
+.sidebar::-webkit-scrollbar{width:5px}
+.sidebar::-webkit-scrollbar-thumb{background:#d8d0c2;border-radius:9999px}
+.brand{display:flex;align-items:center;gap:10px;margin:0 4px 16px;padding-bottom:14px;border-bottom:1px solid var(--hairline)}
+.brand-text .name{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;font-weight:500;letter-spacing:-.01em;color:var(--ink);line-height:1.1}
+.brand-text .meta{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted-soft);text-transform:uppercase;margin-top:3px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.8px;color:var(--muted-soft);text-transform:uppercase;font-weight:500;margin:14px 0 5px 8px;padding-top:4px}
+.toc-section:first-of-type{margin-top:0}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;padding:6px 8px 6px 12px;font-family:'Inter','Noto Sans KR',sans-serif;font-size:12.5px;font-weight:400;color:var(--body);cursor:pointer;margin-bottom:1px;line-height:1.35;transition:background 120ms,color 120ms,border-color 120ms;border-radius:0 6px 6px 0}
+.toc-btn:hover{color:var(--coral);background:var(--surface-card)}
+.toc-btn.active{border-left-color:var(--coral);color:var(--coral);font-weight:600;background:var(--surface-card)}
+.toc-btn.sub{padding-left:24px;font-size:11.8px}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:56px;overflow:hidden;background:var(--canvas)}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:30px 52px 20px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 240ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide.has-complex-formula{padding-top:56px}
+.slide .formula-card,.slide .formula-card-wrap{overflow-y:visible!important}
+.slide-header{display:flex;align-items:baseline;gap:16px;margin-bottom:6px;max-height:64px}
+.sec-badge{flex-shrink:0;display:inline-block;background:var(--coral);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:1.2px;padding:4px 11px;border-radius:9999px;text-transform:uppercase;align-self:center}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(26px,2.7vw,38px);letter-spacing:-.022em;color:var(--ink);line-height:1.12}
+.slide-title .em{font-style:italic;color:var(--coral)}
+.slide-subtitle{flex-shrink:0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,1.4vw,19px);color:var(--muted);align-self:center}
+.header-rule{height:1.5px;background:var(--hairline);border:none;margin:4px 0 14px}
+.slide-body{flex:1;display:flex;flex-direction:column;min-height:0;gap:12px}
+.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-height:0}
+.cols-2-7-5{display:grid;grid-template-columns:7fr 5fr;gap:16px;flex:1;min-height:0}
+.cols-2-5-7{display:grid;grid-template-columns:5fr 7fr;gap:16px;flex:1;min-height:0}
+.flex-col{display:flex;flex-direction:column;gap:10px;min-height:0}
+.card{background:var(--surface-card);border:1px solid var(--hairline);border-radius:12px;padding:14px 18px}
+.card.tight{padding:11px 14px}
+.soft-card{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;padding:14px 18px}
+.dark-card{background:var(--dark);border-radius:12px;padding:16px 20px;color:var(--on-dark-warm)}
+.dark-card .h2,.dark-card .h3,.dark-card .lead{color:#fff}
+.dark-card p,.dark-card li,.dark-card td{color:var(--on-dark-warm)}
+.dark-card strong{color:#fff;font-weight:600}
+.dark-card em{color:var(--amber);font-style:italic;font-weight:500}
+.dark-card .accent{color:var(--coral);font-weight:500}
+.dark-card .accent-amber{color:var(--amber);font-weight:500}
+.dark-card li::marker{color:var(--coral)}
+.dark-card .src{background:#2a2622;color:#d4a87a}
+.dark-card .pill-coral{background:rgba(204,120,92,.18);color:var(--coral)}
+.dark-card .pill-amber{background:rgba(232,165,90,.15);color:var(--amber)}
+.dark-card hr{border:none;height:1px;background:#2a2622;margin:8px 0}
+.formula-card{background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;padding:36px 18px 22px;text-align:center;overflow-x:auto;overflow-y:visible;position:relative}
+.formula-card .src{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);background:transparent;padding:0;display:inline-block}
+.formula-card-wrap{overflow:visible!important}
+.formula-label{position:absolute;top:11px;left:18px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.4px;color:var(--coral);text-transform:uppercase;font-weight:500}
+.callout{border-left:3px solid var(--coral);background:var(--coral-pale);padding:11px 15px;border-radius:0 8px 8px 0}
+.callout.warn{border-color:var(--warn-border);background:var(--warn-bg)}
+.callout.amber{border-color:var(--amber-border);background:var(--amber-bg)}
+.callout.teal{border-color:var(--teal);background:var(--teal-bg)}
+.callout .label{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--coral);font-weight:600;margin-bottom:5px}
+.callout.warn .label{color:var(--warn-border)}
+.callout.amber .label{color:#8a6d12}
+.callout.teal .label{color:#2a8775}
+.callout p{font-size:13.5px;line-height:1.55;color:var(--body)}
+.callout p+p{margin-top:5px}
+.table-wrap{border:1px solid var(--hairline);border-radius:12px;overflow:clip;background:var(--canvas)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--surface-card)}
+thead th{padding:10px 12px;text-align:left;font-weight:600;color:var(--ink);font-size:12.5px;border-bottom:1px solid #d8d0c2;line-height:1.3}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--hairline-soft);color:var(--body);vertical-align:top;line-height:1.5;font-size:12.8px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(204,120,92,.04)}
+td .em-row{color:var(--ink);font-weight:600}
+.src{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:var(--surface-card);padding:2px 7px;border-radius:4px;color:var(--muted);display:inline-block;white-space:nowrap;vertical-align:middle;line-height:1.4}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 9px;border-radius:9999px;letter-spacing:.5px;font-weight:500}
+.pill-coral{background:var(--coral-pale);color:var(--coral-active)}
+.pill-amber{background:var(--amber-bg);color:#8a6d12}
+.pill-teal{background:var(--teal-bg);color:#2a8775}
+.pill-dark{background:var(--dark);color:var(--on-dark-warm)}
+.h2{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(16px,1.55vw,19px);font-weight:600;color:var(--ink);letter-spacing:-.01em;line-height:1.3}
+.h3{font-family:'Inter','Noto Sans KR',sans-serif;font-size:14px;font-weight:600;color:var(--body-strong);letter-spacing:-.005em;margin-bottom:4px}
+.lead{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:clamp(17px,1.7vw,22px);color:var(--body-strong);line-height:1.45;font-weight:400}
+strong{color:var(--ink);font-weight:600}em{font-style:italic}
+.coral{color:var(--coral)}.amber{color:var(--amber-border)}.teal{color:var(--teal)}
+p{font-size:13.5px;line-height:1.6;color:var(--body)}
+p+p{margin-top:7px}
+.list{list-style:none;padding:0}
+.list li{position:relative;padding-left:18px;margin-bottom:5px;font-size:13.5px;line-height:1.55;color:var(--body)}
+.list li::before{content:"";position:absolute;left:4px;top:.65em;width:5px;height:5px;border-radius:50%;background:var(--coral)}
+.dark-card .list li{color:var(--on-dark-warm)}
+.dark-card .list li::before{background:var(--coral)}
+.list-num{counter-reset:itm;list-style:none;padding:0}
+.list-num li{counter-increment:itm;position:relative;padding-left:28px;margin-bottom:6px;font-size:13.5px;line-height:1.5}
+.list-num li::before{content:counter(itm);position:absolute;left:0;top:1px;width:20px;height:20px;background:var(--coral);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.closer{flex:1;display:flex;flex-direction:column;justify-content:center;background:var(--dark);border-radius:16px;padding:40px 52px;position:relative}
+.closer .label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:2px;color:var(--coral);text-transform:uppercase;margin-bottom:18px;font-weight:500}
+.closer .quote{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:clamp(20px,2.2vw,28px);line-height:1.4;color:#fff;font-weight:400;letter-spacing:-.01em}
+.closer .quote em{color:var(--amber);font-style:italic;font-weight:500}
+.closer .signoff{margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--coral);letter-spacing:1px}
+.diagram-box{background:var(--dark);border-radius:12px;padding:24px 28px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.95;color:var(--on-dark-warm);overflow-x:auto}
+.diagram-box .node{color:#fff;font-weight:500;background:rgba(204,120,92,.18);padding:2px 9px;border-radius:6px}
+.diagram-box .arrow{color:var(--coral);margin:0 4px}
+.diagram-box .step{color:var(--amber);font-size:11px;letter-spacing:.5px;margin-left:6px}
+.navbar{position:fixed;bottom:0;left:260px;right:0;height:56px;border-top:1px solid var(--hairline);background:var(--canvas);display:flex;align-items:center;padding:0 28px;gap:20px;z-index:10}
+.nav-btn{background:var(--canvas);border:1px solid var(--hairline);color:var(--body);padding:8px 16px;border-radius:8px;font-family:'Inter','Noto Sans KR',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;transition:all 150ms;min-width:90px}
+.nav-btn:hover:not(:disabled){border-color:var(--coral);color:var(--coral);background:var(--coral-pale)}
+.nav-btn:disabled{opacity:.32;cursor:not-allowed}
+.prog{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);font-weight:500}
+.prog-bar{width:240px;height:3px;background:var(--hairline);border-radius:9999px;overflow:hidden}
+.prog-fill{height:100%;background:var(--coral);border-radius:9999px;transition:width 240ms ease}
+details{border:1px solid var(--hairline);border-radius:8px;background:var(--surface-soft);margin-bottom:5px;font-size:12.8px}
+details[open]{background:var(--surface-card)}
+details summary{cursor:pointer;padding:8px 12px;font-weight:500;color:var(--ink);list-style:none;user-select:none;font-size:12.8px;line-height:1.45}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--coral);transition:transform 150ms;font-size:11px}
+details[open] summary::before{transform:rotate(90deg)}
+details summary .qnum{font-family:'JetBrains Mono',monospace;color:var(--coral);font-weight:600;margin-right:6px;font-size:11.5px}
+details .answer{padding:0 12px 10px 30px;color:var(--body);font-size:12.5px;line-height:1.6}
+details .answer strong{color:var(--ink)}
+.title-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 60px;position:relative}
+.title-cover .ribbon{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3.5px;color:var(--coral);text-transform:uppercase;font-weight:500;margin-bottom:28px;display:flex;align-items:center;gap:14px}
+.title-cover .ribbon::before,.title-cover .ribbon::after{content:"";display:inline-block;width:42px;height:1px;background:var(--coral)}
+.title-cover h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-size:clamp(42px,5.4vw,70px);letter-spacing:-.025em;color:var(--ink);line-height:1.05;margin-bottom:18px}
+.title-cover h1 em{font-style:italic;color:var(--coral)}
+.title-cover .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.2vw,28px);color:var(--muted);margin-bottom:36px;letter-spacing:-.005em}
+.title-cover .lede{max-width:720px;font-size:15px;color:var(--body);line-height:1.7;margin-bottom:36px}
+.title-cover .source{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted-soft);letter-spacing:1.2px;text-transform:uppercase}
+.katex-display{overflow-y:visible!important;margin:0!important;padding:4px 0!important}
+.katex-display>.katex{overflow-y:visible!important;white-space:normal}
+.katex .text,.katex .mord.cjk_fallback{font-family:'Noto Sans KR','Inter',sans-serif!important}
+.katex .mover>.vlist-t,.katex .munder>.vlist-t{overflow:visible!important}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.slide.active>*{animation:fadeUp 380ms ease}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.duo .duo-card{border-radius:12px;padding:14px 16px;border:1px solid var(--hairline)}
+.duo .duo-card.a{background:var(--surface-soft)}
+.duo .duo-card.b{background:var(--surface-card)}
+.duo .duo-head{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--coral);font-weight:600;margin-bottom:6px}
+.subsec-row{display:flex;gap:10px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <div class="brand-text">
+      <span class="name">Pre-Sprint</span>
+      <span class="meta">Modeling Philosophy</span>
+    </div>
+  </div>
+  <div class="toc-section">Cover</div>
+  <button class="toc-btn" data-idx="0">타이틀</button>
+  <div class="toc-section">들어가며</div>
+  <button class="toc-btn" data-idx="1">임상 장면 — Digoxin vs Morphine</button>
+  <button class="toc-btn" data-idx="2">네 카드, 풀어낼 질문</button>
+  <div class="toc-section">§1 한눈에 지도</div>
+  <button class="toc-btn" data-idx="3">Dose → Response 사슬</button>
+  <div class="toc-section">M1 · Modeling Carousel</div>
+  <button class="toc-btn sub" data-idx="4">A. 처음 30초의 함정</button>
+  <button class="toc-btn sub" data-idx="5">B. 6단계 사이클</button>
+  <button class="toc-btn sub" data-idx="6">C. Primary vs Secondary</button>
+  <button class="toc-btn sub" data-idx="7">C. 1구획 예측식·잔차</button>
+  <button class="toc-btn sub" data-idx="8">D. EDA 진짜 산출물</button>
+  <button class="toc-btn sub" data-idx="9">E·F. 5대 함정·NCA 경계</button>
+  <button class="toc-btn sub" data-idx="10">G. 식별성 두 층위</button>
+  <button class="toc-btn sub" data-idx="11">H. 변량성 세 층</button>
+  <button class="toc-btn sub" data-idx="12">M1 — 한 줄로 못 박기</button>
+  <div class="toc-section">M2 · PK/PD Linkage</div>
+  <button class="toc-btn sub" data-idx="13">A. Dose→Exposure→Response</button>
+  <button class="toc-btn sub" data-idx="14">B·C. 치료역·미스터리</button>
+  <button class="toc-btn sub" data-idx="15">D·E. 임상 무게·4 왜곡</button>
+  <button class="toc-btn sub" data-idx="16">F. Allometric Scaling</button>
+  <button class="toc-btn sub" data-idx="17">F. Maturation·마무리</button>
+  <div class="toc-section">M3 · Emax · C50 · γ</div>
+  <button class="toc-btn sub" data-idx="18">A. Hill 3축</button>
+  <button class="toc-btn sub" data-idx="19">B. γ — 16배 vs 4배</button>
+  <button class="toc-btn sub" data-idx="20">C. 등급 vs 이분형</button>
+  <button class="toc-btn sub" data-idx="21">D·E. 측정 함정</button>
+  <button class="toc-btn sub" data-idx="22">F. Effect Compartment·마무리</button>
+  <div class="toc-section">M4 · Turnover</div>
+  <button class="toc-btn sub" data-idx="23">A·B. Dynamic·전환식</button>
+  <button class="toc-btn sub" data-idx="24">C. 4 사례</button>
+  <button class="toc-btn sub" data-idx="25">D·E. IDR·분기·마무리</button>
+  <div class="toc-section">마무리</div>
+  <button class="toc-btn" data-idx="26">§3 30초 체크리스트</button>
+  <button class="toc-btn" data-idx="27">§4 혼동쌍 해부</button>
+  <button class="toc-btn" data-idx="28">§5 자기 테스트</button>
+  <button class="toc-btn" data-idx="29">§6·§7 메타·Closer</button>
+</aside>
+<main class="viewer">
+<section class="slide active">
+  <div class="title-cover">
+    <div class="ribbon">Pre-Sprint · Remastered Edition</div>
+    <h1>모델링 <em>철학</em> · 용어</h1>
+    <div class="subtitle">Modeling is not a button — it's a carousel.</div>
+    <div class="lede">이 자료는 외울 것이 아니라 <strong>데이터셋 앞에 앉았을 때 머릿속에서 자동으로 돌아가야 할 회로</strong>임. 처음부터 끝까지 한 번 읽고, 다음 데이터셋을 받았을 때 <strong>§3의 "30초 체크리스트"가 입에서 나오면 통과</strong>임.</div>
+    <div class="source">Gabrielsson &amp; Weiner, 5e &nbsp;·&nbsp; Rowland &amp; Tozer, 5e</div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">들어가며</span>
+    <h1 class="slide-title">임상 장면 하나가 모든 것을 정리해줌</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p style="font-size:14px;">진료실에서 <strong>digoxin</strong>(강심배당체) 한 명, <strong>morphine sulfate</strong>(오피오이드) 한 명이 처방됨. 둘 다 <span class="pill pill-coral">narrow therapeutic window</span> 카테고리로 묶이는 약물임. 그런데 <strong>처방 빈도가 정반대</strong>임. <span class="src">R&amp;T 5e, Ch.1, pp.4, 7</span></p>
+    <div class="duo">
+      <div class="duo-card a">
+        <div class="duo-head">Digoxin</div>
+        <p style="font-size:19px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink);">0.125–0.25 mg을 <strong>하루 한 번</strong></p>
+        <p style="margin-top:6px;">천천히 빠지니까 <strong>1일 1회</strong>면 됨</p>
+      </div>
+      <div class="duo-card b">
+        <div class="duo-head">Morphine</div>
+        <p style="font-size:19px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink);">10–50 mg을 <strong>하루 최대 6번</strong></p>
+        <p style="margin-top:6px;">빠르게 빠지니까 <strong>자주 줘야</strong> 함</p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="label">⚠ 핵심 오해</span>
+      <p>"둘 다 조심해서 쓰면 돼" 라고 묶으면 끝장임. 왜 한쪽은 1일 1회고 다른 쪽은 하루 6번인지, 이유를 처방 의사가 입으로 못 말하면 <strong>환자 안전이 통째로 흔들리는 거임</strong>.</p>
+    </div>
+    <div class="callout">
+      <span class="label">★ 핵심을 미리 까놓고</span>
+      <p><strong>치료역의 폭이 투여 빈도를 정하는 게 아님. 노출-시간 곡선의 속도가 정함.</strong> 같은 "narrow window"라도 PK 속도가 다르면 처방 전략이 완전히 달라짐.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">들어가며</span>
+    <h1 class="slide-title">네 카드, 모두 같은 척추</h1>
+    <span class="slide-subtitle">— Digoxin vs Morphine을 풀어낼 네 질문</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>우리가 다룰 네 카드가 결국 다 이 한 장면을 풉:</p>
+    <div class="cols-2" style="gap:14px;">
+      <div class="card">
+        <div class="subsec-row"><span class="pill pill-coral">M1 ⚡ Apex</span></div>
+        <div class="h3" style="margin-top:6px;">모델링은 fitting 버튼이 아니라 사이클</div>
+        <p>왜 EDA부터 안 보면 망하는가? — fitting은 6단계 중 5번째일 뿐</p>
+      </div>
+      <div class="card">
+        <div class="subsec-row"><span class="pill pill-coral">M2</span></div>
+        <div class="h3" style="margin-top:6px;">용량은 그 자체로 처방이 아님</div>
+        <p>exposure-time과 response-time 두 곡선으로 번역해야 함</p>
+      </div>
+      <div class="card">
+        <div class="subsec-row"><span class="pill pill-coral">M3</span></div>
+        <div class="h3" style="margin-top:6px;">농도-반응은 한 덩어리가 아님</div>
+        <p>세 축(천장 · 효능 · 가파름)으로 분리됨</p>
+      </div>
+      <div class="card">
+        <div class="subsec-row"><span class="pill pill-coral">M4</span></div>
+        <div class="h3" style="margin-top:6px;">농도 peak ≠ 효과 peak</div>
+        <p>약물이 아니라 <strong>시스템이 천천히 바뀌고 있는 중</strong>임</p>
+      </div>
+    </div>
+    <div class="callout teal">
+      <span class="label">→ 이 네 가지를 손에 잡으면</span>
+      <p>박사과정 PopPK · TDM · 노출-반응 모델링 어디서든 <strong>"내가 지금 뭘 하고 있는가"</strong>를 입으로 말할 수 있게 됨.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1</span>
+    <h1 class="slide-title">한눈에 지도</h1>
+    <span class="slide-subtitle">Dose → Exposure → Response → Effect</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2-7-5" style="gap:16px;">
+      <div class="diagram-box" style="font-size:12.5px;line-height:1.8;">              <span class="node">Dose Regimen</span>
+                       │
+                       │<span class="step">  M2: PK — 흡수/분포/대사/배설</span>
+                       ▼
+              <span class="node">Exposure-Time Profile</span>
+                       │
+                       │<span class="step">  M3: PD — Emax / C50 / γ</span>
+                       ▼
+              <span class="node">Response-Time Profile</span>
+                       │
+                       │<span class="step">  M4: Turnover — 시스템이 늦게 따라옴</span>
+                       ▼
+       <span class="node">Clinical Effect (Desired / Adverse)</span>
+
+  ↑ 이 모든 사슬을 <span style="color:#cc785c;">(M1: Modeling Carousel)</span>
+    <span class="step">6단계 사고 순서</span>로 풀어냄</div>
+      <div class="flex-col">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:64px;">Card</th><th>무엇을 잡는가</th><th style="width:110px;">출처</th></tr></thead>
+            <tbody>
+              <tr><td><span class="pill pill-coral">M1 ⚡</span></td><td>모델링 = 6단계 순환 사고 (fitting은 5단계일 뿐)</td><td><span class="src">G&amp;W 5e, Ch.1</span></td></tr>
+              <tr><td><span class="pill pill-coral">M2</span></td><td>dose regimen을 exposure-time + response-time으로 번역</td><td><span class="src">R&amp;T 5e, Ch.1</span></td></tr>
+              <tr><td><span class="pill pill-coral">M3</span></td><td>농도-반응을 천장·효능·가파름 세 축으로 분리</td><td><span class="src">R&amp;T 5e, Ch.2</span></td></tr>
+              <tr><td><span class="pill pill-coral">M4</span></td><td>농도 peak ≠ 효과 peak = 내인성 시스템 turnover</td><td><span class="src">R&amp;T 5e, Ch.2</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <span class="label">↳ 후속 세션 분기</span>
+          <p><strong>M1</strong> → GOF/VPC/NPDE/CWRES/Bayesian-MAP/<strong class="coral">PopPK</strong> · <strong>M2</strong> → 구획 PK/TDM/소아·비만 covariate · <strong>M3</strong> → 직접 효과 PD/effect compartment · <strong>M4</strong> → 간접 반응(IDR)/질병 진행/TMDD</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · A</span>
+    <h1 class="slide-title"><span class="em">처음 30초</span>의 함정</h1>
+    <span class="slide-subtitle">— "수렴 떴고 GOF 깔끔하니까 끝"</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>보고서 회의에서 제일 자주 보는 자기기만임. NONMEM이 <span class="pill pill-dark">MINIMIZATION SUCCESSFUL</span> 띄웠다고 모델링 끝난 거 아님.</p>
+    <div class="dark-card">
+      <p class="lead" style="margin:0;">"수렴 메시지는 알고리즘이 멈췄다는 신호일 뿐, <em>임상 질문에 답했다는 보증서가 아님.</em>"</p>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="card">
+        <div class="h3">왜 또 빠지는가</div>
+        <p>이유는 단순함 — <strong>fitting부터 돌리는 게 가장 쉽고 직관적이거든.</strong> 그런데 fitting은 <strong class="coral">6단계 중 다섯 번째 단계</strong>임.</p>
+      </div>
+      <div class="card">
+        <div class="h3">건너뛰면 어떻게 되는가</div>
+        <p>앞의 네 단계를 건너뛰면 fitting은 그냥 <strong>"소프트웨어 기본값 + 모델러의 추측"</strong>에서 출발하는 탐색이 되어버림.</p>
+      </div>
+    </div>
+    <div class="callout amber">
+      <span class="label">⚡ Apex Insight</span>
+      <p>새 데이터셋 받는 순간 의식해야 할 단 한 가지 — <strong>"내가 6단계 중 어디에 서 있는가?"</strong> Fitting 돌리고 있는데 4단계(EDA) 산출물이 없으면, 5단계는 이미 망한 거임.</p>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · B</span>
+    <h1 class="slide-title">6단계 <span class="em">Modeling Carousel</span></h1>
+    <span class="slide-subtitle">외울 게 아니라 의식할 것</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:64px;">Step</th><th style="width:160px;">단계</th><th>하는 일</th><th>산출물</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-coral">1</span></td><td><span class="em-row">잠정 모델</span></td><td>사전 가설, 잠정 시스템 구조</td><td>"무엇을 설명할지" 초기 구조</td></tr>
+          <tr><td><span class="pill pill-coral">2</span></td><td><span class="em-row">설계</span></td><td>용량/채혈/반응/대상/시뮬레이션 (CATD)</td><td>식별 가능한 데이터를 만드는 계획</td></tr>
+          <tr><td><span class="pill pill-coral">3</span></td><td><span class="em-row">실험 수행</span></td><td>설계대로 데이터 수집</td><td>농도·반응·시간 자료</td></tr>
+          <tr style="background:rgba(232,165,90,.08);"><td><span class="pill pill-amber">4 ⭐</span></td><td><span class="em-row">EDA</span></td><td>농도-시간, 반응-시간, 반응-농도 도표</td><td><strong>구조·비선형성·초기 추정치 후보</strong></td></tr>
+          <tr><td><span class="pill pill-coral">5</span></td><td><span class="em-row">Fitting</span></td><td>비선형 회귀</td><td>추정값·정밀도·목적함수</td></tr>
+          <tr><td><span class="pill pill-coral">6</span></td><td><span class="em-row">모델 판별</span></td><td>GOF·잔차·검증·경쟁 모델 비교</td><td>채택 / 기각 근거</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">★ 핵심</span>
+      <p>매 순간 <strong>"내가 이 6단계 중 어디에 서 있는가"</strong>를 의식하는 게 핵심임. <span class="src">G&amp;W 5e, Fig.1.1, p.4</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · C</span>
+    <h1 class="slide-title">Primary <span style="color:var(--muted);">vs</span> Secondary 파라미터</h1>
+    <span class="slide-subtitle">— t½ 길어지면 누구를 의심하는가?</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="flex-col">
+        <div class="card">
+          <div class="h3">파라미터 두 층위 <span class="src">G&amp;W 5e, pp.1–2</span></div>
+          <ul class="list" style="margin-top:6px;">
+            <li><strong>상수</strong>: 용량 \(D\) (입력)</li>
+            <li><strong class="coral">Primary (일차)</strong>: \(V\), \(Cl\) — 시스템을 결정함</li>
+            <li><strong>Secondary (이차)</strong>: \(K\), \(AUC\), \(t_{1/2}\) — primary에서 계산됨</li>
+          </ul>
+        </div>
+        <div class="callout warn">
+          <span class="label">⚠ "환자의 t½이 길어졌다" 보고</span>
+          <p>원인 두 가지: <strong>(1) Cl 감소</strong>(간/신기능 저하?) 또는 <strong>(2) V 증가</strong>(체액 저류? 단백결합 변화?)</p>
+          <p>임상 처방이 달라짐. Cl ↓이면 <strong>용량 감량</strong>, V ↑면 <strong>loading dose 증량</strong>. <strong>Secondary parameter만 보면 두 원인을 구분 못 함.</strong></p>
+        </div>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          <div class="formula-label">Primary → Secondary</div>
+          $$\underbrace{K}_{\text{소실속도}}=\frac{\overbrace{Cl}^{\text{1차}}}{\underbrace{V}_{\text{1차}}}$$
+          <div style="height:20px;"></div>
+          $$\underbrace{AUC}_{\text{총노출}}=\frac{\overbrace{D}^{\text{입력}}}{\underbrace{Cl}_{\text{1차}}}$$
+          <div style="height:20px;"></div>
+          $$\underbrace{t_{1/2}}_{\text{반감기(2차)}}=\frac{\ln(2)}{\underbrace{K}_{\text{소실(2차)}}}$$
+          <div class="src" style="margin-top:12px;">Secondary는 Primary에서 도출</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · C</span>
+    <h1 class="slide-title">1구획 예측식과 잔차</h1>
+    <span class="slide-subtitle">— 물통 비유</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="table-wrap" style="align-self:start;">
+        <table>
+          <thead><tr><th style="width:70px;">파라미터</th><th>단위</th><th>의미</th><th>변화 원인</th></tr></thead>
+          <tbody>
+            <tr><td><strong>\(D\)</strong></td><td>amount</td><td>입력량</td><td>처방, 투여 오류</td></tr>
+            <tr><td><strong>\(Cl\)</strong></td><td>vol/time</td><td>제거 가능한 가상 부피/시간</td><td>장기 기능, 효소·수송체</td></tr>
+            <tr><td><strong>\(V\)</strong></td><td>volume</td><td>농도-체내량 변환 공간</td><td>조직 분포, 결합, 체성분</td></tr>
+            <tr><td><strong>\(K\)</strong></td><td>time⁻¹</td><td>1구획 소실 속도</td><td>\(Cl{\uparrow}\) 또는 \(V{\downarrow}\)</td></tr>
+            <tr><td><strong>\(AUC\)</strong></td><td>conc·time</td><td>총 노출</td><td>\(D{\uparrow}\) 또는 \(Cl{\downarrow}\)</td></tr>
+            <tr><td><strong>\(t_{1/2}\)</strong></td><td>time</td><td>농도 반감 시간</td><td>\(K{\downarrow}\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex-col">
+        <div class="formula-card-wrap">
+          <div class="formula-card" style="padding:34px 14px 18px;">
+            <div class="formula-label">예측 (구조모델)</div>
+            $$\underbrace{\hat{C}}_{\text{예측}}=\overbrace{\frac{D}{V}}^{\text{초기 } C_0}\cdot\overbrace{\exp\!\left(-\underbrace{\tfrac{Cl}{V}}_{=K}\,t\right)}^{\text{단일지수 감소}}$$
+          </div>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card" style="padding:34px 14px 18px;">
+            <div class="formula-label">관측 = 모델 + 잔차</div>
+            $$\underbrace{C}_{\text{관측}}=\overbrace{\hat{C}}^{\text{구조모델}}+\underbrace{\varepsilon}_{\text{잔차(RUV)}}$$
+          </div>
+        </div>
+        <div class="callout teal">
+          <span class="label">💡 물통 비유</span>
+          <p>\(D/V\) = 물감 한 방울을 처음에 얼마나 큰 물통에 떨어뜨렸는가(초기 농도). \(\exp(-Kt)\) = 시간이 지나면서 색이 얼마나 빨리 옅어지는가. 관측 \(C\)는 모델 예측 \(\hat C\)에 잔차 \(\varepsilon\)이 더해진 값임.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · D</span>
+    <h1 class="slide-title">EDA가 <span class="em">장식</span>이 아닌 이유</h1>
+    <span class="slide-subtitle">— 초기값이 결과를 결정함</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="card">
+      <p style="font-size:14px;">EDA 단계의 진짜 산출물은 예쁜 그림이 아님. <strong class="coral">5단계 fitting에 들어갈 모델 구조와 초기 추정치를 만드는 것</strong>임.</p>
+    </div>
+    <div class="dark-card">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+        <span class="pill pill-amber">📖 G&amp;W 5e, Fig.1.2, p.6</span>
+      </div>
+      <p>청소율과 분포용적 두 축으로 그린 <strong>목적함수 표면(WRSS)</strong>. 표면에 골짜기가 여러 개 있고, <em>출발점(노란 점)이 다르면 도착점(빨간 점)도 다른 골짜기에 빠짐.</em></p>
+      <hr>
+      <p>비선형 fitting 알고리즘은 초기 추정치를 요구함. EDA가 없으면 그 초기값은 추측으로 채워짐 → <span class="accent">알고리즘이 엉뚱한 골짜기로 떨어짐</span> → <span class="accent-amber">수렴은 떴지만 답이 틀림.</span></p>
+    </div>
+    <div class="callout">
+      <span class="label">💼 실무 인사이트</span>
+      <p>EDA의 진짜 산출물은 도표 자체가 아니라 <strong>"초기 추정치 후보 1표 + 비선형성 유무 1줄"</strong>임. 용량 보정 도표에서 비선형성이 보이면, 결론 내기 전에 데이터셋의 <strong>용량·시간·사건 코딩 오류</strong>부터 배제해야 함.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · E·F</span>
+    <h1 class="slide-title">5대 함정 <span style="color:var(--muted);font-size:.65em;">·</span> 모델링은 "필요할 때만"</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="card">
+        <div class="h3" style="margin-bottom:8px;">5대 함정 <span class="src">G&amp;W 5e, §1.4, p.4</span></div>
+        <div class="table-wrap" style="border:none;">
+          <table>
+            <tbody>
+              <tr><td style="width:30px;"><strong class="coral">①</strong></td><td><strong>fitting 전 EDA 경시</strong> — 모델 구조와 초기값 빈약</td></tr>
+              <tr><td><strong class="coral">②</strong></td><td><strong>수식 맹종</strong> — 생물학·데이터 구조 안 보임</td></tr>
+              <tr><td><strong class="coral">③</strong></td><td><strong>소프트웨어 과신</strong> — 수렴 ≠ 과학적 타당성</td></tr>
+              <tr><td><strong class="coral">④</strong></td><td><strong>가중치 오용</strong> — 잔차/오차 모델 잘못 두면 구조 판단도 흐려짐</td></tr>
+              <tr><td><strong class="coral">⑤</strong></td><td><strong>총체적 시야 부재</strong> — 설계·분석법·생물학·반응 시점을 함께 못 봄</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:8px;font-size:12.5px;">⑤가 발현되는 가장 흔한 자리가 <strong>식별성(G절)</strong>과 <strong>변량성(H절)</strong>. 이 둘을 분리해서 보는 훈련이 박사과정 PopPK 입구임.</p>
+      </div>
+      <div class="flex-col">
+        <div class="card">
+          <div class="h3">모델링이 필요한 4 경우 <span class="src">G&amp;W 5e, p.4</span></div>
+          <p style="font-size:12.5px;">단순 노출 요약(생체이용률·총 청소율)이면 <strong class="coral">NCA로 끝남</strong>. 모델링이 필요한 건 네 경우뿐임:</p>
+          <ol class="list-num" style="margin-top:8px;">
+            <li><strong>단회 투여로 반복 투여 예측</strong></li>
+            <li><strong>비선형 약동학 정량화</strong></li>
+            <li><strong>PK/PD 관계 정량화</strong></li>
+            <li><strong>개체간 변이(IIV) 정량화 = PopPK</strong> ← NONMEM/Monolix를 부르는 자리</li>
+          </ol>
+        </div>
+        <div class="callout teal">
+          <span class="label">★ 메시지</span>
+          <p>G&amp;W의 메시지는 "많이 하라"가 아니라 <strong>"필요할 때만 하라"</strong>임. 같은 요법인데 환자마다 노출/반응이 다를 때, 그 변이가 어디서 오는가(체중·신기능·유전형)를 정량화하려면 NCA로 답 안 나옴. <strong>그래서 PopPK가 필요함.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · G</span>
+    <h1 class="slide-title">식별성의 <span class="em">두 층위</span></h1>
+    <span class="slide-subtitle">구조적 vs 운영적</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:120px;">층위</th><th>묻는 질문</th><th>깨질 때 신호</th><th>처방</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="coral">구조적<br><small>(structural)</small></strong></td>
+            <td>노이즈 없는 무한 데이터에서도 모델 구조가 파라미터를 <em>유일하게</em> 결정하는가?</td>
+            <td>두 파라미터가 항상 곱/비로만 나타남 (예: \(V/F\))</td>
+            <td>모델 자체를 다시 짜야 함 (IV 자료 추가 등)</td>
+          </tr>
+          <tr>
+            <td><strong class="coral">운영적<br><small>(operational)</small></strong></td>
+            <td>우리 실제 데이터로 실용 정밀도로 구별되는가?</td>
+            <td>RSE 매우 큼, 두 파라미터 상관 ≈ 1, condition number 폭주</td>
+            <td>데이터 보강 또는 한 파라미터 고정</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols-2-7-5" style="gap:14px;">
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:34px 14px 16px;">
+          <div class="formula-label">표준 사례 · 경구 단독 자료의 V/F 묶임</div>
+          $$\underbrace{C(t)}_{\text{관측}}=\frac{D_{po}\,K_a}{\underbrace{V/F}_{\text{묶인 비}}\,(K_a-K)}\bigl[\exp(-K\,t)-\exp(-K_a\,t)\bigr]$$
+          <div style="height:14px;"></div>
+          $$\overbrace{V\cdot F}^{\text{개별 식별 불가}}\;\xrightarrow{\text{경구 단독}}\;\underbrace{V/F}_{\text{식별 가능 묶음}}$$
+          <div class="src">G&amp;W 5e, §2.2.4, Eq.2:39, p.32</div>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="dark-card">
+          <p style="font-size:13px;">💬 G&amp;W 원문: <em>"neither F nor V appears elsewhere in the model, and without information following an intravenous dose, unique values for F and V cannot be determined."</em></p>
+        </div>
+        <div class="callout">
+          <span class="label">🔑 열쇠 비유</span>
+          <p><strong>구조적</strong> = "이 자물쇠가 어떤 열쇠로든 열릴 수 있는 구조인가" (모델 설계 문제). <strong>운영적</strong> = "내가 손에 든 열쇠 꾸러미로 이걸 열 수 있는가" (데이터셋 문제). 자물쇠가 멀쩡해도 열쇠가 부족하면 안 열림.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M1 · H</span>
+    <h1 class="slide-title">변량성의 <span class="em">세 층</span> — IIV / IOV / RUV</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:30px 14px 14px;">
+          <div class="formula-label">PopPK 분해</div>
+          $$\underbrace{C_{ij}^{\text{obs}}}_{\text{관측}}=\overbrace{f(\theta_i,\,t_{ij})}^{\text{구조 모델}}+\underbrace{\varepsilon_{ij}}_{\text{잔차 RUV}}$$
+          <div style="height:14px;"></div>
+          $$\underbrace{\theta_i}_{\text{개인}}=\overbrace{\theta_{\text{pop}}}^{\text{집단 평균}}\cdot\exp\!\bigl(\underbrace{\eta_i}_{\text{IIV}}+\underbrace{\kappa_{ik}}_{\text{IOV}}\bigr)$$
+        </div>
+      </div>
+      <div class="table-wrap" style="align-self:start;">
+        <table>
+          <thead><tr><th>층</th><th>기호</th><th>잡는 것</th><th>진단</th></tr></thead>
+          <tbody>
+            <tr><td><strong class="coral">IIV</strong></td><td>\(\eta_i\)</td><td>환자 간 영구적 차이</td><td>\(\eta\)-shrinkage</td></tr>
+            <tr><td><strong class="coral">IOV</strong></td><td>\(\kappa_{ik}\)</td><td>같은 환자 방문 간 변동</td><td>빼면 IIV 부풀려짐</td></tr>
+            <tr><td><strong class="coral">RUV</strong></td><td>\(\varepsilon_{ij}\)</td><td>분석 오차·미설명 변동</td><td>\(\varepsilon\)-shrinkage</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="callout teal">
+        <span class="label">💡 양궁수 비유</span>
+        <p><strong>IIV</strong> = 양궁수마다 평균 명중점이 다름 · <strong>IOV</strong> = 같은 양궁수가 오늘과 내일 컨디션이 달라 평균이 흔들림 · <strong>RUV</strong> = 한 발 한 발이 평균 주변에서 떨림. 세 흔들림을 한 덩어리로 보면 "이 양궁수가 평소 어디로 쏘는가"가 안 잡힘.</p>
+      </div>
+      <div class="callout warn">
+        <span class="label">💼 PopPK 최대 함정</span>
+        <p><strong>IOV를 모델에 안 넣고 IIV가 비현실적으로 크게 나오는 것.</strong> 그러면 체중·신기능 같은 공변량 끼워 넣을 때 "공변량이 IIV를 설명한다"는 결론이 실제로는 IOV를 설명한 거임. <strong>\(\eta\)-shrinkage > 30%면 EBE 회귀 진단이 거의 무력화됨.</strong> <span class="src">Savic &amp; Karlsson 2009</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M1 — Apex</span>
+    <h1 class="slide-title">한 줄로 못 박기</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="closer">
+      <div class="label">M1 · Modeling Carousel</div>
+      <div class="quote">
+        Fitting은 6단계 중 <em>5단계</em>임. 새 데이터셋 받는 순간 <em>질문·설계·EDA</em>가 모델 구조와 초기값을 결정함. 수렴 메시지가 아니라 <em>진단·검증</em>이 모델 타당성을 지배함.
+        <br><br>
+        그리고 <em>식별성(구조적/운영적)</em>과 <em>변량성(η/κ/ε)</em> 분리가 안 되면 PopPK는 그냥 신기루임.
+      </div>
+      <div class="signoff">→ G&amp;W 5e, Ch.1–2</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M2 · A</span>
+    <h1 class="slide-title">PK/PD Linkage <span style="color:var(--muted);font-size:.65em;">·</span> <span class="em">용량은 명령이 아니라 입력</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>PK는 <strong>"용량이 어떻게 농도가 되는가"</strong>, PD는 <strong>"농도가 어떻게 효과가 되는가"</strong>. 둘이 이어져야 효과-시간 곡선이 나옴.</p>
+    <div class="diagram-box" style="font-size:13px;line-height:1.6;padding:16px 24px;text-align:center;"><span class="node">Dose regimen</span> <span class="arrow">→</span> <span class="step">[PK]</span> <span class="arrow">→</span> <span class="node">Exposure-time</span> <span class="arrow">→</span> <span class="step">[PD]</span> <span class="arrow">→</span> <span class="node">Response-time</span> <span class="arrow">→</span> <span class="node">Clinical effect</span></div>
+    <div style="text-align:right;margin-top:-4px;"><span class="src">R&amp;T 5e, p.5, Fig.1-3</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:140px;">단계</th><th style="width:120px;">단위</th><th>의미</th><th>흔드는 요인</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Dose regimen</strong></td><td>amount, time</td><td>입력 이력</td><td>용량, 간격, 경로, 제형, 순응도</td></tr>
+          <tr><td><strong>Exposure-time</strong></td><td>conc over time</td><td>체내 농도 시간 경과</td><td>ADME, F, 체내 배치, first-pass</td></tr>
+          <tr><td><strong>Response-time</strong></td><td>effect over time</td><td>반응의 시간 경과</td><td>작용부위 농도, 민감도, 평가변수</td></tr>
+          <tr><td><strong>Therapeutic window</strong></td><td>exposure range</td><td>효과·위해 사이 작동 범위</td><td>효능 한계, AE, 변이, 측정 부위</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">🔑 꼭 새겨둘 것</span>
+      <p>Dose는 <strong>명령문</strong>이 아니라 <strong class="coral">입력 이력(input history)</strong>임. 임상 판단은 그 입력이 만든 노출/반응 시간 경과를 읽을 때 시작됨. <span class="src">ADME · disposition · first-pass · 생체이용률 · 장간순환, R&amp;T 5e, pp.26–33</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M2 · B·C</span>
+    <h1 class="slide-title">치료역의 진짜 정의 <span style="color:var(--muted);font-size:.65em;">·</span> 미스터리 풀기</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="flex-col">
+        <div class="card">
+          <div class="h3">치료역은 <span class="coral">노출 범위</span>임. 용량 범위가 아님.</div>
+          <div class="table-wrap" style="margin-top:6px;border:none;">
+            <table>
+              <thead><tr><th>상황</th><th>결과 / 조치</th></tr></thead>
+              <tbody>
+                <tr><td><strong>저노출</strong></td><td>무효 치료 → 용량/간격/순응도/흡수 점검</td></tr>
+                <tr><td><strong>고노출</strong></td><td>독성 ↑ → 감량, 간격 조정, TDM</td></tr>
+                <tr><td><strong>입력 불확실</strong></td><td>겉보기 변이 ↑ → PK 변이와 누락 투여 혼동</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:4px;text-align:right;"><span class="src">R&amp;T 5e, p.6, Fig.1-4</span></div>
+        </div>
+        <div class="callout teal">
+          <span class="label">💡 도로 비유</span>
+          <p>같은 좁은 도로라도 어떤 차는 천천히 오래 머물고, 어떤 차는 빠르게 지나감. <strong>"도로가 좁다"는 사실 하나로는 운전 방식이 정해지지 않음.</strong></p>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="card">
+          <div class="h3">Digoxin vs Morphine 풀기 <span class="src">R&amp;T 5e, pp.4, 7, Fig.1-1</span></div>
+          <p style="font-size:13px;">둘 다 좁은 치료역인데 처방 빈도가 다른 이유 — <strong class="coral">농도-시간 곡선의 속도가 다르기 때문</strong>임.</p>
+          <ul class="list" style="margin-top:6px;">
+            <li><strong>Morphine</strong>: 빠르게 제거됨 → 농도가 빨리 떨어짐 → <em>자주 투여</em>해야 치료역 안에 머무름</li>
+            <li><strong>Digoxin</strong>: 천천히 제거됨 → 농도가 오래 유지됨 → <em>1일 1회</em>면 충분</li>
+          </ul>
+        </div>
+        <div class="callout amber">
+          <span class="label">Digitalizing dose 논리 <span class="src">R&amp;T 5e, Fig.1-5</span></span>
+          <p>Digoxin을 처음부터 낮은 유지 용량으로만 주면 치료 농도 도달이 너무 느림. 그래서 <strong>초반에 여러 소량을 빠르게 줘서(loading) 치료 농도까지 끌어올린 뒤, 소량 유지 용량으로 전환</strong>. → "도달"과 "유지"가 분리되는 약물의 사례.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M2 · D·E</span>
+    <h1 class="slide-title">임상적 무게 <span style="color:var(--muted);font-size:.65em;">·</span> 현실이 모델을 흔드는 <span class="em">네 가지</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="dark-card">
+      <p style="font-size:13.5px;">입원의 <strong class="accent-amber">약 5%가 부적절한 약물 사용</strong>에서 옴. <span class="src">R&amp;T 5e, p.4</span> 이건 약동학 일반론이 아니라 <em>요법 설계 안전성</em>의 문제임.</p>
+      <p style="margin-top:6px;">PK/PD는 약물 설계 → 약물 선택 → 요법 설계 → 임상시험 프로토콜 → 데이터 해석 → 약물 평가 → <span class="accent">개인 맞춤 치료(individualized therapy)</span> 개시까지 모든 단계에 쓰임. <span class="src">R&amp;T 5e, p.20, Table 2-1</span></p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:135px;">왜곡</th><th>원문 앵커</th><th style="width:240px;">결과</th></tr></thead>
+        <tbody>
+          <tr><td><strong>측정 부위</strong></td><td>작용부위 농도는 직접 측정 어려움 → 혈장이 대리 <span class="src">R&amp;T 5e, Fig.1-4</span></td><td>혈장 농도 – 실제 반응 불일치</td></tr>
+          <tr><td><strong>순응도</strong></td><td>1일 1회 항고혈압제 1년 지속률 ≈ <strong class="coral">50%</strong> <span class="src">R&amp;T 5e, Fig.1-10</span></td><td>누락 투여가 겉보기 PK 변이로 흡수됨</td></tr>
+          <tr><td><strong>개체 변이</strong></td><td>phenytoin / S-warfarin / primaquine·G6PD / debrisoquine·CYP2D6 / terfenadine·ketoconazole <span class="src">R&amp;T 5e, Fig.1-8</span></td><td>같은 요법 ≠ 같은 노출/반응</td></tr>
+          <tr><td><strong>유전 표기 범위</strong></td><td>CYP2C9 / CYP2C19 다형성, vitamin K epoxide reductase 기전 <span class="src">R&amp;T 5e, p.10</span></td><td>(VKORC1 표기는 원문 범위 밖)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      <span class="label">💼 실무 인사이트</span>
+      <p>순응도 모니터링 약하면 <strong>겉보기 PK 변이가 실제론 missed dose 가공물</strong>임. 모델은 이걸 환자 생리 차이가 아니라 입력 이력 오류로 흡수해버림. PopPK에서 IIV가 비현실적으로 클 때 제일 먼저 의심해야 할 게 <strong class="coral">입력 이력 정확도</strong>임.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M2 · F</span>
+    <h1 class="slide-title">Allometric Scaling</h1>
+    <span class="slide-subtitle">— 신생아에 mg/kg 외삽이 왜 위험한가</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>같은 약을 70 kg 성인과 3 kg 신생아에 동일 mg/kg으로 주면 <strong class="coral">신생아 노출이 더 큼.</strong> 이유 — <strong>청소율은 체중에 선형 비례하지 않음.</strong></p>
+    <div class="cols-2" style="gap:16px;">
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:38px 14px 16px;">
+          <div class="formula-label">청소율 — 비선형</div>
+          $$\underbrace{CL_i}_{\text{개인 청소율}}=\overbrace{CL_{70}}^{\text{70 kg 표준}}\cdot\overbrace{\left(\frac{BW_i}{70}\right)^{0.75}}^{\text{체격 (allometric)}}\cdot\underbrace{F_{\text{mat}}(PMA_i)}_{\text{성숙도 (소아)}}$$
+        </div>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:38px 14px 16px;">
+          <div class="formula-label">분포용적 — 선형</div>
+          $$\underbrace{V_i}_{\text{개인 V}}=\overbrace{V_{70}}^{\text{70 kg 표준}}\cdot\underbrace{\left(\frac{BW_i}{70}\right)^{1.0}}_{\text{체격 (선형)}}$$
+        </div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:140px;">파라미터</th><th style="width:180px;">체중 지수</th><th>의미</th></tr></thead>
+        <tbody>
+          <tr><td>\(CL\)</td><td>\(\propto BW^{0.75}\)</td><td>대사·신배설은 체격에 비선형</td></tr>
+          <tr><td>\(Q\)</td><td>\(\propto BW^{0.75}\)</td><td>같은 지수</td></tr>
+          <tr><td>\(V,\;V_{ss}\)</td><td>\(\propto BW^{1.0}\)</td><td>부피는 체격에 선형</td></tr>
+          <tr><td>\(t_{1/2}\)</td><td>\(\propto BW^{0.25}\)</td><td>\(V/CL\) 비에서 도출</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M2 · F</span>
+    <h1 class="slide-title">Maturation Function <span style="color:var(--muted);font-size:.65em;">·</span> 정규화 <span style="color:var(--muted);font-size:.65em;">·</span> M2 마무리</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2-7-5" style="gap:16px;">
+      <div class="flex-col">
+        <div class="formula-card-wrap">
+          <div class="formula-card" style="padding:34px 14px 14px;">
+            <div class="formula-label">소아 — 성숙도 곱셈</div>
+            $$\underbrace{F_{\text{mat}}(PMA)}_{\text{성숙도 (0\sim1)}}=\frac{\overbrace{PMA^{\,\text{Hill}}}^{\text{나이 효과}}}{\underbrace{TM_{50}^{\,\text{Hill}}}_{\text{성숙 반감 나이}}+PMA^{\,\text{Hill}}}$$
+          </div>
+        </div>
+        <div class="callout teal">
+          <span class="label">💡 엔진 비유</span>
+          <p>체격은 <strong>"엔진 크기"</strong>, 성숙도는 <strong>"엔진이 워밍업됐는가"</strong>. 같은 크기여도 차가운 엔진은 출력이 덜 나옴. 신생아 PK가 mg/kg 외삽으로 안 풀리는 이유.</p>
+          <p style="font-size:12px;margin-top:4px;">PMA = postmenstrual age (임신 시점부터), \(TM_{50}\) = 성인 CL 50% 도달 나이. 신생아 \(F_{\text{mat}} \ll 1\), 보통 1–2세에 성인 수준.</p>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>상황</th><th>1차 정규화</th></tr></thead>
+            <tbody>
+              <tr><td><strong>정상 체중 성인</strong></td><td>TBW (표준)</td></tr>
+              <tr><td><strong>비만 성인</strong></td><td>LBW 또는 fat-free mass</td></tr>
+              <tr><td><strong>소아</strong></td><td>TBW + maturation</td></tr>
+              <tr><td><strong>신생아</strong></td><td>TBW + maturation + 기관 발달 (NICU TDM)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn">
+          <span class="label">💼 표준 NONMEM 코드</span>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--dark);color:var(--on-dark-warm);padding:8px 12px;border-radius:6px;margin-top:4px;">CL = THETA(1) * (WT/70)**0.75 * FMAT</p>
+          <p style="margin-top:6px;">비만+소아 혼합 데이터셋이면 <strong>LBW와 PMA가 같이</strong> 들어가야 함.</p>
+        </div>
+      </div>
+    </div>
+    <div class="dark-card" style="padding:12px 20px;">
+      <p class="lead" style="font-size:16px;">M2 — <em>용량 결정은 dose regimen이 아니라 exposure-time × response-time 곱이 답함.</em> 체격·연령 정규화는 선형이 아니라 <span class="accent">allometric (BW⁰·⁷⁵) + maturation</span>이 표준임.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M3 · A</span>
+    <h1 class="slide-title">Hill 방정식과 <span class="em">세 축</span></h1>
+    <span class="slide-subtitle">— 천장 · 효능 · 가파름 분리</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:44px 14px 18px;">
+          <div class="formula-label">Hill 방정식 · R&amp;T 5e, Eq.2-4</div>
+          $$\underbrace{E}_{\text{예측효과}}=\frac{\overbrace{E_{\max}}^{\text{효과천장}}\cdot\overbrace{C^{\gamma}}^{\text{농도구동}}}{\underbrace{C_{50}^{\,\gamma}}_{\text{효능기준}}+\underbrace{C^{\gamma}}_{\text{현재농도}}}$$
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="callout teal">
+          <span class="label">💡 엘리베이터 비유</span>
+          <ul class="list" style="margin-top:4px;">
+            <li><strong>\(E_{\max}\)</strong> = 도달 가능한 <em>최고층</em> (천장, ceiling)</li>
+            <li><strong>\(C_{50}\)</strong> = <em>중간층까지</em> 가는 데 필요한 농도 (효능, potency)</li>
+            <li><strong>\(\gamma\)</strong> = 버튼 살짝 눌렀을 때 얼마나 <em>급하게</em> 반응하는가 (가파름)</li>
+          </ul>
+        </div>
+        <div class="table-wrap" style="font-size:12.5px;">
+          <table>
+            <thead><tr><th>파라미터</th><th>단위</th><th>의미</th></tr></thead>
+            <tbody>
+              <tr><td>\(E\)</td><td>response unit</td><td>현재 농도에서 예측 효과</td></tr>
+              <tr><td>\(E_{\max}\)</td><td>response unit</td><td>최대 반응 (천장)</td></tr>
+              <tr><td>\(C_{50}\)</td><td>concentration</td><td>\(E_{\max}\)의 50%를 만드는 농도</td></tr>
+              <tr><td>\(\gamma\)</td><td>dimensionless</td><td>농도-반응 가파름</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="label">🔑 노출-시간 앵커도 챙기기</span>
+      <p>\(C_{\max}\) (최고농도), \(t_{\max}\) (도달시간), \(AUC\) (총노출). Fig.2-1 예시: \(C_{\max}=96\,\mu g/L\), \(t_{\max}=3.0\) hr. <span class="src">R&amp;T 5e, pp.21–22</span> <strong>\(C_{50}\) 낮다고 다 좋은 약 아님.</strong> 같은 효능이라도 \(E_{\max}\)가 낮으면 충분한 임상 반응 도달 못 함. 고원·저반응 영역 자료 없이 \(C_{50}\) 주변만 있으면 <strong class="coral">γ 추정은 모델이 아니라 잡음을 따라감.</strong> <span class="src">R&amp;T 5e, pp.40–43</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M3 · B</span>
+    <h1 class="slide-title">γ가 처방을 바꾸는 지점 <span style="color:var(--muted);font-size:.65em;">·</span> <span class="em">16배 vs 4배</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>\(\gamma\) 값에 따라 <strong>20% → 80% 반응에 필요한 농도 범위</strong>가 어떻게 압축되는지 <span class="src">R&amp;T 5e, p.40, Fig.2-16</span></p>
+    <div class="duo">
+      <div class="duo-card a">
+        <div class="duo-head">완만 · γ = 1</div>
+        <p style="font-size:13.5px;">\(C_{20}=0.25\,C_{50}\) → \(C_{80}=4\,C_{50}\)</p>
+        <p style="font-size:18px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink);margin-top:6px;"><strong>16배</strong> 농도 변해야 반응 20→80%</p>
+        <p style="font-size:12.5px;margin-top:4px;">노출 변화에 둔하니 <strong>적정 여유 큼</strong></p>
+      </div>
+      <div class="duo-card b">
+        <div class="duo-head">가파름 · γ = 2</div>
+        <p style="font-size:13.5px;">\(C_{20}=0.5\,C_{50}\) → \(C_{80}=2\,C_{50}\)</p>
+        <p style="font-size:18px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink);margin-top:6px;"><strong>4배</strong>만 변해도 반응 20→80%</p>
+        <p style="font-size:12.5px;margin-top:4px;"><strong class="coral">작은 농도차가 큰 임상차</strong></p>
+      </div>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:34px 14px 14px;">
+          $$\underbrace{\gamma=1}_{\text{완만}}:\;\overbrace{C_{20}=0.25\,C_{50}\to C_{80}=4\,C_{50}}^{\text{16배 여유}}$$
+        </div>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card" style="padding:34px 14px 14px;">
+          $$\underbrace{\gamma=2}_{\text{가파름}}:\;\overbrace{C_{20}=0.5\,C_{50}\to C_{80}=2\,C_{50}}^{\text{4배 여유}}$$
+        </div>
+      </div>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="callout teal">
+        <span class="label">💡 계단 비유</span>
+        <p>완만한 곡선은 <strong>긴 경사로</strong>, 가파른 곡선은 <strong>짧은 계단</strong>. 같은 목적지여도 계단에서는 한 발 차이가 훨씬 크게 느껴짐. 일반적으로 \(\gamma\)는 1–3, 매우 크면 <strong>all-or-none처럼 보임</strong>.</p>
+      </div>
+      <div class="callout warn">
+        <span class="label">💼 실무</span>
+        <p>γ는 곡선 모양이 아니라 <strong>용량 적정 전략 자체</strong>를 바꿈. \(\gamma \approx 1\)이면 증상 기반 적정 자연스러움. 협역 치료역 약물(digoxin, aminoglycoside, warfarin)에서 γ 큰 경우 <strong class="coral">TDM 필수</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M3 · C</span>
+    <h1 class="slide-title">등급 <span style="color:var(--muted);font-size:.65em;">vs</span> 이분형 — <span class="em">propranolol</span> &amp; <span class="em">alfentanil</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="card">
+        <div class="h3"><strong>Propranolol</strong> · 비선택적 β-차단제 <span class="src">R&amp;T 5e, Fig.2-17</span></div>
+        <p style="font-size:13px;">운동 유발 빈맥 감소율과 <strong class="coral">비결합 농도(unbound concentration)</strong>의 관계가 Hill에 잘 맞음.</p>
+        <div class="formula-card-wrap" style="margin-top:8px;">
+          <div class="formula-card" style="padding:34px 10px 12px;">
+            $$\overbrace{\underbrace{\gamma\approx 1}_{\text{거의 log-linear}},\;\underbrace{E_{\max}\approx 40\%}_{\text{심박수 감소 천장}},\;\underbrace{C_{50}=5.3\,\mu g/L}_{\text{unbound 기준}}}^{\text{Hill 적용 결과}}$$
+          </div>
+        </div>
+        <div class="callout warn" style="margin-top:8px;">
+          <span class="label">⚠ 출처 정확화</span>
+          <p>\(C_{50}=5.3\,\mu g/L\)는 <strong>plasma unbound</strong> 기준. <em>"Response increases with the unbound concentration of the drug in plasma"</em> <span class="src">Fig.2-17 caption, p.42</span>. 총 농도로 잘못 외우면 단백결합 변하는 상황(질병, DDI)에서 외삽 어긋남.</p>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="card">
+          <div class="h3"><strong>Alfentanil</strong> · 초단시간 opioid <span class="src">R&amp;T 5e, pp.42–43, Fig.2-18</span></div>
+          <p style="font-size:13px;">N₂O 마취 중 만족스러운 마취 반응의 <strong>누적 빈도</strong>로 평가 — 환자별 <em>"만족/불만족"</em> 이분형. \(C_{50}\)이 수술 부위별로 다름:</p>
+          <ul class="list" style="margin-top:6px;">
+            <li>유방: <strong class="coral">0.27 mg/L</strong></li>
+            <li>하복부: <strong class="coral">0.31 mg/L</strong></li>
+            <li>상복부: <strong class="coral">0.42 mg/L</strong></li>
+          </ul>
+          <p style="font-size:13px;margin-top:6px;">→ 이분형에서 \(C_{50}\)은 등급 곡선 50% 지점이 아니라 <strong>집단 사건 확률 50% 농도 기준</strong>.</p>
+        </div>
+        <div class="card tight">
+          <p style="font-size:12.5px;"><strong>Ketamine</strong> (NMDA 길항) <span class="src">R&amp;T 5e, Fig.2-11</span> — 두 입체이성질체에서 <strong>S(+)</strong>가 R(−)보다 \(C_{50}\) 낮고 \(E_{\max}\) 높음. S(+) \(C_{50} \approx 0.7\) mg/L, R(−) \(C_{50} \approx 1.8\) mg/L → 입체이성질체에 따라 효능·천장이 분리되는 사례.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="label">→ 가르침</span>
+      <p>등급(propranolol) → Hill 직접 효과로 \(E_{\max}/C_{50}/\gamma\) 분리 추정. 이분형(alfentanil) → 누적 빈도/확률, 집단 사건 확률의 농도 기준. <strong class="coral">모델보다 평가변수 정의를 먼저 확정.</strong></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M3 · D·E</span>
+    <h1 class="slide-title">측정의 함정 <span style="color:var(--muted);font-size:.65em;">·</span> 임상 E<small>max</small>가 낮을 때</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="card">
+      <div class="h3">"총 농도 = 활성 분자"가 아님</div>
+      <p>총 농도에는 결합형+비결합형이 다 들어있지만, <strong class="coral">분포·소실·PD 반응은 비결합 농도에 의존함.</strong> \(f_u\)가 일정하면 총 농도로 충분하지만, <strong>포화성 결합·DDI·신·간 질환·수술·중증 화상·임신</strong>에서 결합이 흔들리면 <em>비결합 농도가 결정적</em>임. <span class="src">R&amp;T 5e, p.21</span> <span class="src">G&amp;W 5e, §2.6.5, §2.9.4, Eq.2:373, p.167</span></p>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="card">
+        <div class="h3">활성 물질(active moiety) 경계 <span class="src">R&amp;T 5e, pp.23–25</span></div>
+        <ul class="list" style="margin-top:4px;">
+          <li><strong>acenocoumarol</strong> (쿠마린계 항응고제): 라세미체</li>
+          <li><strong>methylphenidate</strong> (라세미 자극제, ADHD): d-이성질체가 주 활성</li>
+          <li><strong>aspirin / salicylic acid</strong>: 전구약물-활성 대사체 쌍</li>
+        </ul>
+        <p style="font-size:13px;margin-top:6px;">→ <strong class="coral">"무엇을 측정했는가"</strong>가 효능 해석을 결정함.</p>
+      </div>
+      <div class="card">
+        <div class="h3">임상 \(E_{\max}\)가 약리학적 최대치보다 낮을 때 <span class="src">R&amp;T 5e, p.41</span></div>
+        <p>심박수를 올리는 약물에서는 심혈관계가 먼저 악화돼서 <strong>약리학적 최대치 전에 안전성 한계가 옴.</strong> → 작용제(agonist)의 \(E_{\max}\)가 길항제보다 임상적으로 정의하기 어려운 이유.</p>
+        <p style="font-size:13px;margin-top:6px;"><strong>노출 지표 선택도 같이</strong> <span class="src">Fig.2-19, p.44</span> — 만성 치료에서는 <em>최소 농도 이상 유지 기간</em>, 두통 같은 빠른 효과는 \(C_{\max}\)/\(t_{\max}\), 어떤 경우엔 \(AUC\)가 더 관련.</p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="label">💼 실무 인사이트</span>
+      <p>용량 범위가 \(C_{50}\) 주변에만 몰리고 고원 정보 없으면, γ를 자유롭게 추정하기보다 <strong>절약적 가정(γ=1 고정)을 먼저 검토.</strong> "γ를 추정했다"가 아니라 <strong class="coral">"데이터가 γ를 식별할 수 있는가"</strong>가 먼저임. 외부 문헌에서는 이걸 <em>"poor identifiability under truncated concentration range"</em> 또는 <em>"uninformative γ"</em>로 부름.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M3 · F</span>
+    <h1 class="slide-title">Effect Compartment <span style="color:var(--muted);font-size:.65em;">·</span> Hysteresis <span style="color:var(--muted);font-size:.65em;">·</span> 마무리</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:16px;">
+      <div class="flex-col">
+        <div class="table-wrap" style="font-size:12.5px;">
+          <table>
+            <thead><tr><th>패턴</th><th>plot 모양</th><th>해석</th></tr></thead>
+            <tbody>
+              <tr><td><strong class="coral">counter-clockwise</strong></td><td>같은 농도 · 시간 ↑ → 효과 ↑</td><td>작용부위가 혈장보다 느리게 차오름 → effect compartment 필요</td></tr>
+              <tr><td><strong class="coral">clockwise</strong></td><td>같은 농도 · 시간 ↑ → 효과 ↓</td><td>내성(tolerance) 또는 활성 대사체 변동</td></tr>
+              <tr><td><strong class="coral">no loop</strong></td><td>단일 곡선</td><td>직접 효과 모델로 충분</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn">
+          <span class="label">💼 어디서 갈리는가</span>
+          <p>농도 peak와 효과 peak 시간차가 <strong class="coral">분포 평형으로 설명 가능(분~수 시간)</strong> → effect compartment. <strong>시간차가 너무 크거나(시간~일)</strong> 또는 농도 사라진 후에도 효과 지속 → 다음 카드(M4) turnover/IDR 영역.</p>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="formula-card-wrap">
+          <div class="formula-card" style="padding:36px 12px 12px;">
+            <div class="formula-label">Sheiner-Holford framework</div>
+            $$\underbrace{\frac{dC_e}{dt}}_{\text{작용부위 변화}}=\overbrace{k_{e0}}^{\text{전달 속도상수}}\cdot\bigl(\underbrace{C_p}_{\text{혈장}}-\underbrace{C_e}_{\text{작용부위}}\bigr)$$
+            <div style="height:14px;"></div>
+            $$\underbrace{E}_{\text{효과}}=\frac{\overbrace{E_{\max}\cdot C_e^{\,\gamma}}^{C_e\text{로 구동}}}{\underbrace{C_{50,e}^{\,\gamma}}_{\text{작용부위 효능}}+C_e^{\,\gamma}}$$
+          </div>
+        </div>
+        <div class="callout teal">
+          <span class="label">→ 평형 반감기 &amp; 사례</span>
+          <p>\(t_{1/2,k_{e0}} = \ln(2)/k_{e0}\)가 작으면 hysteresis 거의 사라지고, 크면 효과 peak가 농도 peak보다 한참 늦음. 표준 사례 — <strong>midazolam–EEG, fentanyl–pupil diameter</strong> (마취 약물군).</p>
+        </div>
+      </div>
+    </div>
+    <div class="dark-card" style="padding:12px 20px;">
+      <p class="lead" style="font-size:16px;">M3 — <em>농도-반응은 \(E_{\max}\)·\(C_{50}\)·γ 세 축 분리가 답.</em> 평가변수 척도(등급 vs 이분형)가 모델 프레임을 지배함. <span class="accent">\(C_{50}\)이 총 농도 기준인지 unbound 기준인지</span>도 같이 봄. 농도-효과 시간 지연 보이면 <span class="accent-amber">effect compartment부터 의심.</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide has-complex-formula">
+  <div class="slide-header">
+    <span class="sec-badge">M4 · A·B</span>
+    <h1 class="slide-title">Turnover — <span class="em">지연 반응의 문법</span></h1>
+    <span class="slide-subtitle">Dynamic Equilibrium</span>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="card">
+      <p>M3가 농도-반응의 <strong>지금 이 순간</strong> 관계라면, M4는 반응이 <strong class="coral">시간상 늦게 나타나는 이유</strong>를 풂. 농도는 빨리 올라갔는데 효과는 늦게 나오는 상황을 다 분포 지연이나 Hill 곡선 문제로 돌리면, <strong>내인성 시스템이 천천히 바뀌는 구조</strong>를 놓침.</p>
+      <p>전환(turnover) 관점에서 보면 <strong>정상 상태는 정지 상태가 아니라 입력=출력으로 풀 크기가 일정해 보이는 동적 평형(dynamic equilibrium)</strong>임. <span class="src">R&amp;T 5e, p.45</span></p>
+    </div>
+    <div class="cols-2" style="gap:16px;">
+      <div class="flex-col">
+        <div class="card tight">
+          <div class="h3">임상 turnover 약물군</div>
+          <ul class="list" style="margin-top:4px;">
+            <li><strong>경구 항응고제</strong> (warfarin)</li>
+            <li><strong>항고지혈증제</strong></li>
+            <li><strong>요산 배설 촉진제</strong></li>
+            <li><strong>epoetin alfa</strong> (재조합 EPO)</li>
+          </ul>
+          <p style="font-size:12.5px;margin-top:6px;">이들은 다 내인성 화합물/시스템의 생성·소실을 바꿔서 <strong>지연 반응</strong>을 만듦. 약물의 작용은 빨라도 측정 시스템이 늦게 바뀜.</p>
+        </div>
+        <div class="callout warn">
+          <span class="label">⚠ Rt 함정 — 꼭 새겨둘 것</span>
+          <p>\(R_t\)가 크다고 과정이 빠르다고 단정하면 안 됨. 풀 크기 \(A_{ss}\)로 나눈 <strong class="coral">\(k_t\)와 \(t_t\)가 속도 감각을 더 직접적으로 줌.</strong> 농도 peak와 효과 peak가 어긋나면 직접 효과 Hill만으로 충분한지 먼저 의심하고 <strong>전환·지연 구조</strong>를 검토.</p>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="formula-card-wrap">
+          <div class="formula-card" style="padding:32px 12px 12px;">
+            <div class="formula-label">분획 전환속도</div>
+            $$\underbrace{k_t}_{\text{분획 전환속도}}=\frac{\overbrace{R_t}^{\text{전환량/시간}}}{\underbrace{A_{ss}}_{\text{풀 크기}}}$$
+            <div class="src">R&amp;T 5e, Eq.2-5</div>
+          </div>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card" style="padding:32px 12px 12px;">
+            <div class="formula-label">전환 시간</div>
+            $$\underbrace{t_t}_{\text{전환 시간}}=\frac{\overbrace{A_{ss}}^{\text{풀 크기}}}{\underbrace{R_t}_{\text{전환량/시간}}}=\frac{1}{\underbrace{k_t}_{\text{분획 전환속도}}}$$
+            <div class="src">R&amp;T 5e, Eqs.2-6, 2-7</div>
+          </div>
+        </div>
+        <div class="callout teal">
+          <span class="label">💡 저수지 비유</span>
+          <p>\(R_t\)는 하루에 드나드는 물의 리터 수, \(A_{ss}\)는 저수지 크기. <strong>큰 저수지에서는 하루 유입량이 커도 저수지 전체가 갈아엎어지는 속도는 느릴 수 있음.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M4 · C</span>
+    <h1 class="slide-title">같은 식, 다른 임상 결론 — <span class="em">네 사례</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:130px;">예시</th><th>관찰</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>warfarin</strong> <span class="src">R&amp;T Fig.1-6</span></td>
+            <td>1.5 mg/kg 단회 경구 후 농도는 빨리 ↑, prothrombin complex activity는 느리게 ↓</td>
+            <td>농도-시간만으론 반응-시간 설명 불가 → <strong class="coral">전환 구동 반응의 대표</strong></td>
+          </tr>
+          <tr>
+            <td><strong>paclitaxel</strong> <span class="src">R&amp;T Fig.1-7</span></td>
+            <td>약 <strong>2일 내</strong> 체내 제거, 그러나 <strong>백혈구 최저점 1주 후</strong>, <strong>회복 ~3주</strong></td>
+            <td>약물이 사라진 한참 뒤 임상 효과 정점 → <strong class="coral">내인성 시스템 변화가 반응을 지배</strong></td>
+          </tr>
+          <tr>
+            <td><strong>총 체수분</strong> <span class="src">R&amp;T Fig.2-20</span></td>
+            <td>~42 L, \(R_t=2.5\) L/day, \(k_t=0.06\) day⁻¹, \(t_t=17\) days</td>
+            <td>양이 많이 오가도 분획 전환 작으면 <strong>과정은 느림</strong></td>
+          </tr>
+          <tr>
+            <td><strong>사막 환경</strong> <span class="src">R&amp;T pp.45–46</span></td>
+            <td>풀 크기 거의 일정, \(R_t=21\) L/day, \(k_t=0.5\) day⁻¹, \(t_t=2\) days</td>
+            <td>풀 크기 같아도 <strong>전환 속도·시간은 환경에 따라 크게 달라짐</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="callout teal">
+        <span class="label">💡 방 온도 비유</span>
+        <p>warfarin/paclitaxel의 지연은 스위치를 켰는데 <strong>방 전체 온도가 천천히 바뀌는</strong> 상황. 스위치 자체가 빠르게 작동해도, 바뀌어야 할 시스템 풀이 크거나 느리면 효과 peak가 늦어짐.</p>
+      </div>
+      <div class="callout warn">
+        <span class="label">💼 진짜 질문</span>
+        <p>"\(R_t\), \(k_t\), \(t_t\) 중 무엇을 외웠는가"가 아님. <strong>"이 시스템에서 풀 크기가 보존되는가, 분획 전환이 보존되는가, 전환 속도 자체가 바뀌는가"</strong>임. 체수분은 풀 크기가 피드백으로 유지되는 경우, 콜레스테롤·백혈구는 풀 크기 자체가 변하는 경우. <span class="src">R&amp;T 5e, p.46</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">M4 · D·E</span>
+    <h1 class="slide-title">IDR 4 변종 <span style="color:var(--muted);font-size:.65em;">·</span> Effect Compartment vs IDR</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p style="font-size:13px;">R&amp;T의 turnover로 깔아놓은 풀-속도 분리는 <strong>Dayneka–Garg–Jusko 간접 반응 모델(IDR)</strong> 4 변종의 어휘임. 풀 \(R\)이 입력 \(k_{\text{in}}\)과 1차 소실 \(k_{\text{out}}\cdot R\)의 균형으로 유지된다는 기본식에서, <strong>약물이 어느 항을 바꾸는가</strong>로 네 가지가 갈림.</p>
+    <div class="formula-card-wrap">
+      <div class="formula-card" style="padding:32px 14px 12px;">
+        <div class="formula-label">IDR 기본식 — 풀 = 생성 − 소실</div>
+        $$\underbrace{\frac{dR}{dt}}_{\text{풀 변화율}}=\overbrace{k_{\text{in}}}^{\text{생성(0차)}}-\underbrace{k_{\text{out}}\cdot R}_{\text{1차 소실}}\qquad[\,R_{ss}=k_{\text{in}}/k_{\text{out}}\,]$$
+      </div>
+    </div>
+    <div class="table-wrap" style="font-size:12px;">
+      <table>
+        <thead><tr><th style="width:80px;">Model</th><th>약물 작용</th><th style="width:260px;">대표 사례</th></tr></thead>
+        <tbody>
+          <tr><td><strong class="coral">I</strong></td><td>\(k_{\text{in}}\) <strong>억제</strong> — \(dR/dt=k_{\text{in}}(1-\frac{I_{\max}C^\gamma}{IC_{50}^\gamma+C^\gamma})-k_{\text{out}}R\)</td><td><strong>warfarin</strong>: 응고인자 합성 억제 <span class="src">R&amp;T Fig.1-6</span></td></tr>
+          <tr><td><strong class="coral">II</strong></td><td>\(k_{\text{out}}\) <strong>억제</strong> — \(dR/dt=k_{\text{in}}-k_{\text{out}}(1-\frac{I_{\max}C^\gamma}{IC_{50}^\gamma+C^\gamma})R\)</td><td>corticosteroid의 림프구 트래픽</td></tr>
+          <tr><td><strong class="coral">III</strong></td><td>\(k_{\text{in}}\) <strong>자극</strong> — \(dR/dt=k_{\text{in}}(1+\frac{E_{\max}C^\gamma}{EC_{50}^\gamma+C^\gamma})-k_{\text{out}}R\)</td><td><strong>epoetin alfa</strong>: 적혈구 생성 자극 <span class="src">R&amp;T p.45</span></td></tr>
+          <tr><td><strong class="coral">IV</strong></td><td>\(k_{\text{out}}\) <strong>자극</strong> — \(dR/dt=k_{\text{in}}-k_{\text{out}}(1+\frac{E_{\max}C^\gamma}{EC_{50}^\gamma+C^\gamma})R\)</td><td>요산 배설 촉진제 (uricosuric)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="callout">
+        <span class="label">→ 지연의 핵심 시상수</span>
+        <p><strong>\(\ln(2)/k_{\text{out}}\)</strong>임. <strong class="coral">PD plateau 도달 시간이 약물 t½이 아니라 시스템 turnover로 결정됨</strong>이 IDR의 가장 큰 메시지. 예: warfarin의 PT 활성 회복 = 응고인자 turnover · epoetin alfa의 헤모글로빈 변화 = RBC 수명 ≈ <strong>120일</strong>.</p>
+      </div>
+      <div class="callout warn">
+        <span class="label">💼 IDR I vs II</span>
+        <p>둘 다 "↓ 효과"인데 곡선 모양 다름. <strong>Model I</strong> = 생성 차단 → 풀이 <em>천천히</em> 비고 (\(k_{\text{out}}\) 시상수) · <strong>Model II</strong> = 소실 가속 → 풀이 <em>빠르게</em> 빠진 뒤 다시 천천히 회복. 같은 효과 방향인데 <strong>적정 전략이 다름</strong>. "감소 효과 = Model I"로 직행하면 안 됨.</p>
+      </div>
+    </div>
+    <div class="table-wrap" style="font-size:12.5px;">
+      <table>
+        <thead><tr><th style="width:200px;">Effect Compartment vs IDR — 분기</th><th>시상수</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Effect compartment</strong> (\(k_{e0}\))</td><td>분~수 시간</td><td>약물 자체가 작용부위에 도달하는 데 시간 걸림 (분포 지연)</td></tr>
+          <tr><td><strong>IDR</strong> (\(k_{\text{out}}\))</td><td>일~주</td><td>약물 작용은 빠른데 측정 시스템이 내인성 turnover로 천천히 바뀜</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dark-card" style="padding:12px 20px;">
+      <p class="lead" style="font-size:15.5px;">M4 — <em>농도 peak ≠ 효과 peak이면 turnover·지연 구조가 판단을 지배.</em> \(R_t\) 크다고 빠른 게 아니라 <span class="accent">\(k_t\)·\(t_t\)가 속도 감각</span>을 줌. 분포 지연(분~시간) = <span class="accent-amber">effect compartment</span>, 시스템 변화(일~주) = <span class="accent-amber">IDR</span>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3</span>
+    <h1 class="slide-title">데이터셋 앞 30초 — <span class="em">네 렌즈 체크리스트</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <p>새 PK/PD 데이터셋 받는 처음 30초, 네 렌즈를 <strong>동시에</strong> 켬. 모델 코드 작성 <strong class="coral">전</strong> 단계임.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:80px;">렌즈</th><th>먼저 볼 것</th><th>즉시 판단할 것</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-coral">M1</span></td><td>용량 수준, 채혈 밀도, 농도-시간 도표</td><td>EDA가 모델 구조와 초기값을 줄 수 있는가? <strong>식별성·변량성</strong> 분리 가능한가?</td></tr>
+          <tr><td><span class="pill pill-coral">M2</span></td><td>요법, 경로, 순응도, 측정 부위, 체격·연령</td><td>용량→노출→반응 사슬에서 빠진 연결이 있는가? <strong>Allometric/maturation</strong> 필요한가?</td></tr>
+          <tr><td><span class="pill pill-coral">M3</span></td><td>고원, \(C_{50}\) 주변 자료, 평가변수 유형, 농도-효과 시간차</td><td>\(E_{\max}/C_{50}/\gamma\) 식별 가능한가? <strong>등급 vs 이분형</strong>? Hysteresis 있는가? 농도 기준(<strong>총 vs unbound</strong>)?</td></tr>
+          <tr><td><span class="pill pill-coral">M4</span></td><td>농도 peak vs 효과 peak 시점, 기저선 변동</td><td>직접 효과 모델로 충분한가? 시간차 단위(분 vs 일)로 <strong>effect compartment vs IDR</strong> 분기</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">★ 목적</span>
+      <p>이 네 렌즈 켜는 목적은 <strong>제어구문을 미리 쓰는 게 아니라 모델 선택의 근거가 데이터에 있는지를 먼저 묻는 것</strong>임.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4</span>
+    <h1 class="slide-title">혼동쌍 해부 — <span class="em">네 가지</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:14px;">
+      <div class="card tight">
+        <div class="h3"><span class="pill pill-coral">①</span> PK vs PD</div>
+        <table style="margin-top:6px;">
+          <tbody>
+            <tr><td><strong>PK</strong></td><td>입력 → <em>농도-시간</em> · 단위: 농도/AUC/Cmax/tmax · 원인: ADME, 투여 이력</td></tr>
+            <tr><td><strong>PD</strong></td><td>농도 → <em>효과-시간</em> · 단위: 반응/바이오마커 · 원인: 작용부위 민감도, 평가변수</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;margin-top:4px;">⚡ <strong>같은 선상의 앞뒤 화살표</strong>이지 좌우 반대 화살표가 아님. 한쪽만 그리면 용량-효과 사슬 끊어짐.</p>
+      </div>
+
+      <div class="card tight">
+        <div class="h3"><span class="pill pill-coral">② ⚡ 치명적</span> 등급 vs 이분형 반응</div>
+        <table style="margin-top:6px;">
+          <tbody>
+            <tr><td><strong>등급 (graded)</strong></td><td>강도 연속 · Hill/\(E_{\max}\) · ketamine, propranolol</td></tr>
+            <tr><td><strong>이분형 (quantal)</strong></td><td>개체 전부/전무, 집단 누적 빈도 · alfentanil</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;margin-top:4px;"><strong>치명적 시나리오</strong>: 이분형(예: ≥50% 통증 감소 예/아니오)을 연속 VAS Hill로 분석하면 통계학자의 이진 분석과 <strong>서로 다른 용량을 지지</strong>. 문제는 Hill 방정식이 아니라 <strong class="coral">평가변수 척도와 모델링 프레임 불일치</strong>.</p>
+      </div>
+
+      <div class="card tight">
+        <div class="h3"><span class="pill pill-coral">③</span> \(R_t\) vs \(k_t\)</div>
+        <table style="margin-top:6px;">
+          <tbody>
+            <tr><td><strong>\(R_t\)</strong></td><td>amount/time · 2.5 L/day · <em>큰 풀의 느린 전환을 빠른 과정으로 오해</em></td></tr>
+            <tr><td><strong>\(k_t\)</strong></td><td>time⁻¹ · 0.06 day⁻¹ (= \(t_t\) 17 days) · 실제론 <strong>느린 과정</strong>임을 보여줌</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;margin-top:4px;"><strong>속도는 \(k_t\)와 \(t_t\)가 더 잘 말해줌.</strong> <span class="src">R&amp;T 5e, pp.45–46</span></p>
+      </div>
+
+      <div class="card tight">
+        <div class="h3"><span class="pill pill-coral">④</span> 구조적 vs 운영적 식별성</div>
+        <table style="margin-top:6px;">
+          <tbody>
+            <tr><td><strong>구조적</strong></td><td>무한 정확 데이터에서 분리 가능? · \(V/F\), \(CL/F\) 묶임 · <strong>모델 재설계</strong></td></tr>
+            <tr><td><strong>운영적</strong></td><td>우리 데이터로 실용 정밀도? · RSE↑, 상관≈1, condition number 폭주 · <strong>데이터 보강 또는 파라미터 고정</strong></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;margin-top:4px;">NONMEM에서 "수렴은 되는데 OMEGA가 무너진다"는 거의 다 <strong>운영적</strong>. "어떻게 해도 두 파라미터가 묶여 나온다"는 <strong>구조적</strong> — 데이터로는 못 풂.</p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="label">→ 실패 양식</span>
+      <p>이분형 자료를 개체별 등급 곡선처럼 읽으면 Hill 문제가 아니라 <strong>평가변수 정의 문제</strong>임. <strong class="coral">개체 수준 반응 크기인지, 집단 수준 사건 확률인지 먼저 분리</strong>해야 함.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5</span>
+    <h1 class="slide-title">자기 테스트 — <span class="em">입으로 답할 수 있어야 통과</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2" style="gap:12px;">
+      <div class="flex-col" style="gap:5px;">
+        <details>
+          <summary><span class="qnum">Q1.</span> 모델링 사이클에서 fitting은 몇 번째이며, 왜 그 앞이 중요한가?</summary>
+          <div class="answer">→ Fitting은 <strong>5단계</strong>임. 4단계 EDA가 모델 구조와 초기값을 제안하고, 비선형 fitting은 초기값에 민감하기 때문. <span class="src">G&amp;W 5e, pp.5–6, Fig.1.2</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q2.</span> NCA가 충분한 질문과 모델링이 필요한 질문을 하나씩.</summary>
+          <div class="answer">→ <strong>NCA</strong>: 생체이용률·총 청소율 요약. <strong>모델링</strong>: ① 단회→반복 예측, ② 비선형 PK 정량화, ③ PK/PD 정량화, ④ IIV 정량화(PopPK). <span class="src">G&amp;W 5e, p.4</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q3.</span> 치료역을 용량이 아닌 노출 관점에서 설명.</summary>
+          <div class="answer">→ 너무 낮은 노출 = 무효, 너무 높은 노출 = AE ↑. 둘 사이에서 치료 반응을 얻고 과도한 AE를 피하는 <strong>노출 범위</strong>임. <span class="src">R&amp;T 5e, p.6, Fig.1-4</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q4.</span> Digoxin vs morphine 차이를 PK/PD 원리로.</summary>
+          <div class="answer">→ 둘 다 좁은 치료역 가능. morphine은 빨리 제거 → 자주 투여. digoxin은 천천히 제거 → 1일 1회 가능. digoxin은 도달과 유지가 분리되어서 <strong>digitalizing dose + maintenance</strong> 논리가 자연스러움. <span class="src">R&amp;T 5e, pp.4, 7, Fig.1-5</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q5.</span> γ=1과 γ=2의 20–80% 농도 범위 차이?</summary>
+          <div class="answer">→ γ=1이면 <strong>16배</strong>(0.25C₅₀ → 4C₅₀), γ=2이면 <strong>4배</strong>(0.5C₅₀ → 2C₅₀). <span class="src">R&amp;T 5e, p.40, Fig.2-16</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q6.</span> Propranolol·alfentanil 예시의 가르침. propranolol C₅₀=5.3 μg/L의 기준은?</summary>
+          <div class="answer">→ <strong>propranolol</strong> = 등급 반응이 Hill로 잘 맞는 예 (γ≈1, E_max≈40%, C₅₀=5.3 μg/L). <strong>C₅₀은 unbound concentration 기준</strong>(Fig.2-17 caption 명시). <strong>alfentanil</strong> = 이분형에서 C₅₀이 집단 사건 확률 50% 농도 기준 — 유방 0.27, 하복부 0.31, 상복부 0.42 mg/L. <span class="src">R&amp;T 5e, pp.42–43</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q7.</span> 농도 peak와 효과 peak가 어긋날 때 어떤 사고가 켜져야? 후보 둘은 어떻게 구분?</summary>
+          <div class="answer">→ 직접 효과 Hill만으론 부족, <strong>effect compartment(k_e0)</strong> 또는 <strong>IDR</strong>. 시간차가 <strong>분~수 시간 = effect compartment</strong>(midazolam–EEG). <strong>일~주 = IDR</strong>(warfarin–PT, epoetin alfa–RBC). <span class="src">R&amp;T 5e, pp.8–9</span></div>
+        </details>
+      </div>
+      <div class="flex-col" style="gap:5px;">
+        <details>
+          <summary><span class="qnum">Q8.</span> R_t=2.5 L/day인 총 체수분이 왜 "빠른 과정" 아닌가?</summary>
+          <div class="answer">→ 풀 ~42 L → k_t=0.06 day⁻¹, t_t=17 days. <strong>풀 대비 분획이 작으면 과정은 느림.</strong> <span class="src">R&amp;T 5e, pp.45–46</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q9.</span> Fig.2-19 두 시나리오가 노출 지표 선택에 주는 메시지?</summary>
+          <div class="answer">→ 같은 C_max/t_max여도 감소 속도 다르면 AUC 다르고, 같은 AUC여도 입력 속도 다르면 C_max 다름. <strong>어떤 지표가 중요한지는 임상 목표·노출-반응 관계에 따라 달라짐.</strong> <span class="src">R&amp;T 5e, p.44</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q10.</span> 구조적 vs 운영적 식별성 차이와 각 처방?</summary>
+          <div class="answer">→ <strong>구조적</strong>: 모델 구조가 파라미터 유일 결정? 깨지면 V/F로 묶임 → <strong>모델 재설계</strong>. <strong>운영적</strong>: 실제 데이터로 구별? 깨지면 RSE↑/상관≈1 → <strong>데이터 보강 또는 파라미터 고정</strong>. <span class="src">G&amp;W 5e, §2.2.4</span></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q11.</span> PopPK 변량성 세 층 분해 이유? η-shrinkage 크면?</summary>
+          <div class="answer">→ <strong>IIV(η, 환자 간) · IOV(κ, 같은 환자 방문 간) · RUV(ε, 잔차)</strong> 분리 안 되면 공변량 효과 가짜 부풀려짐. IOV를 빼면 IIV로 흡수되어 covariate 가짜 신호. <strong>η-shrinkage > 30%면 EBE 회귀 진단 무력화.</strong></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q12.</span> 신생아 mg/kg 외삽이 위험한 이유? Allometric vs maturation은 각각 뭘 잡나?</summary>
+          <div class="answer">→ CL은 선형(BW¹·⁰)이 아니라 <strong>BW⁰·⁷⁵</strong>. mg/kg 외삽 시 작은 환자 과량. 신생아·영아는 효소 미성숙 → <strong>F_mat(PMA)</strong> 곱해야 함. NONMEM: <code style="font-family:'JetBrains Mono',monospace;background:var(--surface-card);padding:1px 4px;border-radius:3px;font-size:11px;">CL = THETA(1)*(WT/70)**0.75 * FMAT</code></div>
+        </details>
+        <details>
+          <summary><span class="qnum">Q13.</span> Effect compartment와 IDR이 둘 다 "지연" 설명하는데 임상적으로 뭐가 다른가?</summary>
+          <div class="answer">→ <strong>effect compartment(k_e0)</strong> = 약물 자체가 작용부위 도달에 시간 (분~수 시간), counter-clockwise hysteresis. <strong>IDR(k_out)</strong> = 약물은 빠른데 내인성 시스템이 천천히 바뀜 (일~주), warfarin–PT, epoetin alfa–RBC. <strong>두 모델은 같은 "지연"이라도 임상 적정 전략이 다름.</strong></div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6·7</span>
+    <h1 class="slide-title">메타 프레임 <span style="color:var(--muted);font-size:.65em;">·</span> 네 가지 무기 <span style="color:var(--muted);font-size:.65em;">·</span> <span class="em">마무리</span></h1>
+  </div>
+  <hr class="header-rule">
+  <div class="slide-body">
+    <div class="cols-2-7-5" style="gap:14px;">
+      <div class="flex-col">
+        <div class="card tight">
+          <div class="h3">§6 — 이 세션이 후속에 여는 길</div>
+          <div class="table-wrap" style="border:none;font-size:11.5px;">
+            <table>
+              <thead><tr><th>후속 세션</th><th>이 세션이 여는 것</th></tr></thead>
+              <tbody>
+                <tr><td><strong>GOF/VPC, NPDE/CWRES, Bayesian/MAP</strong></td><td>M1: 진단은 Step 6, 식별성 두 층</td></tr>
+                <tr><td><strong>PopPK / 공변량 모델링</strong></td><td>M1: NCA-모델링 경계, 변량성 세 층; M2: allometric/maturation</td></tr>
+                <tr><td><strong>구획 PK / TDM</strong></td><td>M2: dose → exposure → response, 체격·연령 정규화</td></tr>
+                <tr><td><strong>직접 효과 PD / Effect compartment</strong></td><td>M3: 천장·효능·가파름, endpoint type, hysteresis</td></tr>
+                <tr><td><strong>IDR I–IV / 질병 진행 / TMDD</strong></td><td>M4: turnover, IDR 4 변종, k_out 시상수</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card tight">
+          <div class="h3">§7 — 통과한 사람이 갖는 <span class="coral">네 가지 무기</span></div>
+          <ol class="list-num" style="margin-top:4px;">
+            <li><strong>질문 기반 워크플로</strong> — 데이터 받는 순간 "<em>무엇을 결정하기 위한 모델인가</em>"부터 씀. Fitting 버튼은 마지막에.</li>
+            <li><strong>dose → exposure → response 좌표</strong> — 세 좌표 중 어디서 IIV가 생기는지 식별, η/κ/ε 세 층 분해 준비.</li>
+            <li><strong>천장·효능·가파름 3축</strong> — C₅₀만 보고하는 보고서는 천장·가파름 통째로 버린 것. <strong>총 vs unbound, hysteresis</strong>도 같이 봄.</li>
+            <li><strong>전환 = "지연된 상태"의 문법</strong> — 반응 지연이 분포 지연(k_e0, 분~시간)인지 시스템 turnover(k_out, 일~주)인지 가름.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="closer" style="padding:32px 36px;">
+        <div class="label">마무리 한 문장</div>
+        <div class="quote" style="font-size:20px;">
+          모델링은 수식 fitting이 아니라 <em>임상 질문을 시간 축 위의 두 곡선(노출/반응)으로 번역하는 사고</em>임.
+          <br><br>
+          그 번역이 잘 되면 <em>PopPK / TDM / IDR / TMDD</em>가 다 같은 언어로 풀림. 그 번역이 안 되면 어떤 도구를 써도 <em>신기루</em>를 좇게 됨.
+        </div>
+        <div class="signoff">G&amp;W 5e &nbsp;·&nbsp; R&amp;T 5e</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<nav class="navbar">
+  <button id="btn-prev" class="nav-btn" disabled>← 이전</button>
+  <div class="prog">
+    <span class="prog-text" id="prog-text">1 / 30</span>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:3.33%;"></div></div>
+  </div>
+  <button id="btn-next" class="nav-btn">다음 →</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  if (tocBtns[cur]) tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  if (tocBtns[cur]) {
+    tocBtns[cur].classList.add('active');
+    tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function () { goTo(cur - 1); });
+btnNext.addEventListener('click', function () { goTo(cur + 1); });
+document.addEventListener('keydown', function (e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft') goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+for (var i = 0; i < tocBtns.length; i++) {
+  (function (idx) {
+    tocBtns[idx].addEventListener('click', function () {
+      var target = parseInt(this.getAttribute('data-idx'), 10);
+      goTo(target);
+    });
+  })(i);
+}
+
+// initialize active toc
+if (tocBtns[0]) tocBtns[0].classList.add('active');
+
+function renderMath() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$',  right: '$$',  display: true  },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false,
+      strict: false,
+      trust: true,
+      macros: {
+        "\\text": "\\textnormal{#1}"
+      }
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderMath);
+} else {
+  renderMath();
+}
+</script>
+</body>
+</html>
