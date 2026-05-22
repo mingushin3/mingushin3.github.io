@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 11 — 같은 농도, 다른 효과</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<style>
+:root{
+  /* Surface */
+  --canvas:#faf9f5; --surface-soft:#f5f0e8; --surface-card:#efe9de;
+  --surface-cream-strong:#e8e0d2; --surface-dark:#181715;
+  --surface-dark-elevated:#252320; --surface-dark-soft:#1f1e1b;
+  --hairline:#e6dfd8; --hairline-soft:#ebe6df;
+  /* Brand */
+  --coral:#cc785c; --coral-active:#a9583e; --coral-pale:#f4e4dc;
+  --coral-disabled:#e6dfd8; --teal:#5db8a6; --amber:#e8a55a;
+  /* Text */
+  --ink:#141413; --body-strong:#252523; --body:#3d3d3a;
+  --muted:#6c6a64; --muted-soft:#8e8b82; --on-primary:#fff;
+  --on-dark:#faf9f5; --on-dark-soft:#a09d96;
+  /* Semantic */
+  --warn-bg:#fcf0ef; --warn-border:#c64545;
+  --amber-bg:#fdf4e0; --amber-border:#d4a017;
+  --teal-bg:#e6f4f0; --teal-border:#5db8a6;
+  --success:#5db872;
+  --sans:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --mono:'JetBrains Mono','Courier New',monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--sans);
+  background:var(--canvas);
+  color:var(--body);
+  font-size:14px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:0;
+}
+
+/* ============ SIDEBAR ============ */
+.sidebar{
+  position:fixed; top:0; left:0; width:260px; height:100vh;
+  background:var(--surface-soft);
+  border-right:1px solid var(--hairline);
+  overflow-y:auto; padding:22px 16px 40px; z-index:30;
+}
+.sidebar::-webkit-scrollbar{width:7px;}
+.sidebar::-webkit-scrollbar-thumb{background:#dcd4c8;border-radius:99px;}
+.wordmark{display:flex;align-items:center;gap:9px;padding:0 6px 16px;margin-bottom:6px;border-bottom:1px solid var(--hairline);}
+.wordmark .wm-text{font-family:var(--mono);font-size:11px;letter-spacing:1.2px;color:var(--coral);text-transform:uppercase;font-weight:500;}
+.wordmark .wm-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;color:var(--muted-soft);}
+.wm-stack{display:flex;flex-direction:column;line-height:1.35;}
+
+.toc-part{
+  font-family:var(--mono);font-size:9px;letter-spacing:1.4px;
+  color:var(--muted-soft);text-transform:uppercase;font-weight:500;
+  padding:14px 8px 5px;
+}
+.toc-btn{
+  display:block;width:100%;text-align:left;
+  background:none;border:none;cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;font-weight:500;
+  color:var(--body);
+  padding:6px 8px 6px 11px;border-radius:7px;
+  border-left:2px solid transparent;
+  transition:background .14s,color .14s,border-color .14s;
+  line-height:1.35;
+}
+.toc-btn:hover{background:#eee7da;color:var(--ink);}
+.toc-btn .toc-num{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-right:5px;}
+.toc-btn.sub{padding-left:22px;font-size:11.5px;font-weight:400;color:var(--muted);}
+.toc-btn.active{border-left:2px solid var(--coral);color:var(--coral);background:#f1e7dc;}
+.toc-btn.active .toc-num{color:var(--coral);}
+
+/* ============ VIEWER ============ */
+.viewer{
+  position:fixed; left:260px; top:0; right:0; bottom:54px;
+  display:flex; flex-direction:column; overflow:hidden;
+  background:var(--canvas);
+}
+.slide{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  padding:30px 52px 22px;
+  overflow:hidden;
+  opacity:0; pointer-events:none;
+  transition:opacity 220ms ease;
+}
+.slide.active{opacity:1;pointer-events:auto;}
+.slide.has-formula{padding-top:46px;}
+
+/* formula overflow exceptions */
+.slide .formula-card,
+.slide .formula-card-wrap{overflow:visible !important;}
+
+/* ============ HEADER ============ */
+.slide-header{display:flex;align-items:center;gap:13px;flex-wrap:wrap;max-height:72px;}
+.sec-badge{
+  font-family:var(--mono);font-size:11px;letter-spacing:1px;font-weight:500;
+  background:var(--coral);color:#fff;
+  padding:4px 11px;border-radius:9999px;white-space:nowrap;flex-shrink:0;
+}
+.sec-badge.dark{background:var(--surface-dark);color:var(--coral);}
+.sec-badge.teal{background:var(--teal);color:#fff;}
+.slide-title{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(25px,2.55vw,37px);
+  letter-spacing:-.02em;color:var(--ink);line-height:1.1;
+}
+.part-tag{
+  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;
+  color:var(--coral);text-transform:uppercase;font-weight:500;
+  margin-bottom:3px;
+}
+.header-rule{height:1.5px;background:var(--hairline);border:none;margin:11px 0 14px;flex-shrink:0;}
+
+/* ============ BODY SCROLL-FREE CONTENT ============ */
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:13px;overflow:hidden;}
+.s-body.center{justify-content:center;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;flex:1;min-height:0;}
+.grid2.tight{gap:13px;}
+.col{display:flex;flex-direction:column;gap:11px;min-height:0;}
+
+p{font-size:clamp(13px,1.06vw,15.5px);color:var(--body);line-height:1.62;}
+.lead{font-size:clamp(14px,1.18vw,17px);color:var(--body-strong);line-height:1.6;}
+strong{color:var(--body-strong);font-weight:600;}
+em{font-style:italic;color:var(--body);}
+.coral-ink{color:var(--coral);font-weight:600;}
+h2.sub-title{font-family:var(--sans);font-weight:600;font-size:clamp(15px,1.45vw,20px);color:var(--ink);letter-spacing:0;}
+h3.sub-title{font-family:var(--sans);font-weight:600;font-size:clamp(13.5px,1.2vw,16px);color:var(--body-strong);}
+
+ul,ol{padding-left:19px;}
+li{font-size:clamp(12.5px,1.04vw,15px);color:var(--body);line-height:1.55;margin:3px 0;}
+li::marker{color:var(--coral);}
+ul.tight li,ol.tight li{margin:2px 0;font-size:clamp(12px,1vw,14px);}
+
+code{
+  font-family:var(--mono);font-size:.86em;
+  background:var(--surface-card);padding:1px 6px;border-radius:5px;
+  color:var(--coral-active);
+}
+
+/* ============ CARDS ============ */
+.card{background:var(--surface-card);border:1px solid var(--hairline);border-radius:12px;padding:18px 22px;}
+.card.soft{background:var(--surface-soft);}
+.card.tight{padding:13px 16px;}
+.card-label{font-family:var(--mono);font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:500;}
+
+/* dark card — explicit light text only */
+.dark-card{background:var(--surface-dark);border-radius:12px;padding:18px 22px;}
+.dark-card.tight{padding:14px 16px;}
+.dark-card p{color:#d8d4cc;font-size:clamp(12.5px,1.04vw,15px);}
+.dark-card strong{color:#faf9f5;font-weight:600;}
+.dark-card em{color:var(--amber);font-style:italic;}
+.dark-card li{color:#d8d4cc;}
+.dark-card li::marker{color:var(--coral);}
+.dark-card h2,.dark-card h3{color:#faf9f5;}
+.dark-card .card-label{color:var(--coral);}
+.dark-card .chip{background:var(--surface-dark-elevated);color:var(--amber);}
+.dark-card code{background:var(--surface-dark-elevated);color:var(--amber);}
+
+/* algorithm box */
+.algo-box{
+  background:var(--surface-dark);color:#d8d4cc;border-radius:12px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.85;
+  padding:18px 22px;white-space:pre;overflow-x:auto;
+}
+.algo-box .ak{color:var(--coral);}
+.algo-box .aa{color:var(--amber);}
+
+/* ============ CALLOUT ============ */
+.callout{border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:12px 16px;background:var(--coral-pale);}
+.callout .co-label{font-weight:600;color:var(--coral-active);font-size:clamp(12.5px,1.05vw,15px);display:block;margin-bottom:3px;}
+.callout p,.callout li{font-size:clamp(12.5px,1.02vw,14.5px);color:var(--body-strong);line-height:1.55;}
+.callout.warn{border-color:var(--warn-border);background:var(--warn-bg);}
+.callout.warn .co-label{color:var(--warn-border);}
+.callout.amber{border-color:var(--amber-border);background:var(--amber-bg);}
+.callout.amber .co-label{color:#a87b0a;}
+.callout.teal{border-color:var(--teal-border);background:var(--teal-bg);}
+.callout.teal .co-label{color:#3d8475;}
+
+/* ============ FORMULA CARD ============ */
+.formula-card-wrap{overflow:visible !important;}
+.formula-card{
+  background:var(--surface-soft);border:1px solid var(--hairline);border-radius:12px;
+  padding:34px 20px 26px;text-align:center;
+  overflow-x:auto;overflow-y:visible;
+}
+.formula-card.compact{padding:30px 16px 22px;}
+.formula-card .fc-src{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:12px;}
+.formula-card .fc-note{font-size:clamp(11.5px,.95vw,13px);color:var(--muted);margin-top:9px;font-style:normal;}
+
+.katex-display{overflow-y:visible !important;overflow-x:auto;margin:0 !important;padding:4px 0 !important;}
+.katex-display>.katex{overflow-y:visible !important;}
+.katex{font-size:1.04em;font-family:KaTeX_Main,'Noto Sans KR','Apple SD Gothic Neo',serif;}
+.katex .text,.katex .mord.text,.katex .textrm,.katex .textsf,.katex .mathrm{font-family:KaTeX_Main,'Noto Sans KR','Apple SD Gothic Neo',serif !important;}
+
+/* ============ TABLE ============ */
+.tbl-wrap{border:1px solid var(--hairline);border-radius:12px;overflow:clip;background:var(--canvas);}
+table{border-collapse:collapse;width:100%;font-size:clamp(11.5px,.96vw,13.5px);}
+thead{background:var(--surface-card);}
+th{
+  text-align:left;font-weight:600;color:var(--ink);
+  padding:11px 13px;border-bottom:1px solid var(--hairline);
+  font-size:clamp(11px,.92vw,13px);line-height:1.3;
+}
+thead tr:first-child th{padding-top:14px;}
+td{padding:9px 13px;border-bottom:1px solid var(--hairline-soft);color:var(--body);vertical-align:top;line-height:1.45;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:nth-child(even){background:#faf7f1;}
+td strong,th strong{color:var(--body-strong);}
+.tbl-wrap.dense table{font-size:clamp(10.8px,.88vw,12.5px);}
+.tbl-wrap.dense td,.tbl-wrap.dense th{padding:7px 10px;}
+
+/* chip */
+.chip{
+  font-family:var(--mono);font-size:10px;
+  background:var(--surface-card);color:var(--muted);
+  padding:1px 6px;border-radius:4px;white-space:nowrap;
+  display:inline-block;line-height:1.5;
+}
+.chip.coral{background:var(--coral-pale);color:var(--coral-active);}
+
+.tag{
+  font-family:var(--mono);font-size:10px;letter-spacing:.5px;
+  padding:2px 8px;border-radius:9999px;font-weight:500;display:inline-block;
+}
+.tag.c{background:var(--coral-pale);color:var(--coral-active);}
+.tag.t{background:var(--teal-bg);color:#3d8475;}
+.tag.a{background:var(--amber-bg);color:#a87b0a;}
+
+/* title slide */
+.title-slide{flex:1;display:flex;flex-direction:column;justify-content:center;gap:0;}
+.ts-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--coral);text-transform:uppercase;margin-bottom:16px;}
+.ts-title{font-family:var(--serif);font-weight:400;font-size:clamp(38px,5vw,68px);letter-spacing:-.025em;color:var(--ink);line-height:1.04;}
+.ts-sub{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(19px,2vw,28px);color:var(--muted);margin-top:12px;letter-spacing:-.01em;}
+
+/* closer */
+.closer-card{background:var(--surface-dark);border-radius:14px;padding:26px 30px;}
+.closer-card .cc-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--coral);margin-bottom:12px;}
+.closer-card .cc-body{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(17px,1.7vw,23px);color:var(--on-dark-soft);line-height:1.5;}
+.closer-card .cc-body strong{color:#faf9f5;font-style:normal;}
+.closer-card .cc-q{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2vw,28px);color:var(--amber);line-height:1.4;margin:14px 0;}
+
+.two-eq{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;}
+
+/* ============ NAV ============ */
+.navbar{
+  position:fixed;bottom:0;left:260px;right:0;height:54px;
+  background:#faf9f5;border-top:1px solid var(--hairline);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;z-index:30;gap:20px;
+}
+.nav-btn{
+  font-family:var(--sans);font-size:14px;font-weight:500;
+  background:var(--surface-card);color:var(--ink);
+  border:1px solid var(--hairline);border-radius:8px;
+  padding:8px 16px;cursor:pointer;transition:background .14s,opacity .14s;
+  white-space:nowrap;
+}
+.nav-btn:hover:not(:disabled){background:var(--coral);color:#fff;border-color:var(--coral);}
+.nav-btn:disabled{opacity:.35;cursor:default;}
+.nav-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;max-width:440px;}
+#prog-text{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.5px;}
+.prog-track{width:100%;height:3px;background:var(--hairline);border-radius:99px;overflow:hidden;}
+#prog-fill{height:100%;background:var(--coral);width:0;transition:width .22s ease;border-radius:99px;}
+
+@media (max-width:1100px){
+  .grid2{grid-template-columns:1fr;gap:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<nav class="sidebar">
+  <div class="wordmark">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div class="wm-stack">
+      <span class="wm-text">Session 11</span>
+      <span class="wm-sub">Indirect Response · Remastered</span>
+    </div>
+  </div>
+
+  <button class="toc-btn" data-go="0"><span class="toc-num">—</span>표지 · 자료의 위치</button>
+  <button class="toc-btn" data-go="1"><span class="toc-num">§0</span>한 줄로 꿴다</button>
+
+  <div class="toc-part">Part I · 진단의 첫 단추</div>
+  <button class="toc-btn" data-go="3"><span class="toc-num">§1</span>Hysteresis 방향</button>
+
+  <div class="toc-part">Part II · Turnover 골격</div>
+  <button class="toc-btn" data-go="5"><span class="toc-num">§2</span>욕조 · R₀=k_in/k_out</button>
+  <button class="toc-btn" data-go="9"><span class="toc-num">§3</span>4-Model Taxonomy</button>
+  <button class="toc-btn" data-go="13"><span class="toc-num">§4</span>t_ss · peak shift</button>
+  <button class="toc-btn" data-go="14"><span class="toc-num">§5</span>Pool / Precursor</button>
+  <button class="toc-btn" data-go="17"><span class="toc-num">§6</span>I_max / E_max</button>
+
+  <div class="toc-part">Part III · Estimation</div>
+  <button class="toc-btn" data-go="19"><span class="toc-num">§7</span>Graphical Estimation</button>
+
+  <div class="toc-part">Part IV · Turnover 밖</div>
+  <button class="toc-btn" data-go="21"><span class="toc-num">§8</span>비가역 kill · 표적 소비</button>
+
+  <div class="toc-part">Part V · Apex</div>
+  <button class="toc-btn" data-go="24"><span class="toc-num">§9</span>Turnover vs Effect cpt</button>
+
+  <div class="toc-part">Part VI · 임상 번역</div>
+  <button class="toc-btn" data-go="26"><span class="toc-num">§10</span>PK clock vs PD clock</button>
+
+  <div class="toc-part">Part VII · Integration</div>
+  <button class="toc-btn" data-go="28"><span class="toc-num">§11</span>혼동 쌍 · clock 오류</button>
+  <button class="toc-btn" data-go="30"><span class="toc-num">§12</span>자기 테스트</button>
+  <button class="toc-btn" data-go="32"><span class="toc-num">§13</span>큰 그림</button>
+  <button class="toc-btn" data-go="34"><span class="toc-num">§14</span>References</button>
+</nav>
+
+<!-- ================= VIEWER ================= -->
+<main class="viewer" id="viewer">
+<!-- ===== SLIDE 0 — TITLE ===== -->
+<section class="slide" data-sec="cover">
+  <div class="title-slide">
+    <div class="ts-eyebrow">Session 11 · Remastered</div>
+    <h1 class="ts-title">같은 농도,<br>다른 효과</h1>
+    <div class="ts-sub">plasma C와 PD가 따로 노는 모든 경우를 분해하는 법</div>
+    <div class="callout teal" style="margin-top:30px;max-width:880px;">
+      <span class="co-label">📍 이 자료의 위치</span>
+      <p>원본(v4.2_final)이 다루는 콘텐츠·범위·수치 anchor·인용을 <strong>100% 보존</strong>하되, 학습자가 임상 현장에서 데이터를 받았을 때 머릿속에서 자동으로 돌아가는 <strong>진단 순서</strong>대로 다시 짠 강의 노트임. 카드 단위 분절을 풀고, 한 가지 질문(<em>"plasma C와 effect의 mismatch는 어디서 오는가?"</em>)을 척추로 삼아 8개 카드를 한 바느질로 꿰어냈음. 어미는 음슴체, overbrace/underbrace annotation 유지, <span class="chip">[G&amp;W pp.XXX]</span> / <span class="chip">[R&amp;T pp.XXX]</span> 인용 유지함.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 1 — §0 intro ===== -->
+<section class="slide" data-sec="0">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">이 세션 한 줄로 꿴다면</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <p class="lead">임상에서 가장 답답한 순간이 있음. 약을 줬는데 <strong>plasma 농도와 효과가 따로 노는 거임.</strong></p>
+    <div class="grid2 tight">
+      <div class="card">
+        <div class="card-label">사례 A · Naproxen</div>
+        <p><strong>Naproxen 500&nbsp;mg 경구</strong>를 dental pain 환자한테 주면, 같은 혈장 농도라도 농도가 올라가는 중이냐 내려오는 중이냐에 따라 통증 완화가 다름 (1–8&nbsp;h). <span class="chip">[R&amp;T pp.234–235]</span></p>
+      </div>
+      <div class="card">
+        <div class="card-label">사례 B · Aspirin</div>
+        <p><strong>Aspirin 650&nbsp;mg</strong>은 혈장에서 몇 시간 만에 사라지는데 thromboxane B₂ 억제는 <strong>며칠 감.</strong> <span class="chip">[R&amp;T p.251]</span></p>
+      </div>
+    </div>
+    <p>이게 우연이 아니라 임상에서 늘 일어나는 일임. → 그래서 <strong>plasma half-life만 보고 dose interval을 결정하면 어떤 약물에서는 맞고 어떤 약물에서는 완전히 빗나감.</strong></p>
+    <div class="callout">
+      <span class="co-label">🧰 이 세션은 한 질문에 답하는 도구상자</span>
+      <p>"plasma C와 effect가 안 맞을 때, 그 mismatch는 <strong>어디서 오는가</strong>, 그리고 그걸 어떻게 <strong>분해해서 임상 의사결정으로 번역</strong>하는가?" — 답이 될 후보는 단 4가지뿐임. 이걸 머릿속에 박아두면 이번 세션이 전부 풀림.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 2 — §0 4-candidate map ===== -->
+<section class="slide" data-sec="0">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">mismatch의 출처는 단 4가지 — 전체 지도</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th style="width:34px;">#</th><th>mismatch의 출처</th><th>모델 도구</th><th>대표 약물</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td><strong>분포 지연</strong> — 약이 작용 부위에 늦게 도달함</td><td>Effect compartment, \(k_{e0}\)</td><td>(생체상 평형 지연)</td></tr>
+          <tr><td><strong>2</strong></td><td><strong>Turnover</strong> — system이 반응을 만들고 없애는 데 시간이 걸림</td><td>4-Model (Models I–IV) + Pool/Precursor 확장</td><td>Warfarin, EPO, methylprednisolone</td></tr>
+          <tr><td><strong>3</strong></td><td><strong>표적 소비</strong> — 약이 표적을 영구 파괴, 새로 만들 때까지 효과 남음</td><td>\(K_{kill}\), 비가역 kill, regrowth</td><td>Aspirin, Omeprazole, Paclitaxel</td></tr>
+          <tr><td><strong>4</strong></td><td><strong>다른 시계가 더 느림</strong> — PK와 PD 중 느린 쪽이 duration을 결정</td><td>PK-clock vs PD-clock 감별</td><td>Succinylcholine vs Warfarin</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dark-card">
+      <p><strong>베테랑 모델러는 데이터를 받자마자 첫 30초 안에 이 4개 후보 중 어느 쪽인지를 좁힘.</strong> 그 다음에 NONMEM 돌리기 전에 손으로 어디까지 잠가놔야 하는지, fit이 매끄러워도 왜 결론을 미뤄야 하는지, duration 예측 공식을 언제 쓰고 언제 폐기해야 하는지가 줄줄이 갈림.</p>
+      <p style="margin-top:9px;">이 분야 베테랑은 fit이 매끄럽다고 좋아하지 않음. <em>어느 시계가 가장 느린지를 증명할 수 있을 때</em> 좋아함. 이 차이가 이번 세션 전체를 관통하는 척추임.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 3 — §1 Hysteresis A ===== -->
+<section class="slide" data-sec="1">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part I — 진단의 첫 단추</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 1</span>
+    <h1 class="slide-title">Hysteresis 방향 — 30초 만에 후보군 좁히기</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body">
+    <p>PK/PD 데이터를 받으면 곧장 NONMEM을 켜는 건 <strong>틀린 순서임.</strong> 진짜 첫 단계는 종이 위에 그림 하나 — <strong>plasma C(x축) vs response(y축)</strong>를 시간 순서대로 잇는 것. 이게 <strong>hysteresis loop</strong>이고, 그 방향이 4개 후보군을 즉시 가지치기해줌. 같은 약물 농도에서 올라가는 길과 내려오는 길의 반응이 다른 현상임. <span class="chip">[R&amp;T pp.234–235]</span></p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>패턴</th><th>해석</th><th>대표 사례</th><th>떠올릴 후보</th></tr></thead>
+        <tbody>
+          <tr><td><strong>반시계 방향</strong><br>(counterclockwise)</td><td>반응이 농도 뒤에서 따라옴</td><td><strong>Naproxen</strong> 500&nbsp;mg 경구(NSAID), dental pain, Fig 8-2 <span class="chip">[R&amp;T pp.234–235]</span>; <strong>Ibuprofen</strong> 6&nbsp;mg/kg 경구, febrile children, Fig 8-9 <span class="chip">[R&amp;T pp.241–242]</span></td><td>분포 지연, turnover, 활성 대사체</td></tr>
+          <tr><td><strong>Hysteresis 없음</strong><br>(직접 link)</td><td>작용부위 평형·반응 생성이 sampling보다 훨씬 빠름</td><td><strong>Midazolam</strong> 15&nbsp;mg/kg 경구(rat EEG), Fig 8-6 <span class="chip">[R&amp;T p.239]</span></td><td>direct PK–PD link</td></tr>
+          <tr><td><strong>시계 방향</strong><br>(clockwise)</td><td>내성, 피드백, 활성 대사체, 추가 동역학</td><td>(이 세션 본문에는 사례 없음 — tolerance 장에서)</td><td>내성, feedback</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 4 — §1 30초 규칙 ===== -->
+<section class="slide" data-sec="1">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1</span>
+    <h1 class="slide-title">첫 30초 진단의 두 줄 규칙</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <div class="callout">
+      <span class="co-label">🔑 30초 진단 규칙</span>
+      <p>① <strong>반시계 방향이면</strong> → 분포 지연 / turnover / 활성 대사체부터 의심<br>
+      ② <strong>시계 방향이면</strong> → 내성 / 피드백부터 의심<br>
+      ③ <strong>Loop가 안 보이면</strong> → 그렇다고 direct가 확정은 아님. <strong>sampling 해상도 안에서만 그렇다</strong>는 뜻임</p>
+    </div>
+    <p>세 번째가 중요함. Hysteresis가 안 보인다고 모든 약이 direct response인 게 아님. <strong>sampling 간격보다 지연이 짧으면 안 보일 뿐임.</strong> 그래서 "직접 vs 지연" 판정은 model family를 고르기 전에 <strong>설계 해상도(design-resolution) 결정</strong>으로 먼저 다뤄야 함. 지연이 sampling 척도에서 안 보이면 생물학적으로 완전히 순간적이지 않더라도 direct link로 방어 가능함.</p>
+    <div class="callout teal">
+      <span class="co-label">📖 G&amp;W 5e p.235, Fig 3.33 / R&amp;T 5e p.235, Fig 8-2</span>
+      <p>직접 반응과 지연 hysteretic 반응이 어떻게 다르게 그려지는지를 한눈에 보여줌. Fig 8-2는 같은 naproxen 농도에서 상승기/하강기에 따라 통증 완화가 다르게 나타나는 것을 직접 그려놓은 거임. → <strong>농도 하나로 반응을 다 설명할 수 없다는 사실의 시각적 증명</strong>임.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 5 — §2 R0 ===== -->
+<section class="slide has-formula" data-sec="2">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part II — Turnover의 골격</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 2</span>
+    <h1 class="slide-title">욕조에서 출발하기 — \(R_0 = k_{in}/k_{out}\)</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>Turnover 모델은 response가 <strong>두 속도의 균형</strong> 위에 떠 있다는 한 줄로 요약됨. <span class="chip">[G&amp;W pp.235–237; R&amp;T pp.234–235, 239]</span></p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dR}{dt}}_{\text{변화율}}=\underbrace{k_{in}}_{\text{생산속도}}-\overbrace{\underbrace{k_{out}}_{\text{소실 clock}}\,\underbrace{R}_{\text{반응 pool}}}^{\text{pool 소실}}$$
+        <div class="fc-src">[G&amp;W Eq 3:74; G&amp;W p.237]</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{R_0}_{\text{기저값}}=\frac{\underbrace{k_{in}}_{\text{생산}}}{\underbrace{k_{out}}_{\text{소실 clock}}}$$
+        <div class="fc-src">[G&amp;W Eq 3:76; G&amp;W p.237]</div>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="callout amber">
+        <span class="co-label">💡 이 식 하나가 unlocking 시킨다</span>
+        <p>Baseline \(R_0\)는 <strong>독립 상수가 아님.</strong> 수도꼭지(\(k_{in}\))와 배수구(\(k_{out}\))가 만든 균형점일 뿐임. 욕조에서 수도꼭지가 일정 속도로 물을 넣고 배수구가 수위에 비례해 물을 빼면, 두 속도가 같아지는 수위가 생김 — 그 수위가 \(R_0\)임.</p>
+      </div>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>파라미터</th><th>단위</th><th>생물학적 의미</th></tr></thead>
+          <tbody>
+            <tr><td>\(R\)</td><td>response unit</td><td>측정된 약리학적 반응</td></tr>
+            <tr><td>\(k_{in}\)</td><td>response·time⁻¹</td><td>0차 생산 속도</td></tr>
+            <tr><td>\(k_{out}\)</td><td>time⁻¹</td><td>1차 소실 속도 = 회복 clock</td></tr>
+            <tr><td>\(R_0\)</td><td>response unit</td><td>기저 반응 = \(k_{in}/k_{out}\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 6 — §2 reparameterization ===== -->
+<section class="slide has-formula" data-sec="2">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2</span>
+    <h1 class="slide-title">학생이 100% 빠지는 함정 — Reparameterization</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>NONMEM에서 \(k_{in}\)과 \(k_{out}\)을 <strong>따로 추정</strong>하려 하면 거의 항상 둘 중 하나가 일어남:</p>
+      <ol class="tight">
+        <li>correlation이 0.98을 넘어 covariance matrix가 망가짐</li>
+        <li>OFV가 30 iteration 동안 stuck이다가 갑자기 뚝 떨어짐 (stuck-then-drop 패턴)</li>
+      </ol>
+      <p>곱 \(k_{in}\cdot k_{out}\)은 \(R_0\)로 데이터가 강하게 잡아주는데 <strong>두 값을 따로 분리할 정보가 데이터에 없기 때문임.</strong> 어두운 방에서 수도꼭지와 배수구를 동시에 만지며 수위를 맞추는 일과 같음. <strong>해결책은 단순함</strong> — \(R_0\)와 \(k_{out}\)을 추정하고 \(k_{in}\)은 곱으로 계산함.</p>
+      <div class="callout">
+        <span class="co-label">🔑 NONMEM 출력 진단</span>
+        <p>30 iteration stuck-then-drop 패턴이 보이면 곧장 <code>$THETA</code>를 \((R_0, k_{out})\)로 재코딩함. 별다른 진단 없이도 90% 이상 살려내는 표준 처방임.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{k_{in}}_{\text{생산}}=\underbrace{R_0}_{\text{기저값}}\cdot\underbrace{k_{out}}_{\text{소실 clock}}$$
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dR}{dt}}_{\text{변화율}}=\underbrace{k_{out}}_{\text{회복 clock}}\left(\underbrace{R_0-R}_{\text{기저-현재 거리}}\right)$$
+        <div class="fc-src">[G&amp;W Eq 3:103; G&amp;W p.247]</div>
+      </div></div>
+      <div class="card tight">
+        <p><strong>PD4 사례.</strong> Pool 1에서 \(k_1\)과 \(k_{out}\)을 따로 추정했더니 \(r=0.9999\), CV% 4000%. 같은 데이터에 \(k_1 = k_{out}\) 제약을 건 Pool 2의 "정상 CV%"는 <strong>데이터가 동등성을 지지한 게 아니라 제약이 비식별성을 해결한 것</strong>임. <span class="chip">[G&amp;W pp.742–752]</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 7 — §2 moderator ===== -->
+<section class="slide has-formula" data-sec="2">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2</span>
+    <h1 class="slide-title">Baseline이 움직일 수도 있음 — Moderator</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>\(k_{out}\)이 시간 불변이라는 게 기본 가정인데, 실제로는 system 상태에 따라 움직일 수 있음. <strong>IgG</strong>(면역글로불린; FcRn 의존 항체 보호기전) 사례에서 혈청 IgG 30&nbsp;mg·mL⁻¹일 때 반감기가 약 11일로 단축됨 — moderator/feedback 모델의 입구임. <span class="chip">[G&amp;W pp.110–111]</span></p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dR}{dt}}_{\text{response 변화}}=\overbrace{\underbrace{k_{in}}_{\text{생산}}\,\underbrace{H(C)}_{\text{약물 함수}}}^{\text{drug-modulated input}}-\underbrace{k_{out}\,M}_{\text{moderator-driven loss}}$$
+        <div class="fc-src">[G&amp;W Eq 2:261; p.110]</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dM}{dt}}_{\text{moderator 변화}}=\overbrace{\underbrace{k_{tol}\,R}_{\text{R에 의한 생성}}-\underbrace{k_{tol}\,M}_{\text{1차 소실}}}^{\text{tolerance pool turnover}}$$
+        <div class="fc-src">[G&amp;W Eq 2:262; p.111]</div>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\text{slope}_{A,B,C}}_{\text{관찰 반감기 기울기}}=\underbrace{k_{out}}_{\text{소실 clock}}\!\left(1+\underbrace{\frac{R_{A,B,C}}{M_{50}}}_{\text{포화 분율}}\right)$$
+        <div class="fc-src">[G&amp;W Eq 2:263; p.111]</div>
+      </div></div>
+      <div class="callout warn">
+        <span class="co-label">⚠️ 학생이 거의 다 놓치는 한 줄 — G&amp;W 5e p.111</span>
+        <p><em>"The three slopes are functions of \(k_{out}\) and \(M\), since \(R\) is equal to \(M\) at dynamic steady state…"</em> 즉 \(R_0 = k_{in}/k_{out}\)가 회수되려면 <strong>\(H(C)=1\)(약물 없음)</strong> + <strong>\(R=M\) at steady state</strong> 두 조건이 필요함. 이 R=M 가정을 놓치면 moderator 모델이 단순 turnover와 어떻게 연결되는지 derivation이 끊김.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 8 — §2 R=M derivation ===== -->
+<section class="slide has-formula" data-sec="2">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2</span>
+    <h1 class="slide-title">R=M 가정 — moderator 모델이 turnover로 환원되는 다리</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <p style="text-align:center;">정상상태(\(dR/dt=0\))에서 약물이 없고(\(H(C)=1\)) \(R=M\)이면, moderator 시스템은 그대로 \(R_0=k_{in}/k_{out}\) 골격으로 환원됨:</p>
+    <div class="formula-card-wrap"><div class="formula-card">
+      $$\underbrace{\frac{dR}{dt}=0}_{\text{steady state}}\;\Rightarrow\;\underbrace{k_{in}}_{\text{생산}}=\underbrace{k_{out}\,M}_{\text{소실}}\;\xrightarrow[R=M]{\text{steady state 가정}}\;\overbrace{k_{in}=k_{out}\,R}^{\text{moderator-free 골격으로 환원}}\;\Rightarrow\;\underbrace{R_0=k_{in}/k_{out}}_{\text{Eq 3:76 재현}}$$
+    </div></div>
+    <div class="dark-card">
+      <p>이 한 줄이 <strong>tolerance/moderator 모델</strong>과 <strong>단순 turnover 골격</strong> 사이의 다리임. \(R=M\)이 동적 정상상태에서 성립한다는 사실 덕분에 복잡한 moderator system이 익숙한 \(R_0=k_{in}/k_{out}\)로 무너지고, 거꾸로 — baseline drift나 IgG saturable protection 같은 현상은 이 가정이 깨질 때 등장함. <em>derivation의 이 한 줄을 놓치면 두 세계가 따로 놀게 됨.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 9 — §3 I(C)/S(C) ===== -->
+<section class="slide has-formula" data-sec="3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3</span>
+    <h1 class="slide-title">약물이 들어갈 자리는 딱 4개 — 4-Model Taxonomy</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body">
+    <p>Baseline이 잡혔으니 약물이 그 균형을 어디서 깨는지 봄. <strong>반응 방향(올라가냐 내려가냐)만 보고 모델 이름을 붙이면 안 됨.</strong> 약물 함수가 <strong>input에 붙는지 output에 붙는지</strong>가 진짜 분류 기준임. 가역적 turnover에서 약물이 작용할 자리는 4개뿐 — 수도꼭지 잠그기·열기, 배수구 막기·열기. 잠그는 함수 \(I(C)\)와 여는 함수 \(S(C)\)는:</p>
+    <div class="grid2">
+      <div class="formula-card-wrap"><div class="formula-card">
+        $$\underbrace{I(C)}_{\text{남은 activity}}=1-\underbrace{\frac{\overbrace{I_{max}\,C^n}^{\text{억제구동}}}{\underbrace{IC_{50}^n}_{\text{절반농도}}+\underbrace{C^n}_{\text{농도항}}}}_{\text{억제분율}},\quad 0\le I_{max}\le 1$$
+        <div class="fc-src">[G&amp;W Eq 3:77; p.237]</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card">
+        $$\underbrace{S(C)}_{\text{촉진배율}}=1+\underbrace{\frac{\overbrace{E_{max}\,C^n}^{\text{촉진구동}}}{\underbrace{EC_{50}^n}_{\text{절반농도}}+\underbrace{C^n}_{\text{농도항}}}}_{\text{촉진분율}}$$
+        <div class="fc-src">[G&amp;W Eq 3:78; p.237]</div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 10 — §3 4-model table ===== -->
+<section class="slide" data-sec="3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3</span>
+    <h1 class="slide-title">4개 모델 — 한 표로 외움</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <div class="tbl-wrap dense">
+      <table>
+        <thead><tr><th>Model</th><th>ODE</th><th>작용 자리</th><th>\(t_{ss}\) 거동</th><th>\(R_{ss}\)</th><th>최대 \(\Delta R\)</th><th>임상 prototype</th></tr></thead>
+        <tbody>
+          <tr><td><strong>I</strong> 생산 억제</td><td>\(\dot R = k_{in}I(C) - k_{out}R\)</td><td>수도꼭지 잠금</td><td>\(k_{out}\) 지배, 용량 독립</td><td>\(R_0\,I(C_{ss})\)</td><td>\(R_0\,I_{max}\)</td><td><strong>Warfarin</strong> (vit K cycle 억제) <span class="chip">[G&amp;W PD4 pp.742–752]</span></td></tr>
+          <tr><td><strong>II</strong> 소실 억제</td><td>\(\dot R = k_{in} - k_{out}R\,I(C)\)</td><td>배수구 막음</td><td>eff. \(k_{out}\!\cdot\!I(C)\), <strong>용량 의존</strong></td><td>\(R_0/I(C_{ss})\)</td><td>\(R_0\,I_{max}/(1\!-\!I_{max})\)</td><td><strong>Furosemide</strong>-type retention <span class="chip">[G&amp;W p.238]</span></td></tr>
+          <tr><td><strong>III</strong> 생산 촉진</td><td>\(\dot R = k_{in}S(C) - k_{out}R\)</td><td>수도꼭지 더 엶</td><td>\(k_{out}\) 지배, 용량 독립</td><td>\(R_0\,S(C_{ss})\)</td><td>\(R_0\,E_{max}\)</td><td><strong>Erythropoietin</strong> <span class="chip">[G&amp;W p.238]</span></td></tr>
+          <tr><td><strong>IV</strong> 소실 촉진</td><td>\(\dot R = k_{in} - k_{out}R\,S(C)\)</td><td>배수구 더 엶</td><td>eff. \(k_{out}\!\cdot\!S(C)\), <strong>용량 의존</strong></td><td>\(R_0/S(C_{ss})\)</td><td>\(R_0\,E_{max}/(1\!+\!E_{max})\)</td><td>CB1 inverse agonist <span class="chip">[G&amp;W p.238]</span>; PD7 compound C <span class="chip">[G&amp;W pp.764–769]</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 11 — §3 ODE aligned + 함정 ===== -->
+<section class="slide has-formula" data-sec="3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3</span>
+    <h1 class="slide-title">ODE를 한자리에 모으면 패턴이 보인다</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="formula-card-wrap"><div class="formula-card">
+        $$\begin{aligned}
+        \text{Model I: }&\frac{dR}{dt}=\overbrace{k_{in}I(C)}^{\text{input 억제}}-\underbrace{k_{out}R}_{\text{loss}}\\
+        \text{Model II: }&\frac{dR}{dt}=\underbrace{k_{in}}_{\text{input 유지}}-\overbrace{k_{out}RI(C)}^{\text{loss 억제}}\\
+        \text{Model III: }&\frac{dR}{dt}=\overbrace{k_{in}S(C)}^{\text{input 촉진}}-\underbrace{k_{out}R}_{\text{loss}}\\
+        \text{Model IV: }&\frac{dR}{dt}=\underbrace{k_{in}}_{\text{input 유지}}-\overbrace{k_{out}RS(C)}^{\text{loss 촉진}}
+        \end{aligned}$$
+      </div></div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="callout warn">
+        <span class="co-label">⚠️ 반응 방향만으로 모델을 결정하지 말 것</span>
+        <p>"반응이 떨어지니까 Model I (생산 억제)지" — 틀림. <strong>Model IV (loss 촉진)도 baseline 아래로 갈 수 있음.</strong> 반응이 떨어진다고 input 차단이 확정되는 게 아님. <strong>시간 경과 패턴 + \(t_{ss}\)의 용량 의존성</strong>을 같이 봐야 함.</p>
+      </div>
+      <p>핵심은 약물 함수 \(I(C)\)·\(S(C)\)가 <strong>input 항</strong>(생산)에 곱하느냐 <strong>loss 항</strong>(소실)에 곱하느냐임. 같은 자리에 정렬하면 4개 모델이 input-억제 / loss-억제 / input-촉진 / loss-촉진의 2×2 격자로 정리됨.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 12 — §3 Model II 발산 ===== -->
+<section class="slide has-formula" data-sec="3">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3</span>
+    <h1 class="slide-title">Model II의 숨겨진 폭탄 — \(I_{max}\to1\) 발산</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>Model II의 최대 변화량은 분모에 \((1-I_{max})\)가 있음. \(I_{max}\)가 1에 가까워지면 <strong>무한대로 발산함:</strong></p>
+      <div class="formula-card-wrap"><div class="formula-card">
+        $$\underbrace{\Delta R_{M2,\text{max}}}_{\text{M2 최대 변화}}=\frac{\underbrace{R_0}_{\text{기저값}}\,\overbrace{I_{max}}^{\to\,1}}{\underbrace{1-I_{max}}_{\to\,0}}\;\xrightarrow[I_{max}\to 1]{}\;\overbrace{\infty}^{\text{발산}}$$
+        <div class="fc-src">[G&amp;W p.241]</div>
+      </div></div>
+      <p>수학적 호기심이 아니라 임상적으로 <strong>소실 경로가 완전히 차단되면 \(k_{in}\)이 계속 들어오는데 빠질 길이 없어서 pool이 무한히 쌓이는 거임.</strong> 욕조 배수구를 완전히 막으면 결국 흘러넘침.</p>
+    </div>
+    <div class="col">
+      <div class="card">
+        <p>→ 그래서 PPI에 의한 위 \(H^+\) 축적, loop diuretic 차단 시 체액 정체, COX 억제 시 prostanoid 일부 측면의 축적 등 <strong>고용량 saturation/toxicity의 구조적 이유</strong>가 여기 있음.</p>
+        <p style="margin-top:9px;"><strong>Model IV는 반대로 \(E_{max}\to\infty\)여도 \(R_0\)에서 멈춤</strong> — \(\Delta R_{M4,\text{max}} = R_0\,E_{max}/(1+E_{max})\)의 분모가 같이 자라기 때문임. 두 모델의 경계 거동이 <strong>비대칭</strong>이라는 것이 핵심 차이임.</p>
+      </div>
+      <div class="callout">
+        <span class="co-label">🔑 실무 신호</span>
+        <p>모델 적합 중 \(I_{max}\)가 1에 매우 가깝게 수렴하면 ⓐ misspecification 신호이거나 ⓑ saturation 임계 진입 신호임. 어느 쪽이든 cross-check 필수.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 13 — §4 t_ss / peak shift ===== -->
+<section class="slide" data-sec="4">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4</span>
+    <h1 class="slide-title">시간 신호로 4개 칸 가려내기 — \(t_{ss}\)와 peak shift</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>관찰</th><th>1차 가설</th><th>주의</th></tr></thead>
+          <tbody>
+            <tr><td>용량 간 <strong>유사한</strong> \(t_{ss}\)</td><td>생산 측 (Model I or III)</td><td>PK rate-limiting일 수도</td></tr>
+            <tr><td>용량 따라 \(t_{ss}\) <strong>단축/연장</strong></td><td>소실 측 (Model II or IV)</td><td>PK가 PD clock보다 빠를 때만</td></tr>
+            <tr><td>용량 증가에도 peak shift 없음</td><td><strong>Effect cpt 증명 아님</strong></td><td>PD9가 이 과대해석을 직접 경고 <span class="chip">[G&amp;W pp.778–783]</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout teal">
+        <span class="co-label">📌 보조 도구 — \(t_{ss}\)는 금속탐지기일 뿐</span>
+        <p>경고음이 울리면 어디를 더 볼지 알려주지만 물건 정체는 결정 못 함. 넓은 dose range(좁은 범위 숨김 해소) · 반복 투여/washout(system recovery clock) · mechanism prior(production vs loss) · PK clock 확인 중 <strong>최소 하나</strong>가 있어야 함.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3 class="sub-title">학생이 가장 자주 잘못 하는 것 — Early slope에서 \(k_{out}\) 외삽</h3>
+        <p style="margin-top:6px;">PD7 Fig 7.1: 6,400&nbsp;unit에서 \(k_{out}\approx0.6\;h^{-1}\), 160,000&nbsp;unit에서 \(k_{out}\approx1.6\;h^{-1}\). 같은 약, 다른 용량인데 system 파라미터가 단조 변함. <strong>이건 system biology가 아니라 misspecification artifact임.</strong> <span class="chip">[G&amp;W p.251]</span></p>
+        <p style="margin-top:8px;">Models I/III에서는 1차 소실 항이 \(k_{out}\cdot R\)로 유지되니 시간 상수가 \(1/k_{out}\)임. 그런데 Models II/IV에서는 약물이 loss 항을 건드리니 effective time constant가 농도에 따라 달라짐. 이 모델을 I/III처럼 다루며 초기 기울기를 그대로 \(k_{out}\)으로 읽으면 용량별로 다른 답이 나옴.</p>
+      </div>
+      <div class="callout">
+        <span class="co-label">🔑 Mirror-slope 시그너처</span>
+        <p>system 파라미터가 용량에 따라 단조 변하면 biology가 아니라 misspecification임.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 14 — §5 Pool/Precursor ===== -->
+<section class="slide has-formula" data-sec="5">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5</span>
+    <h1 class="slide-title">Cascade가 들어오면 — Pool/Precursor 확장</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>지금까지가 <strong>단일 stage</strong> turnover였음. 실제 생물학에서는 약물이 건드리는 자리와 측정 반응 사이에 <strong>상류 pool이 하나 더</strong> 있는 경우가 많음 — corticosteroid가 mRNA를 만들고 그게 enzyme을 만드는 식. <span class="chip">[Sharma &amp; Jusko 1998]</span></p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dP}{dt}}_{\text{precursor 변화}}=\underbrace{k_{in}}_{\text{0차 생산}}-\overbrace{\underbrace{k_p}_{\text{전환 clock}}\,\underbrace{P}_{\text{precursor pool}}}^{\text{precursor 소실 = R로 전환}}$$
+        <div class="fc-src">[Sharma &amp; Jusko 1998 Eq 1]</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dR}{dt}}_{\text{response 변화}}=\overbrace{\underbrace{k_p}_{\text{전환 clock}}\,\underbrace{P}_{\text{precursor}}}^{\text{R로 들어오는 양}}-\underbrace{k_{out}\,R}_{\text{response 소실}}$$
+        <div class="fc-src">[Sharma &amp; Jusko 1998 Eq 2]</div>
+      </div></div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{P_0}_{\text{precursor 기저}}=\frac{k_{in}}{k_p},\qquad\underbrace{R_0}_{\text{반응 기저}}=\frac{k_{in}}{k_{out}}$$
+      </div></div>
+      <div class="callout">
+        <span class="co-label">🔑 핵심</span>
+        <p>response의 기저값은 single-stage와 <strong>같지만</strong>, 거기에 도달하는 동역학은 <strong>두 시계 \(k_p\)와 \(k_{out}\)의 cascade임.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 15 — §5 Models V-VIII ===== -->
+<section class="slide" data-sec="5">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5</span>
+    <h1 class="slide-title">약물 작용 자리 확장 — 관행적 Models V–VIII</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <div class="tbl-wrap dense">
+      <table>
+        <thead><tr><th>Model (관행)</th><th>약물 작용 자리</th><th>ODE 변화</th><th>사례</th></tr></thead>
+        <tbody>
+          <tr><td><strong>V</strong></td><td>precursor 생산 억제</td><td>\(dP/dt = k_{in}\cdot I(C) - k_p P\)</td><td>corticosteroid → TAT mRNA</td></tr>
+          <tr><td><strong>VI</strong></td><td>precursor 생산 촉진</td><td>\(dP/dt = k_{in}\cdot S(C) - k_p P\)</td><td>EPO precursor 자극</td></tr>
+          <tr><td><strong>VII</strong></td><td>precursor → response 전환 억제</td><td>\(dR/dt = k_p P\cdot I(C) - k_{out} R\)</td><td>효소 활성화 차단</td></tr>
+          <tr><td><strong>VIII</strong></td><td>precursor → response 전환 촉진</td><td>\(dR/dt = k_p P\cdot S(C) - k_{out} R\)</td><td>maturation 가속</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout teal">
+      <span class="co-label">📖 명명법 출처 정정</span>
+      <p>Sharma &amp; Jusko (1998, <em>Br J Clin Pharmacol</em> 45:229–239) <strong>원 논문은 'Model V/VI/VII/VIII' 번호를 명시적으로 부여하지 않음.</strong> "indirect response models with precursor compartments"로 서술됨. <strong>V–VIII 번호는 후속 표준 문헌(Jusko 그룹 후속 review, Mager-Wyska-Jusko 교과서 등)의 관행임.</strong> 학습자가 원 논문에서 'Model V'를 찾으면 그 표기가 없으니 헷갈리지 않게 해둠.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 16 — §5 single-stage 차이 ===== -->
+<section class="slide" data-sec="5">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5</span>
+    <h1 class="slide-title">Single-stage와의 본질적 차이</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>비교 기준</th><th>Single-stage Model I</th><th>Pool/Precursor Model V</th></tr></thead>
+          <tbody>
+            <tr><td>첫 효과까지</td><td>\(\sim 1/k_{out}\)</td><td>\(\sim 1/k_p + 1/k_{out}\) (cascade lag)</td></tr>
+            <tr><td>Onset 곡선 모양</td><td>exponential approach</td><td><strong>sigmoid</strong> (초기 평탄 구간)</td></tr>
+            <tr><td>중단 후 회복</td><td>\(1/k_{out}\) 단일 clock</td><td>두 clock의 deconvolution 필요</td></tr>
+            <tr><td>\(k_{out}\) 단독 추정</td><td>종말 회복 기울기로 가능</td><td>\(k_p\)와 함께 안 하면 cascade depth 흡수</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col">
+      <div class="callout">
+        <span class="co-label">🔑 Sigmoid onset 시그너처</span>
+        <p>Pool/precursor 약물은 투약 직후 즉시 효과가 안 나오고 <strong>lag-then-rise</strong> 패턴을 보임. 이게 보이는데 single-stage Model I로 적합하면 추정된 \(k_{out}\)이 biology가 아니라 cascade depth(\(1/k_p\))의 일부를 흡수함. → "측정된 \(k_{out}\)이 알려진 enzyme half-life보다 작게 나온다"가 cascade misspecification 시그너처임.</p>
+      </div>
+      <div class="callout amber">
+        <span class="co-label">💼 실무 인사이트</span>
+        <p>Corticosteroid 약리(prednisolone → tyrosine aminotransferase, methylprednisolone → lymphocyte trafficking)의 <strong>표준 PD 골격이 바로 Pool/Precursor임.</strong> Single-stage Model I로 적합하면 effect onset이 너무 빠르게 나옴.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 17 — §6 Emax 의미 ===== -->
+<section class="slide has-formula" data-sec="6">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6</span>
+    <h1 class="slide-title">\(I_{max}/E_{max}\)는 같은 이름이지만 같은 뜻이 아님</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>\(E_{max} = 0.65\)라는 숫자를 봤다 치자. 무슨 뜻인지 모델 구조 없이는 답이 안 나옴 — <strong>세 가지 가능성</strong>이 있음. <span class="chip">[G&amp;W p.246]</span></p>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>모델 형태</th><th>\(E_{max}\)의 의미</th></tr></thead>
+          <tbody>
+            <tr><td>Direct additive</td><td>response 단위의 <strong>절대 거리</strong></td></tr>
+            <tr><td>Direct multiplier</td><td><strong>무차원 배율</strong></td></tr>
+            <tr><td>Turnover Model III</td><td><strong>system turnover를 통한 배율</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>같은 "높이 10"이라도 <strong>센티미터인지 층수인지</strong> 모르면 비교 불가. \(E_{max}\)도 어떤 축 위의 거리인지 먼저 봐야 함.</p>
+      <div class="callout">
+        <span class="co-label">🔑 비교 규칙</span>
+        <p>모델 / 연구 / 화합물 간 효과 파라미터 비교는 항상 \(\Delta R/R_0\)로 변환한 뒤 함. raw \(E_{max}\) 숫자 비교는 거의 항상 무의미함.</p>
+      </div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{E}_{\text{관찰효과}}=\underbrace{E_0}_{\text{기저효과}}+\underbrace{\frac{\overbrace{E_{max}C^n}^{\text{효과구동}}}{EC_{50}^n+C^n}}_{\text{절대효과}}$$
+        <div class="fc-note">Direct additive</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{R_{ss}}_{\text{약물 정상상태}}=\underbrace{R_0}_{\text{system 기저값}}\left(1+\underbrace{\frac{\overbrace{E_{max}C^n}^{\text{input 배율}}}{EC_{50}^n+C^n}}_{\text{turnover 효과}}\right)$$
+        <div class="fc-note">Turnover Model III — system 배율</div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 18 — §6 선형PK ≠ 선형PD ===== -->
+<section class="slide" data-sec="6">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6</span>
+    <h1 class="slide-title">선형 PK가 선형 PD를 의미하지 않음</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body center">
+    <div class="card">
+      <div class="card-label">Methylprednisolone — 부신피질호르몬; i.v. phosphate-prodrug</div>
+      <p>16 / 31 / 63 / 125 / 250 / 500 / 1000&nbsp;mg를 줌. 혈장 AUC는 용량에 거의 비례적으로 증가하는데 <strong>lymphocyte 반응은 비례하지 않음</strong> — 고용량에서 PD plateau에 가까워지기 때문임. <span class="chip">[R&amp;T pp.256–258]</span></p>
+    </div>
+    <div class="dark-card">
+      <p>R&amp;T 본문(p.256)이 단호하게 못박아둠 — <em>"Dose linearity in pharmacokinetics does not result in dose linearity in pharmacodynamics. That is almost never the case."</em></p>
+    </div>
+    <div class="grid2 tight">
+      <div class="card tight">
+        <p><strong>Rosuvastatin</strong>(HMG-CoA 환원효소 억제제) OATP1B1 polymorphism은 plasma AUC를 substantially 변화시키지만 cholesterol synthesis 반응은 modestly 변함(Fig 8-28/8-29) — <strong>전신 노출 ≠ 작용 부위 노출</strong>의 보조 사례. Bioequivalence가 효과 동등성을 보장하지 않는 메커니즘으로 자주 인용됨. <span class="chip">[R&amp;T pp.258–259]</span></p>
+      </div>
+      <div class="col" style="gap:11px;">
+        <div class="callout warn">
+          <span class="co-label">⚠️ 결론 쓰기 전에</span>
+          <p>"용량 비례적 노출 → 용량 비례적 반응"이라는 결론을 쓰기 전에 <strong>Hill curve의 어느 영역에 있는지 먼저 확인</strong>함.</p>
+        </div>
+        <div class="callout teal">
+          <span class="co-label">📖 G&amp;W 5e p.246, Fig 3.40</span>
+          <p>같은 파라미터 이름이 모델 계열마다 같은 수직 반응 거리를 의미하지 않는다는 것을 보여줌.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 19 — §7 graphical estimation ===== -->
+<section class="slide" data-sec="7">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part III — Estimation Discipline</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">Graphical Initial Estimation — 사실은 기전적 감사</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>학생들이 graphical estimation을 "NONMEM 이전의 향수"라며 무시함. 틀림. <strong>이건 첫 번째 mechanism audit임.</strong> 초기값을 단순 guess로 두면 optimizer가 비식별성 골짜기에서 가짜 수렴을 내놔도 알아채기 어려움. <span class="chip">[G&amp;W pp.247–251]</span></p>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>단계</th><th>어디서 읽는가</th><th>산출물</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>pre-dose baseline</td><td>\(R_0\)</td></tr>
+            <tr><td>2</td><td>종말 회복 곡선의 log-linear 기울기</td><td>\(k_{out}\)</td></tr>
+            <tr><td>3</td><td>1번 × 2번</td><td>\(k_{in} = R_0 \cdot k_{out}\)</td></tr>
+            <tr><td>4</td><td>2–3개 용량 수준의 정상상태/peak 반응</td><td>\(IC_{50}/EC_{50}\), \(I_{max}/E_{max}\) 자릿수</td></tr>
+            <tr><td>5</td><td>위 값이 sanity 통과 후</td><td>NONMEM 추정 시작</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="card">
+        <div class="card-label">PD5 사례</div>
+        <p>Compound A의 PK가 먼저 잡힌 상태(\(V=40\;\text{L}\), \(K=0.9\;h^{-1}\))에서 4000/16000/80000 unit의 6시간 infusion 데이터를 받음. Pre-infusion baseline에서 \(R_0\)를 읽고, post-infusion 회복 곡선 semi-log plot 종말 기울기로 \(k_{out}\approx0.43\;h^{-1}\)을 얻고, \(k_{in}=R_0\cdot k_{out}\)로 production rate 출발점을 잡음. 세 용량 plateau에서 \(IC_{50}\approx95\), \(I_{max}\approx0.65\) 자릿수까지 잡은 뒤 NONMEM 들어감(Table 5.1).</p>
+      </div>
+      <div class="callout warn">
+        <span class="co-label">⚠️ 자릿수 점검</span>
+        <p>적합값이 graphical 자릿수에서 한 order 이상 벗어나면 <strong>비식별성/misspecification 작동 중</strong> 신호임. Random effects 확장 전에 출발점의 생물학부터 수정함.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 20 — §7 blocking dose + DRT ===== -->
+<section class="slide has-formula" data-sec="7">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">Blocking Dose — Warfarin의 임상 등가 방법</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p><strong>Warfarin</strong> blocking-dose 분석은 \(k_{out}\)을 직접 뽑는 임상적 등가 방법임. 합성이 거의 완전히 차단되면 prothrombin complex activity가:</p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dA}{dt}}_{\text{활성 변화}}=-\underbrace{k_t}_{\text{소실 clock}}\,\underbrace{A}_{\text{잔여 활성}}$$
+        <div class="fc-src">[R&amp;T Eq 8-6; R&amp;T pp.244–246]</div>
+      </div></div>
+      <p>비차단 구간에서는 합성 속도를 재구성함:</p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{R_{syn}}_{\text{합성속도}}=\underbrace{\frac{A_2-A_1}{\Delta t}}_{\text{관찰변화}}+\overbrace{\underbrace{k_t}_{\text{소실 clock}}\frac{\underbrace{A_1+A_2}_{\text{평균 활성}}}{2}}^{\text{소실보정}}$$
+        <div class="fc-src">[R&amp;T Eq 8-7; R&amp;T p.247]</div>
+      </div></div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="card">
+        <p>이게 hysteretic 반응-시간 기록을 <strong>억제-농도 관계로 변환</strong>하는 방법임. <strong>공장 입구를 거의 완전히 막아놓고 창고가 비는 속도를 재는 실험</strong>과 같음 — 들어오는 물량을 잠그면 배출 시계가 드러남. → 그래서 warfarin이 <strong>합성 억제(Model I) 기전의 임상 prototype</strong>으로 자주 인용됨. <span class="chip">[R&amp;T pp.244–247]</span></p>
+      </div>
+      <div class="callout teal">
+        <span class="co-label">📖 DRT (Dose-Response-Time) — 농도 데이터가 없을 때</span>
+        <p>DRT는 농도 데이터가 없어도 baseline, slope, potency, maximal effect를 추론함. 다만 full PK/PD 모델링보다 거친 역문제임. <strong>노출 데이터가 있으면 DRT로 대체하지 말 것</strong> — 후퇴 대안 또는 교육적 가교로만 둠. <span class="chip">[G&amp;W pp.272–275]</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 21 — §8 비가역 kill ===== -->
+<section class="slide has-formula" data-sec="8">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part IV — Turnover로는 안 되는 경우들</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 8</span>
+    <h1 class="slide-title">drug=0인데 effect≠0 — 비가역 작용과 표적 소비</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>가역적 turnover에서는 system이 반응을 계속 생산·제거하니 baseline으로 돌아옴. 그런데 <strong>약물 노출 기간 동안 반응 단위·표적·세포가 영구 제거된 경우</strong>는 다름. 약물이 사라져도 효과가 남음. <span class="chip">[G&amp;W pp.256–260; R&amp;T pp.251–252]</span></p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dR}{dt}}_{\text{생존 변화}}=-\overbrace{\underbrace{K_{kill}}_{\text{kill potency}}\,\underbrace{C}_{\text{노출}}\,\underbrace{R}_{\text{잔여 pool}}}^{\text{비가역 kill}}$$
+        <div class="fc-src">[G&amp;W Eq 3:110; p.257]</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{SF}_{\text{생존분율}}=\exp\left(-\overbrace{\underbrace{K_{kill}}_{\text{kill potency}}\cdot\underbrace{AUC}_{\text{누적노출}}}^{\text{누적 kill}}\right)$$
+        <div class="fc-src">[G&amp;W Eq 3:112; p.257]</div>
+      </div></div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="callout warn">
+        <span class="co-label">⚠️ \(K_{kill}\)은 2차 약리작용 상수</span>
+        <p><strong>1차 PK 소실 상수가 아님.</strong> 이 자료에서 \(K_{kill}/k_k\)는 PD killing이고 \(K_{elim}\)은 PK elimination임. 비가역 kill은 <strong>스위치를 끄는 게 아니라 전구를 빼내는 것</strong>과 같음 — 전기가 다시 들어와도 새 전구를 끼우기 전까지 빛은 안 돌아옴.</p>
+      </div>
+      <div class="callout">
+        <span class="co-label">🔑 Duration 질문 규칙</span>
+        <p><strong>"drug=0이면 effect=0인가?"</strong>의 답이 NO이면 plasma PK 외에 <strong>target replacement clock을 별도 모델링</strong>함.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 22 — §8 prototype + Friberg ODEs ===== -->
+<section class="slide has-formula" data-sec="8">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8</span>
+    <h1 class="slide-title">임상 prototype 3개 + Friberg-Karlsson 골조</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body">
+    <div class="tbl-wrap dense">
+      <table>
+        <thead><tr><th>약물</th><th>PK</th><th>PD</th><th>duration 결정자</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Aspirin</strong> 650&nbsp;mg 경구 (COX-1 비가역 acetylation)</td><td>짧은 혈장 반감기</td><td>thromboxane B₂ 억제 <strong>수일 지속</strong></td><td>혈소판 표적 대체 시계 <span class="chip">[R&amp;T p.251]</span></td></tr>
+          <tr><td><strong>Omeprazole</strong> 40&nbsp;mg 경구 (H⁺/K⁺-ATPase 비가역 결합)</td><td>혈장 반감기 &lt;1&nbsp;h</td><td>산분비 억제 <strong>수일 지속</strong></td><td>proton pump regeneration <span class="chip">[R&amp;T p.252]</span></td></tr>
+          <tr><td><strong>Paclitaxel</strong> i.v. (taxane; 미세소관 안정화)</td><td>혈장 농도 빠르게 감소</td><td>백혈구 회복 <strong>약 3주</strong></td><td>leukocyte regrowth, Fig 8-22 <span class="chip">[R&amp;T pp.253–254]</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>항암제 myelosuppression의 <strong>현대 표준 골격</strong>은 한 단계 더 정교함. Friberg-Karlsson(2002)은 <strong>이 세션의 거의 모든 도구를 한 자리에 결합</strong> — 비가역 cell kill + transit chain maturation + feedback rebound + 약물 농도 함수. 구조: 5개 compartment cascade — 증식 pool \(Prol\) → transit 1 → 2 → 3 → 순환 pool \(Circ\). 약물은 \(Prol\)에서 cell을 죽이고, \(Circ\) 감소가 다시 \(Prol\) 증식을 자극(feedback)함. <span class="chip">[Friberg et al., J Clin Oncol 2002]</span></p>
+    <div class="grid2 tight">
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dProl}{dt}}_{\text{증식 변화}}=\overbrace{\underbrace{k_{prol}\,Prol}_{\text{1차 증식}}\,\underbrace{\bigl[1-E_{drug}(C_p)\bigr]}_{\text{약물 kill 보정}}\,\underbrace{\left(\tfrac{Circ_0}{Circ}\right)^{\gamma}}_{\text{feedback 보정}}}^{\text{net 증식 (drug × feedback)}}-\underbrace{k_{tr}\,Prol}_{\text{maturation 유출}}$$
+      </div></div>
+      <div class="col" style="gap:12px;">
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{\frac{dT_i}{dt}}_{\text{transit }i\text{ 변화}}=\underbrace{k_{tr}\,T_{i-1}}_{\text{이전 단계 유입}}-\underbrace{k_{tr}\,T_i}_{\text{다음 단계 유출}}$$
+          <div class="fc-note">\((i=1,2,3;\;T_0\equiv Prol)\)</div>
+        </div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">
+          $$\underbrace{\frac{dCirc}{dt}}_{\text{순환 cell 변화}}=\underbrace{k_{tr}\,T_3}_{\text{성숙 cell 유입}}-\underbrace{k_{circ}\,Circ}_{\text{1차 소실}}$$
+          <div class="fc-src">[Friberg &amp; Karlsson 2002 Eq 1–3]</div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 23 — §8 Friberg 제약 + integration ===== -->
+<section class="slide has-formula" data-sec="8">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8</span>
+    <h1 class="slide-title">모델 구조 제약 — 절대로 임의 고정 아님</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body">
+    <div class="formula-card-wrap"><div class="formula-card compact">
+      $$\overbrace{\underbrace{k_{prol}}_{\text{증식}}=\underbrace{k_{tr,1}}_{\text{transit 1}}=\underbrace{k_{tr,2}}_{\text{transit 2}}=\underbrace{k_{tr,3}}_{\text{transit 3}}=\underbrace{k_{circ}}_{\text{순환 소실}}\equiv k_{tr}}^{\text{모델 정의에 의한 5중 제약}}\;\Longrightarrow\;\underbrace{MTT}_{\text{mean transit time}}=\underbrace{\frac{n+1}{k_{tr}}=\frac{4}{k_{tr}}}_{n=3\;\text{transit stages}}$$
+    </div></div>
+    <div class="grid2 tight">
+      <div class="col">
+        <div class="callout warn">
+          <span class="co-label">⚠️ 학생이 오해하는 지점</span>
+          <p>이 5중 제약이 약물 간 system parameter 일관성(\(MTT\), \(\gamma\))의 정량적 기반임. "흔한 관행"으로 오해해 \(k_{prol}, k_{tr}, k_{circ}\)를 독립 추정하면 <strong>심각한 비식별성과 과대추정</strong>에 빠짐. <strong>원 논문 그대로 적용할 때만 약물 간 일관성이 회수됨.</strong></p>
+        </div>
+        <div class="callout amber">
+          <span class="co-label">💼 임상적 활용</span>
+          <p>단일 fit으로 호중구 감소의 <strong>nadir 시점·깊이·회복 시점</strong>을 모두 예측, dose-intensity/density 결정의 정량 근거. Docetaxel·paclitaxel·etoposide·5-FU·vinflunine에서 \(\gamma\), \(MTT\) 약물 간 일관 — system parameter는 약물 무관, drug parameter만 차이.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="dark-card tight">
+          <div class="card-label">이 한 모델에 세션 전체 도구가 모인다</div>
+          <ul class="tight" style="margin:0;">
+            <li><strong>§2 Turnover</strong> → \(Circ_0\)가 baseline pool, feedback이 \(k_{out}\) 고정 가정 위반</li>
+            <li><strong>§3 4-Model</strong> → 약물이 증식 항에 곱 = 확장된 VII/VIII</li>
+            <li><strong>§5 Pool/Precursor</strong> → 증식→transit→순환 3단계 cascade</li>
+            <li><strong>§8 비가역 kill</strong> → 약물이 \(Prol\)에서 cell 비가역 사멸</li>
+            <li><strong>§10 PK vs PD clock</strong> → paclitaxel PK 짧지만 \(MTT\approx7\)일이 회복 지배</li>
+          </ul>
+        </div>
+        <div class="callout">
+          <span class="co-label">🔑 임상 시그너처 &amp; 적용 범위</span>
+          <p>호중구 표준: \(MTT\approx100\)–\(140\)h(약 4–6일), \(\gamma\approx0.1\)–\(0.3\). 크게 벗어나면 ⓐ동반약물 ⓑ골수 기능 이상 ⓒmisspecification 의심. <strong>세포독성 항암제 전용</strong> — 표적치료제·면역항암제는 변형 필요(예: lenalidomide).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 24 — §9 two structures ===== -->
+<section class="slide has-formula" data-sec="9">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part V — APEX: 같은 곡선, 두 가지 인과 해석</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 9</span>
+    <h1 class="slide-title">Turnover vs Effect Compartment — 데이터로 결판 안 남</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p>이번 세션의 정점. 같은 곡선을 만드는 <strong>두 가지 구조</strong>가 있음. 두 모델은 <strong>같은 그림자를 만드는 두 물체</strong>임 — 그림자 모양만 보고 물체를 결정하는 건 위험함. 조명 방향을 바꾸거나 다른 각도에서 봐야 정체가 드러남.</p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dR}{dt}}_{\text{변화율}}=\overbrace{\underbrace{k_{in}}_{\text{생산}}\underbrace{S(C)}_{\text{촉진함수}}}^{\text{생산 촉진}}-\overbrace{\underbrace{k_{out}}_{\text{소실 clock}}\underbrace{R}_{\text{response pool}}}^{\text{pool 소실}}$$
+        <div class="fc-note">Turnover 모델</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\frac{dC_e}{dt}}_{\text{effect-site 변화}}=\underbrace{k_{e0}}_{\text{평형 clock}}\left(\underbrace{C-C_e}_{\text{농도차}}\right),\quad\underbrace{R}_{\text{반응}}=\underbrace{f(C_e)}_{\text{effect-site 함수}}$$
+        <div class="fc-src">Effect compartment · [R&amp;T pp.244–246]</div>
+      </div></div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>Metric</th><th>Turnover</th><th>Effect cpt</th><th>Δ</th></tr></thead>
+          <tbody>
+            <tr><td>WRSS</td><td>15,516</td><td>15,518</td><td>2</td></tr>
+            <tr><td>AIC</td><td>1,041</td><td>1,040</td><td>−1</td></tr>
+            <tr><td>시간 상수</td><td>\(k_{out}=5.6\)</td><td>\(k_{e0}=5.6\)</td><td>0</td></tr>
+            <tr><td>Half-doubling</td><td>\(EC_{50}=1{,}633\)</td><td>\(\sim1{,}623\)</td><td>&lt;1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="co-label">⚠️ PD6의 정량 시그너처</span>
+        <p>\(\Delta WRSS = 2\), \(\Delta AIC = -1\)은 <strong>사실상 동치</strong>임. "둘 중 하나가 더 매끄럽다"가 아니라 <strong>"데이터가 둘을 못 가른다"는 신호임.</strong> <span class="chip">[G&amp;W pp.758–763]</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 25 — §9 함정 + 처방 ===== -->
+<section class="slide" data-sec="9">
+  <div class="slide-header">
+    <span class="sec-badge">§ 9</span>
+    <h1 class="slide-title">학생이 100% 빠지는 함정과 정통 처방</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="callout warn">
+        <span class="co-label">⚠️ 나비효과 — \(\Delta AIC=-1\)만 보고 결정하면</span>
+        <p>① AIC 미세차로 구조 결정 → ② \(k_{e0}\) 또는 \(k_{out}\)에 지연 원인 잘못 배정 → ③ 새 dose range/반복 투여 때 onset/offset 예측 실패 → ④ 규제 단계 "대안 구조 평가·sensitivity 누락" deficiency.</p>
+      </div>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>증거</th><th>Turnover 지지</th><th>Effect cpt 지지</th></tr></thead>
+          <tbody>
+            <tr><td>반응 변수</td><td>내인성 매개물질·바이오마커·세포 수·응고인자·위산 pH</td><td>약물 분포 지연이 원인</td></tr>
+            <tr><td>Dose range</td><td>비선형 turnover 드러낼 만큼 넓게</td><td>안정 \(EC_{50}\)·타당 \(k_{e0}\)로 hysteresis 해소</td></tr>
+            <tr><td>교란</td><td>반복 투여/washout으로 회복 시간 노출</td><td>biophase 평형으로 onset/offset 설명</td></tr>
+            <tr><td>Mechanism prior</td><td>알려진 합성/소실 과정</td><td>알려진 조직 분포 지연</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="callout amber">
+        <span class="co-label">💼 규제 제출 인사이트</span>
+        <p>두 인과 구조가 똑같이 잘 맞을 때 <strong>규율 있는 접근</strong>은 "어느 모델이 맞다"고 결정하는 게 아니라 <strong>생물학적 가정을 문서화하고, 두 구조를 가를 설계 요소를 명시</strong>하는 것. 방어 가능성은 곡선의 매끄러움이 아니라 mechanism + design support에서 나옴.</p>
+      </div>
+      <div class="callout teal">
+        <span class="co-label">📌 비식별성 우회 전략 — 베테랑의 트릭</span>
+        <p>두 모델을 둘 다 적합시키고 <strong>sensitivity analysis로 용량 결정이 모델 선택에 얼마나 민감한지 제시.</strong> 두 모델 모두에서 제안 dose가 안전 한계 안이면 <strong>모델 선택 자체가 의사결정의 critical path에서 빠짐.</strong> 이게 비식별성 앞에서 모델을 <em>선택</em>하지 않고 비식별성이 의사결정에 영향을 주지 않는 결정 구조를 설계하는 정통 접근임. <span class="chip">[G&amp;W p.759, Fig 6.1; p.763, Table 6.1]</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 26 — §10 PK vs PD clock ===== -->
+<section class="slide has-formula" data-sec="10">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part VI — 임상 의사결정으로 번역</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 10</span>
+    <h1 class="slide-title">PK clock vs PD clock — 어느 시계가 더 느린가</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="s-body">
+    <p>투약 후 약물의 PK clock(소실)과 반응 system의 PD clock(회복)이 동시에 돌아감. <strong>관찰되는 반응 감소는 둘 중 느린 쪽의 시계가 결정함.</strong> 어느 쪽이 느린지를 먼저 정하면 duration 공식이 살아있는 경우와 폐기할 경우가 그 자리에서 갈림. <span class="chip">[R&amp;T pp.243, 247–256]</span></p>
+    <div class="tbl-wrap dense">
+      <table>
+        <thead><tr><th>상황</th><th>느린 clock</th><th>대표 약물</th><th>모델링 귀결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PK rate-limited</strong></td><td>약물 소실/분포</td><td><strong>Succinylcholine</strong> 0.5/1/2/4&nbsp;mg·kg⁻¹ i.v., <strong>Minoxidil</strong> 25&nbsp;mg 경구</td><td>\(t_D\) 공식이 살아있음 <span class="chip">[R&amp;T pp.249–256]</span></td></tr>
+          <tr><td><strong>PD rate-limited</strong></td><td>System turnover / 표적 재생</td><td><strong>Acenocoumarol</strong> vs 응고인자, <strong>Aspirin</strong> 혈소판, <strong>Omeprazole</strong> pump, <strong>Paclitaxel</strong> 백혈구</td><td>Turnover/target-consumption 모델 필요. PK \(k\)만으론 duration 예측 불가 <span class="chip">[R&amp;T pp.243, 251–254]</span></td></tr>
+          <tr><td><strong>약물 PK가 system보다 느림</strong></td><td>간접 기전에서도 PK 지배</td><td><strong>Phenprocoumon</strong> (~5일) vs 응고인자 동역학</td><td>항응고 효과 회복이 약물 잔류를 따름 <span class="chip">[R&amp;T p.243]</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2 tight">
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{Response}_{\text{관찰반응}}=\underbrace{E(0)}_{\text{시작효과}}-\overbrace{\underbrace{m}_{\text{E-logC 기울기}}\,\underbrace{k}_{\text{PK clock}}\,\underbrace{t}_{\text{시간}}}^{\text{선형 감소}}$$
+        <div class="fc-src">[R&amp;T Eq 8-9; pp.247–249] · Region 2 선형 감소</div>
+      </div></div>
+      <div class="card tight" style="display:flex;align-items:center;">
+        <p>계단식 E-logC 관계에서 <strong>중간 구간(Region 2)</strong>에 있을 때 단일 용량 후 반응이 근사적으로 직선 감소. <strong>Succinylcholine의 약 22%/min 감소</strong>가 예시. Region 1은 1차 동역학 비슷, Region 3은 plateau 근처. Region 2는 <strong>비탈길 중간의 직선 구간</strong>과 같음.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 27 — §10 duration + 같은 기전 ≠ 같은 시계 ===== -->
+<section class="slide has-formula" data-sec="10">
+  <div class="slide-header">
+    <span class="sec-badge">§ 10</span>
+    <h1 class="slide-title">Duration 공식 — 언제 살아있고 언제 폐기되나</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <p><strong>PK-rate-limited 반응에서 노출-반응 관계가 사실상 고정</strong>일 때만 다음 식을 씀:</p>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{t_D}_{\text{duration}}=\underbrace{\frac{1}{k}}_{\text{PK clock 역수}}\ln\left(\frac{\underbrace{Dose}_{\text{투여량}}}{\underbrace{C_{min}V}_{\text{최소 유효량}}}\right)=\underbrace{\frac{1}{k}}_{\text{PK clock 역수}}\ln\left(\frac{\underbrace{Dose}_{\text{투여량}}}{\underbrace{A_{min}}_{\text{효과 최소량}}}\right)$$
+        <div class="fc-src">[R&amp;T Eq 8-12; pp.254–255]</div>
+      </div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\underbrace{\Delta t_D}_{\text{duration 추가분}}=\frac{\underbrace{\ln 2}_{\text{2배 로그}}}{\underbrace{k}_{\text{PK clock}}}=\underbrace{t_{1/2}}_{\text{PK 반감기}}$$
+      </div></div>
+      <p><strong>용량을 두 배로 올리면 약물 반감기 하나만큼의 duration이 추가됨.</strong> Succinylcholine duration이 용량 두 배마다 유효 반감기 하나씩 더해지는 이유임 — dose doubling은 로그 자 위 한 칸 이동, 그 한 칸이 시간축에서 반감기 하나로 번역됨. <span class="chip">[R&amp;T pp.255–256]</span></p>
+    </div>
+    <div class="col">
+      <div class="callout warn">
+        <span class="co-label">⚠️ Eq 8-12를 모든 약에 적용 금지</span>
+        <p>warfarin·aspirin·omeprazole·paclitaxel은 PD-rate-limited임. PK \(k\)로 계산한 \(t_D\)는 수학적으로는 매끈해도 임상적으로 무의미함. <strong>Duration 계산 전에 먼저 "어느 시계가 더 느린가?"를 물어야 함.</strong></p>
+      </div>
+      <div class="dark-card tight">
+        <div class="card-label">같은 기전 ≠ 같은 시계 — Acenocoumarol vs Phenprocoumon</div>
+        <p><strong>Acenocoumarol</strong> (PK ~15&nbsp;h) → PK 짧음 → <em>PD clock</em>(응고인자 turnover) 더 느림 → PD-rate-limited.<br>
+        <strong>Phenprocoumon</strong> (PK ~5일) → PK 김 → <em>PK clock</em> 지배 → PK-rate-limited.</p>
+        <p style="margin-top:7px;">같은 prothrombin complex 동역학을 공유해도 <strong>서로 다른 rate-limiting clock</strong>(Fig 8-11). <span class="chip">[R&amp;T p.243]</span></p>
+      </div>
+      <div class="callout">
+        <span class="co-label">🔑 정량 시그너처</span>
+        <p>예측 duration이 관측과 50% 이상 어긋나거나 dose 증량 시 예측 증가가 관측과 비례하지 않으면 <strong>rate-limiting clock이 잘못 잡혔다는 신호.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 28 — §11 7 hooks ===== -->
+<section class="slide has-formula" data-sec="11">
+  <div class="part-tag" style="position:absolute;top:14px;left:52px;">Part VII — Integration: 한 바느질로 꿰기</div>
+  <div class="slide-header" style="margin-top:14px;">
+    <span class="sec-badge">§ 11</span>
+    <h1 class="slide-title">5분 만에 외우는 혼동 쌍 — 7가지</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2 tight">
+    <div class="col" style="gap:9px;">
+      <div class="card tight"><p><strong>1 · Direct vs Indirect</strong><br><em>바로 켜지는 전등 vs 서서히 따뜻해지는 전기장판.</em> Direct는 농도 상승에 즉시 따라옴. Indirect는 production/loss 변화가 pool에 쌓이며 나타나는 지연 반응. <strong>반응이 \(C_{max}\)보다 늦게 peak → indirect 먼저 의심.</strong></p></div>
+      <div class="card tight"><p><strong>2 · Model I vs Model II</strong><br><em>수원 틀기 vs 배수구 막기.</em> 단일 dose range에서는 사실상 같은 데이터를 만들 수 있음. <strong>mechanism prior나 더 넓은 dose range 필요.</strong></p>
+        <div class="formula-card-wrap"><div class="formula-card compact" style="padding:22px 12px 14px;margin-top:7px;">
+          $$\begin{aligned}\text{Model I: }&\tfrac{dR}{dt}=\overbrace{k_{in}I(C)}^{\text{production 억제}}-\underbrace{k_{out}R}_{\text{기존 loss}}\\\text{Model II: }&\tfrac{dR}{dt}=\underbrace{k_{in}}_{\text{production 유지}}-\overbrace{k_{out}RI(C)}^{\text{loss 억제}}\end{aligned}$$
+        </div></div>
+      </div>
+      <div class="card tight"><p><strong>3 · \(k_{in}\) vs \(k_{out}\)</strong><br><em>수원 속도 vs 배수 속도.</em> 기저상태에서 \(k_{in}=k_{out}\cdot baseline\), \(k_{out}=1/MRT_{response}\)가 반응 반감기를 결정.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact" style="padding:24px 12px 14px;margin-top:7px;">
+          $$\underbrace{k_{in}}_{\text{수원 속도}}=\underbrace{k_{out}}_{\text{배수 clock}}\cdot\underbrace{baseline}_{\text{pool 크기}},\;\;\underbrace{t_{1/2,response}}_{\text{반응 반감기}}=\frac{0.693}{\underbrace{k_{out}}_{\text{소실 clock}}}$$
+        </div></div>
+      </div>
+    </div>
+    <div class="col" style="gap:9px;">
+      <div class="card tight"><p><strong>4 · Baseline \(R_0\) vs Steady-state \(R_{ss}\)</strong><br><em>출발점 vs 목적지.</em> \(R_0\)는 투여 전 자연 균형, \(R_{ss}\)는 약물 효과 하 새 균형. <strong>이동 속도는 \(k_{out}\), 거리는 \(E_{max}/EC_{50}\)이 결정.</strong></p></div>
+      <div class="card tight"><p><strong>5 · Rebound vs Natural recovery</strong><br><em>과교정 vs 자연 복귀.</em> Rebound는 중단 시 반응이 baseline을 <strong>넘어서는 것</strong>, natural recovery는 baseline으로 돌아오는 것. 구분 기준은 baseline을 넘어서는가.</p></div>
+      <div class="card tight"><p><strong>6 · Duration of effect vs AUC of effect</strong><br><em>효과의 길이 vs 효과의 면적.</em> Duration은 threshold 이상 시간, AUC of effect는 반응-시간 곡선 아래 면적. <strong>같은 duration이어도 반응 높이가 다르면 AUC가 다름.</strong></p></div>
+      <div class="card tight"><p><strong>7 · Non-identifiability vs Misspecification</strong><br><em>지도가 둘 다 정확 vs 지도가 틀림.</em> 비식별성은 데이터가 결정 못 하는 상태, misspecification은 안 맞는 구조를 고른 상태. <strong>\(\Delta WRSS\approx2\), \(\Delta AIC\approx-1\)은 비식별성 신호이지 misspecification 아님.</strong></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 29 — §11 bonus + 5 clock errors ===== -->
+<section class="slide has-formula" data-sec="11">
+  <div class="slide-header">
+    <span class="sec-badge">§ 11</span>
+    <h1 class="slide-title">보너스 쌍 + 외워둘 5가지 clock 위치 오류</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col" style="justify-content:center;">
+      <div class="card tight"><p><strong>보너스 · Reversible turnover vs Irreversible kill</strong><br><em>수도꼭지 잠그기 vs 전구 빼내기.</em> Reversible은 system이 계속 생산·소실해 baseline 복귀. Irreversible은 표적/세포가 소비되고 대체/재성장이 필요.</p></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">
+        $$\begin{aligned}\text{Reversible: }&\frac{dR}{dt}=\underbrace{k_{in}}_{\text{재생산}}-\underbrace{k_{out}R}_{\text{소실}}\\\text{Irreversible: }&\frac{dR}{dt}=-\overbrace{\underbrace{K_{kill}}_{\text{kill potency}}\underbrace{C}_{\text{노출}}\underbrace{R}_{\text{잔여 target/cell}}}^{\text{target/cell 소비}}\end{aligned}$$
+      </div></div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>오류</th><th>잘못 짚은 clock</th><th>대표 반례</th></tr></thead>
+          <tbody>
+            <tr><td><strong>E1</strong> Mirror-slope</td><td>모든 모델에서 early slope를 \(-k_{out}\)으로 외삽</td><td>PD7: 6,400U→0.6, 160,000U→1.6 h⁻¹ <span class="chip">[G&amp;W p.251]</span></td></tr>
+            <tr><td><strong>E2</strong> Phantom convergence</td><td>turnover·effect cpt 같은 fit → 한쪽 확정</td><td>PD6: \(\Delta WRSS=2\), \(k_{out}=k_{e0}=5.6\) <span class="chip">[G&amp;W pp.758–763]</span></td></tr>
+            <tr><td><strong>E3</strong> Wrong-clock \(t_D\)</td><td>모든 약물에 Eq 8-12 적용</td><td>warfarin/aspirin/omeprazole/paclitaxel은 PD-limited <span class="chip">[R&amp;T pp.251–254]</span></td></tr>
+            <tr><td><strong>E4</strong> Linear-PK = linear-PD</td><td>dose-proportional AUC = dose-proportional response</td><td>methylprednisolone 16–1000&nbsp;mg <span class="chip">[R&amp;T pp.256–258]</span></td></tr>
+            <tr><td><strong>E5</strong> Same-mechanism = same-clock</td><td>동일 작용기전이면 같은 rate-limiting step</td><td>acenocoumarol(PD) vs phenprocoumon(PK) <span class="chip">[R&amp;T p.243]</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><p><strong>이 다섯을 외운 학습자는 이번 세션의 모델링 결정을 거의 자동으로 방어할 수 있음.</strong></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 30 — §12 Q1-Q5 ===== -->
+<section class="slide has-formula" data-sec="12">
+  <div class="slide-header">
+    <span class="sec-badge teal">§ 12</span>
+    <h1 class="slide-title">자기 테스트 — 능동 회상 (Q1–Q5)</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="card tight">
+        <p><span class="tag c">회상</span> <strong>Q1 · Model I ODE와 정상상태.</strong> 일정한 \(C_{ss}\)에서 \(R_{ss}\) 도출:</p>
+        <div class="formula-card-wrap"><div class="formula-card compact" style="padding:26px 12px 14px;margin-top:7px;">
+          $$\underbrace{\frac{dR}{dt}}_{\text{변화율}}=\overbrace{k_{in}I(C)}^{\text{production 억제}}-\underbrace{k_{out}R}_{\text{소실}}\;\xrightarrow[\text{steady state}]{dR/dt=0}\;\underbrace{R_{ss}}_{\text{약물 정상상태}}=\underbrace{R_0}_{\text{기저값}}\underbrace{I(C_{ss})}_{\text{남은 production}}$$
+        </div></div>
+      </div>
+      <div class="card tight"><p><span class="tag c">회상</span> <strong>Q2 · \(t_{ss}\) 용량 독립.</strong> 답: <strong>Models I와 III</strong> — 1차 소실 항이 \(k_{out}\cdot R\)로 유지되기 때문. II·IV는 약물이 소실 항을 바꿔 용량 의존적 \(t_{ss}\)가 나올 수 있음. 단, <strong>PK가 더 느린 clock이 아닐 때만</strong> 성립. <span class="chip">[G&amp;W pp.247–251; R&amp;T p.243]</span></p></div>
+    </div>
+    <div class="col">
+      <div class="card tight"><p><span class="tag a">응용</span> <strong>Q3 · Peak shift 부재 해석.</strong> 용량 증가에도 peak shift 없음 → effect cpt 증명? <strong>아님.</strong> PD9는 peak shift 부재가 link/effect-cpt 모델을 반드시 의미하지 않는다고 명시 경고. Dose range·비선형 약물 함수·system 동역학을 같이 봐야 함. <span class="chip">[G&amp;W pp.778–783]</span></p></div>
+      <div class="card tight"><p><span class="tag a">응용</span> <strong>Q4 · Zooparc® 용량 정정.</strong> PD9 관찰 반복 투여 figure의 확인 용량은 <strong>2.5&nbsp;mg과 5&nbsp;mg.</strong> 25&nbsp;mg/day는 투사/대규모 연구 논의이며 관찰 용량 맥락이 아님. <span class="chip">[G&amp;W pp.778–783]</span></p></div>
+      <div class="card tight"><p><span class="tag a">응용</span> <strong>Q5 · Naproxen 정정.</strong> "naproxen 250&nbsp;mg, Fig 8-3"의 오류 수정: <strong>Naproxen 500&nbsp;mg 경구, dental pain, 1–8&nbsp;h sampling, 반시계 방향 hysteresis, Fig 8-2.</strong> Fig 8-3은 하류 약력학 도식임. <span class="chip">[R&amp;T pp.234–236]</span></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 31 — §12 Q6-Q10 ===== -->
+<section class="slide" data-sec="12">
+  <div class="slide-header">
+    <span class="sec-badge teal">§ 12</span>
+    <h1 class="slide-title">자기 테스트 — 응용·딜레마 (Q6–Q10)</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="card tight"><p><span class="tag a">응용</span> <strong>Q6 · 잘못된 clock의 \(t_D\).</strong> Aspirin duration에 Eq 8-12가 왜 부적절? Aspirin 혈장 노출은 빠르게 사라지지만 <strong>표적·혈소판 기능 회복이 더 느림.</strong> Duration은 PD/표적 대체가 결정하지 PK rate-limited가 아님. <span class="chip">[R&amp;T p.251]</span></p></div>
+      <div class="card tight"><p><span class="tag a">응용</span> <strong>Q7 · Turnover vs Effect cpt 결정.</strong> 단일 용량 데이터가 둘 다 똑같이 잘 적합. 필요 증거: 반응 변수의 mechanism prior, 더 넓은 dose range, 반복 투여/washout, PK clock 교란, \(EC_{50}/k_{e0}\)의 생물학적 타당성. <strong>적합도 단독으로는 부족.</strong> <span class="chip">[G&amp;W pp.758–763; R&amp;T pp.244–246]</span></p></div>
+      <div class="card tight"><p><span class="tag a">응용</span> <strong>Q8 · Linear PK ≠ Linear PD.</strong> Methylprednisolone AUC가 16–1000&nbsp;mg에서 용량 비례적이어도 반응이 노출-반응 곡선의 <strong>plateau 구간에 진입</strong>할 수 있음. <em>"Dose linearity in pharmacokinetics does not result in dose linearity in pharmacodynamics."</em> <span class="chip">[R&amp;T pp.256–258]</span></p></div>
+    </div>
+    <div class="col">
+      <div class="dark-card tight">
+        <div class="card-label">⚡ Q9 · Boss Dilemma — 30년 베테랑의 방어 논리</div>
+        <p>스폰서: "phenprocoumon·acenocoumarol은 같은 항응고 기전이니 같은 PD turnover half-life로 회복 결정." → <strong>거부.</strong> 같은 기전이 같은 rate-limiting clock을 의미하지 않음. Acenocoumarol(~15h): 회복이 PD-clock 제한. Phenprocoumon(~5일): 회복이 PK-clock 제한.</p>
+        <p style="margin-top:6px;"><strong>올바른 방어:</strong> 약물별 PK가 같은 PD system 위에서 어느 시계를 작동시키는지 Fig 8-11로 직접 증명, 약물별 별도 dose-duration model. <em>단일 PD half-life claim은 phenprocoumon에서 무의미, acenocoumarol에서만 유효.</em> <span class="chip">[R&amp;T p.243]</span></p>
+      </div>
+      <div class="dark-card tight">
+        <div class="card-label">⚡ Q10 · Apex Dilemma — Pool 1 vs Pool 2</div>
+        <p>두 모델이 \(\Delta WRSS=2\), \(k_{out}=k_{e0}\)로 사실상 비식별적일 때 Phase 2 용량 결정? <strong>정통 답:</strong> "어느 모델을 선택했나"보다 <strong>"왜 이 불확실성이 용량 결정의 안전성에 영향을 주지 않는가"</strong>를 설명. 두 모델 모두에서 제안 dose가 안전 한계 안임을 sensitivity로 증명하면 모델 선택이 critical path에서 빠짐. <em>비식별성 앞에서 모델을 선택하지 말고, 비식별성이 의사결정에 영향을 주지 않는 결정 구조를 설계함.</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 32 — §13 큰 그림 A/B ===== -->
+<section class="slide" data-sec="13">
+  <div class="slide-header">
+    <span class="sec-badge dark">§ 13</span>
+    <h1 class="slide-title">큰 그림 — 이 세션이 다른 세션과 만나는 자리</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <h3 class="sub-title">A · 약리계측학 아키텍처에서의 위치</h3>
+      <p style="font-size:13px;">곡선 적합을 넘어 <strong>원인을 분리</strong>해야 하는 자리.</p>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>후속 세션</th><th>열리는 개념</th><th>없으면 실패</th></tr></thead>
+          <tbody>
+            <tr><td>Transit compartment</td><td>분포/전달 지연과 turnover 지연 분리</td><td>모든 지연을 effect cpt로 흡수</td></tr>
+            <tr><td>Tolerance/moderator</td><td>feedback·rebound·post-trough 회복 timing</td><td>\(k_{out}\) 고정 가정 위반 놓침</td></tr>
+            <tr><td>Disease progression</td><td>\(R_0\)가 시간에 따라 움직임</td><td>질병 진행을 약물 효과로 오독</td></tr>
+            <tr><td>PopPK/PD IIV</td><td>drug param과 system param 분리</td><td>\(E_{max},k_{out},k_{e0}\) 해석 혼동</td></tr>
+            <tr><td>Sampling design</td><td>숨겨진 시계 식별 관측 창 설계</td><td>비식별성을 후속 시험에 반복</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col">
+      <h3 class="sub-title">B · 이 세션을 약하게 다뤘을 때 실패 모드</h3>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>실패 모드</th><th>실무적 결과</th></tr></thead>
+          <tbody>
+            <tr><td>모든 지연을 effect cpt로 처리</td><td>\(k_{e0}\)이 생물학 흡수 → 새 프로토콜 시뮬 실패</td></tr>
+            <tr><td>\(t_{ss}\)를 결정적 증거로 처리</td><td>기전적 주장이 설계 근거를 과대평가</td></tr>
+            <tr><td>\(E_{max}\) 단위 혼동</td><td>교차 연구·in vitro/임상 potency 비교 오해</td></tr>
+            <tr><td>PD-rate-limited 약물에 \(t_D\) 적용</td><td>Duration 예측이 생물학적으로 무의미</td></tr>
+            <tr><td>Baseline drift 무시</td><td>질병 진행·일주기 변동을 약물 효과로 오독</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 33 — §13 큰 그림 C/D ===== -->
+<section class="slide" data-sec="13">
+  <div class="slide-header">
+    <span class="sec-badge dark">§ 13</span>
+    <h1 class="slide-title">베테랑이 30초 안에 자동으로 돌리는 진단 순서</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2">
+    <div class="col">
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>단계</th><th>보는 것</th><th>첫 가설 분기</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1</strong></td><td>Plasma C vs response loop 방향</td><td>반시계→분포/turnover/활성대사체, 시계→내성/feedback, 없음→direct(해상도 고려)</td></tr>
+            <tr><td><strong>2</strong></td><td>반응 방향 + \(t_{ss}\) 용량 의존성</td><td>4-model 칸 중 하나로 좁힘</td></tr>
+            <tr><td><strong>3</strong></td><td>Post-trough 회복이 모델보다 빠른가</td><td>moderator/feedback 누락 가능성</td></tr>
+            <tr><td><strong>4</strong></td><td>OFV가 30 iter stuck-then-drop인가</td><td>\(r(k_{in},k_{out})>0.98\) → \(R_0,k_{out}\) 재파라미터화</td></tr>
+            <tr><td><strong>5</strong></td><td>새 약물 duration 질문</td><td>PK clock vs PD clock 어느 쪽이 느린가</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <p>자동화 도구는 단계 1·4를 따라할 수 있지만 <strong>단계 2·3·5의 "데이터의 의미를 묻는 직관"은 데이터 외부의 mechanistic prior를 요구하기 때문에 복제되지 않음.</strong> 이게 베테랑과 자동화 도구의 차이임.</p>
+      </div>
+    </div>
+    <div class="col" style="justify-content:center;">
+      <div class="callout teal">
+        <span class="co-label">D · 최종 한 줄</span>
+        <p>간접 반응 모델링은 <strong>"지연을 추가하는 일"이 아님.</strong> <strong>올바른 인과 시계에 지연을 배정하는 일임.</strong></p>
+      </div>
+      <div class="algo-box"><span class="ak">hysteresis 방향</span>
+  → <span class="aa">4-model 작용 부위</span>
+    → <span class="aa">t_ss / peak-shift 선별</span>
+      → <span class="aa">초기 파라미터 감사 (graphical)</span>
+        → <span class="aa">turnover vs link 감별 (비식별성 인정)</span>
+          → <span class="aa">PK/PD clock 선택</span>
+            → <span class="ak">PK-rate-limited일 때만 duration 공식</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 34 — §14 References ===== -->
+<section class="slide" data-sec="14">
+  <div class="slide-header">
+    <span class="sec-badge dark">§ 14</span>
+    <h1 class="slide-title">References — 교과서·1차 문헌 출처</h1>
+  </div>
+  <hr class="header-rule">
+  <div class="grid2" style="font-size:11px;">
+    <div class="col" style="gap:9px;">
+      <div class="card tight">
+        <div class="card-label">A · 주요 교과서 — G&amp;W 5e</div>
+        <p style="font-size:11.5px;">Gabrielsson J, Weiner D. <em>Pharmacokinetic and Pharmacodynamic Data Analysis: Concepts and Applications.</em> 5th ed. Stockholm: Apotekarsocieteten; 2016. <span class="chip">ISBN 978-91-985558-1-2</span></p>
+        <p style="font-size:11px;margin-top:5px;color:var(--muted);"><strong>핵심 단원:</strong> §2.6.7 (pp.110–111) feedback·moderator Eq 2:261–263, IgG, "R=M"; §3.7–3.10 (pp.235–260) indirect response·irreversible·target consumption; §3.11 (pp.247–251) \(t_{ss}\)·peak shift·graphical; §3.12 (pp.272–275) DRT; §3.13 (pp.317–319) baseline drift; PD6 (pp.758–763); PD7 (pp.764–769); PD9 (pp.778–783); PD5 (pp.742–752).</p>
+        <p style="font-size:11px;margin-top:4px;color:var(--muted);"><strong>식 번호:</strong> Eq 2:261–263; 3:74, 3:76; 3:77, 3:78; 3:103; 3:110, 3:112.</p>
+      </div>
+      <div class="card tight">
+        <div class="card-label">A · 주요 교과서 — R&amp;T</div>
+        <p style="font-size:11.5px;">Rowland M, Tozer TN. <em>Clinical Pharmacokinetics and Pharmacodynamics: Concepts and Applications.</em> 4th ed. Philadelphia: Wolters Kluwer / Lippincott Williams &amp; Wilkins; 2011. <span class="chip">ISBN 978-0-7817-5009-7</span></p>
+        <p style="font-size:11px;margin-top:5px;color:var(--muted);"><strong>판본 주의:</strong> 본문 일부 "R&amp;T 5e" 표기는 통칭이며 실제 인용 근거는 <strong>R&amp;T 4판(2011) Chapter 8</strong>의 페이지 매김임. Ch.8 — Response: Time Course and Variability 전체: pp.234–236 hysteresis·Fig 8-2; p.239 midazolam Fig 8-6; pp.241–242 ibuprofen; p.243 acenocoumarol vs phenprocoumon Fig 8-11; pp.244–247 warfarin Eq 8-6/8-7; pp.247–249 Eq 8-9; pp.249–256 succinylcholine Eq 8-12; pp.251–254 aspirin·omeprazole·paclitaxel Fig 8-22; pp.255–256 Fig 8-23/8-24; pp.256–258 methylprednisolone; pp.258–259 rosuvastatin/OATP1B1.</p>
+      </div>
+    </div>
+    <div class="col" style="gap:9px;">
+      <div class="card tight">
+        <div class="card-label">B · 1차 문헌</div>
+        <p style="font-size:11.5px;"><strong>Sharma &amp; Jusko 1998.</strong> "Characteristics of indirect pharmacodynamic models and applications to clinical drug responses." <em>Br J Clin Pharmacol.</em> 1998;45(3):229–239. <span class="chip">DOI 10.1046/j.1365-2125.1998.00676.x</span><br><span style="color:var(--muted);">명명법 정정: 원 논문은 'Model V/VI/VII/VIII' 번호를 명시 부여하지 않음 — V–VIII는 후속 표준 문헌의 관행.</span></p>
+        <p style="font-size:11.5px;margin-top:7px;"><strong>Friberg &amp; Karlsson 2002.</strong> "Model of chemotherapy-induced myelosuppression with parameter consistency across drugs." <em>J Clin Oncol.</em> 2002;20(24):4713–4721. <span class="chip">DOI 10.1200/JCO.2002.02.140</span><br><span style="color:var(--muted);">모델 구조 정정: \(k_{prol}=k_{tr,1}=k_{tr,2}=k_{tr,3}=k_{circ}\equiv k_{tr}\) (5중 제약)을 모델 정의의 일부로 도입 — "임의 고정"이 아닌 본질적 부분.</span></p>
+      </div>
+      <div class="tbl-wrap dense">
+        <table>
+          <thead><tr><th>형식</th><th>의미</th></tr></thead>
+          <tbody>
+            <tr><td><span class="chip">[G&amp;W Eq 3:74; p.237]</span></td><td>G&amp;W 5판 식 3:74, 본문 p.237</td></tr>
+            <tr><td><span class="chip">[G&amp;W pp.235–236]</span></td><td>G&amp;W 5판 페이지 범위</td></tr>
+            <tr><td><span class="chip">[G&amp;W PD4 pp.742–752]</span></td><td>G&amp;W 5판 PD4 case study</td></tr>
+            <tr><td><span class="chip">[R&amp;T Eq 8-12; pp.254–255]</span></td><td>R&amp;T Ch.8 식 8-12, 페이지</td></tr>
+            <tr><td><span class="chip">[R&amp;T pp.234–235, 239]</span></td><td>R&amp;T Ch.8 (콤마 = 비연속 페이지)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 35 — CLOSER ===== -->
+<section class="slide" data-sec="14">
+  <div class="title-slide" style="justify-content:center;">
+    <div class="closer-card">
+      <div class="cc-label">마지막으로 한 가지만 더</div>
+      <p class="cc-body">이번 세션의 모든 카드를 외운 학생이 보고서나 발표 자리에서 단 한 가지 질문에 답할 수 있어야 함:</p>
+      <p class="cc-q">"당신 모델에서 지연이 어디 사는가,<br>그리고 그걸 어떻게 증명했는가?"</p>
+      <p class="cc-body">이 질문에 <strong>"fit이 매끄럽다"</strong>고 답하는 학생은 30초 만에 들킴. <strong>"이런 mechanism prior와 이런 design에서 이 구조만 데이터를 설명할 수 있어서"</strong>라고 답하는 학생만 살아남음. 이번 세션은 그 답을 만드는 도구상자임.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= NAV BAR ================= -->
+<div class="navbar">
+  <button class="nav-btn" id="btn-prev">← 이전</button>
+  <div class="nav-center">
+    <span id="prog-text">1 / 34</span>
+    <div class="prog-track"><div id="prog-fill"></div></div>
+  </div>
+  <button class="nav-btn" id="btn-next">다음 →</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+(function(){
+  var slides   = document.querySelectorAll('.slide');
+  var tocBtns  = document.querySelectorAll('.toc-btn');
+  var TOTAL    = slides.length;
+  var cur      = 0;
+
+  var progText = document.getElementById('prog-text');
+  var progFill = document.getElementById('prog-fill');
+  var btnPrev  = document.getElementById('btn-prev');
+  var btnNext  = document.getElementById('btn-next');
+
+  // map of toc target slide indices (ascending)
+  var tocTargets = [];
+  for (var i = 0; i < tocBtns.length; i++){
+    tocTargets.push(parseInt(tocBtns[i].getAttribute('data-go'), 10));
+    tocBtns[i].addEventListener('click', (function(idx){
+      return function(){ goTo(parseInt(tocBtns[idx].getAttribute('data-go'), 10)); };
+    })(i));
+  }
+
+  function highlightToc(n){
+    var pick = 0;
+    for (var k = 0; k < tocTargets.length; k++){
+      if (tocTargets[k] <= n) pick = k; else break;
+    }
+    for (var j = 0; j < tocBtns.length; j++){
+      tocBtns[j].classList.toggle('active', j === pick);
+    }
+    tocBtns[pick].scrollIntoView({ block:'nearest', behavior:'smooth' });
+  }
+
+  function goTo(n){
+    if (n < 0 || n >= TOTAL) return;
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    highlightToc(cur);
+    progText.textContent = (cur + 1) + ' / ' + TOTAL;
+    progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+    btnPrev.disabled = (cur === 0);
+    btnNext.disabled = (cur === TOTAL - 1);
+    // re-scroll viewer to top in case
+    slides[cur].scrollTop = 0;
+  }
+
+  btnPrev.addEventListener('click', function(){ goTo(cur - 1); });
+  btnNext.addEventListener('click', function(){ goTo(cur + 1); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowLeft')  goTo(cur - 1);
+    if (e.key === 'ArrowRight') goTo(cur + 1);
+  });
+
+  function renderMath(){
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$',  right: '$$',  display: true  },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false,
+      strict: false
+    });
+    goTo(0);
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', renderMath);
+  } else {
+    renderMath();
+  }
+})();
+</script>
+</body>
+</html>
