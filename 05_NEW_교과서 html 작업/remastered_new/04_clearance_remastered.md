@@ -362,6 +362,8 @@ $$
 
 소변 데이터 받으면 두 가지 plot이 가능함 [G&W pp.50–52 Eq 2:90–2:98]:
 
+<img width="1013" height="538" alt="image" src="https://github.com/user-attachments/assets/4a7188cb-a474-4b1f-958a-83ed00a5f03f" />
+
 **Rate plot** (구간 배설속도):
 
 $$
