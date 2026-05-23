@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 04 — 청소율 완전정복: 4-좌표 주소 읽기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:30px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:22px 12px 16px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:10px 14px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.65;white-space:pre;overflow-x:auto;border-radius:12px;padding:10px 14px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.45}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.98em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:7px 11px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.45}
+.closer-card{background:#181715;border-radius:12px;padding:24px 30px;text-align:center;margin:10px auto;max-width:780px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#faf9f5;line-height:1.5}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.tag.apex{background:#a9583e}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 04</div>
+        <div class="brand-sub">Clearance · 4-좌표</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">프롤로그 — 60 L/h 미스터리</button>
+    <button class="toc-btn" data-idx="1">§0 — 4-좌표 운영체계</button>
+    <button class="toc-btn" data-idx="2">§1.1 t½는 결과, CL은 비례</button>
+    <button class="toc-btn" data-idx="3">§1.2 청소율의 진짜 정의</button>
+    <button class="toc-btn" data-idx="4">§2 좌표 #1 — 매트릭스</button>
+    <button class="toc-btn" data-idx="5">§2.3 60 L/h 해결 + fu vs fub</button>
+    <button class="toc-btn" data-idx="6">§2.5 plasma/serum/wb</button>
+    <button class="toc-btn" data-idx="7">§3 신장 — 분해 + 생리</button>
+    <button class="toc-btn" data-idx="8">§3.4 재흡수 함정</button>
+    <button class="toc-btn" data-idx="9">§3.5 신장 transporter DDI</button>
+    <button class="toc-btn" data-idx="10">§3.7 담즙 + 장간순환</button>
+    <button class="toc-btn" data-idx="11">§3.8 ARE vs Rate plot</button>
+    <button class="toc-btn" data-idx="12">§4.1 Well-stirred 본능</button>
+    <button class="toc-btn" data-idx="13">§4.2 CYP + 2D6 + 염증</button>
+    <button class="toc-btn" data-idx="14">§4.3 Phase II UGT</button>
+    <button class="toc-btn" data-idx="15">§4.4 IVIVE 함정</button>
+    <button class="toc-btn" data-idx="16">§4.5–6 ρ + Extended CL</button>
+    <button class="toc-btn" data-idx="17">§4.7 Induction</button>
+    <button class="toc-btn" data-idx="18">§5 Route × Extraction</button>
+    <button class="toc-btn" data-idx="19">§5.2 임상 anchor 5개</button>
+    <button class="toc-btn" data-idx="20">§6.1–2 율속단계</button>
+    <button class="toc-btn" data-idx="21">§6.3 AUC ratio 분해</button>
+    <button class="toc-btn" data-idx="22">§6.4 First-pass 대사체</button>
+    <button class="toc-btn" data-idx="23">§6.5 신부전+활성 대사체 ⚡</button>
+    <button class="toc-btn" data-idx="24">§7 PK5 동시 적합</button>
+    <button class="toc-btn" data-idx="25">§8 Allometric scaling</button>
+    <button class="toc-btn" data-idx="26">§9 혼동쌍 1–5</button>
+    <button class="toc-btn" data-idx="27">§9 혼동쌍 6–10</button>
+    <button class="toc-btn" data-idx="28">§10 자기 검증</button>
+    <button class="toc-btn" data-idx="29">§11–12 요약 + Closer</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0 - 프롤로그 -->
+    <section class="slide active has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">프롤로그</span>
+        <h1 class="slide-title">60 L/h가 알려주는 진짜 이야기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <p>자, 환자 차트 한 줄로 시작함.</p>
+          <p style="text-align:center;font-size:14px"><strong>"Plasma \(CL = 60\ \mathrm{L/h}\), 간 혈류 \(Q_H = 81\ \mathrm{L/h}\)"</strong></p>
+        </div>
+        <p>옆자리 펠로우가 슬쩍 보더니 그럼. "어, 중등도 이상 hepatic extraction이네요? \(60/81 \approx 0.74\)니까." 그럴듯함. 책 한 권만 본 사람이면 이렇게 답하는 게 자연스러움.</p>
+        <p>근데 같은 환자에서 한 줄이 더 있음 — \(C/C_b = 0.5\). 약물이 RBC에 절반쯤 가 있다는 뜻임. 이걸 알고 다시 계산하면:</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$CL_b = 60 \times 0.5 = 30\ \mathrm{L/h}, \qquad E_H = \frac{30}{81} \approx 0.37$$</div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 분류 통째로 바뀜</span><strong>중등도 이상이 아니라 low-to-intermediate임.</strong> 이 한 줄짜리 판단이 DDI 라벨 문구를 바꾸고, 간장애 환자 dose adjustment 결정을 바꾸고, PBPK input의 \(f_{ub} \cdot CL_{int}\) 단위를 바꿈. <strong>임상 약리 보고서 전체가 이 하나의 매트릭스 mismatch에서 갈라짐.</strong></div>
+        <div class="dark-card">
+          <p>이 챕터에서 우리가 진짜 익히는 건 청소율이라는 숫자가 아님. <strong>"지금 다루는 게 정확히 어떤 청소율인가?"라는 4-좌표 질문을 본능적으로 던지는 습관</strong>임. 그리고 그 4-좌표를 <em>어느 순서로 점검해야 안전한가</em>를 몸에 새기는 거임.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 1 - §0 4-좌표 운영체계 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">4-좌표를 어느 순서로 읽을 것인가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>좌표</th><th>묻는 내용</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>농도 기준</strong></td><td>혈장? 전혈? 비결합?</td></tr>
+              <tr><td>2</td><td><strong>장기</strong></td><td>신장? 간?</td></tr>
+              <tr><td>3</td><td><strong>투여 경로</strong></td><td>IV? Oral?</td></tr>
+              <tr><td>4</td><td><strong>분석 대상</strong></td><td>모약물? 대사체?</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 순서가 임의가 아님</span>1번을 안 풀고 2번으로 가면 hepatic extraction 분류가 통째로 틀어짐(프롤로그). 2번을 안 풀고 3번으로 가면 first-pass가 어느 장기에서 일어나는지 모름. 3번을 안 풀고 4번으로 가면 first-pass 형성과 systemic 형성을 구분 못 함. <strong>그래서 점검 순서는 1 → 2 → 3 → 4임. 절대 거꾸로 가면 안 됨.</strong></div>
+        <div class="diagram">프롤로그 (60 L/h 미스터리)
+   <span class="arr">↓</span>
+<span class="step">§1 청소율의 정의</span> — CL은 비례상수, t½는 결과 (M1)
+   <span class="arr">↓</span>
+<span class="step">§2 좌표 #1</span>: 매트릭스 — plasma vs blood vs unbound (M8)
+   → <span class="anno">여기서 프롤로그 미스터리 풀림</span>
+   <span class="arr">↓</span>
+<span class="step">§3 좌표 #2A</span>: 신장 분해 — CL_R = f_e·CL
+   <span class="arr">↓</span>
+<span class="step">§4 좌표 #2B</span>: 간 분해 — Well-stirred + 확장
+   <span class="arr">↓</span>
+<span class="step">§5 좌표 #3</span>: 투여 경로 — Route × Extraction × Endpoint
+   <span class="arr">↓</span>
+<span class="step">§6 좌표 #4</span>: 대사체 — 율속단계 → 노출비 → 신부전
+   <span class="arr">↓</span>
+<span class="step">§7</span> PK5 / <span class="step">§8</span> Allometric / <span class="step">§9–11</span> 혼동·요약</div>
+        <div class="callout"><span class="callout-label">⏱ 다섯 카드만 골라 읽기</span>시간이 없을 때 — <strong>M1 → M8 → M2 → M4 → M14</strong>임. 4-좌표 전체를 이 다섯 개로 압축 가능.</div>
+      </div>
+    </section>
+
+    <!-- Slide 2 - §1.1 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.1</span>
+        <h1 class="slide-title">왜 반감기로 시작하면 안 되는가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>환자 차트에 "반감기가 늘었어요"라고 적혀 있으면 본능적으로 "아, 신부전인가?" 하고 머리가 감. <strong>이거 막아야 함.</strong> \(t_{1/2}\)는 결과값임. 원인이 아님.</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\underbrace{t_{1/2}}_{\text{반감기}}=\frac{\underbrace{0.693}_{\ln 2}\cdot\underbrace{V}_{\text{분포용적}}}{\underbrace{CL}_{\text{제거능}}}$$
+            <div class="formula-cite"><span class="chip">R&amp;T pp.148–150 Eq 5-24–5-27</span></div>
+          </div>
+        </div>
+        <p>분자에 \(V\), 분모에 \(CL\)이 있음. 반감기가 늘었다는 말은 <strong>\(V\)가 늘었거나, \(CL\)이 줄었거나, 둘 다거나</strong> — 셋 중 어느 건지 아직 모른다는 뜻임.</p>
+        <div class="card-soft">
+          <p>어떤 환자가 hepatomegaly로 \(V\)가 커진 경우랑, 신부전으로 \(CL\)이 떨어진 경우랑, 두 경우 모두 같은 \(t_{1/2}\) 증가를 보일 수 있음. 그런데 임상 조치는 완전히 다름 — <strong>전자는 유지용량 안 건드리고 loading만 늘려야 하고, 후자는 유지용량을 줄여야 함.</strong> \(t_{1/2}\)만 보고 가면 둘을 못 구별함.</p>
+        </div>
+        <div class="dark-card">
+          <p><strong>본능 한 줄.</strong> \(t_{1/2}\) 변화 보고서 받으면 첫 손은 항상 <em>\(CL\)과 \(V\)를 분리하는 자리</em>로 감.</p>
+        </div>
+        <h2 class="section-h">파라미터 해부</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>단위</th><th>의미</th><th>변화 원인</th></tr></thead>
+            <tbody>
+              <tr><td>\(CL\)</td><td>L/h</td><td>농도 대비 제거능</td><td>신장·간 기능, 단백결합, 효소</td></tr>
+              <tr><td>\(V\)</td><td>L</td><td>농도를 양으로 환산하는 분포용적</td><td>조직분포, 단백결합, 체액량</td></tr>
+              <tr><td>\(t_{1/2}\)</td><td>h</td><td>\(V/CL\)의 <strong>결과</strong></td><td>\(V \uparrow\) 또는 \(CL \downarrow\)</td></tr>
+              <tr><td>\(F\)</td><td>fraction</td><td>경구 생체이용률</td><td>흡수, first-pass</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3 - §1.2 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.2</span>
+        <h1 class="slide-title">청소율의 진짜 정의</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>\(CL\)은 "제거 속도" 자체가 아님. <strong>농도로 정규화한 제거능</strong>임 <span class="chip">G&amp;W p.49 Eq 2:83–2:86</span>:</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\underbrace{\frac{dX}{dt}}_{\text{체내 변화속도}}=-\underbrace{CL}_{\text{제거능}}\cdot \underbrace{C}_{\text{농도 신호}}$$</div>
+        </div>
+        <p>first-order 조건에서 <strong>\(CL\)은 시간마다 새로 바뀌는 게 아니라, 관찰 구간 전체를 설명하는 하나의 비례상수</strong>임. IV bolus를 주든 IV infusion을 주든, 어느 시점에 측정하든, <strong>\(CL\)은 같은 숫자가 나와야</strong> 함. 안 그러면 비선형이거나 모델이 틀렸거나 둘 중 하나임.</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\underbrace{CL}_{\text{IV CL}}=\frac{\underbrace{Dose_{iv}}_{\text{IV 투여량}}}{\underbrace{AUC_{0-\infty}}_{\text{IV 전신노출}}}, \qquad \underbrace{\frac{CL}{F}}_{\text{경구 CL/F}}=\frac{\underbrace{D_{po}}_{\text{경구 투여량}}}{\underbrace{AUC_{po}}_{\text{경구 노출}}}$$
+            <div class="formula-cite"><span class="chip">G&amp;W pp.77–79</span><span class="chip">R&amp;T pp.124–128</span></div>
+          </div>
+        </div>
+        <div class="callout teal"><span class="callout-label">💡 NCA가 의미를 갖는 이유</span><strong>Compartment model 없이도 성립함.</strong> 왜냐하면 총 제거량 = dose이고, \(\int Rate\,dt = CL \cdot \int C\,dt = CL \cdot AUC\)이니까. 그래서 NCA가 의미를 갖는 거임 — 모델을 안 가정해도 \(CL\)을 뽑을 수 있음.</div>
+        <div class="algo">$PK
+  TVCL = THETA(1) * (covariate effects)
+  TVV  = THETA(2) * (covariate effects)
+  K    = CL / V    ; 이건 derived parameter</div>
+        <p>\(CL\)과 \(V\)를 따로 추정해야 covariate를 어느 자리에 넣을지 결정할 수 있음. \(t_{1/2}\)를 직접 추정하는 NONMEM 모델은 거의 없음 — 이유가 바로 이거임.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4 - §2 매트릭스 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2</span>
+        <h1 class="slide-title">좌표 #1 — 어느 농도 기준인가 (Matrix)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">⚠ 왜 맨 앞에 와야 하는가</span>
+          <ul>
+            <li>신장 분해(\(CL_R = f_e \cdot CL\))에서 \(CL\)이 plasma 기준 → matrix가 무엇인지 알아야 \(f_e\) 해석이 안 흔들림</li>
+            <li>간 분해(well-stirred)에서 \(f_{ub}\)가 <strong>혈액 기준</strong> 비결합 분율 → plasma 측정값 그대로 넣으면 분자가 자릿수로 틀어짐</li>
+            <li>PBPK input에서 \(C/C_b\) 변환은 모든 organ extraction의 <em>분모를 정해주는 자리</em></li>
+          </ul>
+          <strong>이 좌표를 먼저 잠그지 않으면 §3 이후가 다 무너짐.</strong> 프롤로그의 60 L/h가 정확히 이 함정의 사례였음.
+        </div>
+        <h2 class="section-h">Plasma vs Blood — 변환 한 줄</h2>
+        <p>\(R = C/C_b\)로 정의함(plasma 농도 / blood 농도) <span class="chip">R&amp;T pp.124–128 Eq 5-4–5-6</span>:</p>
+        <div class="two-col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{CL_b}_{\text{혈액 CL}}=\underbrace{CL}_{\text{혈장 CL}}\cdot\underbrace{\frac{C}{C_b}}_{\text{변환비 }R}$$</div>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{E_H}_{\text{간 추출률}}=\frac{\underbrace{CL_{H,b}}_{\text{blood 기준}}}{\underbrace{Q_H}_{\text{간 혈류}}}$$</div>
+          </div>
+        </div>
+        <p><strong>Organ extraction은 무조건 blood 기준임.</strong> 분자도 분모도 같은 단위(blood-based)여야 함. Plasma \(CL\)을 \(Q_H\)로 나누면 단위가 안 맞음 — 이게 프롤로그의 false-high extraction이 만들어진 메커니즘임.</p>
+        <p>\(R < 1\)이면 약물이 RBC에 농축되어 있다는 뜻 → blood 농도가 plasma보다 큼 → 같은 dose에서 \(CL_b\)는 plasma \(CL\)보다 작아짐.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5 - §2.3 60 L/h 해결 + fu vs fub -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.3</span>
+        <h1 class="slide-title">60 L/h 미스터리 해결 + \(f_u\) vs \(f_{ub}\)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">미스터리 해결</h2>
+            <div class="card">
+              <ul>
+                <li>Plasma \(CL = 60\ \mathrm{L/h}\)</li>
+                <li>\(C/C_b = 0.5\) → 약물이 RBC에 절반쯤</li>
+                <li>\(Q_H = 81\ \mathrm{L/h}\)</li>
+              </ul>
+              <p><strong>Step 1:</strong> \(CL_b = 60 \times 0.5 = 30\ \mathrm{L/h}\)<br>
+              <strong>Step 2:</strong> \(E_H = 30 / 81 \approx 0.37\)</p>
+              <p>처음 0.74는 <strong>단위가 틀린 비율</strong>이었음. 실제로는 0.37, <strong>low-to-intermediate extraction</strong>.</p>
+            </div>
+            <div class="callout teal"><span class="callout-label">💼 임상 결정 변화</span>
+              <ul>
+                <li><strong>DDI</strong>: high(&gt;0.7)는 blood flow 민감, enzyme inhibitor 둔감. Low-intermediate는 반대</li>
+                <li><strong>간장애 라벨</strong>: high는 blood flow 감소 우선, 0.37이면 enzyme capacity가 더 중요</li>
+                <li><strong>PBPK input</strong>: \(f_{ub} \cdot CL_{int}\) 분자에 plasma \(f_u\)를 넣으면 또 자릿수 틀어짐</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h2 class="section-h">\(f_u\) vs \(f_{ub}\) — 또 하나의 매트릭스 함정</h2>
+            <div class="formula-card-wrap">
+              <div class="formula-card compact">$$\overbrace{\underbrace{f_u}_{\text{plasma 기준}}=\frac{\underbrace{C_u}_{\text{비결합 농도}}}{\underbrace{C}_{\text{plasma 총농도}}}}^{\text{plasma 측정}}$$
+                $$\overbrace{\underbrace{f_{ub}}_{\text{blood 기준}}=\frac{\underbrace{C_u}_{\text{비결합 농도}}}{\underbrace{C_b}_{\text{blood 총농도}}}}^{\text{blood 환산}}$$</div>
+            </div>
+            <div class="formula-card-wrap">
+              <div class="formula-card compact">$$\overbrace{\underbrace{f_{ub}}_{\text{blood 유리분율}}=\underbrace{f_u}_{\text{plasma 유리분율}}\cdot\underbrace{\frac{C}{C_b}}_{\text{변환비 }R}}^{\text{App.D 변환 — well-stirred 직전 필수}}$$
+                <div class="formula-cite"><span class="chip">R&amp;T App.D pp.775–776</span></div>
+              </div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>시나리오</th><th>\(R\)</th><th>결과</th></tr></thead>
+                <tbody>
+                  <tr><td>RBC/plasma 균등</td><td>1.0</td><td>\(f_u = f_{ub}\)</td></tr>
+                  <tr><td><strong>RBC 농축</strong> (tacrolimus)</td><td>~0.05–0.5</td><td>\(f_{ub} \ll f_u\) — well-stirred 분자 과대평가</td></tr>
+                  <tr><td>plasma 우세</td><td>&gt; 1</td><td>\(f_{ub} > f_u\) (드뭄)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout warn"><span class="callout-label">⚠ 자릿수 차이</span>Plasma \(f_u = 0.1\), \(R = 0.5\)이면 \(f_{ub} = 0.05\). <strong>분자가 2배 차이 남.</strong> well-stirred에 그대로 들어가면 high/low 분류가 흔들리고, IVIVE 2배 빗나가고, PBPK profile 통째로 다른 모양.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6 - §2.5 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.5</span>
+        <h1 class="slide-title">측정 매트릭스 — Plasma / Serum / Whole blood</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>PopPK control stream을 받았을 때 가장 자주 발견되는 <em>조용한</em> 오류 — <strong>TDM 보고서의 측정 매트릭스를 확인하지 않고 plasma인 척 모델에 넣는 것.</strong></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>매트릭스</th><th>정의</th><th>대표 약물</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Plasma</strong> (혈장)</td><td>항응고제 처리 후 원심분리, RBC 제거</td><td>warfarin, phenytoin, valproate, 대부분의 항생제</td></tr>
+              <tr><td><strong>Serum</strong> (혈청)</td><td>응고 후 원심분리, RBC + clot factor 제거</td><td>digoxin, 일부 항경련제</td></tr>
+              <tr><td><strong>Whole blood</strong> (전혈)</td><td>RBC 포함</td><td><strong>tacrolimus, cyclosporine, sirolimus, everolimus</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ Tacrolimus가 왜 전혈 표준인가?</span>RBC 결합/분배가 너무 강해서 \(C/C_b\)가 <strong>0.05–0.2</strong> 수준. Plasma 농도는 hematocrit에 따라 자릿수로 흔들림. Whole blood는 안정적. 그래서 이식센터 TDM은 무조건 whole blood. <strong>tacrolimus whole blood 농도를 plasma로 잘못 해석하면 \(V\) 추정이 5–20배 과소평가됨.</strong></div>
+        <div class="dark-card">
+          <p><strong>본능 3단 체크.</strong> PK 결과 받으면 손이 자동으로 가는 자리는 ① 매트릭스(plasma/serum/whole blood) → ② \(C/C_b\) → ③ well-stirred 식에서 \(f_u\)를 \(f_{ub}\)로 변환 — <em>이 3단 정합성 점검</em>. 한 단계만 빠져도 hepatic extraction 분류와 PBPK 입력이 통째로 흔들림.</p>
+        </div>
+        <div class="algo">$INPUT ID TIME DV AMT MDV MATRIX CMT ...   ; MATRIX flag로 plasma/blood/wb 구분
+$PK
+  R = THETA(7)              ; C/C_b 변환비, covariate화 가능
+  FUB = FU_PLASMA * R       ; well-stirred 입력 변환
+  CL_BLOOD = CL * R         ; organ extraction 계산용</div>
+        <p class="tip">이 절의 한 줄: <strong>4-좌표의 1번 매트릭스를 안 풀고 §3 이후로 가면 안 됨.</strong> 신장·간 분해는 매트릭스가 잠긴 뒤에야 작동함.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7 - §3 신장 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3</span>
+        <h1 class="slide-title">좌표 #2A — 신장 청소율 분해</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">3.1 경로 분해 vs 비례 단축</h2>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$\underbrace{CL_R}_{\text{신장 CL}}=\underbrace{f_e}_{\text{신장 지분}}\cdot\underbrace{CL}_{\text{전체 CL}}, \qquad \underbrace{CL}_{\text{전체 CL}}=\underbrace{CL_R}_{\text{신장}}+\underbrace{CL_H}_{\text{간}}+\underbrace{CL_{other}}_{\text{기타}}$$
+            <div class="formula-cite"><span class="chip">G&amp;W pp.49–50 Eq 2:87–2:89</span><span class="chip">R&amp;T pp.139–142</span></div>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 자주 일어나는 실수</span>neonate나 신부전 환자 PopPK에서 본능적으로 <code>TVCL = THETA(1) * (CRCL/100)**THETA(2)</code>로 covariate를 <em>전체 CL</em>에 곱함. 그러면 nonrenal pathway까지 같이 줄어듦. Drug X의 \(f_e\)가 0.4면 60%가 nonrenal인데, 이 60%까지 신부전에 비례해 줄어드는 가짜 효과 → <strong>systematic CL underestimation → dose adjustment가 너무 보수적.</strong></div>
+        <div class="algo">TVCL_R   = THETA(1) * (CRCL/100)**1     ; 신장 covariate는 여기만
+TVCL_NR  = THETA(2)                      ; nonrenal은 신기능 무관
+TVCL     = TVCL_R + TVCL_NR              ; 합쳐서 모델에 넣음</div>
+        <h2 class="section-h">3.2 신장 생리 — 30초 요약</h2>
+        <div class="two-col">
+          <div class="card">
+            <p><span class="chip">G&amp;W p.48</span><span class="chip">R&amp;T pp.119–120</span></p>
+            <ul>
+              <li>네프론: 보먼주머니 → 근위세뇨관 → 헨레고리 → 원위세뇨관 → 집합관</li>
+              <li>GFR ≈ <strong>120 mL/min</strong></li>
+              <li>Urine pH 범위 4.5–8</li>
+              <li>평균 신장 혈류 약 <strong>1.1 L/min (=66 L/h)</strong> — 신장 추출의 혈류 상한</li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="section-h">3.3 여과 + 분비 − 재흡수</h2>
+            <div class="formula-card-wrap">
+              <div class="formula-card compact">$$\overbrace{\underbrace{CL_R}_{\text{순 신장 CL}}=\underbrace{(1-F_R)}_{\text{재흡수 잔여율}}\cdot(\underbrace{CL_f}_{\text{여과}}+\underbrace{CL_S}_{\text{분비}})}^{\text{1차 재흡수 모델}}$$
+                $$\underbrace{CL_f}_{\text{여과 CL}}=\underbrace{f_u}_{\text{유리분율}}\cdot\underbrace{GFR}_{\text{여과율}}$$
+                <div class="formula-cite"><span class="chip">R&amp;T p.139 Eq 5-17–5-18</span></div>
+              </div>
+            </div>
+            <div class="callout"><span class="callout-label">진단 패턴 한 줄</span>
+              <ul>
+                <li>\(CL_R > f_u \cdot GFR\) → <strong>분비(secretion) 작동</strong></li>
+                <li>\(CL_R < f_u \cdot GFR\) → <strong>재흡수</strong> OR 측정 오류 의심</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8 - §3.4 재흡수 함정 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.4</span>
+        <h1 class="slide-title">1차 재흡수 가정의 함정 — Methamphetamine</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>위 \((1-F_R)\) 항은 "재흡수가 농도 무관한 일정 분율"이라는 1차 가정에 기댄 단순 모델임. <strong>실제 재흡수는 세 변수에 강하게 의존함</strong> — 소변 유속, 소변 pH, 약물의 친유성/이온화도 <span class="chip">R&amp;T pp.142–148</span>:</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{F_R}^{\text{재흡수 분율}}=\underbrace{f\bigl(\underbrace{\text{urine pH}}_{\text{이온화 균형}},\ \underbrace{\text{urine flow}}_{\text{체류시간}},\ \underbrace{\text{lipophilicity}}_{\text{막 투과}},\ \underbrace{\text{transporter}}_{\text{활성 수송}}\bigr)}_{\text{다변수 함수 — 단순 분율로 묶을 수 없음}}$$</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물</th><th>산성 소변 (pH 4.9–5.3)</th><th>알칼리성 소변 (pH 7.8–8.2)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Methamphetamine</strong> (pKa 10, 약염기)</td><td>회수율 <strong>70–80%</strong></td><td>회수율 <strong>1–2%</strong></td></tr>
+              <tr><td><strong>Phenobarbital</strong> (pKa 7.2, 약산)</td><td>낮은 \(CL_R\)</td><td>알칼리화 시 \(CL_R \uparrow\)</td></tr>
+            </tbody>
+          </table>
+          <p style="text-align:right;padding:6px 10px"><span class="chip">R&amp;T p.145, Fig 5-16</span></p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 자릿수 단위로 흔들림</span><strong>소변 pH 하나로 \(CL_R\)이 자릿수 단위로 흔들림.</strong> \((1-F_R)\) 단순 분율로 봉합 불가. 강제 이뇨(forced diuresis)와 소변 알칼리화가 phenobarbital 중독 치료에 쓰이는 이유가 정확히 이거임 <span class="chip">R&amp;T p.147</span>.</div>
+        <div class="callout teal"><span class="callout-label">💼 NONMEM 신호</span>같은 환자에서 \(CL_R\) 추정치가 occasion 간에 자릿수로 흔들리는 경우, 또는 urine pH/flow가 잔차 변이로 흡수돼 들어가는 경우. <strong>Inter-occasion variability(IOV) 항을 \(CL_R\)에 별도로 걸어야 fitting이 안정화.</strong></div>
+      </div>
+    </section>
+
+    <!-- Slide 9 - §3.5+3.6 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.5</span>
+        <h1 class="slide-title">신장 Transporter DDI · eGFR 식 선택</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">신장 transporter 지도</h2>
+            <p>신장 근위세뇨관 — basolateral 쪽 <strong>OAT1/OAT3, OCT2</strong>, apical 쪽 <strong>MATE1/MATE2-K, MRP2/MRP4, P-gp</strong>.</p>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>DDI 짝</th><th>기전</th><th>결과</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Metformin + cimetidine</strong></td><td>OCT2/MATE 억제</td><td>Metformin AUC ~1.5배 ↑</td></tr>
+                  <tr><td><strong>Probenecid + penicillin</strong></td><td>OAT 억제</td><td>β-lactam 분비 차단 (고전)</td></tr>
+                  <tr><td><strong>Dolutegravir + metformin</strong></td><td>MATE1 억제</td><td>Metformin 노출 ↑</td></tr>
+                  <tr><td><strong>Tenofovir nephrotoxicity</strong></td><td>OAT1/3 매개 uptake</td><td>세뇨관 세포내 농도 ↑ → 신독성</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout"><span class="callout-label">💼 PopPK 함정</span>신장 covariate를 CrCl 단독으로만 잡으면 OCT2/MATE 다형성이나 동반 약물 효과가 잔차 변이로 흡수. Metformin PopPK에서 cimetidine 동반복용 covariate 안 넣으면 IIV 부풀어 오름.</div>
+          </div>
+          <div>
+            <h2 class="section-h">3.6 eGFR 식 선택</h2>
+            <div class="callout warn"><span class="callout-label">⚠ 라벨링 정합성</span>신부전 라벨에 "CrCl 30 mL/min에서 50% 감량"이 있을 때, <strong>그 CrCl이 어떤 식으로 계산됐는지 보고서에 안 적힌 경우가 대부분.</strong></div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>식</th><th>단위</th><th>위치</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Cockcroft-Gault (CG)</strong></td><td>mL/min</td><td>약물 라벨 cutoff 표준</td></tr>
+                  <tr><td><strong>MDRD</strong></td><td>mL/min/1.73 m²</td><td>CKD 진단·분류</td></tr>
+                  <tr><td><strong>CKD-EPI</strong></td><td>mL/min/1.73 m²</td><td>정상~약간 감소 영역 정확</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="formula-card-wrap">
+              <div class="formula-card compact">$$\underbrace{\text{CrCl}_{\text{CG}}}_{\text{Cockcroft-Gault}}=\frac{\overbrace{(140-\text{Age})}^{\text{연령항}}\cdot\overbrace{\text{Weight}}^{\text{체중항}}}{\underbrace{72\cdot\text{SCr}}_{\text{혈청 Cr 비례}}}\cdot\underbrace{(0.85\text{ if female})}_{\text{성별 보정}}$$</div>
+            </div>
+            <ul>
+              <li>단위 차이 — CG는 절대, MDRD/CKD-EPI는 BSA 정규화. 같은 환자가 식에 따라 cutoff 넘나듦</li>
+              <li>비만 환자 — CG는 체중항 때문에 과대평가. Adjusted body weight 적용 필요</li>
+              <li>라벨 cutoff와 정합성 — 대부분 신부전 권고가 CG 기반 → PopPK CKD-EPI라도 라벨 검증 단계엔 CG로 재계산</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10 - §3.7 담즙 + 장간순환 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.7</span>
+        <h1 class="slide-title">담즙 청소율 + 장간순환</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>신장·간 외 <em>제3의</em> 배설 경로 — 담즙임. M2 가산성 식에서 \(CL_{other}\)로 묶이는 자리.</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$\underbrace{CL_{\text{biliary}}}_{\text{담즙 CL}}=\frac{\overbrace{(\text{Bile flow})}^{\approx 0.5{-}0.8\ \text{mL/min}}\cdot\overbrace{(C_{\text{bile}})}^{\text{담즙 농도}}}{\underbrace{C_{\text{plasma}}}_{\text{혈장 농도}}}$$</div>
+        </div>
+        <p>고담즙 CL의 4가지 조건 <span class="chip">R&amp;T p.138</span>: ① apical efflux transporter (P-gp, MRP2, BCRP) 기질, ② 극성, ③ MW &gt; 350, ④ 이온화 가능. <strong>글루쿠로니드 대사체</strong>(MW &gt; 350, 극성, pKa ~3)가 전형적.</p>
+        <div class="callout warn"><span class="callout-label">⚠ 중요 정정</span><strong>장간순환은 소실이 아니라 분포의 일부임</strong> <span class="chip">R&amp;T p.138</span>.</div>
+        <div class="diagram">간 <span class="arr">→</span> 담즙 <span class="arr">→</span> 소장 <span class="arr">→</span> 재흡수 (다시 간) : <span class="anno">분포의 일부</span>
+                                       <span class="arr">↓</span>
+                                    분변 배설 : <span class="step">진짜 소실</span></div>
+        <p>장간순환이 일어났다고 약물이 체외로 나간 게 아님. 그래서 청소율 가산성 식에는 장간순환 자체가 아니라 <strong>재흡수되지 않고 분변으로 빠진 분율만</strong> 들어감.</p>
+        <div class="callout"><span class="callout-label">💼 임상 신호 + NONMEM</span><strong>PK 곡선의 secondary peak</strong>(2차 피크), \(t_{1/2}\) 연장, β-glucuronidase 영향 항생제 동반투여 시 PK 변화. <strong>MMF(MPA-MPAG 순환)</strong>이 대표 anchor — 모약물의 글루쿠로니드 대사체가 장내 세균 β-glucuronidase에 의해 가수분해되어 모약물로 되돌아옴.
+        <p>NONMEM 신호: 2차 피크 시점에 dose 입력(MTIME 또는 transit chain) 안 넣으면, 단순 1·2구획 fitting 시 terminal slope가 시간에 따라 변화하는 인상을 줘서 <strong>비선형 PK로 오인</strong>됨.</p></div>
+      </div>
+    </section>
+
+    <!-- Slide 11 - §3.8 plot -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.8</span>
+        <h1 class="slide-title">데이터로 풀기 — ARE plot vs Excretion-rate plot</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>소변 데이터 받으면 두 가지 plot이 가능함 <span class="chip">G&amp;W pp.50–52 Eq 2:90–2:98</span>:</p>
+        <div class="two-col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{\ln\left(\frac{dX_u}{dt}\right)}_{\text{로그 배설속도}}=\underbrace{\ln\left(CL_R\cdot\frac{D_{iv}}{V}\right)}_{\text{초기절편}}-\underbrace{K}_{\text{소실기울기}}\cdot\underbrace{t}_{\text{시간}}$$
+              <div class="formula-cite">Rate plot (구간 배설속도)</div>
+            </div>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{\ln(X_{u,0-\infty}-X_u)}_{\text{잔여량 로그}}=\underbrace{\ln(X_{u,0-\infty})}_{\text{총량절편}}-\underbrace{K}_{\text{소실기울기}}\cdot\underbrace{t}_{\text{시간}}$$
+              <div class="formula-cite">ARE plot (잔여 누적량)</div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>판단 축</th><th>Rate plot</th><th>ARE plot</th></tr></thead>
+            <tbody>
+              <tr><td>수집 간격이 반감기보다 길 때</td><td>취약</td><td>상대적 안정</td></tr>
+              <tr><td>불완전 방광 배출</td><td>취약</td><td>누적 편향 가능</td></tr>
+              <tr><td>\(X_{u,0-\infty}\) 필요도</td><td>낮음</td><td>높음</td></tr>
+              <tr><td>pH/flow에 따른 \(CL_R\) 시간 변동</td><td><strong>잘 보임</strong></td><td>평탄해져서 덜 보임</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 핵심 trap</span>두 plot의 slope가 안 맞을 때, 본능이 "아 다구획 모델이 필요하나?"로 빠지면 안 됨. <strong>먼저 의심할 건 ① collection interval, ② bladder emptying, ③ pH/flow 변동.</strong> 이 순서로 거른 다음에야 구조 모델로 넘어가는 거임.</div>
+        <div class="algo">$INPUT ID TIME DV AMT MDV DVID ...    ; DVID로 plasma(1)/urine(2) endpoint 구분
+$PK
+  TVCL_R   = THETA(1) * (CRCL/100)
+  TVCL_NR  = THETA(2)
+  TVCL     = TVCL_R + TVCL_NR
+  TVV      = THETA(3)
+$ERROR
+  IF (DVID.EQ.1) Y = IPRED * (1+EPS(1)) + EPS(2)   ; plasma
+  IF (DVID.EQ.2) Y = IPRED * (1+EPS(3)) + EPS(4)   ; urine — 잔차가 더 큼</div>
+        <p class="tip">신부전 covariate는 <em>분해된 자리</em>에 거는 거임 — \(CL\) 전체가 아니라 \(CL_R\)에. 그리고 신장 분해는 단순 비례식이 아니라 <strong>여과·분비·재흡수의 다변수 함수</strong>, <strong>장간순환은 분포의 일부</strong>라는 두 정정을 본능에 새김.</p>
+      </div>
+    </section>
+
+    <!-- Slide 12 - §4.1 Well-stirred -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.1</span>
+        <h1 class="slide-title">Well-stirred 식의 본능적 판독</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\underbrace{CL_{H,b}}_{\text{간 }CL_b}=\underbrace{Q_H}_{\text{간혈류}}\cdot\underbrace{E_H}_{\text{추출률}}=\frac{\underbrace{Q_H}_{\text{혈류한계}}\cdot\underbrace{f_{ub}}_{\text{혈액 유리분율}}\cdot\underbrace{CL_{int}}_{\text{간세포 제거능}}}{\underbrace{Q_H}_{\text{혈류}}+\underbrace{f_{ub}\cdot CL_{int}}_{\text{유리·효소축}}}$$
+            <div class="formula-cite"><span class="chip">G&amp;W pp.79–82 Eq 2:188–2:195</span><span class="chip">R&amp;T pp.130–135</span></div>
+          </div>
+        </div>
+        <p><strong>분모에 \(Q_H + f_{ub}\cdot CL_{int}\)가 있다는 거</strong> — 이 두 항 중 어느 게 큰지가 임상 결정 전체를 가름. 비유로 보면 간은 수도관 + 정수기 장치임. 물(혈류 \(Q_H\))이 적게 들어오면 혈류가 한계고, 정수기 용량(효소·결합 \(f_{ub}\cdot CL_{int}\))이 작으면 그 쪽이 한계임. 둘 중 작은 쪽이 전체 throughput을 결정.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{f_{ub}CL_{int}\gg Q_H}_{\text{제거용량>혈류}}\Rightarrow \underbrace{CL_{H,b}\approx Q_H}_{\text{혈류제한, high}}$$</div>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{f_{ub}CL_{int}\ll Q_H}_{\text{제거용량<혈류}}\Rightarrow \underbrace{CL_{H,b}\approx f_{ub}CL_{int}}_{\text{용량·결합제한, low}}$$</div>
+          </div>
+        </div>
+        <p>\(Q_H \approx\) <strong>1.35 L/min = 81 L/h</strong> <span class="chip">R&amp;T p.125</span>. 이걸 기준으로 \(f_{ub}\cdot CL_{int}\)가 81보다 큰지 작은지를 <em>손이 자동으로 비교하는</em> 게 본능임.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>분류</th><th>DDI 민감도</th><th>Hepatic blood flow</th><th>\(f_u\) 변화</th></tr></thead>
+            <tbody>
+              <tr><td><strong>High</strong> (\(E_H > 0.7\))</td><td>효소 inhibitor 둔감(IV)</td><td><strong>매우 민감</strong></td><td>IV total 둔감, oral 민감</td></tr>
+              <tr><td><strong>Low</strong> (\(E_H < 0.3\))</td><td><strong>매우 민감</strong></td><td>둔감</td><td>total CL 민감</td></tr>
+              <tr><td><strong>Intermediate</strong> (0.3–0.7)</td><td>둘 다 어느 정도</td><td>어느 정도</td><td>endpoint에 따라</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p><strong>분류 자체가 매트릭스 변환(§2)을 거친 뒤에야 의미가 있음</strong> — 프롤로그 60 L/h가 정확히 이 단계에서 분류가 바뀐 사례.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13 - §4.2 CYP + 2D6 + 염증 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.2</span>
+        <h1 class="slide-title">\(CL_{int}\) 자체가 합성이다 — 효소·다형성·염증</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">효소 분포 <span class="chip">R&amp;T pp.121–123</span></h2>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>CYP</th><th>간 abundance</th><th>처방약 CL 기여</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>CYP3A4/5</strong></td><td>최대 (간+장벽)</td><td>~40–50% (가장 광범위)</td></tr>
+                  <tr><td><strong>CYP2D6</strong></td><td>~2%</td><td>~25% (다형성 영향 큼)</td></tr>
+                  <tr><td><strong>CYP2C9</strong></td><td>다수</td><td>산성 약물 (warfarin, NSAIDs)</td></tr>
+                  <tr><td><strong>CYP2C19</strong></td><td>다수</td><td>omeprazole, clopidogrel</td></tr>
+                  <tr><td><strong>CYP1A2</strong></td><td>다수</td><td>caffeine, theophylline (흡연 유도)</td></tr>
+                  <tr><td><strong>CYP2E1</strong></td><td>다수</td><td>알코올, halothane, acetaminophen 활성화</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout"><span class="callout-label">💡 비대칭 통찰</span><strong>CYP2D6가 가장 흥미로운 비대칭</strong> — abundance 2%인데 처방약 CL 25% 담당. 그래서 CYP2D6 다형성 영향이 임상에서 제일 격렬.</div>
+          </div>
+          <div>
+            <h2 class="section-h">CYP2D6 다형성 phenotype</h2>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Phenotype</th><th>유전형</th><th>활성</th><th>임상</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>PM</strong></td><td>*4/*4</td><td>~0</td><td>substrate AUC ↑↑ (4배+)</td></tr>
+                  <tr><td><strong>IM</strong></td><td>*10/*10</td><td>0.25–0.5</td><td>중간</td></tr>
+                  <tr><td><strong>EM</strong></td><td>wt</td><td>1.0</td><td>참조</td></tr>
+                  <tr><td><strong>UM</strong></td><td>*1×N</td><td>1.5–2+</td><td>AUC ↓ → codeine→morphine 오히려 morphine 독성</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <p><strong>Desipramine + quinidine</strong> <span class="chip">R&amp;T p.549</span>: quinidine은 CYP2D6 강력 억제. EM이 사실상 PM phenotype으로 <em>전환</em>, desipramine CL 4배 감소, \(t_{1/2}\) 4배 연장.</p>
+            </div>
+            <div class="formula-card-wrap">
+              <div class="formula-card compact">$$\overbrace{\text{Max exposure ratio (PM, inhibitor)}}^{\text{R\&T Eq 17-18}}=\frac{1}{\underbrace{1-f_{m,\text{POLY}}-f_{m,\text{NP}}}_{\text{차단되지 않은 경로 분율}}}$$</div>
+            </div>
+            <p>\(f_{m,\text{POLY}}\)가 0.75 도달 시 PM + nonpolymorphic 억제로 노출비 10배 이상.</p>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 염증성 CYP downregulation</span>패혈증·중증감염·진행암·자가면역에서 IL-6, TNF-α, IL-1β가 hepatic CYP 발현 억제. CYP3A4가 가장 민감. PopPK 신호: 정상 자원자 외삽되지 않는 ICU/중증감염/진행암 cohort, 베이지안 individual estimate가 한 방향 지속 치우침, COVID-19 cytokine storm에서 narrow therapeutic window 약물 노출 변동. → <strong>단순 IIV가 아니라 체계적 IOV 신호.</strong> PopPK에서 IOV 항을 \(CL\)에 별도로 안 걸면 fitting 불안정.</div>
+      </div>
+    </section>
+
+    <!-- Slide 14 - §4.3 Phase II UGT -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.3</span>
+        <h1 class="slide-title">Phase I 옆자리에 항상 Phase II — UGT 축</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>여기서 자주 놓치는 게 — <strong>대사 = CYP라는 무의식적 등식</strong>. CYP가 abundance와 처방약 비중에서 가장 크긴 하지만, <strong>임상에서 가장 격렬한 phenotype 차이를 만드는 자리는 오히려 UGT 쪽</strong>에 자주 있음.</p>
+        <div class="two-col">
+          <div class="card">
+            <p><strong>Phase I</strong>: 산화·환원·가수분해 (CYP가 대표)</p>
+            <p><strong>Phase II</strong>: 접합 (UGT·SULT·NAT·GST)</p>
+            <p>Phase I과 Phase II는 <strong>흔히 순차적</strong> — CYP가 hydroxyl을 만들고, UGT가 거기에 glucuronic acid를 붙임.</p>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{CL_{int,\text{total}}}_{\text{전체 내재 CL}}=\underbrace{\sum_i CL_{int,\text{CYP}_i}}_{\text{Phase I 합}}+\overbrace{\underbrace{\sum_j CL_{int,\text{UGT}_j}}_{\text{Phase II UGT 합}}+\underbrace{CL_{int,\text{SULT}}+CL_{int,\text{others}}}_{\text{기타 접합}}}^{\text{흔히 누락되는 좌표}}$$</div>
+          </div>
+        </div>
+        <h2 class="section-h">임상 anchor 4개</h2>
+        <div class="three-col">
+          <div class="card-soft">
+            <div class="card-title">(1) Irinotecan / SN-38 (UGT1A1*28)</div>
+            <p>irinotecan → SN-38(활성) → SN-38G(비활성, UGT1A1). UGT1A1*28 동형접합체(Gilbert syndrome, Caucasian ~10%)에서 비활성화 느려져 dose-limiting myelosuppression·diarrhea 위험. <strong>약물 라벨에 *28/*28 시작 용량 감량 권고</strong>가 들어가 있음.</p>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">(2) Lamotrigine + Valproate</div>
+            <p>lamotrigine 단독 \(t_{1/2}\) ~25h. Valproate 동반 시 UGT2B7 억제로 CL 반감 → \(t_{1/2}\) ~50h. <strong>시작 용량 절반 이하 적정</strong> 필수(SJS 위험).</p>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">(3) Mycophenolate (MMF)</div>
+            <p>MMF → MPA → MPAG(UGT) → 담즙 → 장내 β-glucuronidase → MPA로 재가수분해 → 재흡수. <strong>2차 피크 PK 곡선</strong>과 항생제 동반투여 시 MPA 노출 감소.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">(4) Morphine / M6G (UGT2B7)</div>
+          <p>morphine의 활성 대사체 M6G가 UGT2B7로 생성. <strong>신부전에서 M6G 축적 → 진정·호흡억제</strong> — §6.4 active metabolite 신부전 시나리오의 정확한 구조.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 신생아 UGT 미성숙</span><strong>chloramphenicol gray baby syndrome</strong>이 고전 anchor. UGT 발달이 늦어서 chloramphenicol glucuronide conjugation이 안 됨 → 모약물 축적 → 독성. §8 maturation function이 정확히 이 좌표에 맞아 들어감.</div>
+      </div>
+    </section>
+
+    <!-- Slide 15 - §4.4 IVIVE 함정 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.4</span>
+        <h1 class="slide-title">IVIVE가 빗나갈 때 — 입력 정보 손실 진단</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>in vitro에서 microsome 또는 hepatocyte로 \(CL_{int}\)를 측정한 다음, well-stirred 식을 거쳐 in vivo CL을 예측함. 이게 IVIVE임. Phase 1 임상에서 5–10배 빗나가는 경우가 흔함.</p>
+        <div class="callout warn"><span class="callout-label">⚠ 본능 패턴</span>IVIVE mismatch 보고서 받으면 첫 손은 "hepatic model이 안 맞나?"가 <em>아님</em>. 첫 손은 <strong>"in vitro 입력 정보가 이미 뭉개졌나?"</strong>임.</div>
+        <h2 class="section-h">세 가지 함정 <span class="chip">G&amp;W pp.85–89</span></h2>
+        <div class="card">
+          <div class="card-title">(1) 단일 농도 함정</div>
+          <p>한 농도에서 측정한 rate를 \(V_{max}/K_m\)처럼 쓰면 비선형성·포화를 통째로 놓침. 농도-속도 관계 곡선 자체가 사라짐.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">(2) MMP 보정 함정</div>
+          <p>간 g당 microsomal protein 보정. 평균값 하나로 끝나지 않음. G&amp;W Table 2.8: 같은 약물에서 MMP를 <strong>20 / 50 / 77 mg/g</strong>로 바꿨을 때, 분류가 <strong>low → intermediate → high</strong>까지 <em>통째로</em> 바뀜. 어느 값을 쓸지가 환자마다 다르고, 평균값 사용 시 그 변이가 잔차로 흡수됨.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">(3) 데이터 압축 함정</div>
+          <p>농도-속도 관계를 단일 \(CL_{int}\)로 압축하면 곡선 형태·이상치 구조가 사라짐. 흐릿하게 압축된 사진을 고해상도로 띄울 수 없는 것과 같음 — <strong>원본 정보가 이미 소실됐기 때문에, 그 위에 어떤 정교한 hepatic model을 얹어도 곡률이 복구되지 않음.</strong></p>
+        </div>
+        <div class="dark-card">
+          <p><strong>본능 한 줄.</strong> IVIVE mismatch → ① single-point rate? → ② MMP/scaling 변이? → ③ data 압축? → ④ transporter/permeability 누락(§4.5)? — <em>이 순서로 점검</em>. Hepatic 식을 의심하는 건 마지막 순서임.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 16 - §4.5–6 ρ + Extended -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.5–6</span>
+        <h1 class="slide-title">막이 병목일 때 — \(\rho\) · Extended Clearance</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>기본 well-stirred는 "간세포 안팎의 unbound 농도가 빠르게 평형"이라고 가정. 근데 hepatic uptake permeability가 느리면 이 가정이 무너짐. 비유: 공장 정문 회전문이 느리면 안쪽 라인이 아무리 빨라도 전체 생산량 떨어짐.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{\rho}_{\text{세포접근성}}=\frac{\underbrace{P_{in}\cdot SA}_{\text{유입투과}}}{\underbrace{P_{out}\cdot SA}_{\text{유출투과}}+\underbrace{CL_{int}}_{\text{대사제거}}}$$
+              <div class="formula-cite"><span class="chip">R&amp;T App.E pp.778–779 Eq E-9–E-15</span></div>
+            </div>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{CL_{H,b}}_{\rho\text{ 수정}}=\frac{\underbrace{Q_H}_{\text{혈류}}\cdot f_{ub}\cdot\rho\cdot CL_{int}}{Q_H+f_{ub}\cdot \rho\cdot CL_{int}}$$</div>
+          </div>
+        </div>
+        <p>passive diffusion 충분 → \(\rho \to 1\) → well-stirred 환원. uptake permeability 작음 → \(\rho < 1\), permeability-limited.</p>
+        <div class="callout teal"><span class="callout-label">💼 임상 신호</span>PopPK에서 <em>모든 cohort</em>에서 \(f_u\) covariate가 비유의로 떨어지고 계수 ~0, IVIVE는 \(CL_{int}\)만 5–10배 underpredict — 이 패턴이 보이면 well-stirred 자체가 아니라 \(\rho\) 누락 의심. <strong>Covariate 자리를 \(f_u\)에서 SLCO1B1 genotype 같은 transporter 변수로 옮겨야 함.</strong></div>
+        <h2 class="section-h">Extended Clearance — Sirianni-Pang</h2>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{\underbrace{CL_{H,b}}_{\text{Extended 간 CL}_b}=\frac{Q_H\cdot f_{ub}\cdot PS_{inf}\cdot(CL_{int,met}+PS_{eff,bile})}{Q_H(PS_{eff,sin}+CL_{int,met}+PS_{eff,bile})+f_{ub}\cdot PS_{inf}(CL_{int,met}+PS_{eff,bile})}}^{\text{Sirianni-Pang Extended Clearance}}$$
+            <div class="formula-cite"><span class="chip">R&amp;T App.E pp.778–779</span><span class="chip">pp.136–138</span></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>조건</th><th>결과</th><th>임상</th></tr></thead>
+            <tbody>
+              <tr><td>\(PS_{inf} \gg CL_{int,met} + PS_{eff,bile}\)</td><td>well-stirred 환원</td><td>수동확산 우세</td></tr>
+              <tr><td>\(PS_{inf} \ll CL_{int,met}\)</td><td><strong>Uptake-limited</strong></td><td><strong>statin 계열 (OATP1B1 기질)</strong></td></tr>
+              <tr><td>\(PS_{eff,bile} \gg CL_{int,met}\)</td><td>Biliary efflux-limited</td><td>P-gp/BCRP 기질</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">💼 Statin anchor</span>rosuvastatin, pitavastatin은 OATP1B1 uptake-limited. <strong>SLCO1B1*5 다형성</strong>에서 AUC 2–3배 ↑. Cyclosporine·gemfibrozil + statin DDI는 OATP 억제가 효소 억제보다 영향 큼 — statin 라벨에 cyclosporine 동반 시 max dose 제한. <strong>Pravastatin</strong>: 거의 전체가 OATP1B1 uptake에 의존 — well-stirred 단순 적용 시 hepatic CL 예측 5–10배 underpredict.</div>
+      </div>
+    </section>
+
+    <!-- Slide 17 - §4.7 Induction -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.7</span>
+        <h1 class="slide-title">DDI는 Inhibition만이 아니다 — Induction 축</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div class="card-soft">
+            <div class="card-title">Inhibition</div>
+            <p>효소·수송체 <em>활성</em>을 즉시 떨어뜨림 (분 단위)</p>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">Induction</div>
+            <p>mRNA 합성 → 단백 합성 → 활성 발현의 <strong>1–2주 timescale</strong>, 효소·수송체 <em>발현</em>을 높임</p>
+          </div>
+        </div>
+        <h2 class="section-h">주요 inducer 지도 <span class="chip">R&amp;T pp.121–123, Ch.17</span></h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Inducer</th><th>기전</th><th>영향</th><th>결과</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Rifampin</strong></td><td>PXR ligand</td><td>CYP3A4, 2B6, 2C9, <strong>P-gp, BCRP, OATP1B1/1B3</strong></td><td>midazolam·warfarin·statin·digoxin·피임약 AUC ↓ 30–80%</td></tr>
+              <tr><td><strong>Carbamazepine</strong></td><td>PXR/CAR</td><td>CYP3A4, P-gp</td><td><strong>자기유도</strong> — 자기 CL이 시간 따라 ↑</td></tr>
+              <tr><td><strong>St. John's Wort</strong></td><td>PXR</td><td>CYP3A4, P-gp</td><td>cyclosporine 거부반응 (herbal 고전)</td></tr>
+              <tr><td><strong>Phenytoin, Phenobarbital</strong></td><td>CAR</td><td>CYP3A, 2C, P-gp</td><td>전형적 inducer</td></tr>
+              <tr><td><strong>Smoking (PAHs)</strong></td><td>AhR</td><td>CYP1A2</td><td>caffeine, theophylline CL ↑</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{\underbrace{CL_{H,b,\text{induced}}}_{\text{유도 후 간 CL}}=Q_H\cdot\overbrace{E_H(\underbrace{CL_{int}\cdot\alpha_{ind}}_{\text{유도된 }CL_{int}}, \underbrace{PS_{inf}\cdot\beta_{ind}}_{\text{유도된 uptake}})}^{\text{효소·수송체 양쪽 변화}}}^{\text{Induction effect on Extended Clearance}}$$</div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ Inhibition과 결정적 차이</span>
+          <ul>
+            <li><strong>워시아웃</strong>: rifampin 중단 후 효소 baseline 복귀에 약 2주 — DDI design에서 washout period가 핵심</li>
+            <li><strong>임상 영향 방향</strong>: inhibition은 substrate ↑ → 독성. Induction은 substrate ↓ → <strong>치료 실패</strong>(피임실패, 거부반응, 항응고 효과 상실)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <p><strong>Carbamazepine autoinduction</strong> — 처음 1–2주 동안 자기 자신의 CL이 점점 증가함. 단순 1구획 fitting 시 terminal slope가 시간에 따라 가팔라지는 것처럼 보임. NONMEM에서 <em>days since inducer start</em>를 time-varying covariate로 모델링해야 잡힘.</p>
+        </div>
+        <div class="algo">DAYS_INDUCER = (TIME - RIFAMPIN_START_TIME)
+INDUCTION_FACTOR = 1 + (THETA(6)-1) * (1 - EXP(-THETA(7)*DAYS_INDUCER))
+TVCL = THETA(1) * INDUCTION_FACTOR</div>
+      </div>
+    </section>
+
+    <!-- Slide 18 - §5 Route × Extraction -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5</span>
+        <h1 class="slide-title">좌표 #3 — Route × Extraction × Endpoint 매트릭스</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>"High extraction이면 \(f_u\) 무관" — 이 한 줄, 약리학 시험에는 정답이지만 <strong>임상에서는 절반의 진실</strong>임. 정확히는 <strong>IV total concentration endpoint에 한정되는 진술</strong>임. Route가 바뀌거나 endpoint가 unbound로 바뀌면 결론이 뒤집힘.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>시나리오</th><th>Total \(C\) / AUC</th><th>Unbound \(C\)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>IV + High</strong></td><td>\(CL \approx Q_H\), total은 \(f_u\)에 둔감</td><td>\(C_u = f_u C\), \(f_u\) ↑ 시 unbound ↑ 가능</td></tr>
+              <tr><td><strong>IV + Low</strong></td><td>\(CL \approx f_u\cdot CL_{int}\), total ↓</td><td>\(C_u\)는 대체로 \(CL_{int}\)가 보존</td></tr>
+              <tr><td><strong>Oral + High</strong></td><td>first-pass 때문에 total AUC가 \(f_u\cdot CL_{int}\)에 민감</td><td>unbound AUC는 \(CL_{int}\) 중심</td></tr>
+              <tr><td><strong>Oral + Low</strong></td><td>total AUC가 \(f_u\cdot CL_{int}\)에 민감</td><td>unbound AUC는 \(CL_{int}\) 중심</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\begin{aligned}\text{IV high: }&\underbrace{CL\approx Q_H}_{\text{혈류제한 CL}},\quad \underbrace{C_u=f_uC}_{\text{유리농도 확인}}\\ \text{Low/oral 축: }&\underbrace{CL\approx f_uCL_{int}}_{\text{결합·용량민감}},\quad \underbrace{AUC\propto (f_uCL_{int})^{-1}}_{\text{경구노출 민감}}\end{aligned}$$
+            <div class="formula-cite"><span class="chip">G&amp;W pp.83–85</span><span class="chip">R&amp;T pp.150–163</span></div>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 현장 함정</span>High extraction 약물의 <strong>IV DDI study가 음성이라고 oral DDI도 안전하다고 결론 내리면 안 됨.</strong> Route가 바뀌면 first-pass와 \(f_u\cdot CL_{int}\) 민감도가 같이 바뀜. IV negative DDI는 oral safety의 보장이 아님.</div>
+        <div class="callout teal"><span class="callout-label">💡 핵심</span><strong>3-축 좌표화</strong>: route × extraction class × total/unbound endpoint. 이 셋 중 하나라도 빠뜨리고 결론 내면 다른 시나리오로 일반화될 때 깨짐.</div>
+      </div>
+    </section>
+
+    <!-- Slide 19 - §5.2 임상 anchor 5개 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.2</span>
+        <h1 class="slide-title">임상 Anchor 5개 — 매트릭스 각 칸을 채우는 사례</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <div class="card-title">(1) Alfentanil (저추출 opioid) + Rifampin <span class="chip">R&amp;T p.152</span></div>
+          <p>rifampin이 CYP3A를 강력하게 <em>induce</em>함. 저추출이라 \(CL\) ↑, AUC ↓로 <strong>직접 반응</strong>. → "저추출 약물은 \(CL_{int}\) 변화에 직접 반응"의 사례.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">(2) Alprenolol (고추출 β차단제) + Pentobarbital(효소 유도) <span class="chip">R&amp;T p.153</span></div>
+          <p>같은 효소 유도라도 IV alprenolol은 high extraction의 혈류 제한 때문에 변화가 작음. 근데 <strong>경구 생체이용률은 분명히 감소함</strong>. → "같은 약이라도 IV와 oral에서 효소 유도에 반응하는 방식이 다름"의 사례.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">(3) Fentanyl (고추출 opioid) + Itraconazole / Ritonavir <span class="chip">R&amp;T pp.154–155</span></div>
+          <p>itraconazole(약한 CYP3A 억제)은 IV fentanyl PK에 큰 영향 없음. 근데 <strong>ritonavir(강한 억제)는 CL을 0.94 → 0.32 L/h/kg로 떨어뜨림</strong>. → "강한 효소 억제가 같은 약을 고추출에서 저추출로 분류를 전환시킴"의 사례. <strong>분류는 약물 이름이 아니라 상태임.</strong></p>
+        </div>
+        <div class="card">
+          <div class="card-title">(4) Phenytoin + 요독증(uremia) <span class="chip">R&amp;T pp.159–160</span></div>
+          <p>요독에서 알부민 결합 ↓ → \(f_u\) ↑. <strong>Total 농도는 낮게 측정되는데 unbound는 안 변하거나 오히려 ↑</strong>. 임상 효과는 unbound가 결정. → "total과 unbound가 다른 질문에 답함"의 사례. <strong>요독 환자 phenytoin은 total로 판단하면 underdose됨.</strong></p>
+        </div>
+        <div class="card">
+          <div class="card-title">(5) Clofibric acid + 신증후군 <span class="chip">R&amp;T pp.161–162</span></div>
+          <p>작은 \(V\)에서 \(f_u\) ↑ → \(V\) ↑와 \(CL\) ↑가 동시 → \(t_{1/2}\) 단축. → "\(f_u\) 변화 하나가 \(V\)와 \(CL\) 양쪽에 작용해 \(t_{1/2}\)를 흔듦"의 사례. M1에서 다룬 "\(t_{1/2}\)로 시작하지 마라"의 직접 이유가 여기 있음.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 20 - §6.1-2 율속단계 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6.1–2</span>
+        <h1 class="slide-title">대사체 — 율속단계의 함정</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>대사체가 임상적으로 중요한 이유 <span class="chip">R&amp;T pp.658–659</span>: <strong>활성, 독성, 효소 억제, 효소 유도, displacement</strong>. 단, "활성 대사체가 있다"와 "임상적으로 의미가 있다"는 <em>같은 말이 아님</em>.</p>
+        <div class="dark-card">
+          <p><strong>활성 대사체 = (활성 자체) × (도달 농도) × (제거 속도)</strong> — 셋 다 봐야 함.</p>
+        </div>
+        <h2 class="section-h">대사체 말단 기울기의 함정 — 율속단계</h2>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$\underbrace{\frac{dA(m)}{dt}}_{\text{대사체 변화}}=\underbrace{k_fA}_{\text{형성입력}}-\underbrace{k(m)A(m)}_{\text{제거출력}}$$
+            <div class="formula-cite"><span class="chip">R&amp;T pp.659–662</span></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>분류</th><th>조건</th><th>관찰</th><th>해석</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Formation rate-limited</strong></td><td>\(k \ll k(m)\)</td><td>모약물에 <em>나란히</em> 감소</td><td>관찰된 metabolite terminal \(t_{1/2}\)은 <strong>parent의 half-life</strong></td></tr>
+              <tr><td><strong>Elimination rate-limited</strong></td><td>\(k(m) \ll k\)</td><td>더 늦게 peak, 더 느리게 감소</td><td>terminal \(t_{1/2}\)이 <strong>metabolite 자신의 half-life</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$\begin{aligned}\underbrace{k\ll k(m)}_{\text{형성 느림}}&\Rightarrow \underbrace{t_{1/2,\mathrm{obs}}(m)\approx t_{1/2,\mathrm{parent}}}_{\text{parent 잔향}}\\ \underbrace{k(m)\ll k}_{\text{제거 느림}}&\Rightarrow \underbrace{t_{1/2,\mathrm{obs}}(m)\approx t_{1/2,\mathrm{metabolite}}}_{\text{대사체 지배}}\end{aligned}$$</div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 핵심 비유</span>순차 연쇄에서 downstream 물질의 말단 감소는 "fastest k"가 아니라 <strong>가장 느린 단계가 지배</strong>함 <span class="chip">R&amp;T p.661</span>. 대사체는 앞차(모약물)를 따라가는 차량 — 앞차가 느리면 뒤차 속도계가 아니라 교통 흐름이 느린 거임.</div>
+        <div class="callout"><span class="callout-label">임상 함정</span>모약물과 대사체가 평행 감소를 보이면 "대사체 반감기 = 모약물 반감기"로 보고하기 쉬움. <strong>그러면 안 됨.</strong> 신부전 환자에서 대사체 축적 외삽이 잘못됨 — §6.5 본 게임이 정확히 여기서 시작됨.</div>
+      </div>
+    </section>
+
+    <!-- Slide 21 - §6.3 AUC ratio 분해 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6.3</span>
+        <h1 class="slide-title">\(AUC(m)/AUC\) 분해 — 형성분율 ≠ 노출비</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>자주 보는 등식 — "\(AUC(m)/AUC = f_m\)". <strong>틀림.</strong> 이건 절반만 맞는 식임.</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$\underbrace{\frac{dA(m)}{dt}}_{\text{대사체 변화}}=\underbrace{CL_f\cdot C}_{\text{형성입력}}-\underbrace{CL(m)\cdot C(m)}_{\text{제거출력}}$$</div>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\boxed{\underbrace{\frac{AUC(m)}{AUC}}_{\text{노출비}}=\underbrace{f_m}_{\text{형성분율}}\cdot\frac{\underbrace{CL}_{\text{parent CL}}}{\underbrace{CL(m)}_{\text{대사체 CL}}}}$$
+            <div class="formula-cite">\(CL_f = f_m \cdot CL\) 대입</div>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ 한 식에 두 미지수</span><strong>\(AUC(m)/AUC\)는 \(f_m\)과 \(CL/CL(m)\)이 곱해진 합성량.</strong> AUC ratio 하나만 보고 형성 쪽 문제인지 제거 쪽 문제인지 <em>원리적으로 구분 불가</em>.</div>
+        <div class="card-soft">
+          <p><strong>욕조 비유.</strong> 수위 = 수도꼭지 유입(\(f_m\)) × 배수구 크기(\(CL(m)\))의 역수. 수위 하나로는 수도꼭지가 작은 건지 배수구가 큰 건지 못 가림.</p>
+        </div>
+        <div class="callout"><span class="callout-label">부등식 한 줄</span>\(AUC(m)/AUC < 1\)이고 \(f_m\) 미상이면, <strong>\(CL(m) \geq CL/f_m\)이라고 추론할 수 없음</strong>. 원전에 부합하는 부등식은 오직 \(CL(m) > f_m \cdot CL\)뿐임.</div>
+        <div class="formula-card-wrap">
+          <div class="formula-card compact">$$\overbrace{\underbrace{\frac{k(m)}{k}}_{\text{속도비}}=\frac{\underbrace{CL(m)/CL}_{\text{청소율비}}}{\underbrace{V(m)/V}_{\text{분포비}}}}^{\text{Eq 20-7 속도상수 비교}}$$
+            <div class="formula-cite"><span class="chip">R&amp;T p.664</span></div>
+          </div>
+        </div>
+        <p>\(V(m)/V\) 분포비가 필요한 이유 — 대사체와 모약물이 분포용적이 다를 수 있기 때문. \(CL(m)/CL = k(m)/k\)로 단순 환원되지 않음.</p>
+        <div class="card">
+          <p><strong>임상 anchor</strong>: Methylprednisolone hemisuccinate (prodrug) → methylprednisolone (active) — prodrug→active 대표 사례 <span class="chip">R&amp;T pp.662–665</span>. Tolbutamide → hydroxytolbutamide — 활성/비활성 비교. Propranolol → naphthoxylactic acid — high first-pass.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 22 - §6.4 First-pass 대사체 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6.4</span>
+        <h1 class="slide-title">First-pass 대사체 + 정상상태 — Morphine/M6G</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>경구 모약물 투여 후 대사체는 <strong>두 군데</strong>에서 생김 <span class="chip">R&amp;T pp.665–669</span>:</p>
+        <div class="two-col">
+          <div class="card-soft">
+            <p>① 흡수·초회통과 중 형성</p>
+          </div>
+          <div class="card-soft">
+            <p>② 흡수 후 전신에서 형성</p>
+          </div>
+        </div>
+        <p>이 둘이 한 모델에서 동시에 작동하는 게 임상 default. 그런데 <strong>oral 단독 데이터만으로는 두 경로를 따로 추정 불가</strong> — IV·oral 비교 design이 필수.</p>
+        <div class="card">
+          <p><strong>Propranolol</strong> (고추출 β차단제, 경구 20 mg) <span class="chip">R&amp;T p.666</span>: naphthoxylactic acid 대사체가 propranolol과 <em>거의 같은 시간</em>에 최고 농도. 초회통과 대사체 유입 패턴. → <strong>high first-pass면 대사체 입력에서 초회통과 비중이 큼</strong>.</p>
+        </div>
+        <div class="card">
+          <p><strong>Morphine / M6G</strong> <span class="chip">R&amp;T pp.667–668</span>: 경구 11.7 mg vs 정맥 5 mg morphine. Morphine 경구 F는 낮음. 근데 <em>초회통과에서 M6G(활성)가 형성</em>되니까 — <strong>M6G 노출량은 두 경로에서 비슷할 수 있음.</strong> → <strong>모약물 F가 낮아도 활성 대사체 노출은 보존됨</strong>. morphine 경구 진통 효과의 진짜 메커니즘 일부.</p>
+        </div>
+        <div class="card">
+          <p><strong>Isoproterenol</strong> <span class="chip">R&amp;T p.669</span>: 투여 경로에 따라 장벽 대사 vs 간외 대사 작동 위치가 바뀜 → 소변 회수율 달라짐. → <strong>route가 first-pass 위치 자체를 옮김</strong>.</p>
+        </div>
+        <h2 class="section-h">정상상태 대사체</h2>
+        <div class="two-col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{C(m)_{ss}}_{\text{대사체 Css}}=\frac{\underbrace{f_m}_{\text{형성분율}}\cdot\underbrace{R_{inf}}_{\text{입력속도}}}{\underbrace{CL(m)}_{\text{대사체 CL}}}$$</div>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{C(m)_{av,ss}}_{\text{평균 Css}}=\frac{\underbrace{AUC(m)_{single}}_{\text{단회 노출}}}{\underbrace{\tau}_{\text{투여간격}}}$$</div>
+          </div>
+        </div>
+        <div class="callout"><span class="callout-label">정상상태 도달 시간</span>율속 패턴에 따라 모약물 또는 대사체 소실 중 <em>더 느린 쪽</em>이 결정. <strong>N-desalkylhalazepam</strong>(diazepam계)에서 대사체 축적이 모약물보다 느림. <strong>Carbamazepine autoinduction</strong>(§4.7)은 추가로 시간 변동까지 들어가서 정상상태가 <em>움직임</em>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 23 - §6.5 신부전 + 활성 대사체 APEX -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6.5</span>
+        <h1 class="slide-title">종착역 — 신부전 + 활성 대사체 (Q9) <span class="tag apex">⚡ APEX</span></h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>4-좌표가 한 환자에서 동시에 충돌하는 시나리오 <span class="chip">R&amp;T pp.673–675; Fig 20-10; Table 20-4</span>.</p>
+        <div class="two-col">
+          <div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>파라미터</th><th>Parent</th><th>활성 대사체</th></tr></thead>
+                <tbody>
+                  <tr><td>전체 CL</td><td>30 L/h</td><td>10 L/h</td></tr>
+                  <tr><td>신장 CL</td><td>15 L/h</td><td>8.5 L/h</td></tr>
+                  <tr><td>F / \(f_m\)</td><td>\(F=0.8\)</td><td>\(f_m=0.3\)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <p>경구 10 mg/h 투여, 정상 신기능:</p>
+              <ul>
+                <li>Parent Css = <strong>0.27 mg/L</strong></li>
+                <li>Metabolite Css = <strong>0.24 mg/L</strong></li>
+                <li>총 활성 농도 = <strong>0.51 mg/L</strong></li>
+              </ul>
+              <p><strong>환자가 무뇨(anuria)</strong>. 단순히 "parent CL이 반으로 줄었으니 dose도 반으로"로 가면 <strong>라벨 실패</strong>임.</p>
+            </div>
+          </div>
+          <div>
+            <h2 class="section-h">5-Step 풀이</h2>
+            <p><strong>Step 1.</strong> 정상상태 분해: Parent CL = renal 15 + metabolic 9 + 기타 nonrenal 6 = 30. Metabolite total CL = 10 = renal 8.5 + nonrenal 1.5.</p>
+            <div class="formula-card-wrap">
+              <div class="formula-card compact">$$\underbrace{CL_{\text{parent, anuria}}}_{\text{무뇨 parent}}=\underbrace{0}_{\text{신장 차단}}+\underbrace{9}_{\text{대사 유지}}+\underbrace{6}_{\text{nonrenal 유지}}=15$$
+              $$\underbrace{CL(m)_{\text{anuria}}}_{\text{무뇨 metabolite}}=\underbrace{0}_{\text{신장 차단}}+\underbrace{1.5}_{\text{nonrenal 유지}}=1.5$$</div>
+            </div>
+          </div>
+        </div>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{\underbrace{f_{m,\text{normal}}}_{=0.3}\xrightarrow{\text{무뇨 시}}\underbrace{f_{m,\text{anuria}}}_{=?}}^{\text{핵심 산출 단계}}=\frac{\overbrace{CL_{\text{metabolic}}}^{=9\ \text{L/h, 유지}}}{\underbrace{CL_{\text{parent, anuria}}}_{=15\ \text{L/h}}}=\boxed{0.6}$$
+            <div class="formula-cite">Step 3 — \(f_m\)이 자동으로 증가함</div>
+          </div>
+        </div>
+        <p>왜 \(f_m\)이 2배? metabolic formation CL의 <em>절대값</em>은 유지되는데(효소는 정상), 신장 경로가 닫히면서 <em>전체 parent CL 중 차지하는 비율</em>이 올라가기 때문.</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{\frac{AUC(m)_{\text{anuria}}}{AUC(m)_{\text{normal}}}}^{\text{대사체 노출 변화}}=\frac{\underbrace{f_{m,\text{anuria}}/CL(m)_{\text{anuria}}}_{0.6/1.5\,=\,0.4}}{\underbrace{f_{m,\text{normal}}/CL(m)_{\text{normal}}}_{0.3/10\,=\,0.03}}=\boxed{\approx 13.3\text{배}}$$</div>
+        </div>
+        <div class="dark-card">
+          <p><strong>모약물 약 2배, 대사체 약 13배.</strong> 모약물만 보고 50% 감량하면 대사체는 여전히 약 6–7배 과노출. 통합 활성 농도(0.51)를 유지하려면 용량을 <em>정상의 약 0.14배</em>로 낮춰야 함.</p>
+          <p><strong>핵심 교훈.</strong> "소수 대사 경로(\(f_m\) 작음)"는 "소수 안전성 우려"가 아님. <em>신장이 닫히는 순간 \(f_m\)이 자동 상승</em>하고, 대사체 신장 의존도가 높으면 \(CL(m)\)이 무너지면서 두 요인이 곱해져 대사체 노출이 <em>자릿수</em>로 폭증함 — \(f_m\) 2배 × \(CL(m)\) ~6.7배 = <strong>~13.3배</strong>.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ Interconversion 추가 함정</span><span class="chip">R&amp;T pp.676–679</span>모약물과 대사체가 서로 재생성 가능한 경우. 대사체 쪽 신장애가 모약물의 <em>겉보기</em> 소실까지 늦출 수 있음. <strong>Clofibric acid</strong>가 대표 anchor. Parent profile만 보고 "renal-safe"로 분류하면 메커니즘을 놓침.</div>
+      </div>
+    </section>
+
+    <!-- Slide 24 - §7 PK5 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7</span>
+        <h1 class="slide-title">구현 다리 — PK5 동시 적합</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>§2~§6이 <em>생리학적 좌표</em>를 깔았다면, 이 절은 그걸 <em>데이터에 어떻게 fitting</em>하는지를 한 사례로 보여줌.</p>
+        <h2 class="section-h">7.1 PK5 시나리오</h2>
+        <p><strong>250 mg IV bolus</strong> <span class="chip">G&amp;W p.494</span>. plasma 농도-시간 곡선 + 누적 소변량. 초기 추정 \(V \approx 7\) L, \(CL \approx 2\) L/h, \(f_e \approx 0.3\).</p>
+        <div class="two-col">
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{C(t)}_{\text{혈장농도}}=\frac{\underbrace{D_{iv}}_{\text{IV 용량}}}{\underbrace{V}_{\text{분포용적}}}\exp\left(-\underbrace{\frac{CL}{V}}_{\text{소실상수 }k}\underbrace{t}_{\text{시간}}\right)$$</div>
+          </div>
+          <div class="formula-card-wrap">
+            <div class="formula-card compact">$$\underbrace{X_u(t)}_{\text{누적 소변량}}=\underbrace{f_e}_{\text{신장 지분}}\cdot D_{iv}\left[1-\exp\left(-\frac{CL}{V}t\right)\right]$$</div>
+          </div>
+        </div>
+        <div class="callout"><span class="callout-label">최종 추정</span>\(CL \approx 1.2\) L/h, \(f_e \approx 35\%\), \(CL_R \approx 0.42\) L/h. Parameter CV &lt; 5%. 잔차 CV는 <strong>plasma 2.84%, urine 8.96%</strong> <span class="chip">G&amp;W pp.497–498</span>.</div>
+        <h2 class="section-h">7.2 왜 한 모델에서 동시에 적합해야 하나</h2>
+        <div class="callout warn"><span class="callout-label">⚠ 분리하면 깨짐</span><strong>소변 데이터를 별도 계산표로 처리하면 그 순간 \(f_e\)와 \(CL_R\)를 plasma model 안에서 따로 추정할 수 없게 됨.</strong> 두 endpoint를 같이 적합해야 — endpoint별 오차 구조와 renal fraction이 <em>한 모델 안에서</em> 추정 가능.
+        <p>Plasma: CV ~2–5%, 측정법 정밀. Urine: CV ~5–15%, collection completeness·bladder emptying·sample homogeneity 영향. 차이 무시하고 단일 잔차오차로 fitting하면 — plasma fit이 urine 잔차에 끌려가서 plasma parameter 추정이 흔들림.</p>
+        </div>
+        <div class="algo">$INPUT ID TIME DV AMT MDV DVID CMT
+$DATA pk5_data.csv
+$SUBROUTINES ADVAN1 TRANS2
+$PK
+  TVCL = THETA(1)
+  TVV  = THETA(2)
+  TVFE = THETA(3)
+  CL = TVCL * EXP(ETA(1))
+  V  = TVV  * EXP(ETA(2))
+  FE = TVFE
+  S1 = V               ; plasma 농도용
+  S2 = 1               ; urine 누적량용
+$DES
+  DADT(1) = -K*A(1)
+  DADT(2) = FE*K*A(1)  ; 누적 소변량
+$ERROR
+  IPRED = A(1)/V
+  IF (DVID.EQ.1) Y = IPRED*(1+EPS(1))      ; plasma, CV ~2.84%
+  IF (DVID.EQ.2) Y = A(2)*(1+EPS(2))       ; urine, CV ~8.96%</div>
+        <p class="tip">다중 endpoint를 만나면 본능은 <strong>한 모델 + DVID 분리 + 잔차오차 블록 분리</strong>임.</p>
+      </div>
+    </section>
+
+    <!-- Slide 25 - §8 Allometric -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8</span>
+        <h1 class="slide-title">종간/체구 정규화 — Allometric Scaling</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{CL=CL_{70}\cdot\left(\frac{BW}{70\ \text{kg}}\right)^{0.75}}^{\text{청소율: 3/4 power}}\,,\qquad \overbrace{V=V_{70}\cdot\left(\frac{BW}{70\ \text{kg}}\right)^{1.0}}^{\text{분포용적: 선형}}\,,\qquad \overbrace{Q=Q_{70}\cdot\left(\frac{BW}{70\ \text{kg}}\right)^{0.75}}^{\text{Q intercompartmental}}$$
+            <div class="formula-cite"><span class="chip">G&amp;W p.87, Table 2.7</span></div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>파라미터</th><th>지수</th><th>근거</th></tr></thead>
+              <tbody>
+                <tr><td>\(CL\) (총)</td><td><strong>0.75</strong></td><td>Kleiber's law, 간 효소·신장 GFR</td></tr>
+                <tr><td>\(Q\) (구획간)</td><td><strong>0.75</strong></td><td>혈류 비례</td></tr>
+                <tr><td>\(V\)</td><td><strong>1.0</strong></td><td>체액 부피와 거의 정비례</td></tr>
+                <tr><td>\(K_a\)</td><td><strong>−0.25</strong> or 0</td><td>시간 척도 — 큰 동물은 흡수 느림</td></tr>
+              </tbody>
+            </table>
+            <p style="padding:6px 10px;text-align:center"><strong>\(t_{1/2} \propto BW^{1.0-0.75} = BW^{0.25}\)</strong> — 큰 동물일수록 반감기 <em>느리게</em> 증가</p>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Species</th><th>BW (kg)</th><th>Liver wt (g)</th><th>Liver flow (mL/min)</th></tr></thead>
+              <tbody>
+                <tr><td>Human</td><td>70</td><td>1500</td><td>1450</td></tr>
+                <tr><td>Dog</td><td>10</td><td>320</td><td>309</td></tr>
+                <tr><td>Rabbit</td><td>2.5</td><td>77</td><td>177</td></tr>
+                <tr><td>Rat</td><td>0.25</td><td>10</td><td>13.8</td></tr>
+                <tr><td>Mouse</td><td>0.020</td><td>1.75</td><td>1.8</td></tr>
+              </tbody>
+            </table>
+            <p style="padding:6px 10px"><span class="chip">G&amp;W p.87 Table 2.7</span> rat → mouse에서 BW 12배 감소 시 liver flow는 7.7배만 감소 — <strong>단순 mg/kg 변환이 실패하는 정량 anchor</strong></p>
+          </div>
+        </div>
+        <h2 class="section-h">소아·신생아 — Maturation Function</h2>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\overbrace{CL_{\text{pediatric}}=CL_{70}\cdot\underbrace{\left(\frac{BW}{70}\right)^{0.75}}_{\text{Size}}\cdot\underbrace{\frac{PMA^{H}}{TM_{50}^{H}+PMA^{H}}}_{\text{Maturation (Hill 함수)}}}^{\text{Anderson \& Holford framework}}$$</div>
+        </div>
+        <p>\(PMA\) = Postmenstrual age, \(TM_{50}\) = 성인 활성 50% 도달 PMA (UGT2B7 ~36주, CYP3A4 ~45주), \(H\) = Hill coefficient. → §4.3 <strong>chloramphenicol gray baby (UGT 미성숙)</strong>가 정확히 이 framework.</p>
+        <h2 class="section-h">비만 환자 — ABW vs IBW vs LBW</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물 특성</th><th>적용 체중</th><th>예시</th></tr></thead>
+            <tbody>
+              <tr><td>친수성 (분포 제한)</td><td>IBW or LBW</td><td>aminoglycosides; vancomycin (load=ABW, maint=IBW)</td></tr>
+              <tr><td>지용성 (조직 분포 큼)</td><td>ABW</td><td>일부 마취제</td></tr>
+              <tr><td>중간</td><td>dosing weight = \(LBW + 0.4 \times (ABW - LBW)\)</td><td>다수 가이드라인</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠ Aminoglycosides 함정</span>lean tissue 분포라서 LBW 기반이 더 정확. ABW로 dose 계산 시 신독성 위험 ↑.</div>
+      </div>
+    </section>
+
+    <!-- Slide 26 - §9 혼동쌍 1-5 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 9</span>
+        <h1 class="slide-title">혼동쌍 1–5</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <div class="callout"><span class="callout-label">쌍 1. CL vs CL_R / f_e</span>\(CL = CL_R + CL_H + CL_{other}\). \(f_e = CL_R/CL\); \(CL_R = f_e \cdot CL\). <strong>⚡ \(f_e\)는 신장 지분임. 곱셈 분해이지 비례 단축이 아님. 신부전 covariate는 \(CL_R\) 위치에만.</strong></div>
+            <div class="callout amber"><span class="callout-label">쌍 2. ARE vs Rate plot</span>ARE: 잔여 누적량 로그. Rate: 구간 배설속도 로그. <strong>⚡ Rate plot은 시간 정보 노출, ARE는 누적량으로 변동 평탄화. Slope 불일치 → 구조 모델 점프 전에 sampling design부터.</strong></div>
+            <div class="callout warn"><span class="callout-label">쌍 3. Plasma CL vs Blood CL_b <span class="tag apex">결정타</span></span>\(CL = Dose/AUC_{plasma}\); \(CL_b = CL \cdot C/C_b\). <strong>⚡ \(E_H = CL_b/Q_H\)임. \(CL/Q_H\) 아님. App.D bridge 없이 organ extraction을 말하지 마라. 프롤로그 60 L/h가 이 함정의 사례.</strong></div>
+          </div>
+          <div>
+            <div class="callout teal"><span class="callout-label">쌍 4. f_u vs f_ub <span class="tag apex">결정타</span></span>plasma 내 unbound 분율 vs blood 내 unbound 분율. well-stirred의 \(f_{ub}\cdot CL_{int}\). <strong>⚡ \(f_{ub} = f_u \cdot R\). 분모가 다른 두 측정량이지 별명이 아님. 매트릭스 anchor: tacrolimus·cyclosporine = whole blood; warfarin·phenytoin = plasma; digoxin = serum.</strong></div>
+            <div class="callout"><span class="callout-label">쌍 5. High IV vs High oral</span>IV: 혈류 제한 항. Oral: \(F\), first-pass, \(f_{ub}CL_{int}\) 민감. <strong>⚡ IV에서는 \(Q_H\) 상한이 enzyme 변화를 가림. Oral에서는 first-pass가 그 상한을 풂. IV negative ≠ oral safety.</strong></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>쌍</th><th>혼동 결과</th></tr></thead>
+            <tbody>
+              <tr><td><strong>1. CL vs CL_R</strong></td><td>total CL에 renal covariate 무차별 적용 → nonrenal까지 줄어 systematic underestimation</td></tr>
+              <tr><td><strong>2. ARE vs Rate</strong></td><td>평활된 누적량을 변동 없음으로 오인; sampling artifact를 구조 모델로 오인</td></tr>
+              <tr><td><strong>3. Plasma vs Blood CL</strong></td><td>\(CL/Q_H\)로 false-high extraction → DDI 해석 실패</td></tr>
+              <tr><td><strong>4. f_u vs f_ub</strong></td><td>plasma 분율을 blood 식에 직접 대입 → hepatic extraction과 PBPK 입력 단위 오류</td></tr>
+              <tr><td><strong>5. High IV vs oral</strong></td><td>IV negative DDI를 oral safety로 오판 → route-dependent DDI 누락</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 27 - §9 혼동쌍 6-10 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 9'</span>
+        <h1 class="slide-title">혼동쌍 6–10</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <div class="callout"><span class="callout-label">쌍 6. Well-stirred vs Extended</span>\(f_{ub}CL_{int}\) vs \(f_{ub}\rho CL_{int}\) 또는 uptake/efflux 분해. <strong>⚡ \(\rho < 1\)이면 효소가 아니라 막이 병목. Statin/OATP1B1 기질에서 \(f_u\) covariate가 비유의로 떨어지면 의심.</strong></div>
+            <div class="callout amber"><span class="callout-label">쌍 7. 단일점 CL_int vs MM 정보</span>한 농도 rate의 압축값 vs 농도-속도 곡선. <strong>⚡ 한 농도 rate를 \(V_{max}/K_m\)로 쓰는 건 곡선을 버리고 분수식을 정교화하는 것. 정보 손실은 어떤 hepatic model로도 복구 안 됨.</strong></div>
+            <div class="callout warn"><span class="callout-label">쌍 8. Formation vs Elimination rate-limited <span class="tag apex">치명적</span></span>\(k \ll k(m)\) vs \(k(m) \ll k\). <strong>⚡ 평행 감소 = 모약물의 잔향. 보고된 metabolite terminal \(t_{1/2}\)이 그 metabolite의 것이 아닐 수 있음. Separate IV 또는 model-based formation rate fixing 필요.</strong>
+            <p style="margin-top:5px">NDA에서 sponsor가 active metabolite IV 단독 시험 없이 "metabolite 반감기는 X시간"을 명시하면, system-level slope에 metabolite 라벨 — (a) 신부전 축적 외삽 빗나감 (b) 다회 투여 축적 빗나감 (c) dose-response timing 빗나감.</p></div>
+          </div>
+          <div>
+            <div class="callout teal"><span class="callout-label">쌍 9. AUC(m)/AUC vs f_m</span>\(f_m \cdot CL/CL(m)\) vs 형성항 단독. <strong>⚡ \(AUC(m)/AUC < 1\)은 한 식에 두 미지수. \(f_m\) 모르면 \(CL(m)/CL\) 부등식 쓰지 마라. 원전 부합 부등식은 \(CL(m) > f_m \cdot CL\)뿐.</strong></div>
+            <div class="callout"><span class="callout-label">쌍 10. Sequential vs Interconversion</span>한 방향 흐름 vs 양방향 parent↔metabolite. <strong>⚡ Sequential = 한 방향, interconversion = 양방향. 후자에선 parent \(f_e\)가 작아도 metabolite 신부전이 parent 겉보기 소실을 늦춤. Clofibric acid가 anchor.</strong></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>쌍</th><th>혼동 결과</th></tr></thead>
+            <tbody>
+              <tr><td><strong>6. WS vs Extended</strong></td><td>낮은 \(CL_{int}\)처럼 오인 → transporter covariate 누락</td></tr>
+              <tr><td><strong>7. 단일점 vs MM</strong></td><td>곡선 정보 소실 후 정교 모델 적용 → IVIVE 예측 실패</td></tr>
+              <tr><td><strong>8. Formation vs Elim limited</strong></td><td>parent 잔향을 metabolite half-life로 라벨 → 신부전 축적·다회 투여 예측 실패</td></tr>
+              <tr><td><strong>9. AUC ratio vs f_m</strong></td><td>낮은 ratio를 낮은 formation으로 단정 → \(CL(m)\) 변화·신장애 위험 누락</td></tr>
+              <tr><td><strong>10. Sequential vs Interconv</strong></td><td>parent profile만으로 renal-safe 오판 → metabolite 신부전이 parent 겉보기 소실 지연</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 28 - §10 자기 검증 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 10</span>
+        <h1 class="slide-title">자기 검증 — 소크라테스식 9문제</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <div class="q-block"><div class="q">Q1. \(CL = Dose/AUC\)가 compartment model 없이도 성립하는 이유는?</div><div class="a">총 제거량 = dose이고 \(\int Rate\,dt = CL \cdot \int C\,dt\)이므로 모델 독립적으로 성립.</div></div>
+            <div class="q-block"><div class="q">Q2. 정상 \(CL = 10\), \(f_e = 0.6\). 신기능 25%로 감소, nonrenal 보존. 새 total CL은?</div><div class="a">renal 6 → 1.5, nonrenal 4 유지, total = <strong>5.5 L/h</strong>.</div></div>
+            <div class="q-block"><div class="q">Q3. Rate plot과 ARE plot의 slope가 달라요. 무엇부터 의심?</div><div class="a">수집 간격, 방광 배출, pH/flow 변동, \(X_{u,\infty}\) 편향. 이 순서로. 구조 모델은 마지막.</div></div>
+            <div class="q-block"><div class="q">Q4. \(Q_H = 81\), \(f_{ub}\cdot CL_{int} = 20\). High/low/intermediate? \(f_{ub}\) 4배 증가하면?</div><div class="a">초기 \(E = 20/(81+20) = 0.20\), 낮은 편. 4배 → \(f_{ub}\cdot CL_{int} = 80\), \(E \approx 0.50\), intermediate.</div></div>
+            <div class="q-block"><div class="q">Q5. Plasma \(CL = 60\), \(C/C_b = 0.5\), \(Q_H = 81\). \(CL_b\)와 \(E_H\)는?</div><div class="a">\(CL_b = 30\) L/h, \(E_H = 0.37\). <strong>Plasma 기준으로 가면 실제보다 높은 추출률로 분류됨.</strong> (프롤로그)</div></div>
+          </div>
+          <div>
+            <div class="q-block"><div class="q">Q6. IVIVE 함정: 한 농도 in vitro rate, MMP 평균값 scaling. Phase 1에서 in vivo CL이 예측의 1/5. 무엇 점검?</div><div class="a">① 단일 농도 비선형성, ② \(f_u\)/free conc 오류, ③ MMP/scaling 변이, ④ transporter/permeability 항 누락.</div></div>
+            <div class="q-block"><div class="q">Q7. Parent 투여 후 모약물과 대사체가 평행 말단 감소. Separate metabolite IV에서는 반감기가 더 짧음. 무엇?</div><div class="a"><strong>Formation rate-limited.</strong> Parent 투여 후 관찰되는 metabolite slope는 parent가 지배.</div></div>
+            <div class="q-block"><div class="q">Q8. \(AUC(m)/AUC = 0.5\). \(f_m = 0.5\)라고 말할 수 있나?</div><div class="a"><strong>불가능.</strong> \(CL(m)/CL\)이 필요함. 식: \(AUC(m)/AUC = f_m \cdot CL/CL(m)\).</div></div>
+            <div class="q-block"><div class="q">Q9 (Boss Dilemma — 신부전+활성 대사체). Parent: \(CL=30\), \(CL_R=15\), \(F=0.8\). Metabolite: \(CL(m)=10\), \(CL_R(m)=8.5\), \(f_m=0.3\). 무뇨에서 50% 감량 왜 불안전?</div><div class="a">① 정상: parent CL 분해 → 15+9+6=30; ② 무뇨: parent CL = 0+9+6 = 15 (~2배); ③ <strong>\(f_m\) 자동 상승</strong>: 9/15 = 0.6 (두 배); ④ Metabolite Css 비: \(\frac{0.6/1.5}{0.3/10} \approx 13.3\)배; ⑤ 통합 활성 유지 용량비 ≈ <strong>0.14</strong> — 50% 감량으로 도달 불가. 핵심: \(f_m\)이 무뇨에서 자동 상승하고 \(CL(m)\)이 무너지면서 두 효과가 곱해져 13배.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 29 - §11-12 요약 + Closer -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 11–12</span>
+        <h1 class="slide-title">한 페이지 요약 · 6 실패 패턴 · 닫는 말</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">11.1 요약 11줄</h2>
+            <div class="card-soft">
+              <ol style="font-size:11.5px">
+                <li>\(CL\)은 농도로 정규화한 제거능 — 제거 속도 자체 아님</li>
+                <li>\(t_{1/2}\)는 \(V/CL\)의 결과값 — \(CL\)과 \(V\) 먼저 분해</li>
+                <li>\(CL_R = f_e \cdot CL\), 실제 = 여과 + 분비 − 재흡수, urine pH/flow가 흔듦</li>
+                <li>Well-stirred는 \(Q_H\), \(f_{ub}\), \(CL_{int}\) — high/low는 극한 근사지 영구 라벨 아님</li>
+                <li>Organ extraction은 blood 기준 — Plasma→blood 변환(App.D)이 분류의 전제</li>
+                <li>IVIVE는 in vitro 입력 정보 손실 시 실패 — single-point, MMP, permeability</li>
+                <li>Parent–metabolite는 \(f_m\), \(CL(m)\), 율속단계 별도 추정 — \(AUC(m)/AUC\)는 \(f_m\) 아님</li>
+                <li>신부전 dose는 parent \(f_e\)만이 아니라 active metabolite CL 별도 평가</li>
+                <li>측정 매트릭스와 \(f_u \to f_{ub}\) 변환은 well-stirred·PBPK 입력 직전 필수</li>
+                <li>Extended Clearance(Sirianni-Pang) — OATP 기질에서 IVIVE underprediction을 uptake/met/efflux로 분해</li>
+                <li>DDI는 inhibition만이 아니라 induction(rifampin 등)도 양 축 — 치료 실패 위험</li>
+              </ol>
+            </div>
+          </div>
+          <div>
+            <h2 class="section-h">11.2 실패 모드 카탈로그 — 6 패턴</h2>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>패턴</th><th>원인</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>DS-1</strong></td><td>Phantom Plasma Clearance</td><td>\(CL\)이 \(Q_H\) 초과 — 생리학적 불가능, 단위 mismatch</td></tr>
+                  <tr><td><strong>DS-2</strong></td><td>Phantom Metabolite Half-life</td><td>Formation rate-limited에서 parent 잔향을 metabolite own slope로 오해</td></tr>
+                  <tr><td><strong>DS-3</strong></td><td>Renal Covariate Asymmetry</td><td>활성 대사체가 거의 신배설 — Tozer Scenario (3) 신호</td></tr>
+                  <tr><td><strong>DS-4</strong></td><td>Permeability Rate-Limited</td><td>수송체 기질에서 \(\rho < 1\) — well-stirred 가정 붕괴</td></tr>
+                  <tr><td><strong>DS-5</strong></td><td>Induction Time-Course Misfit</td><td>Self-induction 1–2주 timescale, binary covariate로 누락</td></tr>
+                  <tr><td><strong>DS-6</strong></td><td>Matrix Mismatch</td><td>TDM whole blood 결과를 plasma로 잘못 해석</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="diagram">청소율 숫자를 봤다
+   <span class="arr">↓</span>
+좌표 #1 (매트릭스): <span class="step">plasma인가 blood인가 unbound인가?</span>  → §2
+   <span class="arr">↓</span>
+좌표 #2 (장기): <span class="step">신장? 간? 분해 식 어디에?</span>  → §3, §4
+   <span class="arr">↓</span>
+좌표 #3 (경로): <span class="step">IV? Oral? Route × Extraction × Endpoint?</span>  → §5
+   <span class="arr">↓</span>
+좌표 #4 (분석 대상): <span class="step">모약물? 대사체? f_m 자동 상승은?</span>  → §6
+   <span class="arr">↓</span>
+구현: <span class="step">한 모델 + DVID + 잔차오차 블록 분리 + 체구 정규화</span>  → §7, §8
+   <span class="arr">↓</span>
+점검: <span class="step">혼동 쌍 10개에 걸려있지 않은가?</span>  → §9</div>
+        <div class="closer-card">
+          <div class="closer-label">— 4-좌표를 한 바느질로 —</div>
+          <p class="closer-text">프롤로그의 60 L/h를 다시 보자. 처음에는 그냥 큰 숫자 하나였음.<br>§2를 통과하면 그게 <em>plasma 기준</em>이라는 걸 알게 됨.<br>\(R = 0.5\) 변환을 거치면 30 L/h. \(Q_H = 81\)과 비교하면 \(E_H = 0.37\).<br>Low-to-intermediate. 이제 DDI는 enzyme inhibitor가 더 중요. 간장애는 enzyme capacity가 더 중요.<br><br>만약 active metabolite를 가지고, metabolite가 신장으로 빠진다면 — §6.5의 13배 폭증 시나리오가 자동으로 머릿속에 떠야 함. <em>그게 본능이 자리잡은 상태임.</em><br><br><strong>"어떤 청소율입니까?"</strong> — 이 한 줄 질문에 4-좌표로 답하는 습관이 평생 가는 본능임.</p>
+        </div>
+        <p class="tip" style="text-align:center"><span class="chip">문서 ID: C-260518-085347-K4P</span></p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var TOTAL = slides.length;
+var cur = 0;
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n){
+  if(n<0||n>=TOTAL) return;
+  slides[cur].classList.remove('active');
+  if(tocBtns[cur]) tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  if(tocBtns[cur]){
+    tocBtns[cur].classList.add('active');
+    tocBtns[cur].scrollIntoView({block:'nearest',behavior:'smooth'});
+  }
+  progText.textContent = (cur+1)+' / '+TOTAL;
+  progFill.style.width = ((cur+1)/TOTAL*100)+'%';
+  btnPrev.disabled = (cur===0);
+  btnNext.disabled = (cur===TOTAL-1);
+}
+btnPrev.addEventListener('click',function(){goTo(cur-1)});
+btnNext.addEventListener('click',function(){goTo(cur+1)});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft') goTo(cur-1);
+  if(e.key==='ArrowRight') goTo(cur+1);
+});
+tocBtns.forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var idx = parseInt(btn.getAttribute('data-idx'));
+    goTo(idx);
+  });
+});
+
+function renderMath(){
+  renderMathInElement(document.body,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'\\(',right:'\\)',display:false}
+    ],
+    throwOnError:false,
+    strict:false
+  });
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',function(){renderMath();goTo(0);});
+}else{
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>

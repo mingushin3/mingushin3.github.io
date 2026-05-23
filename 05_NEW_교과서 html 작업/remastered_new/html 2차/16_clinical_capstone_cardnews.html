@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 16 — 임상 통합 캡스톤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #faf9f5; color: #141413; font-family: 'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: #f5f0e8; border-right: 1px solid #e6dfd8; overflow-y: auto; padding: 22px 18px 28px; z-index: 10; }
+.wordmark { display: flex; align-items: center; gap: 9px; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid #e6dfd8; }
+.wordmark-text { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; color: #141413; }
+.toc-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: #8e8b82; text-transform: uppercase; margin-bottom: 10px; }
+.toc-btn { display: block; width: 100%; text-align: left; background: transparent; border: none; border-left: 2px solid transparent; padding: 6px 10px; font-family: 'Inter', sans-serif; font-size: 12.5px; color: #6c6a64; cursor: pointer; transition: all 160ms; margin-bottom: 1px; line-height: 1.35; }
+.toc-btn:hover { color: #141413; background: #efe9de; }
+.toc-btn.active { border-left-color: #cc785c; color: #cc785c; font-weight: 500; background: #faf6f0; }
+
+.viewer { position: fixed; left: 260px; top: 0; right: 0; bottom: 52px; display: flex; flex-direction: column; overflow: hidden; }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 28px 44px 18px; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity 220ms ease; }
+.slide.active { opacity: 1; pointer-events: auto; }
+.slide.has-formula { padding-top: 48px; }
+.slide .formula-card, .slide .formula-card-wrap { overflow: visible !important; }
+
+.slide-header { display: flex; align-items: center; gap: 14px; }
+.sec-badge { display: inline-block; background: #cc785c; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 1px; padding: 4px 10px; border-radius: 9999px; }
+.slide-title { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-weight: 400; font-size: clamp(26px, 3vw, 42px); letter-spacing: -0.02em; color: #141413; line-height: 1.15; }
+.header-rule { border: none; height: 1.5px; background: #e6dfd8; margin: 10px 0 14px; }
+
+h2.sub-title { font-family: 'Inter', sans-serif; font-weight: 500; font-size: clamp(17px, 1.8vw, 22px); color: #252523; margin: 4px 0 8px; letter-spacing: -0.005em; }
+p, li { font-size: clamp(13px, 1.15vw, 15.5px); color: #3d3d3a; line-height: 1.6; }
+strong { color: #141413; font-weight: 600; }
+em { font-style: italic; color: #252523; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; background: #efe9de; padding: 1px 5px; border-radius: 4px; color: #252523; }
+
+.card { background: #efe9de; border: 1px solid #e6dfd8; border-radius: 12px; padding: 16px 20px; }
+.soft-card { background: #f5f0e8; border: 1px solid #e6dfd8; border-radius: 12px; padding: 16px 20px; }
+.formula-card-wrap { overflow: visible !important; }
+.formula-card { background: #f5f0e8; border: 1px solid #e6dfd8; border-radius: 12px; padding: 30px 18px 22px; text-align: center; overflow-x: auto; overflow-y: visible !important; margin: 6px 0; }
+.formula-card .src { display: block; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #6c6a64; }
+
+.dark-card { background: #181715; border-radius: 12px; padding: 16px 20px; color: #faf9f5; }
+.dark-card p, .dark-card li { color: #a09d96; }
+.dark-card strong { color: #faf9f5; }
+.dark-card em { color: #e8a55a; font-style: italic; }
+.dark-card h2, .dark-card h3 { color: #faf9f5; font-family: 'Inter', sans-serif; font-weight: 500; margin-bottom: 6px; }
+.dark-card .accent { color: #cc785c; }
+.dark-card .amber { color: #e8a55a; }
+.dark-card li::marker { color: #cc785c; }
+
+.algo { background: #181715; color: #a09d96; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.7; padding: 14px 16px; border-radius: 12px; white-space: pre; overflow-x: auto; }
+
+.callout { border-left: 3px solid #cc785c; background: #f4e4dc; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 6px 0; font-size: clamp(12.5px, 1.1vw, 14.5px); color: #3d3d3a; }
+.callout.warn  { background: #fcf0ef; border-left-color: #c64545; }
+.callout.amber { background: #fdf4e0; border-left-color: #d4a017; }
+.callout.teal  { background: #e6f4f0; border-left-color: #5db8a6; }
+.callout strong { color: #141413; }
+.callout-label { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-right: 6px; color: #cc785c; }
+.callout.warn  .callout-label { color: #c64545; }
+.callout.amber .callout-label { color: #d4a017; }
+.callout.teal  .callout-label { color: #1e7e6a; }
+
+.tbl-wrap { border: 1px solid #e6dfd8; border-radius: 12px; overflow: clip; background: #faf9f5; }
+table { width: 100%; border-collapse: collapse; font-size: clamp(11.5px, 1vw, 13.5px); }
+thead { background: #efe9de; }
+thead th { text-align: left; font-weight: 600; padding: 12px 12px 10px; color: #141413; font-family: 'Inter', sans-serif; border-bottom: 1px solid #e6dfd8; }
+thead tr:first-child th { padding-top: 14px; }
+tbody td { padding: 8px 12px; border-bottom: 1px solid #ebe6df; color: #3d3d3a; vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: #faf6f0; }
+
+.chip { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; background: #efe9de; color: #6c6a64; padding: 1.5px 7px; border-radius: 4px; margin: 0 2px; }
+.chip.coral { background: #f4e4dc; color: #a9583e; }
+.chip.amber { background: #fdf4e0; color: #8a6510; }
+.chip.dark  { background: #181715; color: #faf9f5; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.closer { background: #181715; border-radius: 12px; padding: 32px 38px; text-align: center; }
+.closer-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #cc785c; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+.closer-body { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: clamp(16px, 1.5vw, 21px); color: #faf9f5; line-height: 1.55; }
+.closer-sig { margin-top: 18px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a09d96; letter-spacing: 1px; }
+
+.navbar { position: fixed; bottom: 0; left: 260px; right: 0; height: 52px; background: #faf9f5; border-top: 1px solid #e6dfd8; display: flex; align-items: center; padding: 0 24px; z-index: 20; }
+.navbar button { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; background: transparent; border: 1px solid #e6dfd8; border-radius: 8px; padding: 7px 14px; cursor: pointer; color: #3d3d3a; transition: all 160ms; }
+.navbar button:hover:not(:disabled) { background: #efe9de; color: #141413; }
+.navbar button:disabled { opacity: 0.35; cursor: not-allowed; }
+.prog-area { flex: 1; display: flex; flex-direction: column; align-items: center; margin: 0 24px; }
+#prog-text { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #6c6a64; margin-bottom: 4px; letter-spacing: 0.5px; }
+.prog-track { width: 220px; height: 3px; background: #efe9de; border-radius: 2px; overflow: hidden; }
+#prog-fill { height: 100%; background: #cc785c; width: 4%; transition: width 220ms ease; }
+
+.katex-display { overflow-y: visible !important; margin: 0 !important; padding: 4px 0 !important; }
+.katex-display > .katex { overflow-y: visible !important; }
+.katex { font-size: 1.05em !important; }
+.formula-card .katex { font-size: 1.12em !important; }
+
+.note { font-size: 12px; color: #6c6a64; margin-top: 4px; font-style: italic; }
+.lead { font-size: clamp(14px, 1.25vw, 17px); color: #252523; line-height: 1.65; }
+ul, ol { padding-left: 20px; margin: 4px 0; }
+li { margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="wordmark">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span class="wordmark-text">Session 16 · Capstone</span>
+  </div>
+  <div class="toc-label">Contents</div>
+  <button class="toc-btn" data-i="0">Prologue · PK35 사건</button>
+  <button class="toc-btn" data-i="1">두 개의 t½ caveat</button>
+  <button class="toc-btn" data-i="2">§0 다섯 마디 척추</button>
+  <button class="toc-btn" data-i="3">§1.1 모양 읽기 순서</button>
+  <button class="toc-btn" data-i="4">§1.2 Peak는 단서</button>
+  <button class="toc-btn" data-i="5">§1.3 Effect compartment</button>
+  <button class="toc-btn" data-i="6">§1.3 Turnover / Receptor</button>
+  <button class="toc-btn" data-i="7">§2.1 fe vs RF · Rd</button>
+  <button class="toc-btn" data-i="8">§2.1 Renal 영역 + 디곡신</button>
+  <button class="toc-btn" data-i="9">§2.1 간질환 · phenytoin</button>
+  <button class="toc-btn" data-i="10">§2.2 SCr lag · C-G</button>
+  <button class="toc-btn" data-i="11">§2.3 투석 좌표</button>
+  <button class="toc-btn" data-i="12">§3.1 Bayesian 줄다리기</button>
+  <button class="toc-btn" data-i="13">§3.2 PK35 + Lanoxicap F</button>
+  <button class="toc-btn" data-i="14">§3.3 Sampling 식별성</button>
+  <button class="toc-btn" data-i="15">§3.4 DIG trial 치료영역</button>
+  <button class="toc-btn" data-i="16">§4.1 TCS 5 필터</button>
+  <button class="toc-btn" data-i="17">§4.1 Vanco AUC · Sheiner-Tozer</button>
+  <button class="toc-btn" data-i="18">§4.2 LD vs MD</button>
+  <button class="toc-btn" data-i="19">§4.2 Fig.18-5 · 디곡신 적용</button>
+  <button class="toc-btn" data-i="20">§4.3 Missed superposition</button>
+  <button class="toc-btn" data-i="21">§4.3 Forgivability + PK35</button>
+  <button class="toc-btn" data-i="22">§5 노출 보고 (PK15)</button>
+  <button class="toc-btn" data-i="23">§6 혼동쌍 1·2·3</button>
+  <button class="toc-btn" data-i="24">§6 혼동쌍 4·5·6</button>
+  <button class="toc-btn" data-i="25">§7 자기테스트 Q1–Q7</button>
+  <button class="toc-btn" data-i="26">§7 자기테스트 Q8–Q14</button>
+  <button class="toc-btn" data-i="27">§7 보스 딜레마 Q15·Q16</button>
+  <button class="toc-btn" data-i="28">§8 메타 A·B·C</button>
+  <button class="toc-btn" data-i="29">§8 D·E·F 최종 Closer</button>
+</aside>
+
+<main class="viewer">
+
+<!-- ============ SLIDE 0 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">Prologue</span>
+    <h1 class="slide-title">책상 위에 환자 차트 한 장 — PK35 디곡신</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;"><strong>"한 환자의 dose를 결정한다"는 사건을 다섯 마디로 푸는 법.</strong> 자, 시작 전에 사건 하나 깔아두고 가자. 오늘 강의 내내 이 환자한테 돌아옴.</p>
+
+  <div class="dark-card" style="margin-bottom:8px;">
+    <h3>사건 — PK35 digoxin 케이스</h3>
+    <p><strong>55세 남자, 60 kg, CHF(심부전)</strong>. <span class="amber"><strong>Lanoxicap (digoxin) 0.2 mg 매일 복용 중</strong></span>. 어제 두 번 채혈했음 — <strong>458시간 시점에 2.5 µg/L, 21시간 뒤(479시간)에 0.9 µg/L</strong>. Bayesian TDM 소프트웨어가 이 환자의 개인 추정값으로 <strong class="amber">\(CL\) 5.7 L/h, \(V\) 119.6 L, \(t_{1/2}\) 14.5 h</strong>를 내놓음.</p>
+    <p style="margin-top:6px;">그런데 population prior는 <strong>\(CL_{pop}\) 1.8 L/h, \(V_{pop}\) 500 L</strong>. → <span class="accent"><strong>\(CL\)이 3배 늘고, \(V\)는 1/4로 줄어든 셈</strong></span> <span class="chip dark">G&amp;W 5e PK35, pp.641–643</span></p>
+  </div>
+
+  <div class="callout amber">
+    <span class="callout-label">오늘 강의의 손잡이 질문</span>
+    이 숫자 그대로 처방전에 옮기기 전에 던져야 할 질문은 단 하나임 — <strong>"이 두 점의 채혈이, 정말로 이 환자의 \(CL\)을 식별할 수 있는 정보였나?"</strong>
+    <br><br>이 한 줄이 오늘 강의의 손잡이임. 모양 읽기부터 monitoring 결정까지 이 질문 하나로 다 꿰어짐. 답을 미리 흘리자면 — <em>"그 시점의 채혈로는 \(CL\)이 식별 안 됨. 그럼에도 처방을 바꿔야 한다면 어떻게 할 거임?"</em> 이게 <strong>임상가-모델러의 차이</strong>임.
+  </div>
+</section>
+
+<!-- ============ SLIDE 1 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">Caveat</span>
+    <h1 class="slide-title">시작하자마자 짚고 갈 — 두 개의 \(t_{1/2}\)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">PK35 prior 숫자로 단순 환산하면 모집단 \(t_{1/2,\,pop} = 0.693 \cdot V_{pop}/CL_{pop} \approx 192\) h ≈ <strong>약 8일</strong>임. 그런데 임상 표준 digoxin \(t_{1/2}\)는 <strong>약 36 ± 8 h</strong> (정상 신기능 성인). <span class="chip">R&amp;T 5e Table 18-7, p.598</span> <strong>둘이 5배 넘게 차이남.</strong></p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{t_{1/2,\,pop}}_{\text{PK35 학습용 prior}} = \frac{\overbrace{0.693}^{\ln 2}\cdot\underbrace{V_{pop}}_{500\,\mathrm{L}}}{\underbrace{CL_{pop}}_{1.8\,\mathrm{L/h}}} \approx \underbrace{192\,\mathrm{h}}_{\text{학습용}} \;\;\neq\;\; \underbrace{36\pm 8\,\mathrm{h}}_{\text{R\&T 임상 표준}}$$
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">⚠️ 헷갈리지 말 것 — 교과서 외 임상 실무 갱신</span>
+    PK35의 1.8 L/h·500 L는 <strong>"이 환자 posterior가 prior에서 얼마나 떨어졌는지 보여주려고 책에 깔아둔 학습용 anchor"</strong>임. 36 h는 <strong>실제 임상에서 dosing interval과 sampling time을 잡을 때 쓰는 작업 기준</strong>임. <span style="color:#a9583e;"><strong>PK35의 prior 숫자를 "digoxin의 임상 PK"로 외우면 안 됨.</strong></span>
+  </div>
+
+  <h2 class="sub-title" style="margin-top:10px;">소스 범위</h2>
+  <div class="grid-2">
+    <div class="soft-card">
+      <p><strong>Gabrielsson J, Weiner D.</strong> <em>Pharmacokinetic and Pharmacodynamic Data Analysis</em>, 5th ed., Apotekarsocieteten, Stockholm, 2016.</p>
+      <ul style="margin-top:4px;">
+        <li>Ch.6 Pattern Recognition <span class="chip">pp.423–466</span></li>
+        <li>PK15 Toxicokinetics <span class="chip">pp.546–548</span></li>
+        <li>PK35 Bayesian — Digoxin <span class="chip">pp.641–643</span></li>
+      </ul>
+    </div>
+    <div class="soft-card">
+      <p><strong>Rowland M, Tozer TN.</strong> <em>Clinical Pharmacokinetics and Pharmacodynamics</em>, 5th ed., Wolters Kluwer / Lippincott Williams &amp; Wilkins, 2011.</p>
+      <ul style="margin-top:4px;">
+        <li>Ch.15 Disease <span class="chip">pp.443–489</span></li>
+        <li>Ch.18 Initiating and Managing Therapy <span class="chip">pp.577–610</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">다섯 마디 척추 + 네 줄 분리 원칙</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="dark-card" style="margin-bottom:10px;">
+    <h3>오늘 강의가 풀어내는 사슬</h3>
+<pre style="font-family:'JetBrains Mono', monospace; color:#a09d96; font-size:11.8px; line-height:1.7; margin-top:6px; white-space:pre-wrap;"><span class="amber">[모양 읽기]</span>      → 어떤 모델 후보가 살아 있나?       <span class="accent">(Ch.6)</span>
+<span class="amber">[환자 보정]</span>      → 이 환자는 왜 population에서 벗어났나? <span class="accent">(Ch.15)</span>
+<span class="amber">[개인 추정]</span>      → 농도와 prior로 어떻게 묶어 추정하나? <span class="accent">(PK35)</span>
+<span class="amber">[처방 결정]</span>      → 어디서 monitoring 시작하고, LD/MD 가르나? <span class="accent">(Ch.18)</span>
+<span class="amber">[노출 보고]</span>      → 선택된 용량의 exposure와 safety margin은? <span class="accent">(PK15)</span></pre>
+    <p style="margin-top:8px;">시간 없으면 <strong class="amber">§1 → §3 → §2 → §4 → §5</strong> 순서로 봐도 됨. 척추 중에서도 척추는 <strong>§2와 §3</strong>임 — <em>"왜 벗어났는가" + "posterior가 진짜 그 환자를 잡았는가"</em>, 이 두 마디.</p>
+  </div>
+
+  <h2 class="sub-title">머리에 박아둘 네 줄 분리 원칙</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:50px;">#</th><th>원칙</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1</strong></td><td><strong>모양은 신호지 증명이 아님.</strong> plot으로 모델 후보를 줄이는 거지, 모델을 확정하는 게 아님.</td></tr>
+        <tr><td><strong>2</strong></td><td><strong>\(f_e\)(약물)와 \(RF\)(환자)는 다른 축.</strong> 같은 신부전이라도 약마다 dose 조정 크기가 다름.</td></tr>
+        <tr><td><strong>3</strong></td><td><strong>LD는 \(V\), MD는 \(CL\).</strong> 같이 처리하면 사고남.</td></tr>
+        <tr><td><strong>4</strong></td><td><strong>측정 가능 ≠ 해석 가능.</strong> dosing history와 sampling time 없이는 농도는 그냥 숫자임.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1.1</span>
+    <h1 class="slide-title">첫째 마디 — 모양 읽는 순서는 정해져 있음</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;">새 response-time plot 앞에 앉으면, 머릿속에서 모델 이름부터 튀어나오는 게 사람의 본능임. <strong>그걸 누르고 묘사부터 해야 함.</strong> 묘사 순서가 이미 정해져 있음.</p>
+
+  <div class="dark-card">
+<pre style="font-family:'JetBrains Mono', monospace; color:#a09d96; font-size:12px; line-height:1.7; white-space:pre-wrap;"><span class="amber">1. Baseline</span>  — 안정한가? 흘러가는가? 진행/적응 흔적이 있나?
+<span class="amber">2. Delay</span>     — 농도 peak과 response 극값이 분리되나?
+<span class="amber">3. Peak-shift</span> — 용량 올리면 극값이 좌/우로 움직이나?
+<span class="amber">4. Saturation</span> — 고용량에서 flat 구간이 보이나?
+<span class="amber">5. C-R plot</span>  — direct / indirect / rebound / tolerance / hysteresis 중 누가 남나?</pre>
+  </div>
+
+  <div class="callout teal" style="margin-top:10px;">
+    <span class="callout-label">왜 이 순서냐면</span>
+    baseline이 흐르거나 adaptation/rebound가 있는데 direct-effect 모델로 fitting 시작하면, 모델은 통과해도 해석은 처음부터 틀어짐. 이 순서로 묘사를 거친 다음에야 비로소 <strong>"어느 모델을 후보에 남길지"</strong>가 보임. <span class="chip">G&amp;W 5e Ch.6 Fig.6.1, p.423; Fig.6.12 pp.465–466</span>
+  </div>
+
+  <div class="callout" style="margin-top:6px;">
+    <span class="callout-label">💡 모양 먼저 원칙</span>
+    plot 보자마자 "이건 turnover네"라고 말하지 말 것. baseline → delay → peak-shift → saturation 순서로 묘사부터 함. <strong>후보를 빨리 줄였다고 해서 모델이 검증된 건 아님.</strong> fitting, diagnostics, sampling adequacy가 뒤에 줄줄이 남아 있음.
+  </div>
+
+  <div class="callout warn" style="margin-top:6px;">
+    <span class="callout-label">실무에서 자주 보는 함정</span>
+    <strong>"PopPK 모델만 통과하면 posterior, TDM, dosing decision은 소프트웨어가 알아서 처리한다"</strong>는 믿음. Bayesian TDM 소프트웨어는 어떤 sampling이든 posterior mean을 출력해줌. 그래서 그럴싸한 숫자가 항상 나옴. 하지만 sampling이 \(CL\)을 식별 못 하는 시점이면, 그 posterior는 <strong>prior에 농도가 살짝 끌려간 환영</strong>임. 그 환영으로 dose를 결정하면? → 식별 불가 posterior가 처방에 그대로 들어가서, 독성/치료 실패가 났을 때 "왜 그렇게 결정했냐"는 답을 못 함.
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1.2</span>
+    <h1 class="slide-title">Peak가 어디로 갔는가는 단서지 결론이 아님</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">용량 올렸을 때 trough가 좌측으로 이동했다고 해서 곧장 "이건 receptor on/off 모델"이라고 외워두면 안 됨. 같은 좌측 이동을 <strong>turnover의 loss stimulation</strong>도 만들 수 있음. <strong>방향은 후보를 줄이는 1차 필터지, 모델 클래스를 확정하는 도장이 아님.</strong> <span class="chip">G&amp;W 5e pp.424–428</span></p>
+
+  <div class="tbl-wrap" style="margin-top:8px;">
+    <table>
+      <thead><tr><th>관찰 패턴</th><th>가능한 해석</th></tr></thead>
+      <tbody>
+        <tr><td>plasma peak이 \(R_{min}\) 도달 시간의 약 1/3에서 발생</td><td>response delay 있음. direct-effect 단독 모델은 후보에서 거의 빠짐</td></tr>
+        <tr><td>고용량에서 trough가 <strong>좌측</strong> 이동</td><td>turnover loss stimulation <strong>또는</strong> receptor on/off (둘 중 어느 하나로 단정 X)</td></tr>
+        <tr><td>최고용량에서 trough <strong>우측</strong> 이동 + flat 구간</td><td>saturation 동반 input inhibition 강한 후보</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout" style="margin-top:10px;">
+    <span class="callout-label">💡 방향은 단서지 결론이 아님</span>
+    좌측 이동을 곧장 "\(k_{on}\)이 큰 약물"로 읽으면, finite receptor pool 때문에 nadir가 빨라지는 turnover loss stimulation 후보를 그 자리에서 지워버림. <strong>두 모델은 같은 모양인데 메커니즘이 다름.</strong>
+  </div>
+
+  <div class="callout amber" style="margin-top:6px;">
+    <span class="callout-label">실무 팁</span>
+    단일 용량의 response-time curve 하나로 mechanism 확정하지 말 것. <strong>중요한 건 dose escalation에서 모양이 어떻게 바뀌느냐</strong>임. 용량을 올렸을 때 peak가 옮겨가면 turnover나 finite-pool 후보, 거의 안 움직이면 effect compartment 후보. <strong>이게 1차 분기점</strong>임. <span class="chip">G&amp;W 5e Fig.6.2 p.424, Fig.6.3 p.428</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1.3</span>
+    <h1 class="slide-title">Prototype 1 — Effect Compartment (delay가 \(C_e\)에 박힘)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">후보 줄였으면 이제 그 후보가 ODE state에서 어떻게 갈라지는지 봐야 함. Ch.6의 Case A–I 식을 통째로 외우려 들지 말고, <strong>delay가 \(C_e\)에 박혔나, \(R\)에 박혔나, \(RC\)에 박혔나</strong> 이 한 질문만 던지면 세 prototype이 갈라짐.</p>
+
+  <div class="grid-2">
+    <div>
+      <p><strong>Effect compartment.</strong> Time-delay는 있는데 dose 올려도 peak-shift가 약함 → link 모델 의심.</p>
+      <div class="formula-card-wrap" style="margin-top:6px;">
+        <div class="formula-card">
+          $$\underbrace{\frac{dC_e}{dt}}_{C_e\text{ 변화}} = \underbrace{k_{e0}}_{\text{평형 속도}} \overbrace{\left(\underbrace{C}_{\text{혈장}}-\underbrace{C_e}_{\text{효과부위}}\right)}^{\text{농도 차}}$$
+        </div>
+      </div>
+    </div>
+
+    <div class="callout teal">
+      <span class="callout-label">💡 비유 — 복도와 대기실</span>
+      Effect compartment는 혈장이라는 복도에서 실제 효과가 일어나는 방으로 약이 들어가는 <strong>작은 대기실</strong>임. 복도 농도가 이미 높아도 대기실 농도가 늦게 차면 반응도 늦게 옴. <strong>counter-clockwise hysteresis</strong>가 보이면 link 모델의 전형적 신호. <span class="chip">G&amp;W 5e p.426</span>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>디곡신 환자에게 어떻게 적용되나</h3>
+    <p>우리 환자는 농도 두 점만 있는 PK case임. PD response data가 없음. 그러니 §1의 모양 읽기 도구는 직접 적용 안 됨. <strong>하지만</strong> 만약 이 환자의 심박수나 PR interval 같은 PD endpoint를 같이 모으게 된다면? — <span class="amber">digoxin은 receptor-mediated인데 distribution이 느려서 hysteresis가 잘 보이는 약물</span>임.</p>
+    <p style="margin-top:6px;"><strong>Effect compartment prototype이 가장 먼저 후보에 올라옴.</strong> 이 감각이 §1의 진짜 실무 가치임 — <em>"어떤 PD 모델을 처음부터 후보군에 둘 거임?"</em>을 plot 보기 전에 미리 판단하는 것.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1.3</span>
+    <h1 class="slide-title">Prototype 2·3 — Turnover (\(R\)) / Receptor on/off (\(RC\))</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:4px;"><strong>Turnover</strong> — baseline이 흐르거나 rebound/adaptation 있음.</p>
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{\frac{dR}{dt}}_{R\text{ 순변화}} = \overbrace{\underbrace{k_{in}}_{\text{생성}}\cdot\underbrace{I(C)}_{\text{농도 조절}}}^{\text{input 모듈}} - \underbrace{k_{out}R}_{\text{소실}} \quad\text{또는}\quad \underbrace{\frac{dR}{dt}}_{R\text{ 순변화}} = \underbrace{k_{in}}_{\text{기본 생성}} - \overbrace{\underbrace{k_{out}R}_{\text{소실}}\cdot\underbrace{S(C)}_{\text{농도 자극}}}^{\text{loss 모듈}}$$
+    </div>
+  </div>
+  <p class="note" style="margin-top:4px;"><strong>비유.</strong> Turnover는 <strong>물탱크 = 수도꼭지 + 배수구</strong>. 약이 탱크 크기 자체를 바꾸는 게 아니라, 들어오는 속도나 빠지는 속도를 바꿔서 새 수위를 만듦. baseline \(R_0=k_{in}/k_{out}\)는 정적인 비율이 아니라 <strong>동적 평형</strong>이고, 새 평형까지 도달하는 속도는 주로 \(k_{out}\)이 정함.</p>
+
+  <p style="margin-top:8px; margin-bottom:4px;"><strong>Receptor on/off</strong> — finite receptor pool 위에서 binding/dissociation이 경쟁.</p>
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{\frac{dRC}{dt}}_{RC\text{ 변화}} = \overbrace{\underbrace{k_{on}}_{\text{결합}}\underbrace{C}_{\text{농도}}\underbrace{(R_T-RC)}_{\text{free R}}}^{\text{결합 형성}} - \underbrace{k_{off}RC}_{\text{해리}}$$
+    </div>
+  </div>
+  <p class="note" style="margin-top:4px;"><strong>비유.</strong> 자리(receptor)는 한정돼 있는 의자임. 약(C)이 의자 앉기 경쟁을 하는데, \(k_{on}\)이 빠르면 자리가 빨리 차고(\(RC\) 빨리 올라감), \(k_{off}\)가 빠르면 자리에서 빨리 일어남.</p>
+
+  <div class="tbl-wrap" style="margin-top:8px;">
+    <table>
+      <thead><tr><th>state</th><th>\(C_e\)</th><th>\(R\)</th><th>\(RC\)</th></tr></thead>
+      <tbody>
+        <tr><td>어디 박힘</td><td>effect site로 가는 시간</td><td>response system의 turnover</td><td>결합/해리 경쟁</td></tr>
+        <tr><td>진단 단서</td><td>counter-clockwise hysteresis</td><td>baseline drift, rebound, adaptation</td><td>dose 올리면 nadir 좌측 이동 + finite pool</td></tr>
+        <tr><td>핵심 파라미터</td><td>\(k_{e0}\)</td><td>\(k_{in}\), \(k_{out}\)</td><td>\(k_{on}, k_{off}, R_T\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">🔑 §1 한 줄 잠금</span>
+    Ch.6의 진짜 목적은 plot 모양으로 <strong>모델 후보를 줄이는 것</strong>임. 패턴은 증명이 아니라 분류 신호. Case A–I 식 통째로 외우는 게 아니라, <strong>"delay가 어디 박혔는지"</strong>만 잡으면 세 prototype이 갈라짐.
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2.1</span>
+    <h1 class="slide-title">둘째 마디 — \(f_e\)와 \(RF\)를 분리해야 답이 보임</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:6px;">신부전 환자가 왔다 → "그럼 dose 줄여야지" — 이 한 줄로 가버리면 <strong>약물별 신장 의존도를 통째로 무시</strong>하는 꼴임. 같은 신부전이라도 약마다 dose 조정 크기가 완전히 달라야 함. 분리할 게 두 개임:</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">\(f_e\) = 미변화체 신장 배설분율</h2>
+      <p><strong>약물 속성.</strong> drug마다 정해진 값.</p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">\(RF\) = typical 대비 환자 신기능</h2>
+      <p><strong>환자 속성.</strong> 환자마다 다른 값.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:8px;">이 둘을 곱한 게 renal contribution이고, 거기에 비신장 기여를 더하면 maintenance 요구량 비율 \(R_d\)가 나옴.</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{R_d}_{\text{유지용량 비율}} = \overbrace{\underbrace{RF}_{\text{환자 신기능}}\cdot\underbrace{f_e}_{\text{약물 renal}}}^{\text{renal 기여}} + \underbrace{(1-f_e)}_{\text{비신 기여}}$$
+    </div>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{CL}_{\text{총 CL}} = \underbrace{CL_{non\text{-}renal}}_{\text{비신 CL}} + \overbrace{\underbrace{f_e}_{\text{renal 분율}}\cdot\underbrace{CL_{total}}_{\text{기준 CL}}\cdot\underbrace{RF}_{\text{환자 RF}}}^{\text{renal CL}}$$
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">💡 비유 — 다이얼 두 개</span>
+    \(R_d\)는 <strong>다이얼 두 개</strong>임. 하나는 약이 원래 신장에 얼마나 의존하는지(\(f_e\)), 다른 하나는 지금 이 환자 신장이 얼마나 남았는지(\(RF\)). <strong>두 다이얼을 같이 돌려야 답이 나옴.</strong>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2.1</span>
+    <h1 class="slide-title">Renal 영역별 결정 + 디곡신 적용</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="tbl-wrap" style="margin-bottom:10px;">
+    <table>
+      <thead><tr><th>\(f_e \cdot RF\) 영역</th><th>해석</th><th>모델링 함의</th><th>용량/TDM 지침</th></tr></thead>
+      <tbody>
+        <tr><td><strong>&lt; 0.1</strong></td><td>신기능이 거의 기여 안 함</td><td>\(CL_{renal}\) 사실상 무시; 간/대사 covariate에 집중</td><td>신기능 기반 maintenance 조절 불필요</td></tr>
+        <tr><td><strong>0.1–0.5</strong></td><td>신기능이 부분 기여</td><td>\(CL = CL_{non-renal} + f_e \cdot CL_{total} \cdot RF\)로 분리; \(RF\) covariate 탐색</td><td>부분 maintenance 감량 + TDM으로 개별화</td></tr>
+        <tr><td><strong>&gt; 0.5</strong></td><td>신기능이 주된 경로</td><td>\(CL\)이 \(RF\)에 강하게 의존; 신기능 covariate가 \(\omega^2\) 주설명 변수</td><td>적극적 MD 감량; <strong>LD는 \(V\) 기반으로 별도 결정</strong>; TDM 필수</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <span class="callout-label">🔑 약물 × 환자 규칙</span>
+    \(f_e\)는 약물, \(RF\)는 환자. 둘을 분리하면 같은 신부전이라도 약마다 dose 조정이 왜 달라지는지 숫자로 보임. <strong>그리고 \(R_d\)는 loading dose 공식이 아님</strong> — \(V\)가 안 변하면 LD는 따로 판단해야 함. (§4.2에서 다시 옴.)
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>우리 디곡신 환자에게는?</h3>
+    <p>Digoxin은 <span class="amber">\(f_e \approx 0.6\)–0.7</span>로 신장 배설 분율이 큼. 그래서 CHF + 노인 + 신기능 감소 가능성이 있으면 maintenance dose는 \(R_d\) 비례로 <strong>적극 감량 대상</strong>임.</p>
+    <p style="margin-top:6px;"><strong>하지만 LD는 별도</strong> — <span class="amber">digoxin uremia에서는 오히려 \(V\) 자체가 감소하는 예외적 현상</span>이 있어서, 단순히 LD까지 같이 줄이면 초기 농도 미달이 발생할 수 있음. <span class="chip dark">R&amp;T 5e p.464</span></p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2.1</span>
+    <h1 class="slide-title">간 질환은 완전히 다른 축 — Phenytoin 사례</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="callout warn" style="margin-bottom:8px;">
+    <span class="callout-label">"간 질환 = 모든 CL 감소"는 틀린 일반화</span>
+    간경변에서는 <strong>high-extraction 경구 약물이 portal bypass + first-pass loss 감소 → \(F\)가 올라가서 노출이 급격히 상승</strong>함. 반대로 low-extraction에 단백결합이 강한 약물에서는 \(f_u\) 증가가 total \(CL\)을 높이긴 하는데, <strong>unbound \(CL\)은 거의 안 변함</strong>. <span class="chip">R&amp;T 5e pp.444–446</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">High-extraction 경구</h2>
+      <p>portal bypass로 first-pass 우회. <strong>\(F\) 상승 → 노출 급증.</strong></p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">Low-extraction + 단백결합 강</h2>
+      <p>\(f_u\uparrow\) → total \(CL\)은 상승하나 <strong>unbound \(CL\)은 그대로</strong>. unbound 농도 해석이 진짜 작업.</p>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:10px;">
+    <h3>실무 사례 — Phenytoin</h3>
+    <p><span class="amber"><strong>Phenytoin</strong></span> — 단백결합 강함(albumin 결합) + low extraction. uremia, 수술, displacement drug가 있으면 <strong>\(f_u\uparrow\)</strong>. 이때 total 농도 target을 그대로 쓰면 <strong>같은 unbound exposure가 과소평가</strong>됨.</p>
+    <p style="margin-top:6px;">→ 그래서 phenytoin에서는 \(f_e/RF\) 분리만으로는 부족하고, <strong>단백결합 변화까지 같이 봐야 함</strong>. (§4.1 TCS criteria에서 다시 옴.)</p>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">결정 가이드</span>
+    "신장 질환 vs 간 질환" 라벨로 자동 dose 조정 만들지 말 것. 약물 속성(\(f_e\), extraction ratio, \(f_u\)) × 환자 속성(\(RF\), 간기능, 알부민, displacement drug)을 <strong>매번 곱해서 풀어야</strong> 함.
+  </div>
+</section>
+
+<!-- ============ SLIDE 10 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2.2</span>
+    <h1 class="slide-title">Cockcroft-Gault의 함정 — SCr은 지연된 거울</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">\(RF\)를 계산식에 넣으려면 입력값이 필요함. 그 입력값을 만들어주는 게 Cockcroft-Gault임. 그런데 <strong>SCr 자체가 실시간 신기능을 보여주는 거울이 아님</strong> — creatinine turnover가 반영된 지연 지표임.</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{CL_{cr}}_{\text{CrCL 추정}}\,(\mathrm{mL/min}) = \frac{\underbrace{(140-\text{age})}_{\text{연령}}\cdot\underbrace{WT}_{\text{체중}}}{\underbrace{72\cdot SCr}_{\text{SCr 보정}}} \qquad \text{(여성은 }\times 0.85)$$
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">💡 비유 — 뒤늦은 거울</span>
+    SCr은 <strong>뒤늦은 거울</strong>임. 오늘 거울을 봤다고 해서 오늘의 얼굴이 비치는 게 아니라, <strong>며칠 전의 얼굴이 천천히 비쳐오는 상태</strong>. 안정 상태에서는 거울이 맞지만, AKI처럼 신기능이 급변할 때는 거울이 며칠씩 뒤처짐.
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">AKI에서 왜 위험한가</span>
+    신기능이 급격히 떨어져도 SCr은 천천히 따라 올라감. R&amp;T Table 15-6에 따르면 <strong>신기능이 떨어질수록 creatinine turnover time과 half-life가 길어짐</strong>. <span class="chip">R&amp;T 5e pp.459–461</span> → <strong>오늘 측정한 SCr로 오늘의 \(RF\)를 과신하면, 처음 24–48시간 동안 독성이 쌓이는 걸 그대로 놓침.</strong>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>💡 SCr은 뒤늦은 거울 — 두 가지 작업 분리</h3>
+    <p><strong class="amber">① 안정 상태 성인</strong> → C-G가 \(RF\) 입력값을 결정함. snapshot 계산 OK.</p>
+    <p style="margin-top:4px;"><strong class="amber">② AKI나 급성 변화</strong> → SCr <strong>trend</strong>(어제 1.0, 오늘 1.6, 내일 2.2 같은 slope)를 같이 봐야 함. <em>snapshot은 신뢰하지 말 것.</em></p>
+    <p style="margin-top:6px;"><strong>실무 디테일</strong> — 노인·근감소·비만·AKI 환자에서는 어떤 체중을 쓸지(IBW vs ABW vs adjusted)도 dose error의 주된 원인. 별도 학습 주제라 여기서는 짚고만 넘어감.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2.3</span>
+    <h1 class="slide-title">투석은 hard threshold가 아님 — 좌표 평면</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">투석 중에 half-life가 짧아짐 → "그럼 보충 용량 줘야지" — 이 사고로 가버리면 <strong>high-\(V_u\) 약물을 과보충</strong>하기 쉬움. 핵심은 half-life 단축이 아니라 <strong>세션 동안 몸에서 빠진 양</strong>임. 그리고 그 양은 좌표 평면 위에서 결정됨.</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{k_D}_{\text{투석 중 제거}} = \frac{\overbrace{\underbrace{CL_u}_{\text{자체 CL}}+\underbrace{CL_{uD}}_{\text{투석 CL}}}^{\text{total uCL}}}{\underbrace{V_u}_{\text{unbound V}}}, \quad \underbrace{1-\exp(-k_D\cdot T)}_{\text{세션 동안 제거된 분율}}, \quad \underbrace{\frac{CL_{uD}}{CL_u+CL_{uD}}}_{\text{투석 기여 분율}}$$
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">💡 비유 — 수영장과 펌프</span>
+    투석은 <strong>수영장에서 물을 퍼내는 펌프</strong>임. 펌프 성능(\(CL_{uD}\))이 좋아도 수영장(\(V_u\))이 너무 크면, 3시간 동안 수위는 조금밖에 안 내려감.
+  </div>
+
+  <div class="callout amber" style="margin-top:6px;">
+    <span class="callout-label">Fig.15-18의 진짜 메시지</span>
+    high-flux 3시간 투석에서, <strong>unbound \(V\)가 약 120 L를 넘거나 환자 본인의 unbound clearance가 dialysis clearance보다 훨씬 크면 → dialysis가 제거하는 fraction은 20% 미만으로 작아질 수 있음</strong>. <span class="chip">R&amp;T 5e pp.471–472</span> <strong>이건 hard AND gate가 아니라 연속적인 trade-off임.</strong>
+  </div>
+
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="card">
+      <h2 class="sub-title">실무 사례 — Phenobarbital</h2>
+      <p>고용량 진정·항경련제. 투석 중 half-life는 크게 줄어도, 3시간짜리 single session으로는 몸 안의 양이 충분히 빠지지 않을 수 있음. → <strong>반감기 단축 ≠ 세션 중 빠진 약물량.</strong></p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">CAPD 대조</h2>
+      <p>CAPD clearance는 대부분의 약물에서 혈액투석 clearance보다 낮음. <strong>"투석 환자"라는 라벨 하나로 용량 규칙을 묶을 수 없음.</strong> <span class="chip">R&amp;T 5e pp.475–477</span></p>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <p><span class="accent"><strong>🔑 §2 한 줄 잠금</strong></span> — 이 환자가 왜 population에서 벗어났는지를 설명하는 작업은 <strong>\(f_e\)/\(RF\)/\(R_d\) 분리 → SCr lag 점검 → 투석이라면 좌표 평면 위에서 판단</strong>. 라벨 하나로 사고하지 말 것 — <span class="amber">모든 dose 조정은 "약물 속성 × 환자 속성"의 곱</span>임.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3.1</span>
+    <h1 class="slide-title">셋째 마디 — Posterior는 줄다리기임</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:6px;">§2가 "왜 벗어났는가"의 <strong>메커니즘</strong>을 줬다면, §3은 그 환자의 <strong>숫자</strong>를 어떻게 추정하는지 말함. Bayesian TDM은 관측 농도만 믿지도 않고, population average만 믿지도 않음. <strong>농도 likelihood와 population prior의 상대적 variance</strong>를 같이 봐서 둘 사이 어딘가에 posterior를 둠.</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{OBJ_{Bayes}}_{\text{총 penalty}} \approx \underbrace{\sum_i\frac{\left(C_{obs,i}-\hat C_i\right)^2}{\operatorname{var}(\hat C_i)}}_{\text{농도 mismatch}} + \underbrace{\sum_j\frac{\left(P_{pop,j}-\hat P_j\right)^2}{\operatorname{var}(\hat P_j)}}_{\text{prior 이탈}}$$
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">💡 비유 — 두 사람의 줄다리기</span>
+    Bayesian TDM은 <strong>두 사람의 줄다리기</strong>임. 농도 자료 쪽 줄이 약하면 prior가 끌고, prior 쪽이 약하면 농도가 끔. <strong>어느 줄이 더 튼튼한지는 variance가 정함.</strong>
+  </div>
+
+  <div class="grid-3" style="margin-top:8px;">
+    <div class="card">
+      <h2 class="sub-title">농도 없음</h2>
+      <p>→ population average가 사실상 추정값. <strong>개인 정보 0</strong>.</p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">prior 없음</h2>
+      <p>→ maximum-likelihood concentration fitting. <strong>생리학적으로 불가능한 \(V/CL\) 나올 수 있음</strong>.</p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">농도 + prior 다 있음</h2>
+      <p>→ complete Bayesian. <strong>이게 정상 작동</strong>.</p>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">💡 데이터 없음 vs 사전 지식 없음</span>
+    posterior mean은 항상 출력됨. 하지만 <strong>그게 likelihood가 끌어서 나온 거냐, prior가 끌어서 나온 거냐</strong>는 다른 문제임. <strong style="color:#a9583e;">식별 가능한 정보 위에 있지 않은 posterior는 dose 결정의 근거가 아님.</strong>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3.2</span>
+    <h1 class="slide-title">우리 환자 + Lanoxicap의 \(F\)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="dark-card" style="margin-bottom:8px;">
+    <h3>PK35 디곡신 케이스 재확인</h3>
+    <p>55세, 60 kg, CHF, <span class="amber">Lanoxicap 0.2 mg daily</span>, 458 h에 2.5 µg/L, 479 h에 0.9 µg/L. \(CL_{pop}\) 1.8 L/h, \(V_{pop}\) 500 L → 추정 <strong class="amber">\(CL\) 5.7 L/h, \(V\) 119.6 L, \(t_{1/2}\) 14.5 h</strong>. <span class="chip dark">G&amp;W 5e pp.641–643</span></p>
+  </div>
+
+  <p style="margin-bottom:6px;"><strong>여기서 먼저 짚을 디테일 하나.</strong> 같은 0.2 mg이라도 제형에 따라 흡수되는 양이 다름:</p>
+
+  <div class="grid-2">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>제형</th><th>\(F\) (R&amp;T Table 18-7)</th></tr></thead>
+        <tbody>
+          <tr><td>Tablet</td><td>0.70–0.75</td></tr>
+          <tr><td><strong>Capsule (Lanoxicap)</strong></td><td><strong>0.95–1.00</strong></td></tr>
+          <tr><td>Elixir</td><td>0.80</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout amber">
+      <span class="callout-label">25–30% 더 흡수</span>
+      PK35 환자는 <strong>Lanoxicap (capsule)</strong>. tablet과 비교하면 <strong>25–30% 더 흡수</strong>되고 있음. <span style="color:#8a6510;"><strong>LD/MD 계산에서 \(F\)를 무시하면 안 됨.</strong></span> <span class="chip">R&amp;T 5e Table 18-7, p.598</span>
+    </div>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:8px;">
+    <div class="formula-card">
+      $$\underbrace{D_L}_{\text{loading}} = \frac{\overbrace{\underbrace{V}_{\text{분포}}\cdot\underbrace{C_{target}}_{\text{목표 농도}}}^{\text{필요 amount}}}{\underbrace{F}_{\text{제형 의존}}} \quad\Rightarrow\quad \underbrace{F_{\text{Lanoxicap}}\approx 0.95}_{\text{capsule}} \;\neq\; \underbrace{F_{\text{tablet}}\approx 0.72}_{\text{tablet}}$$
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3.3</span>
+    <h1 class="slide-title">Sampling Identifiability — 채혈로 \(CL\)이 식별 됐냐</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:6px;">자, 이게 오늘 강의 전체의 손잡이 질문임. 답을 미리 흘렸음 — <strong>그 두 점으로는 \(CL\)이 식별 안 됨.</strong></p>
+
+  <div class="card" style="margin-bottom:8px;">
+    <h2 class="sub-title">왜? — R&amp;T Fig.18-13의 메시지 한 줄</h2>
+    <ul>
+      <li><strong>이른 sample(\(&lt; 1\times t_{1/2}\))</strong> → \(V\)에 더 민감.</li>
+      <li><strong>늦은 sample / plateau / steady-state</strong> → \(CL\)에 더 민감.</li>
+      <li><strong>그래서</strong> \(1\times t_{1/2}\) 근처 sampling만으로는 <strong>\(CL\) 1/3 변화와 \(V\) 3배 변화를 따로 구분할 수 없음.</strong></li>
+    </ul>
+  </div>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{CL\times\frac{1}{3}}_{\text{낮은 CL}} \;\approx_{\text{early sample}}\; \underbrace{V\times3}_{\text{큰 V}}, \qquad \underbrace{t\geq 4\times t_{1/2}}_{\text{이 시점에야 CL 분리}}$$
+      <span class="src">\(CL\) 정확 추정에 필요한 sampling 시점 — R&amp;T 5e pp.605–606</span>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>우리 환자의 458 h, 479 h 채혈은?</h3>
+    <p>Digoxin의 임상 표준 \(t_{1/2}\)가 36 h이므로 <strong>458 h는 dose 시작 후 약 12–13 half-life 지난 시점</strong>. 이건 충분히 늦은 sample임 — <span class="amber">이론적으로 \(CL\) 식별 가능 구간</span>임. 그래서 PK35 posterior의 <strong class="amber">\(CL = 5.7\) L/h는 likelihood가 끌어준 숫자</strong>로 봐도 됨.</p>
+    <p style="margin-top:6px;"><strong>하지만 \(V = 119.6\) L는?</strong> 두 점 다 늦은 시점이고, distribution phase 정보가 전혀 없음. → \(V\) 추정의 신뢰도는 <span class="amber"><strong>prior에 끌려간 영역</strong></span>일 가능성이 큼. 119.6 L가 환자의 실제 \(V\)인지, prior(500 L)와 likelihood의 타협으로 떨어진 숫자인지 구별이 안 됨.</p>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">⚠️ NONMEM 신호 해독 — 실패 모드 시그니처</span>
+    <strong>η-shrinkage on \(CL\) &gt; 30%, \(V\)는 &lt; 15%, RSE(\(CL\)) &gt; 50%인데 fit이 통과한다?</strong> → 거의 확실하게 <strong>"sampling time mismatch"</strong> 신호임. 데이터가 식별 못 한 양을 추정한 결과임. 해결 — <strong>\(V\)를 strong prior로 고정하고 \(CL\)만 개별화하거나, \(\geq 4\times t_{1/2}\) sample을 추가.</strong>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3.4</span>
+    <h1 class="slide-title">디곡신 치료영역 — 책 값 vs 현대 임상 (DIG trial)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">다시 우리 환자의 458 h 농도 2.5 µg/L를 보자. <strong>이게 toxic인가 아닌가?</strong></p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">책에서는</h2>
+      <p>R&amp;T Table 18-7이 digoxin trough 치료영역을 <strong>0.8–2 µg/L (Murphy)</strong> 또는 <strong>0.5–2 µg/L, CHF: 0.5–1 µg/L (Winter)</strong> 로 인용. <span class="chip">R&amp;T 5e p.598</span></p>
+    </div>
+    <div class="dark-card">
+      <h3>현대 임상에서는 (교과서 외)</h3>
+      <p><strong class="amber">DIG trial post hoc analysis (Rathore et al., JAMA 2003)</strong> 이후 심부전(HF)에서는 <strong class="amber">목표 0.5–0.9 µg/L</strong>, 0.9 µg/L 초과 시 사망률 증가가 관찰됨. AHA/ACC, ESC, 한국순환기학회 가이드라인 다 같은 방향으로 갔음.</p>
+    </div>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:8px;">
+    <div class="formula-card">
+      $$\underbrace{C_{target,\,DIG\text{-}trial}}_{\text{HF, post-2003}} = \overbrace{0.5\text{–}0.9\,\mu\mathrm{g/L}}^{\text{현대 표준}} \;\;\subset\;\; \underbrace{0.8\text{–}2\,\mu\mathrm{g/L}}_{\text{R\&T Table 18-7 (Murphy)}}$$
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">그래서 우리 환자의 2.5 µg/L는?</span>
+    책 상한(2 µg/L)을 약간 넘은 정도가 아니라 — <strong>현대 HF 기준에서는 명백한 toxicity range</strong>임. CHF 환자에서 digoxin toxicity는 nausea, visual disturbance, arrhythmia(특히 ventricular)로 나타날 수 있음. <strong>모니터링 → dose 결정 사슬이 막 시작된 셈임.</strong>
+  </div>
+
+  <div class="callout amber" style="margin-top:6px;">
+    <span class="callout-label">⚠️ 경계 명시</span>
+    R&amp;T 책 값은 <strong>source-locked로 보존</strong>하되, 임상 의사결정 시점에서는 <strong>DIG trial 이후 기준(0.5–0.9 µg/L)</strong>을 함께 읽어야 함. <em>책 인용은 학습용, 처방은 현대 기준.</em> PK35는 \(CL/V/t_{1/2}\) 추정 사례임. "Loading 0.4 mg, maintenance 0.1–0.125 mg/day"처럼 구체적 처방 문장은 교과서의 직접 권고가 아니라 <code>[교과서 외 통합 추론 예시]</code>로만 다룸. Sheiner 1977을 NONMEM 직계 조상이라 단정하는 표현은 <code>[확인 필요]</code> 영역.
+  </div>
+
+  <div class="dark-card" style="margin-top:6px;">
+    <p><span class="accent"><strong>🔑 §3 한 줄 잠금</strong></span> — Bayesian posterior는 <strong>두 줄(농도 vs prior)의 줄다리기 결과</strong>이고, 그 결과를 dose에 옮겨도 되는지는 <strong class="amber">sampling이 그 파라미터를 진짜 식별했냐</strong>에 달려 있음.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4.1</span>
+    <h1 class="slide-title">넷째 마디 — TCS는 5개 순차 필터임</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:6px;">좋음, 우리 환자의 posterior를 얻었고 toxic range에 와 있다고 판단함. 그럼 routine monitoring을 도입할까? 이게 <strong>Target Concentration Strategy(TCS)</strong> 의사결정임.</p>
+
+  <div class="callout warn" style="margin-bottom:8px;">
+    <span class="callout-label">가장 흔한 오해 한 줄로</span>
+    <strong>"TCS 후보 약물이니까 농도 잰다"</strong> — 이 한 마디로 가버리면 <strong>placebo monitoring</strong>(잘 시키는데 결정을 못 바꾸는 모니터링)이 됨. TCS는 약물 이름 자동 적용이 아니라 <strong>5개 기준의 순차 필터</strong>임. 하나라도 막히면 결정 가치가 줄어듦. <span class="chip">R&amp;T 5e pp.594–597</span>
+  </div>
+
+  <div class="dark-card">
+<pre style="font-family:'JetBrains Mono', monospace; color:#a09d96; font-size:12px; line-height:1.7; white-space:pre-wrap;"><span class="amber">필터 1.</span> concentration-response 관계가 충분히 좋은가?
+<span class="amber">필터 2.</span> therapeutic failure 가능성이 높은가?
+        (low TI, 큰 PK variability, 유전·질환·DDI 위험, nonadherence 가능성)
+<span class="amber">필터 3.</span> PopPK 정보가 있는가?
+<span class="amber">필터 4.</span> 신뢰할 만한 assay가 가능한가?
+<span class="amber">필터 5.</span> assay 결과가 다음 처방 결정 <span class="accent">전에</span> 도착하는가?</pre>
+  </div>
+
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="card">
+      <h2 class="sub-title">Table 18-5 후보군</h2>
+      <p><strong>cyclosporine, digoxin, gentamicin, nortriptyline, phenytoin, theophylline</strong>. → 이름만으로 TCS가 필수라는 뜻은 아님. <strong>5개 기준이 대부분 충족될 때 보조 전략으로 가치 있음.</strong> <span class="chip">R&amp;T 5e Table 18-5, pp.595–596</span></p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">Table 18-6 — 농도값 하나만으로는 해석 안 됨</h2>
+      <p>완전한 농도 해석에 필요한 것 — <strong>dosing history, sampling time, previous concentrations, clinical status, renal/hepatic lab, protein binding, concurrent drugs, assay method, usual PK</strong>. <span class="chip">R&amp;T 5e Table 18-6, p.597</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4.1</span>
+    <h1 class="slide-title">Vancomycin AUC 패러다임 · Sheiner-Tozer 정식</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="callout warn">
+    <span class="callout-label">⚠️ Vanco — Trough에서 AUC₂₄/MIC로 (교과서 외 갱신)</span>
+    R&amp;T Table 18-7은 vancomycin trough 5–15 mg/L를 표준으로 제시 <span class="chip">p.598</span>. 그런데 <strong>2020 ASHP/IDSA/PIDS/SIDP joint consensus (Rybak et al. 2020)</strong> 이후로 표준은 <strong>AUC₂₄/MIC ≥ 400</strong> (목표 AUC₂₄ 400–600 mg·h/L, MIC 1 mg/L)으로 이동. 이유 — trough 기반은 (a) AUC를 안정적으로 예측 못 하고, (b) 신독성과 더 강하게 연관됨. 현대 실무는 <strong>Bayesian AUC estimation</strong>(2 농도 포인트로 개별 AUC 추정).
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{\text{Trough}\,5\text{–}15\,\mathrm{mg/L}}_{\text{R\&T 5e (2011)}} \;\xrightarrow{\text{2020 consensus}}\; \overbrace{\underbrace{AUC_{24}/MIC}_{\text{exposure index}} \;\geq\; \underbrace{400}_{\text{efficacy threshold}}}^{\text{현대 표준}}$$
+    </div>
+  </div>
+
+  <h2 class="sub-title" style="margin-top:10px;">🧪 Phenytoin Sheiner-Tozer 정식 (교과서 외 갱신)</h2>
+  <p style="margin-bottom:4px;">R&amp;T 5e가 "altered protein binding에서 target total을 같은 unbound에 맞추도록 조정해야 한다"는 <strong>원칙</strong>은 명시함 <span class="chip">p.596</span>. 임상에서 쓰는 <strong>정량 보정식</strong>은 Sheiner &amp; Tozer (1979):</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\overbrace{\underbrace{C_{corrected}}_{\text{정상 alb 환산}} = \frac{\overbrace{C_{measured}}^{\text{측정 total}}}{\underbrace{0.2\cdot Alb_{(g/dL)}}_{\text{bound 항}}+\underbrace{0.1}_{\text{unbound 분율}}}}^{\text{Form A: Sheiner-Tozer 정식 (g/dL 입력)}}$$
+      <span class="src">검증 — 정상 albumin 4.4 g/dL: 분모 = 0.2×4.4 + 0.1 = 0.98 ≈ 1 ✓</span>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:6px;">
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\overbrace{C_{corrected} = \frac{C_{measured}}{\underbrace{0.9\cdot(Alb/4.4)}_{\text{정규화 bound}}+\underbrace{0.1}_{\text{unbound}}}}^{\text{Form B: 정규화 형태}}$$
+        <span class="src">\(Alb=4.4\): 분모 = 0.9×1 + 0.1 = 1.0 ✓</span>
+      </div>
+    </div>
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{C_{corrected,\,uremia}}_{\text{신부전 보정 (Anderson)}} = \frac{\overbrace{C_{measured}}^{\text{측정 total}}}{\underbrace{0.1\cdot Alb_{(g/dL)}}_{\text{감소 bound}}+\underbrace{0.1}_{\text{unbound}}}$$
+        <span class="src">uremia에서 단백결합 친화도 자체 감소</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <p><span class="accent"><strong>🔑 TCS 한 줄 잠금</strong></span> — TCS는 약물명 자동 적용 ❌, <strong class="amber">5개 순차 필터</strong> ⭕. 그리고 <strong>측정된 농도와 해석 가능한 농도는 다름</strong> — dosing history + sampling time + clinical status가 다 갖춰져야 "해석 가능한 농도"가 됨.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4.2</span>
+    <h1 class="slide-title">LD ≠ MD — 절대 같은 다이얼로 돌리지 말 것</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">monitoring 도입을 결정했다면 이제 dose 자체를 어떻게 바꿀지 결정해야 함. <strong>여기서 가장 흔한 사고가 LD와 MD를 같이 처리하는 것</strong>임. 둘은 다른 파라미터가 지배함.</p>
+
+  <div class="grid-2">
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{D_L}_{\text{loading dose}} = \frac{\overbrace{\underbrace{V}_{\text{분포 공간}}\cdot\underbrace{C_{target}}_{\text{목표 농도}}}^{\text{필요 amount}}}{\underbrace{F}_{\text{이용률}}}$$
+      </div>
+    </div>
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{D_M/\tau}_{\text{유지 dose rate}} = \frac{\overbrace{\underbrace{CL}_{\text{제거능}}\cdot\underbrace{C_{ss,avg}}_{\text{목표 평균 농도}}}^{\text{재공급량}}}{\underbrace{F}_{\text{이용률}}}$$
+      </div>
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">💡 비유 — 욕조 채우기 vs 욕조 유지하기</span>
+    LD는 <strong>빈 욕조를 목표 수위까지 한 번 채우는 일</strong>, MD는 <strong>배수구로 빠지는 만큼 계속 채워넣는 일</strong>. 욕조 크기가 그대로(\(V\) 안 변함)면 채우는 양도 그대로. 배수 속도(\(CL\))가 줄면 보충 속도도 줄여야 함. <strong>이 두 작업은 따로 결정해야 함.</strong>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:8px;">
+    <table>
+      <thead><tr><th>작업</th><th>지배 파라미터</th><th>변하는 원인</th></tr></thead>
+      <tbody>
+        <tr><td><strong>LD</strong></td><td>\(V\), \(C_{target}\), \(F\)</td><td>body size, tissue distribution, disease</td></tr>
+        <tr><td><strong>MD</strong></td><td>\(CL\), \(C_{target}\), \(\tau\), \(F\)</td><td>renal/hepatic function, interaction, disease</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ SLIDE 19 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4.2</span>
+    <h1 class="slide-title">Fig.18-5 함정 · 디곡신 환자 적용</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="callout warn">
+    <span class="callout-label">Fig.18-5 — 변동성 분할, prediction accuracy 아님</span>
+    자주 헷갈리는 그림. R&amp;T Fig.18-5는 <strong>각 파라미터가 covariate로 얼마나 설명되는지의 비율</strong>을 보여줌:
+    <ul style="margin-top:4px;">
+      <li>\(V\) → body weight 25% + age 10% + renal function 10% = <strong>약 45% 설명, 55% 미설명</strong></li>
+      <li>hepatic \(CL\) → <strong>약 40% 설명, 60% 미설명</strong></li>
+      <li>renal \(CL\) → renal function 50% + body weight 15% + age 15% = <strong>약 80% 설명</strong></li>
+      <li>\(F\) → <strong>약 5%만 설명</strong></li>
+    </ul>
+    → 이건 "이만큼 정확하게 예측 가능"이 <strong>아니라</strong> "이만큼만 covariate로 설명되고 나머지는 IIV"라는 뜻. <strong style="color:#a9583e;">자주 오독되는 그림임.</strong> <span class="chip">R&amp;T 5e p.582</span>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:10px;">
+    <table>
+      <thead><tr><th>상황</th><th>파라미터 변화</th><th>결과</th><th>조치</th></tr></thead>
+      <tbody>
+        <tr><td>Renal-CL dominant</td><td>\(RF\)가 \(CL\) 강하게 설명</td><td>maintenance 예측 가능성 ↑</td><td>\(RF/R_d\) 기반 MD 조정</td></tr>
+        <tr><td>Hepatic-CL dominant</td><td>demographic으로 설명 안 되는 IIV ↑</td><td>개인 노출 불확실성 ↑</td><td>TCS 기준 충족 시 monitoring 고려</td></tr>
+        <tr><td>이론적 LD가 매우 큼</td><td>\(V\cdot C_{target}\) 요구량 큼</td><td>단회 투여 독성/투여 가능성 문제</td><td>divided loading 검토</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout" style="margin-top:8px;">
+    <span class="callout-label">💡 신부전이라 LD도 줄인다 — 자동 규칙은 틀릴 수 있음</span>
+    LD는 \(V\) 문제, MD는 \(CL\) 문제. <strong>다만 digoxin uremia처럼 \(V\) 자체가 줄어드는 예외</strong>는 별도 잡음.
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>우리 환자에게 적용</h3>
+    <p>디곡신 toxic range(2.5 µg/L). HF target 0.5–0.9 µg/L. → <strong class="amber">MD를 줄여야 함 (CL 작업)</strong>. LD는 이미 들어간 약이 spread돼 있는 상태라 별 의미 없음.</p>
+    <p style="margin-top:6px;">만약 신기능 저하 의심이 있어 \(RF\)가 70% 정도라면, \(f_e\approx 0.65\)인 digoxin에서 \(R_d \approx 0.65\times 0.7 + 0.35 = 0.81\). → MD를 <strong class="amber">약 80% 수준으로 적용</strong>. 동시에 dose hold하고 농도가 target range로 내려갈 때까지 기다리는 게 안전한 임상 동선.</p>
+    <p style="margin-top:6px;"><em>위 dose 수치는 <code>[교과서 외 통합 추론 예시]</code>임. PK35 원문에 직접 권고된 처방이 아님.</em></p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 20 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4.3</span>
+    <h1 class="slide-title">Missed / Erratic Dosing은 Superposition 문제</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">실제 환자가 dose를 빼먹거나, ICU에서 dosing interval이 깨졌을 때 — TDM 농도를 어떻게 해석할 것임? <strong>"자료 오염"으로 처리해버리면 adherence 문제가 IIV에 통째로 흡수돼서 모델이 망함.</strong> 핵심 — <strong>불규칙 dosing은 superposition 문제임.</strong></p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{C(t)}_{\text{현재 농도}} = \overbrace{\sum_{i}\underbrace{C_i(t-t_i)}_{i\text{번째 dose의 잔여 기여}}}^{\text{superposition}}$$
+    </div>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:8px;">
+    <table>
+      <thead><tr><th>시나리오</th><th>수식</th><th>핵심</th></tr></thead>
+      <tbody>
+        <tr><td>한 번 missed</td><td>Eq.18-1</td><td>예상 ss 농도에서 missed dose의 잔여 기여를 뺌</td></tr>
+        <tr><td>연속 2번 missed</td><td>Eq.18-2</td><td>두 missed dose 기여를 뺌</td></tr>
+        <tr><td>Unequal interval (9-13-17-21)</td><td>Eq.18-3</td><td>일중 간격 unequal한 24h cycle</td></tr>
+        <tr><td>Dose+interval 모두 unequal</td><td>Eq.18-4</td><td>이전 dose 잔여량 합산; \(4\times t_{1/2}\) 이전 dose는 무시 가능</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">💡 비유 — 방 안에 남은 향수 냄새 더하기</span>
+    Superposition은 <strong>방 안에 남은 향수 냄새 더하기</strong>임. 방금 뿌린 향수만 보지 말고, <strong>어제 뿌린 향수가 얼마나 남았는지를 다 합산</strong>해야 함.
+  </div>
+
+  <h2 class="sub-title" style="margin-top:10px;">유지 풀이 예제 — 실무 감각용</h2>
+  <ul>
+    <li><strong>Digoxin missed 2회</strong> — 0.25 mg daily 환자가 2번 빼먹은 경우 예상 농도 <strong>0.39 µg/L</strong>. therapeutic range 0.8–2.0 µg/L보다 낮음. <span class="chip">R&amp;T 5e p.602</span></li>
+    <li><strong>Vancomycin 9-13-17-21</strong> — 20 kg, 5세 환아, \(V\) 14 L, \(CL\) 3.3 L/h, \(k\) 0.24 h⁻¹, 250 mg regimen → <strong>8:00 농도 2.03 mg/L</strong>. therapeutic 5–15 mg/L보다 낮음. <span class="chip">R&amp;T 5e pp.602–603</span></li>
+    <li><strong>Erratic vancomycin</strong> — 68 kg, 60세 남성, SCr 2.2 mg/dL, \(CL_{cr}\) 34 mL/min, \(V\) 42.2 L, \(k\) 0.049 h⁻¹; <strong>observed 34 mg/L vs predicted 33.7 mg/L</strong>. → kinetics는 일관됨, dose 자체가 너무 높다는 신호. <span class="chip">R&amp;T 5e p.604</span></li>
+  </ul>
+</section>
+
+<!-- ============ SLIDE 21 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4.3</span>
+    <h1 class="slide-title">Forgivability + PK35 환자 적용</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="callout amber">
+    <span class="callout-label">📐 Osterberg-Urquhart Forgiveness (교과서 외)</span>
+    "forgiving/unforgiving"은 라벨이 아니라 <strong>연속 변수</strong>임. <strong>Osterberg-Urquhart (Br J Clin Pharmacol 2005)</strong>의 정의 — <strong>여유 시간 = \(D_a\)(효과 지속) − \(\tau\)(투여 간격)</strong>.
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\overbrace{\underbrace{\mathrm{Forgiveness}}_{\text{용서력}} \;\sim\; \underbrace{D_a}_{\text{효과 지속}}\;-\;\underbrace{\tau}_{\text{투여 간격}}}^{\text{여유 시간}}, \qquad \underbrace{D_a/\tau}_{\text{비율}} \begin{cases} <1 & \text{unforgiving} \\ \approx 1 & \text{borderline} \\ \geq 2 & \text{highly forgiving} \end{cases}$$
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:4px;"><strong>실무 검증</strong> — simulation으로 (a) 1회 결손 시 trough가 lower therapeutic limit 아래로 떨어지나, (b) 연속 2회 결손을 견디나.</p>
+
+  <div class="callout warn" style="margin-top:10px;">
+    <span class="callout-label">⚠️ PK35 환자 forgivability — 어떤 \(t_{1/2}\)?</span>
+    세 개의 \(t_{1/2}\)가 같이 존재함:
+    <ul style="margin-top:4px;">
+      <li>\(t_{1/2,\,pop} \approx 192\) h (PK35 prior 환산)</li>
+      <li>\(t_{1/2,\,clinical} \approx 36\) h (R&amp;T Table 18-7 임상 reference)</li>
+      <li><strong>\(t_{1/2,\,posterior} = 14.5\) h</strong> (이 환자 Bayesian 추정)</li>
+    </ul>
+    임상 reference 36 h를 쓰면 \(t_{1/2}/\tau \approx 36/24 \approx 1.5\) → <strong>borderline forgiving</strong>. <br><strong>하지만 이 환자의 posterior 14.5 h를 쓰면</strong> \(t_{1/2}/\tau \approx 14.5/24 \approx 0.6\) → <strong>unforgiving 영역</strong>.
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{\frac{t_{1/2,\,PK35\,posterior}}{\tau}}_{\text{환자 specific}} = \frac{\overbrace{14.5\,\mathrm{h}}^{\text{Bayesian}}}{\underbrace{24\,\mathrm{h}}_{\tau}} \approx \underbrace{0.6}_{\text{unforgiving}} \;\;\neq\;\; \underbrace{\frac{t_{1/2,\,clinical}}{\tau}}_{\text{population}} = \frac{\overbrace{36\,\mathrm{h}}^{\text{Table 18-7}}}{\underbrace{24\,\mathrm{h}}_{\tau}} \approx \underbrace{1.5}_{\text{borderline}}$$
+    </div>
+  </div>
+
+  <p style="margin-top:6px;">→ 이 환자에게는 <strong>1회 결손에도 trough가 sub-therapeutic으로 떨어질 위험</strong>으로 분류해야 함. <strong>Forgivability는 무조건 환자별 PK로 계산해야 의미 있음.</strong></p>
+
+  <div class="dark-card" style="margin-top:6px;">
+    <p><span class="accent"><strong>🔑 §4 한 줄 잠금</strong></span> — Monitoring 도입은 5개 순차 필터 통과 시 보조 전략. Dose 변경은 <strong>LD(\(V\)) vs MD(\(CL\)) 분리</strong>. 불규칙 dosing은 자료 오염이 아니라 <strong>superposition 문제</strong>. <strong class="amber">어떤 \(t_{1/2}\)를 쓸지에 따라 forgivability 판단이 뒤집힘.</strong></p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 22 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5</span>
+    <h1 class="slide-title">다섯째 마디 — 노출 보고로 마무리 (PK15)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;">이건 세션 16에서 짧게 짚고 가는 마디임. <strong>선택된 용량의 exposure와 safety margin을 어떻게 보고할 것이냐</strong>가 PK15의 역할임. <span class="chip">G&amp;W 5e pp.546–548</span></p>
+
+  <h2 class="sub-title">핵심 anchor 숫자</h2>
+  <div class="tbl-wrap" style="margin-bottom:10px;">
+    <table>
+      <thead><tr><th>항목</th><th>값</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dose levels</strong></td><td>10 / 56 / 320 µmol·day⁻¹·kg⁻¹</td></tr>
+        <tr><td><strong>노출 지표</strong></td><td>Cmax / AUC</td></tr>
+        <tr><td><strong>Therapeutic 농도</strong></td><td>0.05–0.1 µM</td></tr>
+        <tr><td><strong>High-dose Cmax</strong></td><td>약 50 µM</td></tr>
+        <tr><td><strong>Safety margin</strong></td><td><strong style="color:#a9583e;">&gt;100배</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dark-card">
+    <h3>이게 의미하는 바</h3>
+    <p><strong class="amber">dosing decision의 사슬은 처방 자체에서 끝나는 게 아니라, "그 dose에서 환자가 받는 exposure와 안전역이 얼마였는지"를 보고하는 데서 끝남.</strong> 임상 보고서, NDA dose-rationale, regulatory document에서 이게 <strong>마지막 layer</strong>임.</p>
+  </div>
+
+  <div class="callout teal" style="margin-top:10px;">
+    <span class="callout-label">🔑 §5 한 줄 잠금</span>
+    Dose 결정으로 끝내지 말 것. <strong>선택된 dose에서의 exposure(Cmax, AUC)와 safety margin</strong>을 source boundary 안에서 보고하는 게 사슬의 진짜 끝임.
+  </div>
+</section>
+
+<!-- ============ SLIDE 23 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6</span>
+    <h1 class="slide-title">혼동 쌍 1·2·3 — 실무 오류 차단 장치</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="note" style="margin-bottom:6px;">🎯 혼동 쌍은 시험 암기용이 아니라 <strong>실무 오류 차단 장치</strong>임. 끝까지 분리해야 할 네 가지 — \(C_e/R/RC\), \(RF/f_e\), \(V/CL\), sampling 신뢰도.</p>
+
+  <h2 class="sub-title">§6.1 — Effect compartment vs Turnover</h2>
+  <div class="tbl-wrap" style="margin-bottom:8px;">
+    <table>
+      <thead><tr><th>기준</th><th>Effect compartment</th><th>Turnover</th></tr></thead>
+      <tbody>
+        <tr><td>단위</td><td>\(C_e\): 농도; \(k_{e0}\): 시간⁻¹</td><td>\(R\): response 단위; \(k_{in}, k_{out}\)</td></tr>
+        <tr><td>수식</td><td>\(dC_e/dt=k_{e0}(C-C_e)\)</td><td>\(dR/dt = k_{in}\cdot I(C) - k_{out}R\)</td></tr>
+        <tr><td>원인</td><td>plasma–effect site 평형 지연</td><td>input/loss process가 약으로 바뀜</td></tr>
+        <tr><td>혼동 시 사고</td><td>delay를 전부 turnover로 과해석</td><td>response system 변화를 link 모델로 축소</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">⚡ <strong>분포 지연 vs 시스템 지연.</strong> Effect compartment는 약이 effect site로 <strong>이동하는 시간</strong> 때문. Turnover는 약은 이미 도달했는데 <strong>response system이 바뀌는 시간</strong> 때문. 진단 단서 — dose 올리며 peak가 옮겨가면 turnover, 안 옮겨가면 effect compartment 쪽.</p>
+
+  <h2 class="sub-title" style="margin-top:10px;">§6.2 — 좌측 이동 vs 우측 이동</h2>
+  <div class="tbl-wrap" style="margin-bottom:6px;">
+    <table>
+      <thead><tr><th>기준</th><th>좌측 trough shift</th><th>우측 shift + 고용량 flat</th></tr></thead>
+      <tbody>
+        <tr><td>시간축</td><td>earlier로 이동</td><td>later로 이동 + flat 구간</td></tr>
+        <tr><td>후보</td><td>turnover loss stimulation 또는 receptor on/off</td><td>saturation 동반 input inhibition</td></tr>
+        <tr><td>혼동 시 사고</td><td>"무조건 receptor on/off" 과잉 확정</td><td>absorption delay로 오독</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">⚡ <strong>방향은 단서지 결론이 아님.</strong> 1차 필터지 최종 판단이 아님.</p>
+
+  <h2 class="sub-title" style="margin-top:10px;">§6.3 — Bayesian "농도 없음" vs "prior 없음"</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>기준</th><th>농도 없음</th><th>prior 없음</th></tr></thead>
+      <tbody>
+        <tr><td>누가 지배</td><td>prior penalty가 지배</td><td>concentration mismatch가 지배</td></tr>
+        <tr><td>결과</td><td>population average에 가까움</td><td>maximum-likelihood concentration fitting</td></tr>
+        <tr><td>사고</td><td>환자 특이 deviation 놓침</td><td>생리학적으로 불가능한 \(V/CL\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">⚡ <strong>데이터 없음 vs 사전 지식 없음.</strong> posterior 숫자 자체가 아니라 <strong>누가 끌고 갔는지</strong>를 인식해야 함.</p>
+</section>
+
+<!-- ============ SLIDE 24 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6</span>
+    <h1 class="slide-title">혼동 쌍 4·5·6</h1>
+  </div>
+  <hr class="header-rule">
+
+  <h2 class="sub-title">§6.4 — 간 고추출 약물 vs 신장 배설 약물</h2>
+  <div class="tbl-wrap" style="margin-bottom:6px;">
+    <table>
+      <thead><tr><th>기준</th><th>간 고추출/단백결합</th><th>신장 배설 미변화</th></tr></thead>
+      <tbody>
+        <tr><td>축</td><td>\(F\), extraction ratio, \(f_u\), unbound \(CL\)</td><td>\(RF\), \(f_e\), renal \(CL\)</td></tr>
+        <tr><td>수식 위치</td><td>경구에서 \(F\)↑와 \(CL\) 변화가 노출 지배</td><td>\(R_d = RF\cdot f_e + (1-f_e)\)</td></tr>
+        <tr><td>혼동 시 사고</td><td>"간 질환 = 모든 \(CL\) 감소" 오독</td><td>약물/환자 속성 혼동</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">⚡ <strong>"간 질환 = \(CL\) 감소"의 함정.</strong> High-extraction 경구는 간경변에서 \(F\)가 올라서 노출이 급격히 ↑. Low-extraction + albumin 결합 강한 약물은 total target 자체를 재해석해야 함.</p>
+
+  <h2 class="sub-title" style="margin-top:10px;">§6.5 — LD vs MD</h2>
+  <div class="tbl-wrap" style="margin-bottom:6px;">
+    <table>
+      <thead><tr><th>기준</th><th>Loading dose</th><th>Maintenance dose</th></tr></thead>
+      <tbody>
+        <tr><td>단위</td><td>dose; \(V\cdot C_{target}/F\)</td><td>dose rate; \(CL\cdot C_{target}\cdot\tau/F\)</td></tr>
+        <tr><td>지배</td><td>\(V\), target 농도</td><td>\(CL\), \(RF\), \(R_d\)</td></tr>
+        <tr><td>원인</td><td>body size, tissue distribution</td><td>renal/hepatic, interaction</td></tr>
+        <tr><td>혼동 시 사고</td><td>신부전이라고 LD까지 줄여 초기 농도 미달</td><td>장기 dosing에 \(V\) 논리 적용 → accumulation/underdosing</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">⚡ <strong>욕조 채우기 vs 욕조 유지하기.</strong> LD = 일회성 채우기. MD = 새는 만큼 보충. 신부전이어도 \(V\) 안 변하면 LD 줄일 이유 없음.</p>
+
+  <h2 class="sub-title" style="margin-top:10px;">§6.6 — 채혈 식별가능성 vs Point estimate 신뢰도</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>기준</th><th>채혈 식별가능성</th><th>Point estimate 신뢰도</th></tr></thead>
+      <tbody>
+        <tr><td>영역</td><td>sampling geometry, \(t/t_{1/2}\)</td><td>posterior mean, RSE, shrinkage</td></tr>
+        <tr><td>핵심</td><td>early → \(V\), late/ss → \(CL\)</td><td>같은 likelihood의 여러 \((V,CL)\) 조합 위</td></tr>
+        <tr><td>사고</td><td>\(CL\) collapse를 개인 \(CL\)로 오독</td><td>식별 불가 posterior로 dose 결정</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">⚡ <strong>지도가 식별 가능한 영역에 있는가.</strong> \(1\times t_{1/2}\) 이전 sample은 \(V\)는 잡지만 \(CL\)은 prior로 collapse. TDM 농도 보면 먼저 — <strong>"이 농도가 \(CL\)을 실제로 추정한 거 맞아?"</strong>부터 물어야 함. 💡 <strong>실패 모드 시그니처</strong> — NONMEM에서 η-shrinkage on \(CL\) &gt; 30%, \(V\) &lt; 15%, RSE(\(CL\)) &gt; 50%인데 fit 통과 → <strong>"sampling time mismatch"</strong> 신호.</p>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <p><strong>§6 한 줄.</strong> 오류 대부분은 <strong class="amber">하나의 관찰을 하나의 원인에 고정</strong>할 때 생김. 판단 단위는 단일 수치가 아니라 <strong>shape + covariate + dose history + sampling time의 묶음</strong>임.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 25 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">자기 테스트 — Q1~Q7 (판단 사슬 누수 검사)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">Q1 — 모양 읽기 순서</h2>
+      <p>baseline → time-delay → peak-shift → saturation/slope 순서 이유?</p>
+      <p style="margin-top:4px;"><strong>A.</strong> baseline이 흐르거나 adaptation/rebound 있으면 direct 모델 해석이 먼저 깨짐. time-delay와 peak-shift는 effect-site delay/turnover/receptor on/off 후보 가르는 신호. saturation/slope는 고용량 비선형 드러냄. <span class="chip">pp.423–424</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q2 — Case B 좌측 peak-shift</h2>
+      <p>"모델 클래스 확정"으로 쓰면 왜 위험?</p>
+      <p style="margin-top:4px;"><strong>A.</strong> 좌측 shift는 turnover loss stimulation도, receptor on/off도 만들 수 있음. 원문은 가능한 모델들을 평가하라고 했지 방향만으로 확정하라고 하지 않음. <span class="chip">pp.424–428</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q3 — Effect compartment vs turnover</h2>
+      <p><strong>A.</strong> Effect compartment = 농도가 effect site로 늦게 평형되는 <strong>분포 지연</strong>. Turnover = response variable의 production/loss rate 자체가 약으로 바뀜. <span class="chip">pp.425–426</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q4 — 농도 없음 vs prior 없음</h2>
+      <p><strong>A.</strong> 농도 없음 → population average가 추정값. Prior 없음 → maximum-likelihood concentration fitting. Sparse concentration + weak prior 조합은 생리학적으로 불가능한 \(V/CL\)을 만들어낼 수 있음. <span class="chip">pp.641–643</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q5 — PK35 anchor</h2>
+      <p><strong>A.</strong> 55세, 60 kg, CHF, Lanoxicap 0.2 mg daily, 458 h 2.5 µg/L, 479 h 0.9 µg/L, \(CL_{pop}\) 1.8 L/h, \(V_{pop}\) 500 L, 추정 \(CL\) 5.7 L/h, \(V\) 119.6 L, \(t_{1/2}\) 14.5 h. <span class="chip">pp.641–643</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q6·Q7 — \(R_d\) 분리 / SCr lag</h2>
+      <p><strong>Q6.</strong> \(f_e\)는 약물 속성, \(RF\)는 환자 속성. 분리해야 신부전이 maintenance 노출에 미치는 영향을 정량화 가능. <span class="chip">pp.450–453</span></p>
+      <p style="margin-top:4px;"><strong>Q7.</strong> SCr은 즉시값이 아니라 creatinine turnover 반영된 지연값. 급성 변화에서는 실제 \(RF\)가 SCr 기반 추정보다 더 낮을 수 있음. <span class="chip">pp.459–461</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 26 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">자기 테스트 — Q8~Q14</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">Q8 — 투석 보충 dose?</h2>
+      <p>half-life 단축 = 보충 용량 필요?</p>
+      <p style="margin-top:4px;"><strong>A.</strong> 아님. <strong>세션 동안 몸에서 빠진 양</strong>이 핵심. \(V_u\)가 크거나 \(CL_u\gg CL_{uD}\)이면 single session fraction removed는 작을 수 있음. <span class="chip">pp.471–472</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q9 — TCS 후보면 항상 monitoring?</h2>
+      <p><strong>A.</strong> 아님. concentration-response 양호 + therapeutic failure 가능성 + PopPK 정보 + 신뢰할 assay + 결정 전 도착하는 turnaround, <strong>5개가 대부분 충족돼야</strong> routine strategy. <span class="chip">pp.594–597</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q10 — Phenytoin total target</h2>
+      <p>그대로 해석하면 왜 틀릴 수 있나?</p>
+      <p style="margin-top:4px;"><strong>A.</strong> Phenytoin은 albumin 결합 강함 + saturable metabolism. Uremia, 수술, displacement drug 있으면 단백결합 변화 → total target을 같은 unbound 농도에 맞춰 조정. 정량 보정은 Sheiner-Tozer \(C_{corrected}=C_{measured}/(0.2\cdot Alb + 0.1)\). <span class="chip">pp.588, 595–596</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q11 — LD vs MD 한 문장으로</h2>
+      <p><strong>A.</strong> LD는 \(V\)와 target 농도의 문제. MD는 \(CL\)과 target 평균 노출의 문제. <span class="chip">pp.584–586</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q12 — Fig.18-5 오독</h2>
+      <p>"V는 정확히 예측 가능"으로 읽으면 왜 틀린가?</p>
+      <p style="margin-top:4px;"><strong>A.</strong> Fig.18-5는 <strong>variability partition</strong>임. \(V\) 약 45%, hepatic \(CL\) 약 40%, renal \(CL\) 약 80%, \(F\) 약 5% 설명. 이건 prediction accuracy 값이 아님. <span class="chip">p.582</span></p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q13·Q14 — Vanco 9-13-17-21 / PK35</h2>
+      <p><strong>Q13.</strong> 24h total daily dose가 같아도 일중 간격이 unequal하면 trough가 크게 떨어질 수 있음. 250 mg 9-13-17-21에서 8:00 농도 <strong>2.03 mg/L</strong>로 therapeutic 5–15 mg/L보다 낮음. <span class="chip">pp.602–603</span></p>
+      <p style="margin-top:4px;"><strong>Q14.</strong> PK35는 \(CL/V/t_{1/2}\) 추정 사례. 0.4 mg loading이나 0.1–0.125 mg/day maintenance를 직접 권고하는 처방 문서 아님. 그런 답은 <code>[교과서 외 통합 추론 예시]</code>로만 제시. <span class="chip">pp.641–643</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 27 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">⚡ 보스 딜레마 Q15·Q16 — 방어 가능한 추론</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="dark-card">
+    <h3>Q15 — Hepatic-CL dominant 약물 X / TCS marginal turnaround</h3>
+    <p>maintenance 단계 환자. Fig.18-5: hepatic \(CL\)은 demographic으로 약 40%만 설명. TCS 5 기준 중 "concentration-response 양호"는 충족, "결정 전 도착 turnaround"는 marginal. Routine TDM 도입? Demographic 기반 표준? 어떻게 방어?</p>
+    <p style="margin-top:8px;"><strong class="amber">A.</strong> 양자택일이 정답 아님. <strong>두 trade-off를 명시적으로 분리해서 인식하는 게</strong> 핵심.</p>
+    <ul style="margin-top:6px;">
+      <li><span class="amber"><strong>Demographic-only 비용</strong></span> — hepatic \(CL\)의 60% IIV가 covariate로 설명 안 됨 → 개인 노출 ±50% 이상 벗어날 수 있음. sampling/assay/turnaround 운영 위험 0.</li>
+      <li><span class="amber"><strong>Routine TDM 비용</strong></span> — 60% IIV 개별화 가능. 그런데 turnaround marginal → 도착한 농도가 다음 dose 결정 시점을 *지나서* 도착할 수 있음. 측정값은 있는데 의사결정 input이 아닌 상태 = <strong>placebo monitoring</strong>.</li>
+      <li><span class="accent"><strong>마스터 모델러의 선택</strong></span> — TCS 기준이 대부분 충족되니 도입 *후보*는 맞음. 그런데 turnaround marginal을 운영적으로 해결할 방법(sampling timing 조정, lab cutoff 협의)이 없으면 <strong>데이터만 쌓고 결정 못 바꾸는 placebo monitoring이 됨</strong>. → 운영 조건 잡히기 전까지는 demographic + clinical response monitoring으로 가되, "hepatic-\(CL\) dominant이고 demographic으로 60% 미설명, IIV outlier 가능"을 명시 보고. 운영 조건 확보되는 즉시 TCS 전환. <span class="chip dark">pp.582, 594–597</span></li>
+    </ul>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">Q16 — Vanco PopPK 실패 모드 시그니처</span>
+    η-shrinkage on \(CL\) &gt; 30%, \(V\) &lt; 15%, COV step 통과, RSE(\(CL\)) &gt; 50%. ICU 첫 24시간 dense sampling. 무슨 신호?
+    <p style="margin-top:4px;"><strong>A.</strong> <strong>"Fit은 통과했지만 데이터가 식별할 수 없었던 양을 추정하려 한"</strong> 신호. \(1\times t_{1/2}\) 이전 sample에서는 \(CL\times 1/3\)과 \(V\times 3\)이 거의 같은 likelihood → NONMEM이 \(V\)는 잡고 \(CL\)은 population mean으로 collapse. <strong>해결</strong> — (a) \(V\)를 strong prior로 고정하고 \(CL\)만 개별화, (b) \(\geq 4\times t_{1/2}\) post-infusion sample 추가. <span class="chip">pp.605–606</span></p>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{CL\times\frac{1}{3}}_{\text{낮은 CL}} \;\approx_{\text{early}}\; \underbrace{V\times 3}_{\text{큰 V}}, \qquad \underbrace{t\geq 4\times t_{1/2}}_{CL\text{ 분리 가능}}$$
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:6px;">
+    <span class="callout-label">🔑 §7 한 줄</span>
+    자기 테스트의 목적은 계산 정답보다 <strong>"어떤 정보가 없으면 해석이 불가능한가"를 즉시 말하게 만드는 것</strong>. Q15·Q16은 단일 정답 없는 trade-off를 <em>방어 가능한 추론</em>으로 바꾸는 문제.
+  </div>
+</section>
+
+<!-- ============ SLIDE 28 ============ -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8</span>
+    <h1 class="slide-title">메타 프레임 A·B·C — Model에서 Decision으로</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">A. 이 세션의 위치</h2>
+      <p>"모델 구축"과 "임상 dosing 결정" 사이의 <strong>연결부</strong>. 모델을 만든 다음 실제 환자 용량 판단으로 넘어가는 지점.</p>
+      <ul style="margin-top:4px;">
+        <li>Ch.6 — model structure를 좁히는 눈</li>
+        <li>Ch.15 — 질환이 파라미터를 어떻게 움직이는지</li>
+        <li>PK35 — individual parameter를 posterior로</li>
+        <li>Ch.18 — estimate를 LD/MD/monitoring/missed-dose 해석으로</li>
+        <li>PK15 — 선택된 dose의 exposure/safety margin 보고</li>
+      </ul>
+    </div>
+
+    <div class="dark-card">
+      <h3>B. MIPD — 현대 표준 용어 (교과서 외)</h3>
+      <p>이 세션이 다루는 다섯 마디 — <em>plot shape → 질환 covariate → Bayesian posterior → LD/MD 분리 → exposure 보고</em> — 가 현대 표준 용어로는 <strong class="amber">MIPD (Model-Informed Precision Dosing)</strong>임. ASCPT/PSCC 핵심 educational priority, FDA/EMA 규제 권고에도 등장.</p>
+      <p style="margin-top:4px;">R&amp;T 5e(2011)는 이 용어를 안 썼지만 Ch.18 구조 자체가 MIPD framework임.</p>
+    </div>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:8px;">
+    <div class="formula-card">
+      $$\overbrace{\underbrace{\text{MIPD}}_{\text{현대 표준 용어}} \;\equiv\; \underbrace{\text{PopPK prior}}_{\text{Ch.13/15}} \;+\;\underbrace{\text{Bayesian posterior}}_{\text{PK35}} \;+\;\underbrace{\text{target concentration}}_{\text{Ch.18 TCS}} \;+\;\underbrace{\text{LD/MD 분리}}_{\text{Ch.18}}}^{\text{model-informed individualization cycle}}$$
+    </div>
+  </div>
+
+  <h2 class="sub-title" style="margin-top:10px;">C. 네 가지 메타 패턴 — 다 곱셈, 다 좌표</h2>
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{R_d}_{\text{renal}} \sim \overbrace{\underbrace{f_e}_{\text{약물}}\times\underbrace{RF}_{\text{환자}}}^{\text{renal}}, \quad \underbrace{\text{forgiveness}}_{\text{용서력}} \sim \overbrace{\underbrace{t_{1/2}/\tau}_{\text{시간 여유}}\times\underbrace{\text{TI}}_{\text{농도 여유}}}^{\text{여유}}, \quad \underbrace{TCS}_{\text{monitoring}} \sim \overbrace{\underbrace{\text{risk}}_{\text{위험}}\times\underbrace{\text{measurability}}_{\text{측정성}}}^{\text{TCS}}$$
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="callout amber">
+      <strong>2.</strong> 식별가능성은 채혈 시점에 달려 있음. 이른 농도 → \(V\), 늦은/steady-state → \(CL\).
+    </div>
+    <div class="callout">
+      <strong>3.</strong> 현실은 연속, 소통은 이산. Renal stage, TCS list, dialysis threshold는 의사소통 도구지 hard cutoff가 아님.
+    </div>
+    <div class="callout teal">
+      <strong>4.</strong> \(CL\)의 해부학이 용량 논리를 결정. Renal/hepatic dominant, high/low-extraction, protein-bound — 같은 "\(CL\) 감소"로 묶을 수 없음.
+    </div>
+    <div class="callout warn">
+      <strong>1.</strong> <strong>두 인자의 곱이 결정함.</strong> 모든 dose 판단은 약물 속성 × 환자 속성.
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 29 ============ -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8 · 최종</span>
+    <h1 class="slide-title">체크리스트 · 사용 금지 · 최종 한 줄</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2" style="margin-bottom:8px;">
+    <div class="card">
+      <h2 class="sub-title">D. Source-locked 전문가 체크리스트</h2>
+      <ul>
+        <li>☐ Plot 모양으로 ODE 후보를 줄였는가</li>
+        <li>☐ \(f_e/RF/R_d\)로 신질환 maintenance 조정을 계산했는가</li>
+        <li>☐ C-G를 쓰되 SCr lag와 body composition caveat를 같이 봤는가</li>
+        <li>☐ Bayesian 출력을 prior, 농도, sampling time, dosing history의 산물로 읽었는가</li>
+        <li>☐ TCS를 5개 기준 기반 보조 전략으로 운용했는가</li>
+        <li>☐ LD와 MD를 \(V\) vs \(CL\) 문제로 분리했는가</li>
+        <li>☐ Missed/erratic dosing을 superposition 문제로 계산했는가</li>
+      </ul>
+    </div>
+
+    <div class="dark-card">
+      <h3>E. 사용 금지 / 대체 표현 (최종 잠금)</h3>
+<pre style="font-family:'JetBrains Mono', monospace; color:#a09d96; font-size:10.5px; line-height:1.55; white-space:pre-wrap; margin-top:4px;"><span style="color:#c64545;">❌ 금지</span>
+- peak-shift direction = model class
+- TCS candidate drug = mandatory TCS
+- V/CL Fig.18-5 percentages = accuracy
+- PK35 = 직접 처방 권고
+- TDM patients 80% irregular dosing
+- hemodialysis decision = simple Vu&lt;120 AND CLu&lt;CLuD
+- Sheiner-Tozer 분모에 (Alb/4.4)를 0.2와 곱
+
+<span class="amber">⭕ 대체</span>
+- peak-shift narrows competing models
+- TCS is adjunct when criteria satisfied
+- Fig.18-5 = variability partition (NOT accuracy)
+- PK35 estimates CL/V/t½; prescription separate
+- missed/unequal/erratic = needs equations
+- dialysis lies on Vu·CLu·CLuD plane
+- Sheiner-Tozer: C_corrected = C_measured/(0.2·Alb+0.1)
+  (정상 alb=4.4에서 분모 ≈ 0.98 ≈ 1 검증)</pre>
+    </div>
+  </div>
+
+  <h2 class="sub-title">F. 최종 요약 — 한 줄로 다시 꿰면</h2>
+  <div class="callout amber" style="margin-bottom:8px;">
+    <strong>plot 모양으로 모델 후보를 좁히고, 질환과 환자 특성으로 파라미터 편차를 설명하고, Bayesian TDM과 dosing 식으로 치료 의사결정에 연결함.</strong>
+    <p style="margin-top:6px;">피해야 할 다섯 함정:</p>
+    <ol>
+      <li>방향 하나로 모델을 단정하는 deterministic overclaim</li>
+      <li>근거 없는 백분율</li>
+      <li>라벨 없는 규제/소프트웨어 외삽</li>
+      <li>PDF에 없는 직접 처방 주장</li>
+      <li>산술적으로 검증 안 되는 보정식</li>
+    </ol>
+  </div>
+
+  <div class="closer">
+    <div class="closer-label">Capstone · Final Sutured Line</div>
+    <div class="closer-body">
+      한 환자의 dose를 결정한다는 사건은 다섯 마디로 풀림 — <span style="color:#e8a55a;">모양 읽기</span> · <span style="color:#e8a55a;">환자 보정</span> · <span style="color:#cc785c;">개인 추정</span> · <span style="color:#cc785c;">처방 결정</span> · <span style="color:#e8a55a;">노출 보고</span>.<br><br>
+      마지막에 남는 질문은 처음과 같음 — <span style="color:#cc785c;"><strong>"이 두 점의 채혈이, 정말로 이 환자의 \(CL\)을 식별할 수 있는 정보였나?"</strong></span><br><br>
+      Bayesian posterior는 줄다리기의 결과이고, 그 결과를 dose에 옮겨도 되는지는 <em>sampling이 그 파라미터를 진짜 식별했냐</em>에 달려 있음. 측정 가능 ≠ 해석 가능, 라벨 ≠ 결정.
+    </div>
+    <div class="closer-sig">C-260518-051847-Q9X · Session 16 · Clinical Capstone</div>
+  </div>
+</section>
+
+</main>
+
+<nav class="navbar">
+  <button id="btn-prev">← 이전</button>
+  <div class="prog-area">
+    <div id="prog-text">1 / 30</div>
+    <div class="prog-track"><div id="prog-fill"></div></div>
+  </div>
+  <button id="btn-next">다음 →</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderMath);
+} else {
+  renderMath();
+}
+
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var TOTAL = slides.length;
+var cur = 0;
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn, i) {
+  btn.addEventListener('click', function() { goTo(i); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+goTo(0);
+</script>
+</body>
+</html>

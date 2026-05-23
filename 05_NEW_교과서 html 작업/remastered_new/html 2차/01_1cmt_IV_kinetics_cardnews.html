@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 01 — 1구획 IV 동력학: 같은 기울기, 다른 결정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:7px 10px 7px 14px;font-family:inherit;font-size:12.5px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.4;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:28px 44px 22px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:48px}
+.slide-header{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(26px,3vw,42px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.12}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(17px,1.8vw,22px);font-weight:500;color:#252523;margin:12px 0 6px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:8px 0 14px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;padding-bottom:8px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+p{font-size:clamp(13px,1.15vw,15.5px);color:#3d3d3a;margin:7px 0;line-height:1.6}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:14px 18px;margin:8px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:14px 18px;margin:8px 0}
+.formula-card-wrap{margin:10px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:36px 20px 28px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:6px 0}
+.formula-card.compact{padding:30px 16px 22px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6c6a64;margin-top:10px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:14px 18px;margin:8px 0}
+.dark-card p{color:#a09d96}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:4px 0 6px}
+.dark-card li{color:#a09d96}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:6px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;white-space:pre;overflow-x:auto;border-radius:12px;padding:14px 18px;margin:8px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:11px 15px;margin:8px 0;font-size:13px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:4px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#efe9de;color:#3d3d3a;padding:1px 6px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:8px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+thead{background:#efe9de}
+thead th{padding:12px 12px;text-align:left;font-weight:600;color:#141413;font-size:12px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:9px 12px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:5px 0;color:#3d3d3a;font-size:13.5px;line-height:1.55}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:18px 24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#a09d96;line-height:1.85;white-space:pre;overflow-x:auto;margin:8px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:12.5px;color:#6c6a64;font-style:italic;margin-top:4px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:1.05em}
+.katex{font-size:1.02em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:#141413;margin:10px 0 6px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:9px 14px;margin:8px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:13.5px;margin-bottom:4px}
+.q-block .a{font-size:12.5px;color:#3d3d3a}
+.closer-card{background:#181715;border-radius:12px;padding:24px 30px;text-align:center;margin:12px auto;max-width:760px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#faf9f5;line-height:1.55}
+.closer-text em{color:#e8a55a}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0}
+.kpi-box{background:#181715;border-radius:10px;padding:12px 14px;text-align:center}
+.kpi-box .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1px;text-transform:uppercase}
+.kpi-box .val{font-family:'Cormorant Garamond',serif;font-size:22px;color:#faf9f5;margin-top:4px}
+.kpi-box .sub{font-size:10.5px;color:#a09d96;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <svg width="20" height="20" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="brand-text">Session 01</div>
+      <div class="brand-sub">1-cpt IV Kinetics</div>
+    </div>
+  </div>
+  <div class="toc-section">Contents</div>
+  <button class="toc-btn" data-i="0">§0 시작 전 한 줄</button>
+  <button class="toc-btn" data-i="1">§1 함정 — S1 vs S4</button>
+  <button class="toc-btn" data-i="2">§2 욕조 모델</button>
+  <button class="toc-btn" data-i="3">§3 위계 규칙</button>
+  <button class="toc-btn" data-i="4">C1 청소율 CL (1/2)</button>
+  <button class="toc-btn" data-i="5">C1 청소율 CL (2/2)</button>
+  <button class="toc-btn" data-i="6">C2 분포용적 V (1/2)</button>
+  <button class="toc-btn" data-i="7">C2 분포용적 V (2/2)</button>
+  <button class="toc-btn" data-i="8">C3 소실속도상수 K</button>
+  <button class="toc-btn" data-i="9">C4 반감기 t½ (1/2)</button>
+  <button class="toc-btn" data-i="10">C4 반감기 t½ (2/2)</button>
+  <button class="toc-btn" data-i="11">C5 평균체류시간 MRT</button>
+  <button class="toc-btn" data-i="12">§5 혼동쌍 CL vs K</button>
+  <button class="toc-btn" data-i="13">§5 혼동쌍 V vs Vss</button>
+  <button class="toc-btn" data-i="14">§5 혼동쌍 t½ vs MRT</button>
+  <button class="toc-btn" data-i="15">M1 BLQ — NCA</button>
+  <button class="toc-btn" data-i="16">M1 BLQ — Beal M3</button>
+  <button class="toc-btn" data-i="17">M2 Allometric (성인)</button>
+  <button class="toc-btn" data-i="18">M2 Allometric (소아)</button>
+  <button class="toc-btn" data-i="19">§7 자기 테스트 Q1–3</button>
+  <button class="toc-btn" data-i="20">§7 자기 테스트 Q4–6</button>
+  <button class="toc-btn" data-i="21">§7 자기 테스트 Q7–9</button>
+  <button class="toc-btn" data-i="22">§8 메타프레임 위치</button>
+  <button class="toc-btn" data-i="23">§8 7가지 실패</button>
+  <button class="toc-btn" data-i="24">§8 최종 한 줄</button>
+</aside>
+
+<main class="viewer">
+
+<!-- 0 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 0</span><h1 class="slide-title">1구획 IV 동력학 — 같은 기울기, 다른 결정</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>원재료:</strong> Gabrielsson &amp; Weiner 5e Ch.2 §2.2.1–2.2.5 + Case Study PK1 / Rowland &amp; Tozer 5e Ch.3 <span class="chip">G&amp;W p.14–32, p.469–475</span> <span class="chip">R&amp;T p.53–76</span></p>
+    <p><strong>대상:</strong> 계량약리학 박사과정, PopPK 입문–중급</p>
+    <p><strong>한 줄 약속:</strong> 이 세션 끝나면 반로그 도표 하나만 보고 "유지용량 권고"를 절대 안 쓰게 됨.</p>
+
+    <h2 class="section-h">시작 전 — 이 세션이 끝까지 메아리치는 한 줄</h2>
+    <div class="closer-card">
+      <div class="closer-label">Core Message</div>
+      <div class="closer-text">약물의 체내 처리는 <em>CL</em>과 <em>V</em> 두 개가 정함.<br>\(K\)랑 \(t_{1/2}\)는 그 둘이 만든 결과지, 독립적인 원인이 아님.</div>
+    </div>
+    <p>이 한 줄을 진짜로 체화하면, 앞으로 받는 모든 IV 보고서에서 같은 질문 두 개를 자동으로 던지게 됨 — <strong>"AUC는 어떻게 변했음? \(C^0\)는 어떻게 변했음?"</strong> 이 두 질문이 안 던져진 보고서는 그 자체로 다시 돌려보내는 거임. 다른 거 다 잊어도 이거 하나면 됨.</p>
+  </div>
+</section>
+
+<!-- 1 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">§ 1</span><h1 class="slide-title">함정 — 같은 기울기 뒤에 두 배 다른 청소율</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>월요일 아침. Compound A 10 mg IV bolus, 4명 데이터를 받음. 반로그 도표를 그림. Subject 1이랑 Subject 4를 봄. <strong>말단 기울기가 거의 똑같음.</strong> \(K\approx 0.01\;\text{min}^{-1}\), \(t_{1/2}\)도 거의 같음. 자연스럽게 머릿속에 떠오르는 결론 — "아, 둘 다 약물 처리 능력이 비슷하네. 같은 유지용량 권고 가능."</p>
+
+    <p>이게 함정임. 표 좀 보면 <span class="chip">G&amp;W 5e, Case Study PK1, Tables 1.2/1.3, p.473–474</span>:</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>\(K\) (min⁻¹)</th><th>\(V\) (L)</th><th>\(CL\) (L/min)</th><th>\(AUC\) (µg·min/L)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>0.01</td><td>10</td><td><strong>0.1</strong></td><td>98,000</td></tr>
+        <tr><td>2</td><td>0.02</td><td>9.8</td><td>0.2</td><td>49,000</td></tr>
+        <tr><td>3</td><td>0.02</td><td>10</td><td>0.2</td><td>51,000</td></tr>
+        <tr><td>4</td><td>0.01</td><td><strong>20</strong></td><td><strong>0.2</strong></td><td>51,000</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>\(K\)랑 \(t_{1/2}\)는 S1≈S4인데, <strong>\(CL\)은 두 배 차이임</strong> (S1: 0.1, S4: 0.2 L/min). 같은 주입속도 \(R_{in}\)을 두 사람에게 주면 항정 농도 \(C_{ss}\)가 정확히 두 배 차이남. 한 명은 독성역, 한 명은 sub-therapeutic 됨. <strong>보고서 한 장이 두 환자를 동시에 망가뜨림.</strong></p>
+
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{K}_{\text{기울기}}=\frac{\underbrace{CL}_{\text{정화능}}}{\underbrace{V}_{\text{분포공간}}}$$</div></div>
+
+    <div class="callout warn"><span class="callout-label">⚠ 핵심</span>S4는 \(CL\)도 두 배(0.2 L/min), \(V\)도 두 배(20 L)임. 분자랑 분모가 동시에 두 배니까 비율은 보존됨. <strong>반로그 기울기는 비율만 보여줌. 절대값을 안 보여줌.</strong> 이 함정이 이 세션 전체의 spine임 — 앞으로 나오는 모든 카드가 "그래서 S1 vs S4가 어떻게 갈리는지"에 한 번씩 등장함.</div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 2</span><h1 class="slide-title">욕조 모델 — 이 세션의 마스터 비유</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="two-col">
+      <div>
+        <div class="diagram">          ┌─────────────┐
+          │             │ ← 약물 (총량 = D)
+          │   <span class="step">욕조 V</span>    │ ← V = 욕조 크기 (분포공간)
+          │             │
+          │  농도 = C   │ ← C = 욕조 안 약물 농도
+          └─────┬───────┘
+                │ <span class="anno">배수구 = CL</span>
+                <span class="arr">▼</span> (단위 시간당 빠지는 깨끗한 물의 부피)
+              제거됨</div>
+        <p class="tip">함정에서 빠져나오려면 머릿속에 정확한 그림이 박혀 있어야 함. 앞으로 모든 카드가 이 욕조 좌표 안에서 움직임.</p>
+      </div>
+      <div>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>욕조 좌표</th><th>PK 파라미터</th><th>직관</th></tr></thead>
+          <tbody>
+            <tr><td><strong>배수구 크기</strong></td><td>\(CL\) (부피/시간)</td><td>단위 시간당 깨끗해지는 혈액 부피</td></tr>
+            <tr><td><strong>욕조 크기</strong></td><td>\(V\) (부피)</td><td>같은 약물량 들어왔을 때 얼마나 묽어지는지</td></tr>
+            <tr><td><strong>수위 떨어지는 속도</strong></td><td>\(K = CL/V\)</td><td>남은 양 중 매 시간 빠지는 비율</td></tr>
+            <tr><td><strong>수위가 절반 되는 시간</strong></td><td>\(t_{1/2} = \ln 2 / K\)</td><td>절반시간</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="dark-card">
+      <h3>욕조 비유의 진짜 가치 — 사라지지 않는 한 줄</h3>
+      <p><strong>수위가 떨어지는 속도(\(K\))만 보고 배수구 크기(\(CL\))를 알 수 없음.</strong></p>
+      <p>같은 속도로 떨어져도, 배수구도 두 배 욕조도 두 배면 실제 단위 시간당 빠지는 물의 양은 두 배임. 이게 정확히 S1 vs S4임. S4는 큰 욕조에 큰 배수구를 달고 있는 것임. 표면(=수위 떨어지는 속도)에선 작은 욕조 작은 배수구랑 구분 안 됨.</p>
+    </div>
+
+    <div class="callout teal"><span class="callout-label">🎯 좌표 통일</span>앞으로의 모든 카드에서 이 좌표를 씀 — \(CL\) 얘기할 때 = 배수구, \(V\) 얘기할 때 = 욕조, \(K\) 얘기할 때 = 수위 속도, \(t_{1/2}\) 얘기할 때 = 절반 시간.</div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 3</span><h1 class="slide-title">위계 규칙 — 일차(원인) vs 이차(결과)를 영구히 분리</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="diagram"><span class="anno">[일차 파라미터 — 원인]            [이차 파라미터 — 결과]</span>
+   <span class="step">CL</span> ─────────────┐
+                   ├── <span class="step">K</span> = CL/V ── <span class="step">t½</span> = 0.693·V/CL
+   <span class="step">V</span>  ─────────────┘                <span class="step">MRT</span> = 1/K  (1-cpt IV bolus만)
+
+   <span class="arr">↑</span>                                <span class="arr">↑</span>
+   생리학·해부학이                  반로그 도표가
+   직접 결정                         보여주는 시간 표지</div>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>파라미터</th><th>위계</th><th>무엇이 정함</th><th>임상에서 결정함</th></tr></thead>
+      <tbody>
+        <tr><td>\(CL\)</td><td><strong>일차</strong></td><td>혈류·추출·대사·배설</td><td>AUC, \(C_{ss}\), <strong>유지용량</strong></td></tr>
+        <tr><td>\(V\)</td><td><strong>일차</strong></td><td>조직 결합, 체수분, 측정 공간</td><td>\(C^0\), <strong>부하용량</strong></td></tr>
+        <tr><td>\(K\)</td><td>이차</td><td>\(CL/V\) 비율</td><td>반로그 기울기, ODE 시상수</td></tr>
+        <tr><td>\(t_{1/2}\)</td><td>이차</td><td>\(\ln 2 / K = 0.693V/CL\)</td><td>항정 도달 시간, 채혈 창</td></tr>
+        <tr><td>\(MRT\)</td><td>이차</td><td>\(AUMC/AUC\)</td><td>평균 체류 시간, \(V_{ss}\) 환산</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout warn"><span class="callout-label">⚡ 위계가 깨지면</span>NONMEM에서 \(K\)에 공변량 붙임 → 신기능 변화(\(CL\)) vs 부종 변화(\(V\))가 한 변수에 섞임 → 잔차가 체중·CrCl이랑 같이 움직이는 이유를 설명 못함 → 규제 리뷰에서 재분석 요구. 한 위계 오해가 보고서 끝에서 폭발하는 거임.</div>
+
+    <div class="callout"><span class="callout-label">📖 R&amp;T 5e, p.54–55, Fig.3-1, Fig.3-2</span>같은 용량을 줬을 때 "초기 농도", "기울기", "AUC" 셋이 각각 다른 정보를 담고 있다는 사실을 한 그림 안에서 분리해서 보여줌. Drugs A/B는 \(V\) 같고 \(CL\) 다름 (→ 기울기·AUC 다름, 절편 같음). Drugs C/D는 \(CL/V\) 비율 같음 (→ 반감기 같음, 절편·AUC 다름).</div>
+  </div>
+</section>
+
+<!-- 4 - C1 part 1 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">C1 · 1</span><h1 class="slide-title">🃏 청소율 CL — AUC·유지용량의 일차 결정자 [⚡ Apex]</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>한 줄 정의</strong>: \(CL\)은 단위 시간당 약물이 완전히 비워지는 가상의 혈장 부피임. 단위가 L/min임. <strong>속도(rate)가 아니라 유량(flow)</strong>임. <span class="chip">G&amp;W p.16; R&amp;T p.56</span></p>
+
+    <div class="two-col">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\text{제거속도}}_{\text{Rate of elim}}=\underbrace{CL}_{\text{정화부피/시간}}\cdot\underbrace{C}_{\text{현재농도}}$$<div class="formula-cite">R&amp;T Eq.3-4, p.56 · G&amp;W Eq.2:2, p.16</div></div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL}_{\text{정화부피/시간}}=\underbrace{Q}_{\text{혈류(운반)}}\cdot\underbrace{E}_{\text{추출분율}}$$<div class="formula-cite">R&amp;T Eq.3-5, p.56</div></div></div>
+    </div>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>파라미터</th><th>의미</th><th>변화 원인</th></tr></thead>
+      <tbody>
+        <tr><td>\(Q\)</td><td>장기로 약물을 운반하는 혈류량</td><td>장기 혈류 변화</td></tr>
+        <tr><td>\(E\)</td><td>장기 통과 중 제거되는 분율</td><td>효소·수송체·배설능 변화</td></tr>
+        <tr><td>\(CL\)</td><td>\(Q\cdot E\)의 곱</td><td>위 둘의 합</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout"><span class="callout-label">💡 직관</span>\(CL=Q\cdot E\)를 단순 공식이 아니라 <strong>"얼마나 많은 혈액이 지나가고 그중 얼마를 빼내는가"</strong>로 읽으면, 간/신 청소율 후속 세션에서 고추출·저추출 약물 분기가 자연스럽게 이어짐.</div>
+
+    <h2 class="section-h">왜 \(CL\)이 일차임? — "\(V\)가 사라지는" 두 식</h2>
+
+    <div class="two-col">
+      <div class="formula-card-wrap"><div class="formula-card compact"><strong style="font-size:11px;color:#cc785c">식 1. 노출량 식</strong>
+$$\underbrace{CL}_{\text{정화능}}=\frac{\underbrace{Dose}_{\text{투여량}}}{\underbrace{AUC_0^\infty}_{\text{총노출}}}$$<div class="formula-cite">G&amp;W p.19 · R&amp;T p.59–60</div></div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact"><strong style="font-size:11px;color:#cc785c">식 2. 항정상태 식</strong>
+$$\underbrace{\frac{dC}{dt}}_{}=\underbrace{\frac{R_{in}}{V}}_{}-\underbrace{\frac{CL}{V}C}_{}\xrightarrow{dC/dt=0}\underbrace{C_{ss}}_{\text{항정농도}}=\frac{R_{in}}{CL}$$<div class="formula-cite">G&amp;W Eq.2:22, p.23</div></div></div>
+    </div>
+
+    <div class="callout teal"><span class="callout-label">핵심</span><strong>두 식 모두 \(V\)가 깨끗하게 사라짐.</strong> 분포공간은 곡선 출발점(\(C^0\))이랑 시상수(\(K\))는 바꾸지만, 한 번 적분(=AUC)하거나 시간을 무한히 늘리면(=Css), 노출·항정의 중심에는 \(CL\)만 남음.</div>
+  </div>
+</section>
+
+<!-- 5 - C1 part 2 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">C1 · 2</span><h1 class="slide-title">S1 vs S4 — 함정 카드 1번 적용</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>\(K\)</th><th>\(t_{1/2}\)</th><th>\(CL\)</th><th>\(R_{in}=10\;\mu g/\text{min}\) 줄 때 \(C_{ss}\)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>0.01</td><td>68 min</td><td>0.1 L/min</td><td>\(10/0.1 = \mathbf{100}\;\mu g/L\)</td></tr>
+        <tr><td>4</td><td>0.01</td><td>71 min</td><td>0.2 L/min</td><td>\(10/0.2 = \mathbf{50}\;\mu g/L\)</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="kpi">
+      <div class="kpi-box"><div class="lbl">S1 vs S4 — Slope</div><div class="val">≈ 같음</div><div class="sub">K = 0.01 / 0.01</div></div>
+      <div class="kpi-box"><div class="lbl">CL ratio</div><div class="val">×2</div><div class="sub">0.1 → 0.2 L/min</div></div>
+      <div class="kpi-box"><div class="lbl">C_ss ratio</div><div class="val">×2 (반대 방향)</div><div class="sub">100 → 50 μg/L</div></div>
+    </div>
+
+    <p>기울기(=K)·반감기 거의 같음. <strong>항정 농도는 정확히 두 배 차이.</strong> \(CL\)이 정한 거임. 표면(반로그 기울기) 신뢰가 임상적으로 얼마나 위험한지 숫자로 보여주는 자리임. <span class="chip">G&amp;W Eq.2:22, p.23; Case Study PK1, p.473–474</span></p>
+
+    <div class="callout"><span class="callout-label">💼 실무 (PopPK 모수화)</span>NONMEM에서 공변량을 \(K\)에 직접 붙이면 안 됨. 신기능이 좋아져서 \(CL\)이 올라간 건지, 부종이 빠져서 \(V\)가 줄어든 건지 식별 안 됨. <strong>`TRANS2`로 \(CL\)과 \(V\)를 따로 두는 게 단순 코딩 관습이 아니라 위계 보존 안전장치임.</strong></div>
+
+    <div class="dark-card">
+      <h3>C1 핵심 한 줄</h3>
+      <ul>
+        <li>① 노출(AUC) 질문, 유지용량 질문 → 무조건 <strong>\(CL\)</strong></li>
+        <li>② \(K\) 같음 ≠ \(CL\) 같음 (S1 vs S4)</li>
+        <li><strong>⚡ \(K\)로 건너뛰는 순간 유지용량 권고가 두 배 어긋남</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6 - C2 part 1 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">C2 · 1</span><h1 class="slide-title">🃏 분포용적 V — C⁰·부하용량의 일차 결정자</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>한 줄 정의</strong>: \(V\)는 실제 부피가 아니라, <strong>체내 총량을 혈장 농도 하나로 환산하는 겉보기 공간</strong>임. <span class="chip">G&amp;W p.20; R&amp;T p.63</span></p>
+
+    <div class="two-col">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V}_{\text{환산공간}}=\frac{\underbrace{A_b}_{\text{체내총량}}}{\underbrace{C}_{\text{측정농도}}}$$<div class="formula-cite">G&amp;W Eq.2:14 · R&amp;T Eq.3-26</div></div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V}_{\text{초기희석공간}}=\frac{\underbrace{D_{iv}}_{\text{IV용량}}}{\underbrace{C^0}_{\text{외삽 초기농도}}}$$<div class="formula-cite">G&amp;W Eq.2:13, p.20</div></div></div>
+    </div>
+
+    <p>말단 정보가 있으면 우회식도 씀:</p>
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V}_{\text{말단용적}}=\frac{\underbrace{CL}_{\text{정화능}}}{\underbrace{K}_{\text{말단기울기}}}=\underbrace{1.44}_{1/\ln 2}\cdot\underbrace{CL}_{\text{정화능}}\cdot\underbrace{t_{1/2}}_{\text{반감기}}$$<div class="formula-cite">R&amp;T Eq.3-27/3-28, p.63</div></div></div>
+
+    <h2 class="section-h">"겉보기" — 이 한 단어가 안 박히면 게임 끝</h2>
+    <div class="callout amber"><span class="callout-label">Quinacrine 예시</span><strong>Quinacrine</strong> (항말라리아제, 조직 결합이 극단적으로 강함). \(V \approx 40{,}000\) L임. 체중 70 kg 사람한테 40,000 L 부피가 어디 있음? <strong>없음. 그게 포인트임.</strong></div>
+
+    <p>\(V\)가 큰 이유를 정확히 풀면 이거임:</p>
+    <ul>
+      <li>약물 총량은 그대로인데 (분자 \(A_b\))</li>
+      <li>측정 농도 (\(C\))가 낮음 — 왜? 약물 대부분이 조직에 묶여서 혈장에 잘 안 나옴</li>
+      <li>\(V = A_b / C\) 식에서 분모가 작아지니까 \(V\)가 커 보임</li>
+    </ul>
+
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V}_{\text{관찰용적}}=\underbrace{V_u}_{\text{비결합용적}}\cdot\underbrace{f_u}_{\text{유리분율}}$$<div class="formula-cite">G&amp;W Eq.2:15, p.20</div></div></div>
+
+    <div class="callout"><span class="callout-label">📖 G&amp;W 5e, p.15, Fig.2.3</span>두 양동이 그림. 실제 물 부피는 같은데 측정 농도가 다르면 겉보기 용적이 10 L vs 100 L로 갈라지는 장면을 직접 그려서 보여줌. 이 그림 안 보고 가면 \(V\)를 해부학적 부피로 오해함.</div>
+  </div>
+</section>
+
+<!-- 7 - C2 part 2 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">C2 · 2</span><h1 class="slide-title">S1 vs S4 적용 & 부하용량 ↔ 유지용량</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>Compound A에서 S1–3는 \(V\approx 10\) L, S4만 20 L임. <strong>S4의 절편(=\(C^0\))이 다른 사람들보다 낮음.</strong> 같은 10 mg 용량인데 보이는 농도가 절반이니까 환산 공간이 두 배인 거임.</p>
+
+    <p>\(V\)가 커지면 → \(C^0=D/V\)가 낮아짐 → <strong>부하용량을 더 줘야 같은 초기 농도에 도달.</strong> 근데 주의: \(V\)가 두 배 됐다고 \(AUC\)가 두 배 되는 건 아님 (\(AUC\)는 \(CL\)이 정함, C1에서 봤음). <span class="chip">G&amp;W p.470, p.473</span></p>
+
+    <h2 class="section-h">부하용량 ↔ 유지용량 한 줄 정리</h2>
+
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{LD}_{\text{부하용량}}=\underbrace{V}_{\text{분포공간}}\cdot\underbrace{C_{target}}_{\text{목표농도}},\qquad\underbrace{MD}_{\text{유지용량/단위시간}}=\underbrace{CL}_{\text{정화능}}\cdot\underbrace{C_{ss,target}}_{\text{목표 Css}}$$</div></div>
+
+    <div class="kpi">
+      <div class="kpi-box"><div class="lbl">부하용량 LD</div><div class="val">V × C_target</div><div class="sub">분포공간 함수</div></div>
+      <div class="kpi-box"><div class="lbl">유지용량 MD</div><div class="val">CL × C_ss</div><div class="sub">정화능 함수</div></div>
+      <div class="kpi-box"><div class="lbl">임상 결정 80%</div><div class="val">이 두 줄</div><div class="sub">한 줄이면 정리됨</div></div>
+    </div>
+
+    <p style="font-size:15px;text-align:center;margin:14px 0"><strong>부하용량은 \(V\) 함수, 유지용량은 \(CL\) 함수.</strong></p>
+
+    <div class="callout"><span class="callout-label">💼 실무 인사이트</span>반로그 도표에 명백한 꺾임점(break point)이 보이면, 1구획 \(V\)를 그대로 부하용량에 쓰기 전에 점검 — <strong>중심 구획 \(V_c\)인지, 항정 상태 \(V_{ss}\)인지</strong>. 초기 빠른 효과 목적이면 \(V_c\), 평형 후 농도 유지가 목적이면 \(V_{ss}\). (다구획 세션 예고편)</div>
+
+    <div class="dark-card">
+      <h3>C2 핵심 한 줄</h3>
+      <ul>
+        <li>① \(C^0\) 질문, 부하용량 질문 → 무조건 <strong>\(V\)</strong></li>
+        <li>② "\(V\)가 크다" = "혈장에 보이는 농도가 낮다" (조직에 숨어 있음)</li>
+        <li><strong>⚡ \(V\)를 해부학적 부피로 읽으면 부하용량 판단이 무너짐</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 8 - C3 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">C3</span><h1 class="slide-title">🃏 소실속도상수 K — 기울기는 원인이 아니라 결과</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>한 줄 정의</strong>: \(K\)는 단위 시간당 남은 양 중 제거되는 분율임. 구조적으로는 \(CL/V\)임. <span class="chip">G&amp;W p.17; R&amp;T Eq.3-7, p.56</span></p>
+
+    <div class="two-col">
+      <div>
+        <h3 style="font-size:14px;color:#141413;margin-bottom:4px">ODE → 반로그 직선 한 호흡</h3>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\frac{dC}{dt}=-\underbrace{K}_{\text{분율속도}}\cdot C=-\frac{CL}{V}\cdot C$$<div class="formula-cite">G&amp;W Eq.2:1, p.16</div></div></div>
+
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C(t)}_{}=C^0\cdot e^{-K t}=\frac{D}{V}\cdot e^{-(CL/V)t}$$<div class="formula-cite">G&amp;W Eq.2:4, p.17</div></div></div>
+
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\ln C}_{}=\underbrace{\ln C^0}_{\text{절편}}-\underbrace{K}_{\text{기울기 절대값}}\cdot t$$</div></div>
+        <p class="tip">반로그 도표에서 직선의 기울기 = \(-K\) <span class="chip">G&amp;W Fig.2.4/2.6 · R&amp;T Eq.3-11</span></p>
+      </div>
+      <div>
+        <h3 style="font-size:14px;color:#141413;margin-bottom:4px">"분율 제거"의 직관</h3>
+        <p>지수감소가 헷갈리는 이유 — "매 시간 똑같은 양을 퍼낸다"고 착각해서. 아님. <strong>남은 양의 같은 비율을 계속 퍼냄.</strong> R&amp;T Table 3-1: \(K=0.1\) hr⁻¹로 100 mg 시작하면 1시간 후 90 mg, 2시간 후 81 mg, 3시간 후 72.9 mg. <strong>매 시간 10 mg이 아니라, 남은 양의 10%가 사라지는 거임.</strong> <span class="chip">R&amp;T p.57</span></p>
+
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{A}{Dose}}_{\text{남은분율}}=e^{-K t}=\left(\frac12\right)^{n=t/t_{1/2}}$$<div class="formula-cite">R&amp;T Eq.3-19, p.59</div></div></div>
+      </div>
+    </div>
+
+    <h2 class="section-h">S1 vs S4 — 함정 카드 3번 적용 (핵심)</h2>
+    <p>\(K=0.01\)이 같다는 건 \(CL/V\) 비율이 같다는 뜻일 뿐임. <strong>S1: \(0.1/10 = 0.01\). S4: \(0.2/20 = 0.01\).</strong> 같은 비율을 만드는 \((CL, V)\) 조합은 무한히 많음. \(K\)만 봐서는 어느 조합인지 알 수 없음.</p>
+
+    <div class="callout warn"><span class="callout-label">💼 TRANS1 vs TRANS2</span><span class="chip">ADVAN1 TRANS1</span>은 \(K\)를 직접 추정함. 적합은 됨. 그런데 신기능 covariate를 어디에 붙임? \(K\)에 붙이면 \(CL\) 변화인지 \(V\) 변화인지 모름. <span class="chip">TRANS2</span>는 \(CL\)과 \(V\)를 따로 추정함 → 공변량 위치를 분리할 수 있음. <strong>모수화 선택이 PopPK 해석 가능성을 결정하는 자리임.</strong></div>
+
+    <div class="dark-card">
+      <h3>C3 핵심 한 줄</h3>
+      <ul>
+        <li>① 반로그 기울기 = \(K = CL/V\). <strong>표면 표지지, 일차 파라미터 아님.</strong></li>
+        <li>② \(K\)가 같다고 \(CL\)이 같지 않음 (S1 vs S4: 같은 K, 두 배 다른 CL)</li>
+        <li><strong>⚡ \(K\)를 일차 파라미터로 모델링하면 공변량 위치가 섞임</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9 - C4 part 1 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">C4 · 1</span><h1 class="slide-title">🃏 반감기 t½ — 임상에서 가장 자주 오해받는 파라미터</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>C4는 이 세션의 <strong>절정</strong>임. 왜? 임상에서 가장 자주 인용되는 파라미터인데, 가장 자주 잘못 해석됨.</p>
+
+    <div class="callout warn"><span class="callout-label">⚠ 흔한 실수</span><strong>"반감기가 늘었다 → 신기능 저하다 → 용량 감량"</strong><br>진실: \(t_{1/2}=0.693\cdot V/CL\)임. \(V\)가 늘어도 \(t_{1/2}\)가 길어짐. 부종 환자에서 반감기가 늘었다고 신장 용량 감량을 권고하면, <strong>실제로는 분포공간만 늘어난 것일 수도 있음.</strong></div>
+
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{t_{1/2}}_{\text{반감기}}=\frac{\overbrace{\ln 2}^{\text{절반조건}}}{\underbrace{K}_{\text{분율속도}}}=\frac{\overbrace{0.693}^{\ln 2}\cdot\underbrace{V}_{\text{분포공간}}}{\underbrace{CL}_{\text{정화능}}}$$<div class="formula-cite">G&amp;W Eq.2:3/2:6, p.17–18 · R&amp;T Eq.3-15, p.58</div></div></div>
+
+    <h2 class="section-h">Creatinine vs Inulin — 같은 \(CL\), 다른 \(t_{1/2}\)</h2>
+    <p>R&amp;T가 두 생리학 marker로 직접 보여줌 — <strong>creatinine</strong> (근육 대사산물, total body water에 가까운 분포)과 <strong>inulin</strong> (다당류, extracellular water에 가까운 분포). <span class="chip">R&amp;T p.58</span></p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Compound</th><th>\(CL\) (L/hr)</th><th>\(V\) (L)</th><th>\(t_{1/2}\) (hr)</th><th>분포 특성</th></tr></thead>
+      <tbody>
+        <tr><td>Creatinine</td><td>4.5</td><td>42</td><td><strong>6.5</strong></td><td>TBW 근접 (세포 안까지 들어감)</td></tr>
+        <tr><td>Inulin</td><td>4.5</td><td>16</td><td><strong>2.5</strong></td><td>ECW 근접 (세포 안 못 들어감)</td></tr>
+      </tbody>
+    </table></div>
+
+    <p><strong>\(CL\)이 똑같이 4.5인데 반감기가 2.5배 차이.</strong> \(V\)가 다르니까. → "긴 반감기 ≠ 낮은 청소율"의 깔끔한 증거.</p>
+
+    <h2 class="section-h">항정 도달 시간 — V가 Css는 안 바꾸지만 시간은 바꿈</h2>
+    <div class="two-col">
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>반감기 수</th><th>항정 도달 분율</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>50%</td></tr>
+          <tr><td>2</td><td>75%</td></tr>
+          <tr><td>3</td><td>87.5%</td></tr>
+          <tr><td>4</td><td>~94%</td></tr>
+          <tr><td>6.64</td><td>~99%</td></tr>
+        </tbody>
+      </table></div>
+      <div>
+        <p class="fig-cite"><span class="chip">G&amp;W p.22 · R&amp;T p.59</span></p>
+        <p><strong>\(C_{ss}=R_{in}/CL\)</strong>에서 \(V\)는 사라짐. 그런데 <strong>\(t_{1/2}=0.693V/CL\)</strong>을 통해 항정 도달 시간은 \(V\)에 비례함. 부종 환자(큰 \(V\))는 같은 \(C_{ss}\)에 도달하는 데 더 오래 걸림.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{LD}_{\text{부하}}\approx\underbrace{MD}_{\text{유지}}\cdot\frac{\underbrace{\tau}_{\text{투약간격}}}{\underbrace{0.693\cdot t_{1/2}}_{}}$$</div></div>
+        <p class="tip">반감기 긴 약물 (digoxin이 전형 예) → 부하용량 없으면 항정 도달까지 며칠씩 걸림.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 - C4 part 2 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">C4 · 2</span><h1 class="slide-title">말단 단계가 진짜 소실 단계인가? — Midazolam vs Gentamicin</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>C4에서 가장 위험한 함정. <strong>"말단 직선 = 소실 단계"는 자동 성립이 아님.</strong></p>
+
+    <div class="two-col">
+      <div class="card-soft">
+        <h3 style="font-size:15px;color:#141413;margin-bottom:6px">Midazolam (안전한 케이스)</h3>
+        <p>79 kg 성인, 7.5 mg base IV bolus. 반로그 프로파일이 <strong>이상성(biphasic)</strong>임. 처음 ~1시간 분포 단계, 그 뒤 소실 단계. 5분 시점에 혈장에 0.61 mg, <strong>나머지 6.9 mg (92%)는 이미 혈장 밖</strong>. R&amp;T Fig.3-5: 2시간까지 누적 AUC가 전체의 <strong>48%</strong>. → 분포 단계 AUC 비율이 절반 정도라 일부 목적에서 <strong>1구획 근사 안전</strong>함. <span class="chip">R&amp;T p.61–65</span></p>
+      </div>
+      <div class="dark-card">
+        <h3>Gentamicin (위험한 케이스)</h3>
+        <p>Aminoglycoside, 신장 청소가 매우 빠른 친수성 약물, 조직 침투는 매우 느림(특히 신피질). R&amp;T Fig.3-7 원문: <em>"More than 95% of an i.v. dose of this antibiotic is eliminated into the urine before distribution equilibrium has occurred"</em>. <span class="chip">R&amp;T p.66, Fig.3-7</span></p>
+      </div>
+    </div>
+
+    <p>여기서 가장 헷갈리는 게 "distribution equilibrium"의 정체. <strong>두 시점을 명확히 분리</strong>:</p>
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{t_{\alpha}}_{\text{혈장↔말초 빠른 평형}}\approx\underbrace{30\;\text{min}}_{\alpha\text{-phase 시상수}}\;\;\ll\;\;\underbrace{t_{\beta\text{-deep}}}_{\text{깊은 조직 분포 평형}}\approx\underbrace{36\;\text{hr}}_{\text{R\&T Fig.3-7}}$$</div></div>
+
+    <p>R&amp;T가 말하는 "분포 평형"은 빠른 α-phase가 아니라 <strong>깊은 조직(신피질 등) 분포 평형(≈36시간)</strong>임. 36시간 도달 전에 신장이 이미 95% 비워버림. 즉 <strong>말단 직선(36시간 이후)은 깊은 조직에서 천천히 빠져나오는 5% 미만을 보고 있는 것</strong>일 뿐, 소실 능력 대표가 아님. <span class="chip">Adelman et al., AAC 1982;22:800–804</span></p>
+
+    <div class="callout teal"><span class="callout-label">결정 기준 — 한 줄</span><strong>"분포 단계 AUC가 전체 AUC의 몇 %를 차지하는가"</strong>가 모든 걸 정함. Midazolam ≈ 48% → 1구획 근사 안전 (일부 목적). Gentamicin > 95%가 분포 평형 도달 전에 빠져나감 → 말단 기울기 신뢰 위험.</div>
+
+    <div class="callout"><span class="callout-label">💼 실무</span>말단 기울기 채택할 때 던질 질문은 "마지막이 직선이냐?"가 아님. <strong>"그 직선이 분포 단계 오염이 충분히 작아진 뒤의 직선이냐?"</strong>임. 점검 항목 — 최소 데이터 포인트 수, 회귀 \(R^2\), <strong>분포 단계 AUC 비율</strong>.</div>
+
+    <div class="dark-card">
+      <h3>C4 핵심 한 줄</h3>
+      <ul>
+        <li>① \(t_{1/2}\) 변화 → \(CL\)인지 \(V\)인지 분리 필요 (AUC·\(C^0\) 함께 봄)</li>
+        <li>② 말단 직선 = 소실 단계 자동 성립 아님 (gentamicin trap)</li>
+        <li><strong>⚡ "긴 반감기 = 신기능 저하"로 건너뛰면 불필요한 감량 또는 분포 오판</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 - C5 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">C5</span><h1 class="slide-title">🃏 평균체류시간 MRT — 1구획 IV의 수학적 서명</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>한 줄 정의</strong>: \(MRT\)는 약물 분자가 체내에 머무는 시간의 평균값임. 시간가중 평균임. <span class="chip">G&amp;W Eq.2:11, p.19</span></p>
+
+    <div class="two-col">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC_0^\infty}_{\text{총노출}}=\int_0^\infty C(t)\,dt$$
+$$\underbrace{AUMC_0^\infty}_{\text{시간가중노출}}=\int_0^\infty t\cdot C(t)\,dt$$</div></div>
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{MRT}_{\text{평균체류}}=\frac{\underbrace{AUMC_0^\infty}_{\text{시간가중면적}}}{\underbrace{AUC_0^\infty}_{\text{총면적}}}$$</div></div>
+    </div>
+
+    <div class="callout"><span class="callout-label">💡 비유</span>\(t_{1/2}\)이 "농도가 반이 되는 한 시점 (중위값)"이라면, \(MRT\)는 <strong>모든 분자가 머문 시간을 평균낸 출석부 (무게중심)</strong>. 한 분자는 5분 머물고 다른 분자는 5시간 머물면, 이걸 다 평균낸 값이 \(MRT\).</div>
+
+    <h2 class="section-h">1구획 IV bolus의 "수학적 서명" — MRT/t½ ≈ 1.443</h2>
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{MRT}_{\text{평균체류}}=\frac{1}{\underbrace{K}_{\text{분율속도}}}=\frac{\underbrace{t_{1/2}}_{\text{반감기}}}{\underbrace{\ln 2}_{\text{절반조건}}}\approx\underbrace{1.443}_{1/\ln 2}\cdot\underbrace{t_{1/2}}_{}$$<div class="formula-cite">R&amp;T Eq.3-25, p.60</div></div></div>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>\(K\) (min⁻¹)</th><th>\(t_{1/2}\) (min)</th><th>\(MRT\) (min)</th><th>\(MRT/t_{1/2}\)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>0.01</td><td>68</td><td>98</td><td>1.44</td></tr>
+        <tr><td>2</td><td>0.02</td><td>34</td><td>48</td><td>1.41</td></tr>
+        <tr><td>3</td><td>0.02</td><td>36</td><td>53</td><td>1.47</td></tr>
+        <tr><td>4</td><td>0.01</td><td>71</td><td>100</td><td>1.41</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout amber"><span class="callout-label">📌 표 값 vs 이론값</span>이론적으로 \(MRT/t_{1/2}\)는 정확히 \(1/\ln 2 \approx 1.4427\). 표에서 1.41~1.47로 흩어진 건 측정 노이즈가 아니라 <strong>표 원본이 분 단위로 반올림됐기 때문</strong>임 (S1: \(98/68=1.441\), S4: \(100/71=1.408\)). 수식상으로는 정확히 \(1/\ln 2\). 이 동일성이 <strong>단일지수 1구획 IV bolus의 수학적 서명</strong>.</div>
+
+    <p><strong>이 비율이 깨지면?</strong> 가장 먼저 던질 질문 — <em>"이 자료가 정말 1구획처럼 행동하는가?"</em> 가능한 원인: 다구획성 / 혈관외 투여 / 말단 외삽 품질 문제.</p>
+
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V_{ss}}_{\text{항정상태 분포용적}}=\underbrace{CL}_{\text{정화능}}\cdot\underbrace{MRT}_{\text{평균체류}}$$</div></div>
+    <p class="tip">NCA에서 MRT를 보고하는 진짜 이유 — 구획 모델 없이 \(V_{ss}\)를 뽑을 수 있는 NCA의 무기. (다구획 세션 예고편)</p>
+  </div>
+</section>
+
+<!-- 12 - §5 CL vs K -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 5 · 1</span><h1 class="slide-title">혼동쌍 1 — CL vs K (일차 vs 이차)</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>다섯 카드를 다 봤으면 이제 임상·모델링에서 매번 헷갈리는 세 쌍을 정리. <strong>공통점: 표면 비슷, 위계 다름.</strong></p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>비교</th><th>\(CL\)</th><th>\(K\)</th></tr></thead>
+      <tbody>
+        <tr><td>단위</td><td>L/min (유량)</td><td>1/min (속도)</td></tr>
+        <tr><td>위계</td><td><strong>일차</strong></td><td>이차</td></tr>
+        <tr><td>식 위치</td><td>\(Dose/AUC\), \(R_{in}/C_{ss}\), \(Q\cdot E\)</td><td>\(CL/V\), \(\ln 2 / t_{1/2}\)</td></tr>
+        <tr><td>변화 원인</td><td>혈류·추출·대사·배설</td><td>\(CL/V\) <strong>비율</strong> 변화</td></tr>
+        <tr><td>혼동 시 결과</td><td>(없음 — 일차임)</td><td>유지용량·공변량 위치 모두 망가짐</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout"><span class="callout-label">⚡ 기억 고리 — 배수구 vs 수위 속도</span><strong>\(CL\) = 배수구 크기</strong>, <strong>\(K\) = 수위가 떨어지는 상대 속도</strong>. 배수구 커도 욕조가 크면 수위는 천천히 떨어짐 → <strong>\(K\) 같아도 \(CL\)은 두 배 다를 수 있음</strong> (S1 vs S4). 공변량이 붙는 자리는 <strong>배수구(\(CL\))와 욕조(\(V\))지, 그 비율(\(K\))이 아님</strong>.</div>
+
+    <div class="dark-card">
+      <p>이 한 줄이 끝까지 메아리쳐야 함 — <strong>"수위 속도(\(K\))만 보고 배수구 크기(\(CL\))를 결정하면 안 된다."</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 - §5 V vs Vss -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 5 · 2</span><h1 class="slide-title">혼동쌍 2 — V vs Vss (겉보기 bolus 용적 vs 항정 분포 용적)</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>비교</th><th>\(V\) (bolus)</th><th>\(V_{ss}\)</th></tr></thead>
+      <tbody>
+        <tr><td>식</td><td>\(D/C^0\) 또는 \(CL/K\)</td><td>\(CL\cdot MRT\), 조직 분배 합</td></tr>
+        <tr><td>시점</td><td>분포 평형 직후 외삽</td><td>항정 평형</td></tr>
+        <tr><td>다구획에서</td><td>중심 구획 \(V_c\)와 구분 필요</td><td>NCA에서 모델-독립적</td></tr>
+        <tr><td>혼동 시 결과</td><td>부하용량에 말단 용적 잘못 적용</td><td>1구획처럼 단순화</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout"><span class="callout-label">⚡ 기억 고리 — 실제 vs 외관상 용기</span>\(V\)는 "약이 실제로 어디 있는가"가 아님. 관측 농도 설명을 위해 <strong>가정해야 하는 겉보기 공간 크기</strong>임. 조직 결합 강할수록 \(V\)가 실제 체적을 훨씬 초과 (Quinacrine: 40,000 L).</div>
+
+    <p>본 세션 범위는 "\(V\)가 겉보기 파라미터"라는 사실까지. \(V_{ss}\) 본격 해석은 다구획 분포 세션. <span class="chip">G&amp;W p.20–21; R&amp;T p.63–64</span></p>
+  </div>
+</section>
+
+<!-- 14 - §5 t1/2 vs MRT -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 5 · 3</span><h1 class="slide-title">혼동쌍 3 — t½ vs MRT (절반시간 vs 평균체류)</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>비교</th><th>\(t_{1/2}\)</th><th>\(MRT\)</th></tr></thead>
+      <tbody>
+        <tr><td>정의</td><td>\(\ln 2 / K\)</td><td>\(AUMC/AUC\)</td></tr>
+        <tr><td>직관</td><td>농도 반감의 <strong>한 시점 (중위)</strong></td><td>분자 체류시간의 <strong>평균 (무게중심)</strong></td></tr>
+        <tr><td>1구획 IV에서 관계</td><td>—</td><td>\(= 1/K = 1.443 \cdot t_{1/2}\)</td></tr>
+        <tr><td>다구획·혈관외에서</td><td>말단 기울기 의존</td><td>분포·흡수 구조까지 반영</td></tr>
+        <tr><td>혼동 시 결과</td><td>항정 시간과 청소 능력 혼동</td><td>NCA 체류시간·\(V_{ss}\) 해석 오류</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout"><span class="callout-label">⚡ 기억 고리 — 중위값 vs 무게중심</span>\(t_{1/2}\)은 농도가 반으로 줄어드는 <strong>한 시점</strong>. \(MRT\)는 모든 분자의 체류시간을 <strong>평균낸 값</strong>. 1구획 IV에서만 \(MRT = 1.443 \times t_{1/2}\)가 깔끔하게 성립. 분포 지연·흡수 지연 더해지면 \(MRT\)가 \(t_{1/2}\)보다 훨씬 길어질 수 있음.</div>
+
+    <div class="dark-card">
+      <h3>§5 세 혼동쌍 메타 정리</h3>
+      <p>세 쌍 모두 한 핵심을 공유함 — <strong>표면(반로그 기울기, 평균 시간)은 비슷해 보여도 위계(일차 vs 이차, bolus vs ss, 중위 vs 평균)가 다르면 임상 결정과 PopPK 모수화 결과가 완전히 갈라짐.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- 15 - M1 BLQ NCA -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">M1 · 1</span><h1 class="slide-title">BLQ (정량 한계 미만) — 말단을 어떻게 다루는가</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>한 줄 정의</strong>: BLQ는 LLOQ 미만이라 정량값 보고가 불가능한 농도 구간. 보고서엔 "BLQ", "&lt;LLOQ", 또는 missing 표기.</p>
+
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_{obs}}_{\text{관측농도}}<\underbrace{LLOQ}_{\text{정량하한}}\;\Rightarrow\;\underbrace{\text{BLQ tag}}_{\text{보고 분류}}$$</div></div>
+
+    <p><strong>왜 1구획 IV 세션에서 BLQ를 짚어야 함?</strong> 말단 영역 = 농도 낮은 영역 = BLQ 점들이 모이는 자리. 그 자리가 \(K\)를 결정하는 자리.</p>
+
+    <div class="diagram">BLQ 처리 규칙 <span class="arr">→</span> 말단 회귀 직선 <span class="arr">→</span> <span class="step">K</span> 추정 <span class="arr">→</span> <span class="step">t½</span> <span class="arr">→</span> <span class="step">AUC</span> 외삽 <span class="arr">→</span> <span class="step">CL = Dose/AUC</span> <span class="arr">→</span> <span class="anno">유지용량</span></div>
+
+    <p><strong>한 단계라도 흔들리면 사슬 끝 유지용량 권고가 어긋남.</strong></p>
+
+    <h2 class="section-h">NCA 단계 — 위치별 결정론적 규칙</h2>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>위치</th><th>표준 처리</th><th>영향</th></tr></thead>
+      <tbody>
+        <tr><td><strong>첫 정량값 이전 BLQ</strong></td><td>0 처리</td><td>AUC 시작점 미미</td></tr>
+        <tr><td><strong>정량값 사이 끼인 BLQ</strong></td><td>선형 보간 또는 결측</td><td>log-linear 회귀 가중치</td></tr>
+        <tr><td><strong>말단 BLQ</strong></td><td><strong>0 또는 결측 후 외삽</strong></td><td><strong>\(K\)·말단 \(V\)·\(AUC_t^\infty\)에 직접</strong></td></tr>
+      </tbody>
+    </table></div>
+
+    <p>말단 영역 BLQ를 0 치환 후 단순 회귀하면 두 왜곡 동시 발생:</p>
+    <ol>
+      <li><strong>\(K\) 과대추정</strong>: 마지막 점이 0이 되면서 회귀선이 가팔라짐 → \(K\uparrow\), \(t_{1/2}\downarrow\)</li>
+      <li><strong>외삽 \(AUC\) 과소</strong>: \(AUC_t^\infty = C_{last}/K\)인데 \(K\)가 부풀려져서 외삽분 축소 → 총 \(AUC\downarrow\) → \(CL = Dose/AUC\) 과대 → 유지용량 권고 어긋남</li>
+    </ol>
+
+    <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC_t^\infty}_{\text{말단외삽분}}=\frac{\underbrace{C_{last}}_{\text{마지막 정량값}}}{\underbrace{K}_{\text{말단 기울기}}}$$</div></div>
+
+    <div class="callout warn"><span class="callout-label">💼 실무 게이트</span>NCA 보고서에 <strong>% AUC extrapolated</strong>가 항상 같이 와야 함. <strong>20% 넘으면 그 보고서는 신뢰 약함으로 분류</strong> (많은 가이던스 권고). 보고서 검토 1차 질문 — "말단 BLQ 어떻게 처리했음? 외삽 비율 몇 %임?"</div>
+  </div>
+</section>
+
+<!-- 16 - M1 Beal M3 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">M1 · 2</span><h1 class="slide-title">PopPK 단계 — Beal M1/M3/M5/M6/M7 likelihood 분기</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>NCA는 한 환자 곡선의 결정론적 규칙. NONMEM은 다름 — <strong>BLQ 점을 likelihood에 어떻게 반영하는가</strong>가 분기점. <span class="chip">Beal 2001 · Ahn 2008 · Bergstrand & Karlsson 2009</span></p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>방법</th><th>처리 방식</th><th>적합 상황</th><th>한계</th></tr></thead>
+      <tbody>
+        <tr><td><strong>M1</strong></td><td>BLQ 점 결측 처리 후 제외</td><td>BLQ 비율 &lt; 10%</td><td>비율 늘면 \(K\) 편향</td></tr>
+        <tr><td><strong>M3</strong></td><td><strong>누적분포 \(\Phi(LLOQ\mid\hat C,\sigma)\)를 likelihood에 추가</strong></td><td><strong>표준 권고</strong>, BLQ 10–60%</td><td>계산 비용 ↑</td></tr>
+        <tr><td><strong>M5</strong></td><td>\(LLOQ/2\) 치환 후 정량값처럼 처리</td><td>빠른 비교용</td><td>편향 발생</td></tr>
+        <tr><td><strong>M6</strong></td><td>연속 BLQ 중 첫 점만 \(LLOQ/2\) 보존</td><td>말단 tail 긴 경우</td><td>이론적 근거 약함</td></tr>
+        <tr><td><strong>M7</strong></td><td>0 치환 후 정량값처럼 처리</td><td><strong>사용 비권장</strong></td><td>가장 큰 편향</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>M3가 표준인 이유 — 한 줄로:</p>
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\mathcal{L}_{M3}}_{\text{우도}}=\underbrace{\prod_{C_i\geq LLOQ}\phi(C_i\mid \hat C_i,\sigma)}_{\text{정량값: 확률밀도}}\cdot\underbrace{\prod_{C_j<LLOQ}\Phi\!\left(\tfrac{LLOQ-\hat C_j}{\sigma}\right)}_{\text{BLQ: 누적확률 (censoring)}}$$</div></div>
+
+    <div class="callout teal"><span class="callout-label">핵심 직관</span><strong>"BLQ 점은 '측정값이 LLOQ보다 작다는 사실(censoring event)'만 알고 있음"</strong>을 likelihood에 그대로 반영. 0으로 깎거나(M7) 절반값으로 미는 것(M5)이 아니라, <strong>"이 시점엔 농도가 LLOQ 이하라는 확률 한 덩어리"</strong>를 그 자리에 넣는 것.</div>
+
+    <p>NONMEM 구현: <span class="chip">F_FLAG=1</span> 또는 <span class="chip">YLO</span> 구문을 <span class="chip">LAPLACE</span> 방법과 함께.</p>
+
+    <div class="callout"><span class="callout-label">💼 보고서 검토 2차 질문</span>PopPK 단계에서는 "<strong>M3 적용했음? BLQ 비율 몇 %임?</strong>"이 첫 질문. NCA 결정론적 규칙 → PopPK likelihood 기반 처리로 넘어가는 다리가 M3.</div>
+
+    <div class="dark-card">
+      <p><strong>M1 정리</strong>: BLQ는 "0"이 아니라 "정량 불가". 말단 BLQ 처리 한 줄이 \(K\) → \(t_{1/2}\) → \(AUC\) → \(CL\) → 유지용량 권고 전체를 흔듦.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 - M2 Allometric adult -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">M2 · 1</span><h1 class="slide-title">Allometric scaling — 체중 표준화의 0.75 vs 1.0</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p><strong>한 줄 정의</strong>: 생리학적 파라미터를 체중의 거듭제곱 함수로 표준화하는 framework.</p>
+
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{P_i}_{\text{개체 i 파라미터}}=\underbrace{P_{ref}}_{\text{기준 체중 (보통 70 kg)}}\cdot\left(\frac{\underbrace{BW_i}_{\text{개체 체중}}}{\underbrace{BW_{ref}}_{\text{70 kg}}}\right)^{\underbrace{\theta}_{\text{지수}}}$$</div></div>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>파라미터</th><th>표준 지수</th><th>직관</th></tr></thead>
+      <tbody>
+        <tr><td><strong>\(CL\)</strong></td><td><strong>0.75</strong></td><td>대사·열 손실은 표면적(∝\(BW^{2/3}\))과 활동(∝\(BW^{1}\))의 절충</td></tr>
+        <tr><td><strong>\(V\)</strong></td><td><strong>1.0</strong></td><td>체수분·세포외액·조직 부피는 체중에 거의 선형</td></tr>
+        <tr><td>\(Q\)</td><td>0.75</td><td>\(CL\)과 같은 유량 차원</td></tr>
+        <tr><td>\(t_{1/2}\) (예측)</td><td>0.25</td><td>\(V^{1.0}/CL^{0.75}=BW^{0.25}\) → 큰 체중일수록 약간 길어짐</td></tr>
+      </tbody>
+    </table></div>
+
+    <p><strong>왜 1구획 IV 세션에서 이걸 짚어야 함?</strong> C1·C2에서 \(CL\)이 유지용량, \(V\)가 부하용량을 정한다고 했음. 환자 체중이 50–100 kg 범위로 흩어진 자료를 보고 있다면, <strong>\(CL\)·\(V\)를 raw 값으로 환자별 비교하는 게 의미 없음.</strong></p>
+    <p>Compound A S1(\(V=10, CL=0.1\))이랑 S4(\(V=20, CL=0.2\))도 만약 체중이 두 배 차이라면, <strong>allometric scaling 후 두 배 차이가 거의 사라질 수 있음.</strong> 진짜 covariate 신호를 보려면 체중을 먼저 표준화한 뒤 남는 잔차를 봐야 함.</p>
+
+    <h2 class="section-h">NONMEM 코드 (가장 빈번한 형태)</h2>
+    <div class="algo"><span class="strong">CL</span> = THETA(1)*(<span class="em">WT/70</span>)**<span class="em">0.75</span> * EXP(ETA(1))
+<span class="strong">V</span>  = THETA(2)*(<span class="em">WT/70</span>)       * EXP(ETA(2))</div>
+
+    <div class="callout warn"><span class="callout-label">💼 PopPK 1주차 흔한 실수</span>① 체중 covariate 누락 → 잔차 패턴이 체중과 같이 움직임. ② 체중을 <strong>선형</strong>으로 넣음 (\(CL \propto BW^{1.0}\)) → 큰 체중 환자에서 \(CL\) 과대추정. <strong>\(CL\)엔 0.75, \(V\)엔 1.0</strong> — 이게 표준 출발점.</div>
+  </div>
+</section>
+
+<!-- 18 - M2 Allometric pediatric -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">M2 · 2</span><h1 class="slide-title">소아·신생아 — size × maturation 분리</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>성인에서 잘 되는 ¾제곱이 신생아에서 깨지는 이유 한 줄: <strong>체중이 작아진다는 사실(size)과 효소·신기능이 미성숙하다는 사실(maturation)의 시간 척도가 다름.</strong> 체중은 출생부터 단조 증가하지만 CYP3A·UGT·신사구체 여과율은 발달의 sigmoid 궤적을 따라 늦게 성숙. <span class="chip">Anderson BJ, Holford NHG. ARPT 2008;48:303–332</span></p>
+
+    <p>표준형 — 두 항의 <strong>곱</strong>:</p>
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{CL_i}_{\text{개체 청소율}}=\underbrace{CL_{std}}_{\text{성인 표준값}}\cdot\underbrace{\left(\frac{BW_i}{70}\right)^{0.75}}_{\text{size 항 (allometric)}}\cdot\underbrace{F_{mat}(PMA_i)}_{\text{maturation 항}}$$</div></div>
+
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{F_{mat}(PMA)}_{\text{성숙 분율}}=\frac{\underbrace{PMA^{Hill}}_{\text{현재 성숙 정도}}}{\underbrace{TM_{50}^{Hill}}_{\text{50\% 도달 PMA}}+\underbrace{PMA^{Hill}}_{}}\;\in\;[0,1]$$</div></div>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>기호</th><th>의미</th><th>직관</th></tr></thead>
+      <tbody>
+        <tr><td><strong>PMA</strong></td><td>post-menstrual age (수태 후 주수)</td><td>출생일 아니라 <strong>수태</strong>부터 센 시계. 조산아·만삭아를 한 좌표에 둘 수 있음</td></tr>
+        <tr><td><strong>\(TM_{50}\)</strong></td><td>\(F_{mat}=0.5\)가 되는 PMA</td><td>약물·기전별 (신사구체여과 ≈ 47.7주)</td></tr>
+        <tr><td><strong>Hill</strong></td><td>sigmoid 가팔기</td><td>보통 3–5</td></tr>
+        <tr><td><strong>\(F_{mat}\)</strong></td><td>무차원 분율 (0=미성숙 ~ 1=성숙)</td><td>성인은 ≈ 1로 수렴</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout"><span class="callout-label">💡 왜 출생일이 아니라 PMA임?</span>조산아 (PMA 32주 출생)와 만삭아 (PMA 40주 출생)를 출생 후 일자로 정렬하면 "생후 0일"의 청소 능력이 서로 완전히 다름. PMA로 정렬하면 같은 sigmoid 위에 자연스럽게 놓임. <strong>출생이라는 사건이 결정점이 아니라 수태부터의 발달 시간이 결정점</strong>임.</div>
+
+    <div class="callout warn"><span class="callout-label">💼 신생아 PopPK 보고서 흔한 코멘트</span>① "체중만 covariate, maturation 누락" → 신생아 \(CL\) 과대추정. ② "출생 후 일자(postnatal age)를 maturation 시계로 사용" → 조산아·만삭아 정렬 실패. 둘 다 표준 출발점은 <strong>size × maturation 분리 + PMA-based \(F_{mat}\) sigmoid</strong>.</div>
+
+    <div class="dark-card">
+      <p><strong>M2 정리</strong>: \(CL\)·\(V\) raw 값 비교 전에 체중 표준화 (성인: 0.75/1.0, 소아: + maturation). 진짜 covariate 신호와 단순 체격 효과를 분리하는 게이트.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 19 - §7 Q1-3 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 7 · Q1–3</span><h1 class="slide-title">자기 테스트 (1/3) — 회상</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="q-block"><div class="q">Q1 [회상 ★★] \(t_{1/2}\)를 \(V\), \(CL\)로 표현하고 왜 "이차"인지</div><div class="a">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{t_{1/2}}_{\text{반감기}}=\frac{0.693\cdot V}{CL}$$</div></div>
+      \(t_{1/2}\)만으로 \(CL\) 감소인지 \(V\) 증가인지 구분 불가. <strong>다른 두 변수가 만들어낸 표지값</strong>이라는 게 "이차"의 진짜 뜻. <span class="chip">G&amp;W p.17–18</span>
+    </div></div>
+
+    <div class="q-block"><div class="q">Q2 [회상 ★] \(V\)의 정의식 두 가지</div><div class="a">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$V=\frac{A_b}{C},\qquad V=\frac{D_{iv}}{C^0}$$</div></div>
+      말단 정보 있으면 \(V=CL/K=1.44\cdot CL\cdot t_{1/2}\). <span class="chip">G&amp;W p.20</span>
+    </div></div>
+
+    <div class="q-block"><div class="q">Q3 [회상 ★] \(C_{ss}=R_{in}/CL\) 도출</div><div class="a">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\frac{dC}{dt}=\frac{R_{in}}{V}-\frac{CL}{V}C\xrightarrow{dC/dt=0}C_{ss}=\frac{R_{in}}{CL}$$</div></div>
+      \(V\)가 사라짐. <strong>\(V\)는 도달 시간엔 영향, 최종 \(C_{ss}\)엔 영향 없음.</strong> <span class="chip">G&amp;W p.22–23</span>
+    </div></div>
+  </div>
+</section>
+
+<!-- 20 - §7 Q4-6 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 7 · Q4–6</span><h1 class="slide-title">자기 테스트 (2/3) — 회상·적용</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="q-block"><div class="q">Q4 [회상 ○] \(MRT\) 정의와 1구획 IV와의 관계</div><div class="a">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$MRT=\frac{AUMC}{AUC},\quad MRT_{\text{1구획IV}}=\frac{1}{K}=1.443\cdot t_{1/2}$$</div></div>
+      두 번째 등식은 <strong>1구획 IV bolus 한정</strong>.
+    </div></div>
+
+    <div class="q-block"><div class="q">Q5 [적용 ★★] S1·S4에 같은 \(R_{in}=10\) µg/min — \(C_{ss}\) 같음?</div><div class="a">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$C_{ss,1}=\frac{10}{0.1}=\mathbf{100}\;\mu g/L,\quad C_{ss,4}=\frac{10}{0.2}=\mathbf{50}\;\mu g/L$$</div></div>
+      <strong>두 배 차이.</strong> \(K\)·\(t_{1/2}\) 비슷해도 \(C_{ss}\)는 \(CL\)이 정함. <strong>이게 §1 함정의 결정적 숫자임.</strong> <span class="chip">G&amp;W Eq.2:22, p.23</span>
+    </div></div>
+
+    <div class="q-block"><div class="q">Q6 [적용 ★★] \(t_{1/2}\) 늘었음 — \(CL\downarrow\) vs \(V\uparrow\) 어떻게 분리?</div><div class="a">
+      <strong>AUC와 \(C^0\) 분리해서 봄</strong>: \(CL\downarrow\) → \(AUC=Dose/CL\uparrow\); \(V\uparrow\) → \(C^0=D/V\downarrow\). 둘 다 변하면 \(t_{1/2}\) 하나로는 분리 불가. <span class="chip">R&amp;T p.58–60</span>
+    </div></div>
+  </div>
+</section>
+
+<!-- 21 - §7 Q7-9 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 7 · Q7–9</span><h1 class="slide-title">자기 테스트 (3/3) — 적용·Boss</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <div class="q-block"><div class="q">Q7 [적용 ★] R&amp;T midazolam: 79 kg, 7.5 mg IV, AUC = 287 µg·hr/L, \(t_{1/2}=3.8\) hr. (a) \(CL\)? (b) \(V\)? (c) 5분 농도 180 µg/L, 혈장 부피 3.4 L이면 혈장 밖 분율?</div><div class="a">
+      <div class="formula-card-wrap"><div class="formula-card compact">$$CL=\frac{7500}{287}\approx \mathbf{26}\;L/hr,\quad V=1.44\times 26\times 3.8\approx \mathbf{142}\;L$$</div></div>
+      혈장 내 약물 = \(180\times 3.4=612\) µg = 0.612 mg. 혈장 밖 = \(7.5-0.612=6.89\) mg = <strong>약 92%</strong>. 5분 만에 조직으로 빠르게 분포한다는 직접 증거. <span class="chip">R&amp;T p.61–63</span>
+    </div></div>
+
+    <div class="q-block"><div class="q">Q8 [적용 ★] IV bolus 자료 \(MRT/t_{1/2}=1.85\). 무엇을 의심?</div><div class="a">
+      1구획 IV bolus 단일지수 가정 위배. <strong>분포 동력학</strong> 또는 <strong>말단 외삽 품질</strong> 문제 의심. 본 세션 출처 범위 결론은 여기까지, 구체적 NONMEM ADVAN 선택은 후속 실무 판단. <span class="chip">G&amp;W p.19 · R&amp;T p.60–66</span>
+    </div></div>
+
+    <div class="q-block"><div class="q">Q9 [Boss Dilemma ★★] 새 IV 약물 반로그 도표 biphasic — 1구획 vs 2구획 어떻게 방어?</div><div class="a">
+      질문 자체가 잘못. "어느 모델이 항상 옳음?"이 아니라 <strong>"분포 단계가 임상적으로 중요한 시간대임?"</strong>.
+      <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\text{말단 = 소실 대표}}_{\text{1구획 안전}}\Leftrightarrow\underbrace{\text{분포 AUC 비율 작음}}_{\text{midazolam }(\approx 48\%)}\;\text{vs}\;\underbrace{\text{비율 매우 큼}}_{\text{gentamicin >95\% (평형 전)}}$$</div></div>
+      방어 시 함께 제시: ① <strong>분포 단계 AUC 비율</strong> ② <strong>임상 의사결정 시점이 분포 단계인가 소실 단계인가</strong>. <span class="chip">R&amp;T p.61–66</span>
+    </div></div>
+
+    <div class="callout"><span class="callout-label">§7 정리</span>계산 문제 핵심은 수식 암기가 아니라 <strong>"어떤 식에서 어떤 파라미터가 사라지는가"</strong>. \(C_{ss}\)에선 \(V\)가 사라지고, \(t_{1/2}\)엔 \(CL\)·\(V\)가 함께 남음. 이 사라짐과 남음의 패턴이 임상 결정의 일차 좌표를 알려줌.</div>
+  </div>
+</section>
+
+<!-- 22 - §8 위치 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 8 · A</span><h1 class="slide-title">메타프레임 — 이 세션의 위치 (모든 후속 구조의 출발점)</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <p>이 세션은 PK/PD 학습 그래프의 <strong>루트 노드</strong>임. 후속 모든 가지가 여기서 갈라짐:</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>후속 세션</th><th>이 세션에서 열린 개념</th><th>이 세션 없으면 실패하는 것</th></tr></thead>
+      <tbody>
+        <tr><td>다구획 모델</td><td>말단 단계가 소실 대표인지 판정</td><td>terminal slope 자동 신뢰</td></tr>
+        <tr><td>흡수 모델</td><td>혈관외 말단 기울기 정체 (\(K\) vs \(K_a\))</td><td>flip-flop 혼동</td></tr>
+        <tr><td>간/신 청소율</td><td>\(CL=Q\cdot E\), \(CL_R=f_e\cdot CL\) 분해</td><td>장기별 생리학 연결 실패</td></tr>
+        <tr><td>PopPK 공변량</td><td>\(CL\) vs \(V\) 위치 배치</td><td>\(K\) 직접 모수화로 원인 혼재</td></tr>
+        <tr><td>NCA</td><td>\(AUC\), \(AUMC\), \(MRT\) 모멘트 해석</td><td>평균체류 vs 반감기 혼동</td></tr>
+        <tr><td><strong>NCA 보고 품질 (M1)</strong></td><td>말단 BLQ + % AUC extrapolated</td><td>\(K\)·\(CL\) 사슬 신뢰도 손실</td></tr>
+        <tr><td><strong>PopPK BLQ likelihood (M1)</strong></td><td>Beal M3 censoring</td><td>BLQ 큰 자료에서 추정 편향</td></tr>
+        <tr><td><strong>성인 PopPK covariate (M2)</strong></td><td>\(CL\propto BW^{0.75}\), \(V\propto BW^{1.0}\)</td><td>체격 효과와 진짜 신호 혼재</td></tr>
+        <tr><td><strong>소아 PopPK (M2)</strong></td><td>size × maturation + PMA \(F_{mat}\)</td><td>신생아 \(CL\) 과대추정</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- 23 - §8 7가지 실패 -->
+<section class="slide">
+  <div class="slide-header"><span class="sec-badge">§ 8 · B</span><h1 class="slide-title">대충 넘기면 실제로 일어나는 7가지 실패</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <ol style="padding-left:24px">
+      <li><strong>\(t_{1/2}\) 단독 해석</strong> — "긴 반감기 = 신기능 저하" 자동 결론 → 부종 환자 (\(V\uparrow\)) 놓침. 정답: <strong>AUC·\(C^0\) 함께 봄</strong>.</li>
+      <li><strong>\(V\)를 해부학적 부피로 오해</strong> — Quinacrine 40,000 L 보고 "모델 틀림" 결론. 정답: \(V\)는 <strong>혈장 측정 농도와 총량의 환산률</strong>.</li>
+      <li><strong>말단 단계 자동 신뢰</strong> — gentamicin trap (95% 신배설이 깊은 조직 분포 평형 (≈36 hr) 도달 전). 정답: <strong>분포 단계 AUC 비율 확인</strong>.</li>
+      <li><strong>\(K\) 직접 모수화</strong> — TRANS1로 공변량을 \(K\)에 붙임. \(CL/V\) 분리 불가. 정답: <strong>TRANS2로 \(CL\)·\(V\) 분리</strong>.</li>
+      <li><strong>BLQ 무시 (M1)</strong> — 말단 0 치환 → \(K\uparrow\to t_{1/2}\downarrow\to AUC\downarrow\to CL\uparrow\) 사슬 폭발. 정답: <strong>NCA 위치별 규칙 + PopPK M3, % AUC extrapolated 함께</strong>.</li>
+      <li><strong>체중 표준화 누락 (M2)</strong> — raw \(CL\)·\(V\) 비교 → 체격 효과와 covariate 신호 혼재. 정답: <strong>0.75 / 1.0 표준 출발</strong>.</li>
+      <li><strong>소아 maturation 누락 (M2)</strong> — 체중만 ¾제곱 → 신생아 \(CL\) 과대. 정답: <strong>size × maturation 분리 + PMA</strong>.</li>
+    </ol>
+
+    <h2 class="section-h">C. 전문가가 만드는 차이</h2>
+    <p>자동화 도구는 단일지수 적합으로 \(CL\)·\(V\)·\(K\)·\(t_{1/2}\) 출력은 빠르게 함. <strong>전문가의 가치는 숫자 출력이 아니라 숫자의 위계를 읽는 것</strong>:</p>
+    <ul>
+      <li>\(C_{ss}\)가 다른 이유를 \(t_{1/2}\)가 아니라 \(CL\)에서 찾음</li>
+      <li>\(t_{1/2}\) 변화 시 \(CL\)·\(V\) 먼저 분해</li>
+      <li>반로그 말단 직선이 언제 소실 대표가 아닌지 앎</li>
+      <li>출처 기반 진술과 실무 인사이트를 구분</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 24 - §8 최종 -->
+<section class="slide has-formula">
+  <div class="slide-header"><span class="sec-badge">§ 8 · D·E</span><h1 class="slide-title">임상 결정 좌표 & 최종 한 줄</h1></div>
+  <hr class="header-rule">
+  <div class="content">
+    <h2 class="section-h">D. 임상 결정 좌표 한 장 요약</h2>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>변화</th><th>일차 파라미터</th><th>임상 결과</th><th>조치</th></tr></thead>
+      <tbody>
+        <tr><td>AUC·유지용량</td><td>\(CL\)</td><td>\(CL\)↓ 절반 → AUC 두 배</td><td>즉시 \(CL\) 역수 계산</td></tr>
+        <tr><td>\(C^0\)·부하용량</td><td>\(V\)</td><td>\(V\) 불변이면 부하 수정 불요</td><td>부하용량은 \(V\) 함수</td></tr>
+        <tr><td>말단 기울기</td><td>\(CL/V\)</td><td>단독으로 결정 불가</td><td>AUC·\(C^0\) 함께 확인</td></tr>
+        <tr><td>잔차 패턴</td><td>\(CL\) 또는 \(V\)</td><td>\(K\) 모수화는 혼재</td><td>배수구·욕조 가설로 세움</td></tr>
+        <tr><td>NCA \(MRT\)</td><td>\(AUMC/AUC\)</td><td>\(V_{ss}=CL\cdot MRT\)</td><td>구획 \(V/CL\)과 차이 명시</td></tr>
+        <tr><td>CWRES vs WT/CrCl</td><td>\(CL\) 또는 \(V\)</td><td>잔차 원인 위치가 모델 방어력 정함</td><td>공변량 위치 재검토</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2 class="section-h">E. 최종 한 줄</h2>
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{CL}_{\text{노출결정}}=\frac{Dose}{AUC},\;\;\underbrace{V}_{\text{초기농도 결정}}=\frac{D}{C^0},\;\;\underbrace{K}_{\text{시간기울기}}=\frac{CL}{V},\;\;\underbrace{t_{1/2}}_{\text{시간척도}}=\frac{0.693\cdot V}{CL}$$</div></div>
+
+    <p style="text-align:center;font-size:15px;margin:14px 0">진짜 목표는 <strong>식 암기가 아니라 위계 체화</strong>임.</p>
+
+    <div class="closer-card">
+      <div class="closer-label">한 줄 못 박기</div>
+      <div class="closer-text"><em>CL과 V를 먼저 보고,<br>K와 t<sub>½</sub>를 그 결과로 읽음.</em></div>
+      <p style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#a09d96;letter-spacing:0.8px">S1 vs S4가 끝까지 가르쳐준 한 줄. 다음 세션부터는 이 위계를 다구획·흡수·간/신·PopPK 공변량으로 확장함.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="nav">
+  <button class="nav-btn" id="btn-prev">← 이전</button>
+  <div class="prog">
+    <span class="prog-text" id="prog-text">1 / 25</span>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+  <button class="nav-btn" id="btn-next">다음 →</button>
+</nav>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+function renderMath(){
+  renderMathInElement(document.body,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'\\(',right:'\\)',display:false}
+    ],
+    throwOnError:false,
+    strict:false
+  });
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',renderMath);}else{renderMath();}
+
+var slides=document.querySelectorAll('.slide');
+var tocBtns=document.querySelectorAll('.toc-btn');
+var TOTAL=slides.length;
+var cur=0;
+var progText=document.getElementById('prog-text');
+var progFill=document.getElementById('prog-fill');
+var btnPrev=document.getElementById('btn-prev');
+var btnNext=document.getElementById('btn-next');
+
+function goTo(n){
+  if(n<0||n>=TOTAL)return;
+  slides[cur].classList.remove('active');
+  if(tocBtns[cur])tocBtns[cur].classList.remove('active');
+  cur=n;
+  slides[cur].classList.add('active');
+  if(tocBtns[cur]){tocBtns[cur].classList.add('active');tocBtns[cur].scrollIntoView({block:'nearest',behavior:'smooth'});}
+  progText.textContent=(cur+1)+' / '+TOTAL;
+  progFill.style.width=((cur+1)/TOTAL*100)+'%';
+  btnPrev.disabled=(cur===0);
+  btnNext.disabled=(cur===TOTAL-1);
+}
+btnPrev.addEventListener('click',function(){goTo(cur-1);});
+btnNext.addEventListener('click',function(){goTo(cur+1);});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft')goTo(cur-1);
+  if(e.key==='ArrowRight')goTo(cur+1);
+});
+tocBtns.forEach(function(b){b.addEventListener('click',function(){goTo(parseInt(b.dataset.i,10));});});
+goTo(0);
+</script>
+</body>
+</html>

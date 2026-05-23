@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 09 — TMDD 한 바느질로 꿰기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: #faf9f5;
+  color: #141413;
+  font-family: 'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === Sidebar === */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 260px;
+  background: #f5f0e8;
+  border-right: 1px solid #e6dfd8;
+  overflow-y: auto;
+  padding: 22px 18px 28px;
+  z-index: 10;
+}
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e6dfd8;
+}
+.wordmark-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #141413;
+}
+.toc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #8e8b82;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.toc-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 6px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  color: #6c6a64;
+  cursor: pointer;
+  transition: all 160ms ease;
+  margin-bottom: 1px;
+  line-height: 1.35;
+}
+.toc-btn:hover { color: #141413; background: #efe9de; }
+.toc-btn.active {
+  border-left-color: #cc785c;
+  color: #cc785c;
+  font-weight: 500;
+  background: #faf6f0;
+}
+.toc-btn.sub { padding-left: 22px; font-size: 11.5px; }
+
+/* === Viewer === */
+.viewer {
+  position: fixed;
+  left: 260px; top: 0; right: 0; bottom: 52px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 44px 18px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+.slide.has-formula { padding-top: 48px; }
+
+/* exception: formula card must not be clipped */
+.slide .formula-card,
+.slide .formula-card-wrap { overflow: visible !important; }
+
+/* === Slide header === */
+.slide-header { display: flex; align-items: center; gap: 14px; }
+.sec-badge {
+  display: inline-block;
+  background: #cc785c;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+.slide-title {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(26px, 3vw, 42px);
+  letter-spacing: -0.02em;
+  color: #141413;
+  line-height: 1.15;
+}
+.header-rule {
+  border: none;
+  height: 1.5px;
+  background: #e6dfd8;
+  margin: 10px 0 14px;
+}
+
+/* === Typography === */
+h2.sub-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: clamp(17px, 1.8vw, 22px);
+  color: #252523;
+  margin: 4px 0 8px;
+  letter-spacing: -0.005em;
+}
+p, li {
+  font-size: clamp(13px, 1.15vw, 15.5px);
+  color: #3d3d3a;
+  line-height: 1.6;
+}
+strong { color: #141413; font-weight: 600; }
+em { font-style: italic; color: #252523; }
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+  background: #efe9de;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #252523;
+}
+
+/* === Cards === */
+.card {
+  background: #efe9de;
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.soft-card {
+  background: #f5f0e8;
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.formula-card-wrap { overflow: visible !important; }
+.formula-card {
+  background: #f5f0e8;
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  padding: 30px 18px 22px;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: visible !important;
+  margin: 6px 0;
+}
+.formula-card .src {
+  display: block;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: #6c6a64;
+}
+
+/* === Dark cards === */
+.dark-card {
+  background: #181715;
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: #faf9f5;
+}
+.dark-card p,
+.dark-card li { color: #a09d96; }
+.dark-card strong { color: #faf9f5; }
+.dark-card em { color: #e8a55a; font-style: italic; }
+.dark-card h2,
+.dark-card h3 { color: #faf9f5; font-family: 'Inter', sans-serif; font-weight: 500; margin-bottom: 6px; }
+.dark-card .accent { color: #cc785c; }
+.dark-card .amber { color: #e8a55a; }
+.dark-card li::marker { color: #cc785c; }
+
+/* algorithm box */
+.algo {
+  background: #181715;
+  color: #a09d96;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  padding: 14px 16px;
+  border-radius: 12px;
+  white-space: pre;
+  overflow-x: auto;
+}
+.algo .cm { color: #6c6a64; }
+.algo .kw { color: #e8a55a; }
+.algo .fn { color: #cc785c; }
+
+/* === Callouts === */
+.callout {
+  border-left: 3px solid #cc785c;
+  background: #f4e4dc;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 6px 0;
+  font-size: clamp(12.5px, 1.1vw, 14.5px);
+  color: #3d3d3a;
+}
+.callout.warn  { background: #fcf0ef; border-left-color: #c64545; }
+.callout.amber { background: #fdf4e0; border-left-color: #d4a017; }
+.callout.teal  { background: #e6f4f0; border-left-color: #5db8a6; }
+.callout strong { color: #141413; }
+.callout-label {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-right: 6px;
+  color: #cc785c;
+}
+.callout.warn  .callout-label { color: #c64545; }
+.callout.amber .callout-label { color: #d4a017; }
+.callout.teal  .callout-label { color: #1e7e6a; }
+
+/* === Tables === */
+.tbl-wrap {
+  border: 1px solid #e6dfd8;
+  border-radius: 12px;
+  overflow: clip;
+  background: #faf9f5;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(11.5px, 1vw, 13.5px);
+}
+thead { background: #efe9de; }
+thead th {
+  text-align: left;
+  font-weight: 600;
+  padding: 12px 12px 10px;
+  color: #141413;
+  font-family: 'Inter', sans-serif;
+  border-bottom: 1px solid #e6dfd8;
+}
+thead tr:first-child th { padding-top: 14px; }
+tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ebe6df;
+  color: #3d3d3a;
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: #faf6f0; }
+
+/* === Chips === */
+.chip {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  background: #efe9de;
+  color: #6c6a64;
+  padding: 1.5px 7px;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+.chip.coral { background: #f4e4dc; color: #a9583e; }
+.chip.amber { background: #fdf4e0; color: #8a6510; }
+.chip.dark  { background: #181715; color: #faf9f5; }
+
+/* === Grids === */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.body-scroll { overflow-y: auto; flex: 1; padding-right: 6px; }
+
+/* === Closer === */
+.closer {
+  background: #181715;
+  border-radius: 12px;
+  padding: 32px 38px;
+  text-align: center;
+}
+.closer-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #cc785c;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.closer-body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 1.6vw, 22px);
+  color: #faf9f5;
+  line-height: 1.55;
+}
+.closer-sig {
+  margin-top: 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: #a09d96;
+  letter-spacing: 1px;
+}
+
+/* === Nav bar === */
+.navbar {
+  position: fixed;
+  bottom: 0; left: 260px; right: 0;
+  height: 52px;
+  background: #faf9f5;
+  border-top: 1px solid #e6dfd8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 20;
+}
+.navbar button {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid #e6dfd8;
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  color: #3d3d3a;
+  transition: all 160ms;
+}
+.navbar button:hover:not(:disabled) {
+  background: #efe9de;
+  color: #141413;
+}
+.navbar button:disabled { opacity: 0.35; cursor: not-allowed; }
+.prog-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 24px;
+}
+#prog-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: #6c6a64;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+.prog-track {
+  width: 220px;
+  height: 3px;
+  background: #efe9de;
+  border-radius: 2px;
+  overflow: hidden;
+}
+#prog-fill {
+  height: 100%;
+  background: #cc785c;
+  width: 6%;
+  transition: width 220ms ease;
+}
+
+/* === KaTeX overrides === */
+.katex-display {
+  overflow-y: visible !important;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+}
+.katex-display > .katex { overflow-y: visible !important; }
+.katex { font-size: 1.05em !important; }
+.formula-card .katex { font-size: 1.12em !important; }
+
+/* helpers */
+.note { font-size: 12px; color: #6c6a64; margin-top: 4px; font-style: italic; }
+.lead { font-size: clamp(14px, 1.25vw, 17px); color: #252523; line-height: 1.65; }
+ul, ol { padding-left: 20px; margin: 4px 0; }
+li { margin-bottom: 3px; }
+
+.flex-rows { display: flex; flex-direction: column; gap: 10px; }
+.tight p { margin-bottom: 5px; }
+.kbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  background: #efe9de;
+  border: 1px solid #e6dfd8;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #3d3d3a;
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="wordmark">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78"
+            stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span class="wordmark-text">Session 09 · TMDD</span>
+  </div>
+  <div class="toc-label">Contents</div>
+  <button class="toc-btn" data-i="0">§0 들어가며 — 123배 사건</button>
+  <button class="toc-btn" data-i="1">§0 한 바느질 6장 + 출처</button>
+  <button class="toc-btn" data-i="2">§1 M1 — Turnover 욕조</button>
+  <button class="toc-btn" data-i="3">§1 M1 — 비대칭과 단위</button>
+  <button class="toc-btn" data-i="4">§1 M1 — 임상 앵커 3</button>
+  <button class="toc-btn" data-i="5">§2 M2 — 4 관문 개관</button>
+  <button class="toc-btn" data-i="6">§2 M2 — 관문 ①②</button>
+  <button class="toc-btn" data-i="7">§2 M2 — 관문 ③④</button>
+  <button class="toc-btn" data-i="8">§2 M2 — sc mAb 표</button>
+  <button class="toc-btn" data-i="9">§3 M3 — PK27 농도 지도</button>
+  <button class="toc-btn" data-i="10">§3 M3 — 4 phase 정체</button>
+  <button class="toc-btn" data-i="11">§3 M3 — 곡선의 한계</button>
+  <button class="toc-btn" data-i="12">§4 M4 — Full TMDD 4 state</button>
+  <button class="toc-btn" data-i="13">§4 M4 — ODE & BIND 함정</button>
+  <button class="toc-btn" data-i="14">§4 M4 — 자료 풍부도</button>
+  <button class="toc-btn" data-i="15">§4 M4 — 123배 사건의 정체</button>
+  <button class="toc-btn" data-i="16">§4 M4 — NONMEM 단위 정합</button>
+  <button class="toc-btn" data-i="17">§4 M4 — Soluble vs Membrane</button>
+  <button class="toc-btn" data-i="18">§4 M4 — ADA 시간 의존</button>
+  <button class="toc-btn" data-i="19">§4½ QSS — 근사 위계</button>
+  <button class="toc-btn" data-i="20">§4½ QSS — 도출과 K_ss</button>
+  <button class="toc-btn" data-i="21">§4½ 세 K 상수 & 한계</button>
+  <button class="toc-btn" data-i="22">§5 M5 — MM의 4 조건</button>
+  <button class="toc-btn" data-i="23">§5 M5 — Occupancy 경계</button>
+  <button class="toc-btn" data-i="24">§6 4 쌍 — Pair 1·2</button>
+  <button class="toc-btn" data-i="25">§6 4 쌍 — Pair 3·4</button>
+  <button class="toc-btn" data-i="26">§7 능동 회상 Q1–Q5</button>
+  <button class="toc-btn" data-i="27">§7 능동 회상 Q6–Q10</button>
+  <button class="toc-btn" data-i="28">§8 메타 프레임</button>
+  <button class="toc-btn" data-i="29">§9 마지막 한 줄</button>
+</aside>
+
+<!-- ============ VIEWER ============ -->
+<main class="viewer">
+
+<!-- =================== SLIDE 0 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">TMDD 한 바느질로 꿰기 — PK27의 123배 사건</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:10px;">세션 09 — TMDD: 단백질 약물 PK, mAb 배치, FcRn, TMDD, Michaelis-Menten 근사, 자료 풍부도(data richness), assay 식별성을 한 흐름으로 묶은 학습자용 정리본. <span class="chip">G&amp;W 5e Ch.2 §2.6 / PK26 / PK27</span> <span class="chip">R&amp;T 5e Ch.21</span></p>
+
+  <div class="grid-2" style="margin-top:6px;">
+    <div class="callout amber">
+      <span class="callout-label">임상 장면 한 컷</span>
+      한 단클론 항체를 <strong>1.5, 5, 15, 45 mg·kg⁻¹</strong> 네 용량으로 급속 정맥 주사함. 고용량 곡선 세 개는 모델이 그럴듯하게 맞춰주는데, 가장 낮은 용량 곡선 하나만 따로 놂. 그래서 모델을 두 가지로 돌려봤음 — MM 모델의 \(K_m\)은 <strong>3.7</strong>, Full TMDD 모델의 \(K_m\)은 <strong>0.03</strong>. <strong>약 123배 차이임.</strong>
+      <div class="chip" style="margin-top:6px;">G&amp;W pp.602–603; G&amp;W p.609</div>
+    </div>
+    <div class="dark-card">
+      <h3>임상 현장 언어로 옮기면</h3>
+      <p>first-in-human 들어가서 <strong>저용량 trough 노출</strong>을 MM 모델로 예측했는데, 실제로는 100배 이상 어긋날 수 있다는 얘기임. <em>dose-escalation 결정이 통째로 잘못된 경로</em>로 갈 수 있고, target occupancy 판단도 망가지고, sub-population 외삽도 망가짐.</p>
+      <p style="margin-top:6px;">"피팅이 살짝 안 됐다" 수준이 아니라 <span class="amber"><strong>임상 의사결정의 출발 좌표가 틀어진 사건</strong></span>임.</p>
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">하나의 질문</span>
+    이 세션 전체는 결국 한 질문에 답하는 것임 — <strong>"이 데이터가 실제로 어떤 파라미터를 가르치고 있는가?"</strong> 곡선이 예쁘게 맞춰지냐가 아니라, 이 질문이 모든 결정의 기준임.
+  </div>
+</section>
+
+<!-- =================== SLIDE 1 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 0</span>
+    <h1 class="slide-title">한 바느질로 꿰면 — 6장의 의존 사슬</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="tbl-wrap" style="margin-bottom:10px;">
+    <table>
+      <thead><tr><th style="width:80px;">카드</th><th>한 줄</th></tr></thead>
+      <tbody>
+        <tr><td><strong>M1</strong></td><td>Target은 "살아있는 욕조"임 — baseline은 결과값이지 입력값이 아님</td></tr>
+        <tr><td><strong>M2</strong></td><td>mAb는 작은 약물처럼 안 빠짐 — 4개의 관문(분포·림프·proteolysis·FcRn)이 따로 작동함</td></tr>
+        <tr><td><strong>M3</strong></td><td>TMDD 곡선의 4 phase는 시간 순서가 아니라 <strong>농도 영역의 지도</strong>임</td></tr>
+        <tr><td><strong>M4</strong></td><td>Full TMDD는 ligand·target·complex·sink를 분리하는 ODE임 — 자료가 있어야 풀림</td></tr>
+        <tr><td><strong>M4½</strong></td><td>임상에서 실제로 쓰는 건 Full도 MM도 아니라 그 사이의 <strong>QSS 근사</strong>임</td></tr>
+        <tr><td><strong>M5</strong></td><td>MM은 "포화 영역 안에서만 쓰는 압축 도구"임 — 그 밖으로 외삽하면 PK27 사건이 일어남</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2">
+    <div class="callout">
+      <span class="callout-label">의존 사슬</span>
+      M1이 무너지면 M2가 흔들리고, M3 없이 M4를 보면 phase가 뭘 가르치는지 모르고, M4 없이 M4½/M5를 보면 어디서 어떤 가정으로 근사가 가능한지 판단할 도구가 없음. 거꾸로 말하면, PK27의 123배 사건은 <strong>이 사슬의 어느 한 마디를 건너뛴 결과</strong>임.
+    </div>
+    <div class="soft-card">
+      <h2 class="sub-title">선행 / 후속</h2>
+      <p><strong>선행</strong>: 1구획·2구획 선형 PK + Michaelis-Menten + ODE 기본</p>
+      <p><strong>후속</strong>: mAb PopPK → target occupancy 시뮬레이션 → QSP/PBPK → biologics 임상약리 narrative</p>
+      <div style="margin-top:8px;">
+        <div class="chip">G&amp;W 5e pp.94–111 (Ch.2 §2.6 Turnover)</div>
+        <div class="chip">G&amp;W pp.599–601 (PK26 Efalizumab)</div>
+        <div class="chip">G&amp;W pp.602–610 (PK27 TMDD)</div>
+        <div class="chip">R&amp;T pp.687–730 (Ch.21 Protein Drugs)</div>
+        <div class="chip">Mager &amp; Jusko JPKPD 2001;28:507</div>
+        <div class="chip">Peletier &amp; Gabrielsson JPKPD 2012;39:429</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 2 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · M1</span>
+    <h1 class="slide-title">Turnover — Target은 "살아있는 욕조"</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;">PK27의 123배 사건이 일어난 첫 번째 이유는 단순함. 사람들이 <strong>target \(R\)을 고정값으로 처리</strong>하기 때문임. 그런데 target은 약물이 들어오기 전부터 이미 몸 안에서 계속 만들어지고 계속 분해되는 <strong>dynamic system</strong>임. <span class="chip">G&amp;W p.96</span></p>
+
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:8px;">
+        <h2 class="sub-title">욕조 그림 한 컷</h2>
+        <p>10 L 욕조에 분당 1 L의 물이 들어오고 분당 1 L가 빠져나가면 turnover time은 10분임. 사람 몸의 물 42 L와 하루 섭취량 2.5 L를 넣으면 water turnover time은 <strong>약 17일</strong>임. 핵심은 "얼마나 많이 있는가"가 아니라 <strong>"지금 pool 전체가 얼마나 빨리 교체되는가"</strong>임. 이 단순한 욕조 수학이 <em>내인성 IgG·target receptor·hormone turnover</em>에 글자 그대로 똑같이 적용됨.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>파라미터</th><th>단위</th><th>의미</th></tr></thead>
+          <tbody>
+            <tr><td>\(A\)</td><td>mass</td><td>욕조 안의 물(pool 양)</td></tr>
+            <tr><td>\(k_{in}\)</td><td>mass/time</td><td>수도꼭지 — 0차 입력</td></tr>
+            <tr><td>\(k_{out}\)</td><td>time⁻¹</td><td>배수구 — 1차 분획 소실</td></tr>
+            <tr><td>\(A_0\)</td><td>mass</td><td>정상상태 수위(baseline)</td></tr>
+            <tr><td>\(t_t\)</td><td>time</td><td>욕조 전체가 교체되는 시간</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex-rows">
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\overbrace{\frac{dA}{dt}}^{\text{pool 변화}} = \underbrace{k_{in}}_{\text{0차 입력 (수도꼭지)}} - \underbrace{k_{out}\cdot A}_{\text{1차 소실 (배수구)}}$$
+          <span class="src">Eq.2:237 — G&amp;W p.96</span>
+        </div>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\begin{aligned}
+          \underbrace{A_0}_{\text{baseline}} &= \underbrace{\tfrac{k_{in}}{k_{out}}}_{\text{입력 ÷ 소실}} \\[2pt]
+          \underbrace{t_t}_{\text{교체 시간}} &= \underbrace{\tfrac{1}{k_{out}}}_{\text{소실 역수}} = \underbrace{\tfrac{V_{ss}}{Cl}}_{\text{PK 체류시간}} = \underbrace{MRT}_{\text{평균 체류}} \\[2pt]
+          \underbrace{t_{1/2}}_{\text{반감기}} &= \underbrace{\tfrac{\ln(2)}{k_{out}}}_{\text{1차 반감}}
+          \end{aligned}$$
+          <span class="src">G&amp;W pp.95–96</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 3 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · M1</span>
+    <h1 class="slide-title">Turnover 비대칭 — \(k_{in}\)과 \(k_{out}\)은 다르게 작동함</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:8px;">이게 임상 해석에서 진짜 중요한 부분임. <strong>\(k_{in}\)을 바꿀 때와 \(k_{out}\)을 바꿀 때 결과가 다름.</strong></p>
+
+  <div class="grid-2" style="margin-bottom:8px;">
+    <div class="card">
+      <h2 class="sub-title">\(k_{in}\) 변화</h2>
+      <p><strong>수위만</strong> 바뀜. 새 수위 도달 시간은 그대로 <span class="chip">G&amp;W p.97</span></p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">\(k_{out}\) 변화</h2>
+      <p><strong>수위와 도달 시간이 같이</strong> 바뀜 <span class="chip">G&amp;W p.97</span></p>
+    </div>
+  </div>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{k_{in}\uparrow}_{\text{입력 증가}} \Rightarrow \underbrace{A_0\uparrow}_{\text{level만 상승}}, \qquad \underbrace{k_{out}\uparrow}_{\text{분획 소실 증가}} \Rightarrow \underbrace{A_0\downarrow}_{\text{level 하강}}+\underbrace{t_t\downarrow}_{\text{시간도 단축}}$$
+    </div>
+  </div>
+
+  <div class="callout amber" style="margin-top:10px;">
+    <span class="callout-label">왜 임상에서 중요한가</span>
+    어떤 PD endpoint가 회복이 느려졌음. 합성이 줄어든 건지(\(k_{in}\downarrow\)), 분해가 느려진 건지(\(k_{out}\downarrow\))에 따라 처치 방향이 완전히 갈림. <strong>level 하나만 봐서는 원인을 못 잡음.</strong>
+  </div>
+
+  <div class="callout">
+    <span class="callout-label">단위가 핵심임</span>
+    \(k_{in}\)은 mass/time, \(k_{out}\)은 time⁻¹임. 이거 안 구분하면 곧 <strong>target 합성(\(k_{in}\))과 ligand-target 결합 on-rate(\(k_{on}\))을 같은 양으로 섞어버림</strong> — M4에서 이 함정이 다시 나옴. 미리 못 박아둬야 안전함.
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>실무에서 자주 망하는 지점</h3>
+    <p>predose target 값을 그냥 <span class="amber">R0=THETA</span>로만 추정하면 \(R_0\)의 individual variability가 <strong>residual error로 흡수돼서 사라짐</strong>. <strong>baseline DV record로 모델에 직접 넣어야 함.</strong> 이건 교과서 control stream이 아니라 NONMEM 쪽 구현 해석임.</p>
+    <p style="margin-top:6px;"><span class="accent"><strong>M1 한 줄</strong></span> — target을 고정값으로 보면 TMDD는 출발부터 망함. \(R\)은 \(k_{in}/k_{out}\)이 만들어내는 <em>균형의 결과값</em>이고, 외부 ligand는 이 균형을 흔드는 침입자임.</p>
+  </div>
+</section>
+
+<!-- =================== SLIDE 4 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 1 · M1</span>
+    <h1 class="slide-title">임상 앵커 3개 — 같은 수식, 다른 맥락</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-3">
+    <div class="card">
+      <h2 class="sub-title">IgX (내인성 펩타이드)</h2>
+      <p>성장호르몬 유사 펩타이드. predose baseline <strong>32 µg·L⁻¹</strong>, \(k_{in}=0.78\) µg·h⁻¹·kg⁻¹, \(t_t=2.7\) h, \(t_{1/2}=2.5\) h, \(k_{out}=0.27\) h⁻¹.</p>
+      <p style="margin-top:6px;">→ <strong>endogenous baseline 위에 외부 ligand가 얹히는</strong> 전형적인 사례.</p>
+      <div class="chip" style="margin-top:6px;">G&amp;W pp.100–101</div>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">내인성 IgG</h2>
+      <p>\(t_{1/2}=\) <strong>23 days</strong>, FCR 6.7% plasma pool·day⁻¹, turnover 33 mg·kg⁻¹·day⁻¹. R&amp;T가 "치료용 mAb 반감기 ≈ 21일"이라고 하는 숫자와 비슷한 영역.</p>
+      <p style="margin-top:6px;">→ 그런데 <strong>두 문장을 하나로 합치면 안 됨</strong>. 내인성 IgG는 단일 분자종이고, 치료용 mAb는 후보별로 FcRn 친화도가 다 다름. <em>숫자가 비슷하다고 같은 사실이 아님.</em></p>
+      <div class="chip" style="margin-top:6px;">G&amp;W p.102 · R&amp;T p.708</div>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Estradiol (폐경 후)</h2>
+      <p>\(k_{in}=19\) µg·24h⁻¹, \(Cl=1.6\) L·min⁻¹, \(V_{ss}=50\) L, \(t_{1/2}=26\) min, \(MRT=18\) min.</p>
+      <p style="margin-top:6px;">임상 포인트 — 폐경 후 낮은 E2 level은 <strong>청소율이 늘어서가 아니라 \(k_{in}\)이 줄어서</strong> 만들어짐. <em>level 하나만 봐서는 합성 쪽인지 분해 쪽인지 모름.</em></p>
+      <div class="chip" style="margin-top:6px;">G&amp;W pp.102–104</div>
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:10px;">
+    <span class="callout-label">M1 정리</span>
+    target을 고정값으로 보면 TMDD는 출발부터 망함. <strong>baseline과 회복 시간을 같이 설명할 때는 \(k_{in}/k_{out}\) 구조가 결정함</strong>. 외부 ligand는 이미 돌아가고 있는 turnover 시스템 안으로 들어가서 그 균형을 흔드는 침입자임.
+  </div>
+</section>
+
+<!-- =================== SLIDE 5 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · M2</span>
+    <h1 class="slide-title">mAb는 작은 약물처럼 안 빠짐 — 4개의 관문</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;">M1에서 target이 살아있는 욕조라는 걸 잡았음. 이제 그 욕조에 들어가는 ligand 자체를 봐야 함. mAb라면 small molecule과 전혀 다른 ADME를 거침. <strong>"반감기 21일" 같은 숫자 하나로 압축</strong>하면 slow input, FcRn salvage, target-mediated sink가 전부 terminal slope에 뭉뚱그려져서 <em>어떤 데이터가 어떤 mechanism을 가르치는지 분리할 수 없게 됨</em>. <span class="chip">G&amp;W pp.97–100; R&amp;T pp.701–724</span></p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:200px;">관문</th><th>무슨 일이 일어나는가</th><th style="width:200px;">출처</th></tr></thead>
+      <tbody>
+        <tr><td><strong>① Distribution</strong></td><td>\(V_d\)가 작음 — plasma/interstitial space로 분포 제한됨</td><td><span class="chip">Table 21-6 · R&amp;T pp.701–702</span></td></tr>
+        <tr><td><strong>② Absorption (lymphatic)</strong></td><td>sc/im 후 큰 단백질은 주로 림프관으로 느리게 전신 유입</td><td><span class="chip">Table 21-13 · R&amp;T p.718</span></td></tr>
+        <tr><td><strong>③ Elimination</strong></td><td>작은 단백질은 신장이 핵심, 큰 mAb는 proteolysis와 RME가 중심</td><td><span class="chip">G&amp;W pp.98–99; R&amp;T pp.704–708</span></td></tr>
+        <tr><td><strong>④ Rescue (FcRn)</strong></td><td>IgG/mAb를 acidic endosome에서 회수해 순환으로 돌려보냄</td><td><span class="chip">Fig.21-5 · R&amp;T p.709</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout amber" style="margin-top:10px;">
+    <span class="callout-label">왜 4개로 분리하나</span>
+    이 4개 관문을 분리해 두면 다음 M3에서 phase A~D가 무엇을 가르치는지 분리해서 읽을 수 있음. <strong>mAb의 느림은 단일 원인이 아니라 <em>tissue access + lymphatic transit + FcRn recycling + target sink</em>가 합쳐진 결과</strong>임.
+  </div>
+</section>
+
+<!-- =================== SLIDE 6 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · M2</span>
+    <h1 class="slide-title">관문 ① 분포 + ② 림프 흡수</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:8px;">
+        <h2 class="sub-title">① 분포 — "혈관 안에 갇힌 큰 덩어리"</h2>
+        <p>R&amp;T Table 21-6은 단백질 약물의 \(V_{ss}\)가 대체로 <strong>0.04–0.23 L·kg⁻¹</strong> 범위라고 보여줌. body water 전체(약 0.6 L·kg⁻¹)에 비하면 작은 숫자임. 큰 biologic은 body water 전반이 아니라 <strong>plasma/interstitial space에만 갇혀 있다</strong>는 뜻임.</p>
+        <div class="chip">R&amp;T pp.701–702</div>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{V_{ss}}_{\text{SS 분포용적}} \approx \underbrace{0.04\text{--}0.23\ \mathrm{L\cdot kg^{-1}}}_{\text{제한 분포}}$$
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:8px;">
+        <h2 class="sub-title">② 림프 흡수 — "혈관 아니라 림프관 타고"</h2>
+        <p>sc 단백질·펩타이드 흡수는 낮고 erratic하고 지연됨. 림프 흐름은 대략 <strong>2 L/day</strong>임. R&amp;T Table 21-13의 분자량 기준이 핵심 — <strong>15,000–20,000 g/mol을 넘으면 주로 림프관 경로</strong>임.</p>
+        <div class="chip">G&amp;W p.97 · R&amp;T p.718</div>
+      </div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\underbrace{MW}_{\text{분자량}} > \underbrace{15{,}000\text{--}20{,}000\ \mathrm{g/mol}}_{\text{림프 경로 역치}} \Rightarrow \underbrace{\mathrm{lymphatic\ input}}_{\text{느린 전신 유입}}$$
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:10px;">
+    <span class="callout-label">주의 한 줄</span>
+    R&amp;T <strong>Fig.21-16</strong>에서 양(sheep)의 0.246–19 kDa 데이터로 "분자량 클수록 림프 회수율 증가"라는 <strong>방향성</strong>만 봐야 함. 이 데이터를 150 kDa mAb에 직선 외삽해서 회수율 퍼센트를 계산하면 안 됨. <span class="chip">R&amp;T p.720</span>
+  </div>
+
+  <div class="callout amber" style="margin-top:6px;">
+    <span class="callout-label">Absorption-rate limitation 사례 — somatropin</span>
+    재조합 성장호르몬(22 kDa): iv 반감기 <strong>2.1시간</strong>, 그런데 sc로 주면 농도가 훨씬 더 길게 지속됨. → <strong>terminal profile이 elimination이 아니라 slow input에 의해 rate-limited될 수 있다</strong>는 사례임. <span class="chip">R&amp;T p.721</span>
+  </div>
+</section>
+
+<!-- =================== SLIDE 7 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · M2</span>
+    <h1 class="slide-title">관문 ③ 제거 + ④ FcRn salvage</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">③ 제거 — "크기에 따라 갈림"</h2>
+      <p><strong>Renal disease 사례 — anakinra</strong>: 재조합 IL-1 수용체 길항제(17,258 g/mol). 신기능 떨어지면 청소율도 같이 떨어짐. 반면 full-size mAb는 사구체 여과를 거의 안 받아서 신질환 영향이 작음.</p>
+      <p style="margin-top:6px;">→ <strong>"단백질이면 신장이 중요하다"가 아니라 크기에 따라 갈림.</strong></p>
+      <div class="chip" style="margin-top:4px;">R&amp;T p.724</div>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">④ FcRn salvage — "분해 직전에서 구조됨"</h2>
+      <p>FcRn은 내인성 IgG와 치료용 mAb의 긴 반감기를 설명하는 핵심 salvage 기전임. R&amp;T는 mAb 반감기가 IgG에 가까운 <strong>약 21일</strong>인 경우가 많다고 함. 그런데 이건 모든 mAb에 통하는 고정 숫자가 아님. <em>FcRn 친화도, target-mediated clearance, immunogenicity, dose level</em>에 따라 apparent 반감기가 달라짐.</p>
+      <div class="chip" style="margin-top:4px;">R&amp;T pp.708–710</div>
+    </div>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:8px;">
+    <div class="formula-card">
+      $$\underbrace{t_{1/2,\,\mathrm{mAb}}}_{\text{mAb 겉보기 t½}} \approx \underbrace{21\ \mathrm{days}}_{\text{IgG식 prior}} \quad \text{(prior일 뿐, 분자별 확인 필요)}$$
+    </div>
+  </div>
+
+  <div class="callout amber" style="margin-top:10px;">
+    <span class="callout-label">FcγR 매개 청소율 사례 — adalimumab + MTX</span>
+    류마티스 관절염 환자에서 <strong>methotrexate</strong> 병용 시 <strong>adalimumab</strong>의 청소율이 <strong>29–44% 감소</strong>할 수 있음. → FcγR은 변두리 디테일이 아니라 <em>특정 질환·병용약물 맥락에서 clearance covariate가 됨.</em> <span class="chip">R&amp;T p.706</span>
+  </div>
+</section>
+
+<!-- =================== SLIDE 8 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 2 · M2</span>
+    <h1 class="slide-title">sc mAb 예시 — Tmax가 며칠 단위 · ADA 단서</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="tbl-wrap" style="margin-bottom:10px;">
+    <table>
+      <thead><tr><th>mAb</th><th>표적 / 분류</th><th>\(F\)</th><th>\(T_{max}\)</th><th>\(t_{1/2}\)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>adalimumab</strong></td><td>anti-TNFα</td><td>0.64</td><td>5.5 days</td><td>30 days</td></tr>
+        <tr><td><strong>omalizumab</strong></td><td>anti-IgE</td><td>0.62</td><td>7.5 days</td><td>26 days</td></tr>
+        <tr><td><strong>efalizumab</strong></td><td>anti-CD11a</td><td>0.50</td><td>—</td><td>17 days</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-bottom:8px;">Table 21-15 예시 — R&amp;T p.723</p>
+
+  <p style="margin-bottom:8px;">\(T_{max}\)가 며칠 단위라는 것 자체가 <strong>sc 입력이 느리다</strong>는 뜻임. terminal slope를 그대로 "elimination 반감기"로 읽으면 absorption-rate limitation을 놓침.</p>
+
+  <div class="callout">
+    <span class="callout-label">한 줄로 박아두기</span>
+    mAb 곡선의 "느림"은 단일 원인이 아님. 4개 관문이 합쳐진 결과임. 그래서 sc 투여 terminal slope를 그대로 elimination 반감기로 읽으면 위험함. terminal phase를 해석하기 전, <strong>4개 관문 중 어느 쪽이 지배하는지 먼저 적어보는 습관</strong>이 필요함.
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>ADA(anti-drug antibody)와 immunogenicity</h3>
+    <p>설명되지 않는 청소율 증가가 보이면 target biology뿐 아니라 <span class="amber"><strong>ADA</strong></span>도 같이 점검해야 함. ADA가 TMDD signature 자체를 시점에 따라 어떻게 변형시키는지는 <em>M4에서 따로 다룸.</em> <span class="chip dark">R&amp;T p.725</span></p>
+    <p style="margin-top:6px;"><span class="accent"><strong>M2 한 줄</strong></span> — 이 4관문을 분리해 두면 다음 M3에서 phase A~D가 무엇을 가르치는지 분리해서 읽을 수 있음.</p>
+  </div>
+</section>
+
+<!-- =================== SLIDE 9 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · M3</span>
+    <h1 class="slide-title">TMDD 4 Phase — 시간이 아니라 농도 영역의 지도</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;">target 결합이 개입하는 순간 곡선은 더 이상 시간표가 아님. <strong>농도 영역의 지도</strong>가 됨. Phase A→B→C→D를 "시간 순서"로 외우면 임상에서 망함. <strong>농도 위계</strong>로 읽어야 함.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">PK27 데이터셋 한 번 더</h2>
+      <p>이 세션의 척추가 되는 PK27을 다시 꺼냄. 단클론 항체를 <strong>1.5, 5, 15, 45 mg·kg⁻¹</strong> 네 용량으로 급속 정맥 주사한 데이터임. <span class="chip">G&amp;W pp.602–603</span></p>
+      <p style="margin-top:6px;">곡선을 용량별로 층화해서 봐야 하는 이유는 단순함 — <strong>곡선이 어떤 phase를 실제로 관찰했는지가 용량마다 다름</strong>.</p>
+      <p style="margin-top:6px;">PK27에서 \(R_0 \approx 12\) mg·L⁻¹, \(K_m \approx 0.03\) mg·L⁻¹임. ligand 농도 \(C_L\)이 이 역치들을 통과하면서 phase가 갈림.</p>
+    </div>
+
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{C_L}_{\text{ligand 농도}} \quad\text{순차 통과}\quad \overbrace{\underbrace{R_0}_{\text{target level 역치}} \;\longrightarrow\; \underbrace{K_m}_{\text{포화 경계}} \;\longrightarrow\; \underbrace{K_d}_{\text{결합 경계}}}^{\text{phase 전환점 (고농도 → 저농도)}}$$
+      </div>
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:10px;">
+    <span class="callout-label">한방 직관</span>
+    고용량(45 mg/kg)을 주면 ligand가 target을 완전 압도해서 곡선은 nonspecific clearance 쪽만 보임 — Phase B만 길게 깔리고, 정말 마지막 trace level에서야 Phase D가 살짝 보임. <strong>저용량(1.5 mg/kg)을 주면 ligand가 target에 비해 충분히 많지 않으니 target-specific 경로가 처음부터 끝까지 계속 작동함</strong> — Phase C, D가 훨씬 일찍, 훨씬 뚜렷하게 보임. 그래서 phase는 시간 좌표가 아니라 <strong>dose가 결정하는 농도 영역의 지문</strong>임.
+  </div>
+</section>
+
+<!-- =================== SLIDE 10 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · M3</span>
+    <h1 class="slide-title">4 Phase의 정체 — Phase B 함정 포함</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="tbl-wrap" style="margin-bottom:10px;">
+    <table>
+      <thead><tr><th>단계</th><th>지배 과정</th><th>농도 위치</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A</strong></td><td>빠른 2차 결합</td><td>dosing 직후 최고 농도</td><td>ligand와 target이 빠르게 평형</td></tr>
+        <tr><td><strong>B</strong></td><td><strong>1차 nonspecific clearance</strong></td><td>target 포화 영역</td><td>target 경로 포화 → 비특이적 linear clearance가 지배</td></tr>
+        <tr><td><strong>C</strong></td><td>혼합차수 배치</td><td>target 부분 포화</td><td>선형과 target-mediated 경로 공존</td></tr>
+        <tr><td><strong>D</strong></td><td>\(k_{off}\)와 \(k_{e(RL)}\) 주도</td><td>매우 낮은 ligand</td><td>target-specific 제거가 가시화</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-label">Phase B의 "느린"은 함정임</span>
+    표준 TMDD 문헌(Mager &amp; Jusko 2001; Peletier &amp; Gabrielsson 2012)과 R&amp;T 본문은 Phase B를 <em>"drug is mainly eliminated directly by a first-order process"</em>로 기술함. 즉 Phase B는 <strong>target 결합 경로가 포화돼서 nonspecific linear clearance가 지배하는 영역</strong>이고, 절대적 청소율 척도로는 <strong>Phase D보다 빠름</strong>. 저농도 Phase D에서는 \(k_{off}\)·\(k_{e(RL)}\) 주도의 매우 느린 말기 기울기가 나옴. "느린"이라는 단어 때문에 phase 순서를 <em>"A→B→C→D = 빨라짐→느려짐"</em>으로 단조 해석하면 안 됨. <strong>농도 위계가 시간 위계와 반드시 일치하는 게 아님.</strong> <span class="chip">R&amp;T p.712</span>
+  </div>
+</section>
+
+<!-- =================== SLIDE 11 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 3 · M3</span>
+    <h1 class="slide-title">곡선이 가르치는 것 · 가르치지 않는 것</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">곡선의 한계 4가지</h2>
+      <ul>
+        <li>고용량 데이터만 봤다면 target-mediated 경로는 이미 포화 상태라 <strong>선형처럼 보임</strong> → MM 모델로도 잘 맞는 것처럼 보임</li>
+        <li>assay 민감도가 낮아서 저용량 데이터가 빠지면 <strong>Phase A와 D를 못 봄</strong></li>
+        <li>sc 흡수가 느리면 초기의 rapid binding(Phase A)이 <strong>input kinetics 뒤에 가려짐</strong></li>
+        <li>target과 complex 데이터가 없으면 ligand-only 적합이 좋아 보여도 \(k_{on}\), \(k_{off}\), \(k_{e(RL)}\)의 <strong>정밀도는 그대로 낮음</strong></li>
+      </ul>
+      <div class="chip" style="margin-top:6px;">G&amp;W pp.603–609</div>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">실무 판독 규칙 한 줄</h2>
+      <p>TMDD plot은 <strong>용량별로 층화</strong>해서 점검하는 게 첫걸음임. 고용량 곡선은 잘 맞는데 저용량 잔차가 체계적으로 한쪽으로 편향돼 있다면 — <strong>이게 phantom linearity의 신호</strong>임.</p>
+      <p style="margin-top:6px;">중심에서는 겉보기 성공인데 저농도 외삽에서는 편향이 숨어 있는 상태임. <strong>PK27의 123배 사건이 정확히 이 패턴이었음.</strong> <span class="chip">G&amp;W p.609</span></p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:10px;">
+    <span class="callout-label">결정 가이드</span>
+    Phase 라벨은 시간이 아니라 농도 영역의 지문임. 고용량 곡선만 가지고 있으면 target-mediated 경로가 포화돼서 <strong>곡선이 선형처럼 보일 수 있음</strong>. Full TMDD와 MM 중 무엇을 쓸지 결정하기 전에, 용량별 층화 곡선에서 <strong>실제로 관찰된 phase가 무엇인지 먼저 표시</strong>해 둬야 함.
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <p><span class="accent"><strong>M3 한 줄</strong></span> — 보이는 phase가 곧 식별 가능한 mechanism임. <strong>고용량 적합만 평가하는 함정을 피해야 phantom linearity에 안 속음.</strong></p>
+  </div>
+</section>
+
+<!-- =================== SLIDE 12 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4 ⚡</span>
+    <h1 class="slide-title">Full TMDD — 4-state ODE의 정체 [Apex Concept]</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:8px;">M3에서 4 phase가 농도 영역의 지문이라는 걸 잡았으면, 이제 그 지문을 만들어내는 ODE 자체를 분해해야 함.</p>
+
+  <div class="callout warn" style="margin-bottom:8px;">
+    <span class="callout-label">자주 하는 오해부터 깨야 함</span>
+    Full TMDD는 "MM에 target·complex라는 이름표를 붙인 복잡한 saturable clearance 모델"이 아님. <strong>ligand disposition, target turnover, binding, complex sink를 서로 다른 state와 ODE 항으로 분리하는 모델</strong>임. 한 마디로 못 박을 수 있음 — <strong>관찰 species가 없는 mechanism은 추정값이 아니라 가정임.</strong>
+  </div>
+
+  <div class="grid-2">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>상태변수</th><th>의미</th></tr></thead>
+        <tbody>
+          <tr><td>\(L_c\)</td><td>central 구획의 ligand</td></tr>
+          <tr><td>\(L_t\)</td><td>tissue/peripheral 구획의 ligand</td></tr>
+          <tr><td>\(R\)</td><td>free target/수용체</td></tr>
+          <tr><td>\(RL\)</td><td>ligand-target complex</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{\mathbf{x}(t)}_{\text{TMDD 상태벡터}} = \bigl( \underbrace{L_c}_{\text{central}}, \underbrace{L_t}_{\text{tissue}}, \underbrace{R}_{\text{free target}}, \underbrace{RL}_{\text{complex}} \bigr)$$
+      </div>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:10px;">
+    <h3>PK27의 "8-parameter full TMDD model"</h3>
+    <p>\(V_c=0.05\) L·kg⁻¹를 fixed해 둔 상태에서 Table 27.2가 보고하는 <strong>8개의 추정 파라미터</strong>를 말함. fixed \(V_c\)까지 structural quantity로 세면 <span class="amber"><strong>4 state + 9 structural quantities</strong></span>임.</p>
+    <p style="margin-top:6px;">Table 27.2의 8개 보고 파라미터: <span class="amber">\(Cl\), \(k_{on}\), \(k_{off}\), \(V_t\), \(Cl_d\), \(k_{out}\), \(R_0\), \(k_{e(RL)}\)</span>. \(V_c\)는 \(0.05\) L·kg⁻¹로 fixed.</p>
+    <div class="chip dark" style="margin-top:6px;">G&amp;W pp.603, 608–609</div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 13 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4</span>
+    <h1 class="slide-title">핵심 ODE — Target / Complex와 BIND 함정</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">ligand 식은 일반적인 2구획 + binding sink 형태이고, 진짜 핵심은 <strong>target과 complex 식</strong>임.</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\begin{aligned}
+      \overbrace{\frac{dR}{dt}}^{\text{free target 변화}} &= \underbrace{k_{in}}_{\text{target 생성}} - \underbrace{k_{out}R}_{\text{target 자연 소실}} - \underbrace{k_{on}LR}_{\text{LT 결합}} + \underbrace{k_{off}RL}_{\text{complex 해리}} \\[2pt]
+      \overbrace{\frac{dRL}{dt}}^{\text{complex 변화율}} &= \underbrace{k_{on}LR}_{\text{complex 형성}} - \underbrace{k_{off}RL}_{\text{해리}} - \underbrace{k_{e(RL)}RL}_{\text{complex sink}}
+      \end{aligned}$$
+      <span class="src">G&amp;W p.604; G&amp;W pp.606–607</span>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:10px;">
+    <span class="callout-label">절대 헷갈리면 안 되는 한 줄</span>
+    결합 속도항은 \(k_{on}\cdot L\cdot R\)임. \(k_{in}\cdot L\cdot R\)이 <strong>아님</strong>. \(k_{in}\)은 <strong>target 합성</strong> 쪽이고, \(k_{on}\)은 ligand-target 결합의 <strong>2차 on-rate</strong>임. 표기 차이가 아니라 <strong>turnover process와 binding process를 분리하는 핵심 갈림길</strong>임.
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{\mathrm{BIND}}_{\text{complex 형성속도}} = \underbrace{k_{on}}_{\text{2차 on-rate}} \cdot \underbrace{L}_{\text{ligand}} \cdot \underbrace{R}_{\text{free target}} \quad \ne \quad \underbrace{k_{in}\cdot L\cdot R}_{\text{process 혼합 (오류)}}$$
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 14 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4</span>
+    <h1 class="slide-title">자료 풍부도 — 이 세션의 진짜 결론</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">여기가 이 카드, 그리고 이 세션 전체의 결론에 가까운 부분임. PK27은 세 데이터셋을 비교함:</p>
+
+  <div class="grid-3">
+    <div class="card"><h2 class="sub-title">Dataset I</h2><p>ligand 단독</p></div>
+    <div class="card"><h2 class="sub-title">Dataset II</h2><p>ligand + target</p></div>
+    <div class="card"><h2 class="sub-title">Dataset III</h2><p>ligand + target + complex</p></div>
+  </div>
+
+  <p style="margin:8px 0 6px;">target과 complex 시간경과 데이터가 추가될수록 핵심 파라미터의 정밀도가 줄줄이 좋아짐. Table 27.2의 CV% 변화:</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\begin{aligned}
+      \underbrace{CV\%(k_{on})}_{\text{kon 정밀도}} &: \underbrace{17\to2\to1}_{\text{자료 풍부도}}\\
+      \underbrace{CV\%(k_{off})}_{\text{koff 정밀도}} &: \underbrace{27\to13\to3}_{\text{target/complex 추가}}\\
+      \underbrace{CV\%(k_{e(RL)})}_{\text{sink 정밀도}} &: \underbrace{27\to23\to2}_{\text{complex 측정 효과}}
+      \end{aligned}$$
+      <span class="src">G&amp;W pp.603, 608–609</span>
+    </div>
+  </div>
+
+  <div class="callout teal" style="margin-top:10px;">
+    <span class="callout-label">식별성의 분업표</span>
+    <strong>ligand 데이터</strong>는 nonspecific disposition과 가시적 phase 구조를 가르치고, <strong>target 데이터</strong>는 recovery와 saturation 경계를 가르치고, <strong>complex 데이터</strong>는 sink 거동을 가르침. <span style="color:#a9583e;"><strong>측정 안 한 species의 파라미터는 "추정값"이 아니라 "가정"임.</strong></span> 자료 풍부도는 장식이 아니라 <em>어떤 ODE 항이 추정 가능해지는지를 결정하는 변수</em>임.
+  </div>
+</section>
+
+<!-- =================== SLIDE 15 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4</span>
+    <h1 class="slide-title">적합 품질 ≠ 기전 타당성 — PK27의 123배 사건</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{\frac{K_{m,\mathrm{MM}}}{K_{m,\mathrm{TMDD}}}}_{\text{MM bias}} = \underbrace{\frac{3.7}{0.03}}_{\text{PK27 비교}} \approx \underbrace{123}_{\text{123배 과대}}$$
+      <span class="src">G&amp;W p.609</span>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="card">
+      <h2 class="sub-title">무슨 일이 일어났나</h2>
+      <p>reduced model은 가장 높은 세 ligand 곡선은 상당히 잘 맞춤. 그런데 <strong>가장 낮은 곡선에서는 실패</strong>함. 그 결과로 MM 모델의 \(K_m\)이 Full TMDD의 \(K_m\) 대비 <strong>123배 과대추정</strong>됨. 이 편향은 trough 예측, target occupancy 추정, subgroup 외삽으로 그대로 전파됨.</p>
+    </div>
+    <div class="card">
+      <h2 class="sub-title">왜 일어났나 — 한 줄 인과</h2>
+      <p>MM 근사는 <strong>drug \(\gg\) target</strong> 조건(즉 \(L \gg R\) 또는 \(L \gg K_d\)에서 binding이 빠르게 quasi-equilibrium에 도달하고 target 경로가 지속 포화되는 상태)에서만 Full TMDD로부터 구조적으로 유도됨. <strong>ligand 농도가 \(K_d\) 또는 \(K_m\) 부근(target saturation 전환점)으로 떨어지는 구간</strong>, 그리고 <strong>매우 낮은 농도의 linear regime</strong>에서 MM 근사는 PK 거동을 구조적으로 잘못 예측함.</p>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">임상 실무에서 어떻게 드러나나</span>
+    저용량 Phase 1 데이터에서 MM 모델이 OFV·VPC 기준으로 잘 맞은 것처럼 보일 수 있음. 그런데 <strong>중간 용량 범위의 비선형 전환점(Phase B↔C↔D 전이)을 mechanistic하게 예측 못 해서 Phase 2 dose selection이 어긋남</strong>. 또는 고용량 데이터셋만으로 적합된 MM이 sub-population(저체중, 고 target burden, 초기 dose interval) 외삽에서 trough 노출을 체계적으로 잘못 예측해서 후속 임상 의사결정의 출발점이 흔들림.
+  </div>
+</section>
+
+<!-- =================== SLIDE 16 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4</span>
+    <h1 class="slide-title">NONMEM 스타일 구현 — 단위 정합성 한 번에</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">교과서 control stream이 아니라 <strong>PK27/R&amp;T ODE 구조를 NONMEM 스타일로 교육 목적 번역</strong>한 골격임. 단위 정합성을 학습자가 직접 확인할 수 있도록 <strong>두 가지 표기 선택지</strong>를 명시함.</p>
+
+  <div class="grid-2">
+    <div>
+      <p style="margin-bottom:4px;"><strong>(a) 모든 상태변수를 농도로</strong> — R&amp;T Eq.21-1~21-4 표기 <span class="chip">R&amp;T p.711</span></p>
+      <div class="algo">; (a) concentration-based: A(i)는 농도로 직접 처리
+CLIG = A(1)        ; ligand conc in central
+CTIS = A(2)        ; ligand conc in tissue
+R    = A(3)        ; free target conc
+RL   = A(4)        ; complex conc
+
+BIND = KON * CLIG * R          ; conc/time
+DISS = KOFF * RL
+SINK = KERL * RL
+
+DCDT(1) = INPUT/VC - (CL/VC)*CLIG
+          - (Q/VC)*(CLIG-CTIS) - BIND + DISS
+DCDT(2) = (Q/VT)*(CLIG-CTIS)
+DCDT(3) = KIN - KOUT*R - BIND + DISS
+DCDT(4) = BIND - DISS - SINK</div>
+    </div>
+
+    <div>
+      <p style="margin-bottom:4px;"><strong>(b) 모든 상태변수를 amount로</strong> — NONMEM 표준 DADT</p>
+      <div class="algo">; (b) amount-based: A(i)는 amount
+CLIG = A(1)/VC      ; central concentration
+CTIS = A(2)/VT      ; tissue concentration
+RC   = A(3)/VR      ; free target conc (plasma → VR=VC)
+RLC  = A(4)/VR      ; complex concentration
+
+BIND = KON * CLIG * RC * VR    ; amount/time
+DISS = KOFF * A(4)
+SINK = KERL * A(4)
+
+DADT(1) = INPUT - CL*CLIG - Q*(CLIG-CTIS)
+          - BIND + DISS
+DADT(2) =  Q*(CLIG-CTIS)
+DADT(3) =  KIN*VR - KOUT*A(3) - BIND + DISS
+DADT(4) =  BIND - DISS - SINK</div>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:10px;">
+    <span class="callout-label">두 표기를 절대 섞으면 안 됨</span>
+    흔한 함정 — <code>BIND = KON * CLIG * R * VC</code>라고 쓰는 경우가 있는데, 이 식은 <strong>R이 농도일 때만</strong> 옳음. R이 amount이면 추가 volume 변환이 필요해서 mass balance가 조용히 깨짐. PK27 원전(G&amp;W Eq.27:1~27:3)의 mass-balance는 <strong>둘 중 하나로 일관되게</strong> 잡혀야 함 — concentration-based(DCDT)이거나 amount-based(DADT, 모든 binding 항에 명시적 volume 변환)이거나. <span class="chip">G&amp;W pp.606–607; R&amp;T p.711</span>
+  </div>
+
+  <div class="callout teal" style="margin-top:4px;">
+    <span class="callout-label">실무 디버깅 한 줄</span>
+    두 표기를 혼용하면 정상상태에서 \(R_0 = k_{in}/k_{out}\) 관계가 미묘하게 어긋나서, 모델은 적합되지만 baseline drift가 <strong>자료가 아닌 표기 오류 때문에</strong> 만들어짐. 가장 안전한 디버깅은 <strong>dose=0 simulation에서 \(R\)이 정확히 \(R_0\)로 수렴하는지를 먼저 확인</strong>하는 것임.
+  </div>
+</section>
+
+<!-- =================== SLIDE 17 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4</span>
+    <h1 class="slide-title">Soluble vs Membrane-bound Target — 임상 분기점</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">PK27이 다루는 데이터는 <strong>soluble target</strong>임. <span class="chip">G&amp;W p.602</span> 그런데 임상 mAb 분석에서는 target이 soluble이냐 membrane-bound이냐가 <strong>TMDD signature의 phase 구조 자체를 바꾸는 분기점</strong>임. G&amp;W도 PK27 본문에서 <em>"membrane bound targets could have very different impact on the ligand disposition"</em>이라고 명시적으로 경고함. <span class="chip">G&amp;W p.605</span></p>
+
+  <div class="tbl-wrap" style="margin-bottom:8px;">
+    <table>
+      <thead><tr><th style="width:160px;">비교 기준</th><th>Soluble (VEGF, TNF-α, IgE)</th><th>Membrane-bound (HER2, CD20, CD11a)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Complex의 운명</strong></td><td>drug-target complex가 <strong>혈장 같이 순환</strong></td><td>complex가 세포 안으로 <strong>internalize</strong>되어 곧장 sink</td></tr>
+        <tr><td><strong>Target turnover</strong></td><td>혈장에서 \(k_{in}/k_{out}\) 측정 가능</td><td>세포 표면 발현·shedding·internalization이 얽힘</td></tr>
+        <tr><td><strong>Phase A 신호</strong></td><td>rapid binding이 혈장 곡선에 잘 보임</td><td>internalize가 빠르면 Phase A가 흡수돼서 안 보일 수 있음</td></tr>
+        <tr><td><strong>Total assay</strong></td><td>total = free + complex (둘 다 혈장)</td><td>total이 shed antigen만 잡고 막결합 target은 못 잡음</td></tr>
+        <tr><td><strong>대표 mAb</strong></td><td>bevacizumab, adalimumab, omalizumab</td><td>trastuzumab, rituximab, efalizumab</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\overbrace{\frac{dRL}{dt}}^{\text{complex 변화}} = \underbrace{k_{on}LR}_{\text{형성}} - \underbrace{k_{off}RL}_{\text{해리}} - \overbrace{\underbrace{k_{e(RL)}RL}_{\text{soluble: 혈장 청소}} \;\text{vs}\; \underbrace{k_{int}\cdot RL}_{\text{membrane: internalize 직행}}}^{\text{이 항의 의미가 갈리는 지점}}$$
+    </div>
+  </div>
+
+  <div class="callout amber" style="margin-top:8px;">
+    <span class="callout-label">실무 한 줄</span>
+    새 mAb 후보의 TMDD 모델링 시작할 때 가장 먼저 적어야 하는 한 줄은 <strong>"이 target은 soluble인가, membrane-bound인가, 아니면 shed antigen이 둘 다 만들어지는가?"</strong>임. PK27의 4-state Full TMDD 골격은 soluble target에 가장 직접 적용되고, membrane-bound나 shed-antigen 시나리오에서는 <em>추가 state(membrane R, shed R, 두 종류의 complex)가 필요해질 수 있음.</em> <span class="chip">R&amp;T p.751, Fig.22-20</span>
+  </div>
+</section>
+
+<!-- =================== SLIDE 18 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4 · M4</span>
+    <h1 class="slide-title">ADA — TMDD signature의 시간 의존 변형</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">soluble vs membrane-bound가 <strong>target 쪽 분기</strong>라면, ADA는 <strong>숙주 면역계 쪽 분기</strong>임. PK27의 single-dose 데이터에서는 ADA가 안 보이지만, <strong>임상 mAb의 repeated-dose 데이터에서는 ADA 형성이 TMDD signature를 시점에 따라 변형</strong>시킴. <span class="chip">R&amp;T p.712</span></p>
+
+  <p style="margin-bottom:6px;"><strong>기전</strong> — anti-drug antibody가 형성되면 mAb-ADA 면역복합체가 phagocytic cell의 uptake와 lysosomal degradation을 자극해서 mAb 청소율을 끌어올림.</p>
+
+  <div class="grid-2">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>TMDD signature 변형</th><th>임상·모델링 신호</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Phase B(linear) CL 급증</strong></td><td>nonspecific linear CL이 target turnover 변화 없이 시간에 따라 증가</td></tr>
+          <tr><td><strong>BSV 폭발</strong></td><td>일부 환자만 trough가 sub-therapeutic으로 떨어지고 나머지는 그대로 — bimodal</td></tr>
+          <tr><td><strong>시점 의존 PK</strong></td><td>같은 환자 PK가 dose 초기와 후반에서 다름 — IOV 또는 dose-time interaction</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\overbrace{\frac{dL}{dt}}^{\text{ligand 변화율}} = \underbrace{(\text{기존 TMDD 항})}_{\text{nonspecific CL + TMDD 경로}} - \overbrace{\underbrace{k_{ADA}(t)\cdot L}_{\text{면역복합체 매개 sink}}}^{\text{시간 의존 1차 추가 항}}$$
+        </div>
+      </div>
+      <div class="dark-card" style="margin-top:6px;">
+        <h3>ADA 시간 척도 · 위험 인자</h3>
+        <p>R&amp;T Fig.21-19(cynomolgus monkey의 anti-tetanus toxoid ADA): <span class="amber"><strong>titer 약 200시간(~8–9일)부터 검출, 약 400–500시간(~17–21일)에 정점.</strong></span></p>
+        <p style="margin-top:4px;">위험 인자: 경로 <strong class="amber">s.c. &gt; i.m. &gt; i.v.</strong> · 응집 ↑ → 면역원성 ↑ · 인간 유사도: <strong class="amber">murine &gt; chimeric &gt; humanized &gt; human</strong> <span class="chip dark">R&amp;T p.725</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">모델링 함정</span>
+    ADA-매개 청소율 증가를 단순 "target turnover 변화"로 잡으면 \(k_{in}\)이나 \(R_0\)를 잘못 추정함. 두 신호는 <strong>시간 위계가 다름</strong> — target turnover 변화는 보통 baseline 시점부터 차이가 있는 반면, ADA-매개 변형은 <strong>dose 후 약 200h 이후부터 켜지는 시간 지연 신호</strong>임. ADA가 의심되는 데이터에서는 <strong>dose-elapsed-time covariate</strong>나 occasion-based IOV 구조로 두 신호를 분리할 수 있는지 먼저 살펴봐야 함.
+  </div>
+</section>
+
+<!-- =================== SLIDE 19 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4½</span>
+    <h1 class="slide-title">QSS — Full과 MM 사이의 실무 표준</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p class="lead" style="margin-bottom:6px;">M4의 Full TMDD와 M5의 MM 사이에는 <strong>중간 근사 단계가 사슬처럼 있음</strong>. 임상 mAb 분석에서 실제로 가장 많이 쓰이는 건 Full도 MM도 아니라 그 사이의 <strong>준정상상태(QSS) 근사</strong>임. <span class="chip">R&amp;T p.712</span></p>
+
+  <div class="callout warn" style="margin-bottom:8px;">
+    <span class="callout-label">핵심</span>
+    <strong>QSS를 "MM의 별명"으로 외우면 안 됨.</strong> QSS는 complex의 동역학에 대한 명시적 가정을 두고 <strong>ligand·target 수준에서 식별성을 회복</strong>시키는 단계임. MM은 그 위에 <em>"drug \(\gg\) target"</em>이라는 한 가지 가정을 더 얹어서 한 항으로 접은 형태임. 그래서 QSS는 보통 MM보다 <strong>더 넓은 농도 영역에서 방어 가능</strong>하고, biologics PopPK 실무의 출발점이 됨.
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>근사 단계</th><th>핵심 가정</th><th>식별 가능한 양</th><th>주된 사용처</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Full TMDD</strong></td><td>가정 없음</td><td>\(R_0, k_{out}, k_{on}, k_{off}, k_{e(RL)}\)</td><td>target·complex 자료 풍부할 때</td></tr>
+        <tr><td><strong>Rapid Binding (RB) / Quasi-Equilibrium (QE)</strong></td><td>\(k_{on}, k_{off} \gg k_{e(RL)}\)</td><td>\(K_d = k_{off}/k_{on}\) 중심</td><td>매우 강한 결합 <span class="chip">R&amp;T p.712</span></td></tr>
+        <tr><td><strong>Quasi-Steady-State (QSS)</strong> <span class="chip coral">실무 표준</span></td><td>\(d[RL]/dt \approx 0\)</td><td>\(K_{ss} = (k_{off}+k_{e(RL)})/k_{on},\, R_0,\, k_{out}\)</td><td>대부분의 biologics PopPK 출발점</td></tr>
+        <tr><td><strong>Michaelis-Menten (MM)</strong></td><td>\(L \gg R\) 또는 occupancy ≈ 100%</td><td>\(V_{max}, K_m\) (target/complex 식별 불가)</td><td>자료 한정, 고용량 내삽 위주</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- =================== SLIDE 20 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4½</span>
+    <h1 class="slide-title">QSS 도출 — 한 줄로 이해하기</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">Full TMDD의 complex 식 (R&amp;T Eq.21-4)에서 출발:</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\overbrace{\frac{d[RL]}{dt}}^{\text{complex 변화율}} = \underbrace{k_{on}\,L\,R}_{\text{형성}} - \underbrace{(k_{off}+k_{e(RL)})\,RL}_{\text{해리+sink}}$$
+    </div>
+  </div>
+
+  <p style="margin:6px 0;">QSS 가정 — complex가 ligand·target보다 훨씬 빠른 time scale로 평형 도달. 우변 ≈ 0:</p>
+
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{k_{on}\,L\,R}_{\text{형성}} \approx \underbrace{(k_{off}+k_{e(RL)})\,RL}_{\text{해리+sink}} \;\Longrightarrow\; \overbrace{\underbrace{K_{ss}}_{\text{QSS 상수}} = \frac{\underbrace{k_{off}+k_{e(RL)}}_{\text{소실 합}}}{\underbrace{k_{on}}_{\text{결합}}}}^{\text{Mager-Krzyzanski식 정의}}$$
+    </div>
+  </div>
+
+  <div class="callout amber" style="margin-top:8px;">
+    <span class="callout-label">같은 분수식, 다른 가정</span>
+    여기서 <strong>\(K_{ss}\)는 수식적으로 \(K_m\)과 동일한 형태</strong>임. 그런데 의미는 다름:
+    <ul style="margin-top:4px;">
+      <li>\(K_m\) = "겉보기 saturation 경계" (MM에서)</li>
+      <li>\(K_{ss}\) = <strong>complex의 quasi-steady-state로부터 명시적으로 유도된 ligand·target 평형 상수</strong> (QSS에서)</li>
+    </ul>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{R}_{\text{free target}} = \frac{\overbrace{R_{tot}\cdot K_{ss}}^{\text{총 target × QSS 상수}}}{\underbrace{K_{ss}+L}_{\text{ligand 의존}}} ,\qquad \underbrace{RL}_{\text{complex}} = \frac{\overbrace{R_{tot}\cdot L}^{\text{총 target × ligand}}}{\underbrace{K_{ss}+L}_{\text{포화 분모}}}$$
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:6px;">
+    <p><span class="accent"><strong>QSS의 핵심 이득</strong></span> — <strong>complex 데이터를 명시적으로 추적하지 않아도, ligand와 total target만으로 \(K_{ss}\)를 식별할 수 있음.</strong> Full TMDD가 요구하던 "complex assay 풍부도"를 우회함. 이게 biologics PopPK 실무에서 QSS가 거의 표준이 된 이유임.</p>
+  </div>
+</section>
+
+<!-- =================== SLIDE 21 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 4½</span>
+    <h1 class="slide-title">MM과의 관계 · 세 K 상수 한 자리에 · 한계</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:4px;">QSS에 추가로 <strong>\(L \gg R\)</strong> (target occupancy ≈ 100%) 가정을 얹으면 MM이 나옴:</p>
+  <div class="formula-card-wrap">
+    <div class="formula-card">
+      $$\underbrace{K_{ss}}_{\text{QSS}} \xrightarrow{\,L\gg R\text{ 가정 추가}\,} \underbrace{K_{m}}_{\text{MM}} ,\qquad \underbrace{V_{max}}_{\text{MM}} \approx \underbrace{k_{e(RL)}\cdot R_{tot}}_{\text{포화 시 sink 처리능}}$$
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:6px;">
+    <span class="callout-label">결정적 차이</span>
+    MM에서는 <strong>\(R_{tot}\) 자체가 보이지 않게 잠긴 형태</strong>임. 그래서 MM은 target turnover (\(k_{in}, k_{out}\))와 complex sink (\(k_{e(RL)}\))를 분리해서 추정할 수 없고, \(V_{max}/K_m\)이라는 두 macro-parameter만 남음. <strong>PK27에서 \(K_m\)이 0.03 → 3.7로 123배 부풀려졌던 이유 중 하나가 정확히 이거임</strong>.
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\overbrace{K_d}^{\text{thermodynamic}} = \frac{k_{off}}{k_{on}} \;<\; \overbrace{K_{ss}}^{\text{QSS}} = \frac{k_{off}+k_{e(RL)}}{k_{on}} \;=\; \overbrace{K_{m}}^{\text{MM}} = \frac{k_{off}+k_{e(RL)}}{k_{on}}$$
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="card">
+      <h2 class="sub-title">시나리오별 권고</h2>
+      <ul>
+        <li>Preclinical, target·complex 풍부 → <strong>Full TMDD</strong></li>
+        <li>Clinical Phase 1, ligand·total target → <strong>QSS</strong></li>
+        <li>Clinical PopPK, ligand만 → <strong>Parallel linear+MM 또는 QSS with prior</strong></li>
+        <li>SAD, occupancy ≥ 95% 유지 → <strong>MM(제한적)</strong></li>
+      </ul>
+    </div>
+    <div class="dark-card">
+      <h3>QSS의 한계</h3>
+      <ul>
+        <li>complex 동역학이 ligand·target과 같은 time scale이면 QSS 가정이 깨짐 (예: internalize가 매우 느린 membrane-bound target)</li>
+        <li>QSS는 \(k_{on}\)과 \(k_{e(RL)}\)를 <strong>개별 식별 못함</strong> — \(K_{ss}\)만 식별</li>
+        <li><strong>soluble target에서 가장 깔끔하게 작동</strong>. membrane-bound·shed antigen은 추가 state 필요</li>
+      </ul>
+      <p style="margin-top:6px;"><span class="accent"><strong>M4½ 한 줄</strong></span> — Full과 MM은 같은 사슬의 양 끝, 그 사이에 <strong>QSS·QE라는 명시적 가정 단계</strong>가 있음. MM이 QSS의 한 가지 추가 가정 하 특수 경우라서 같은 분수식.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 22 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5 · M5</span>
+    <h1 class="slide-title">MM의 경계 — 통하는 4가지 조건 · PK26 앵커</h1>
+  </div>
+  <hr class="header-rule">
+
+  <p style="margin-bottom:6px;">MM 근사는 Full TMDD의 target과 complex 하부 시스템을 \(V_{max}\)와 \(K_m\)로 줄이는 거임. 진짜 문제는 적합이 아니라 — <strong>어느 농도·occupancy 영역에서 이 접기가 구조적으로 허용되는가</strong>임.</p>
+
+  <div class="grid-2">
+    <div>
+      <div class="formula-card-wrap">
+        <div class="formula-card">
+          $$\overbrace{Cl_{MM}}^{\text{포화 TMDD CL}} = \frac{\underbrace{V_{max}}_{\text{최대 처리능}}}{\underbrace{K_m}_{\text{반포화 경계}}+\underbrace{C}_{\text{ligand 농도}}}$$
+        </div>
+      </div>
+      <div class="formula-card-wrap" style="margin-top:6px;">
+        <div class="formula-card">
+          $$\overbrace{K_d}^{\text{결합 해리상수}} = \frac{\underbrace{k_{off}}_{\text{해리}}}{\underbrace{k_{on}}_{\text{결합}}}, \qquad \overbrace{K_m}^{\text{겉보기 동역학상수}} = \frac{\overbrace{k_{off}+k_{e(RL)}}^{\text{해리+sink}}}{\underbrace{k_{on}}_{\text{결합}}}$$
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:8px;">
+        <h2 class="sub-title">MM이 통할 수 있는 4가지 조건</h2>
+        <ul>
+          <li>ligand 농도가 target 농도를 크게 초과할 때</li>
+          <li>target occupancy가 거의 완전 포화일 때</li>
+          <li>관찰된 용량 범위가 제한적일 때</li>
+          <li>목적이 저농도 외삽이 아니라 <strong>관찰 프로파일 내 내삽</strong>일 때</li>
+        </ul>
+        <div class="chip">G&amp;W p.609 · R&amp;T p.712</div>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">PK26 Efalizumab — 정당화된 앵커</span>
+        <strong>Efalizumab</strong>(anti-CD11a IgG1 mAb, 건선 치료제). 2구획 모델에 parallel linear/MM 제거. target/complex 데이터와 \(k_{on}/k_{off}/K_d\) 정보가 없어 full TMDD 적합 자체가 불가능했음.
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:8px;">
+    <div class="formula-card">
+      $$\overbrace{\{V_t,\,V_{max},\,K_m,\,Cl_d,\,Cl_L\}}^{\text{PK26 reduced set}} = \underbrace{\{0.061,\;0.039,\;0.161,\;0.031,\;0.007\}}_{\text{보고 추정값}}$$
+      <span class="src">G&amp;W pp.599–601 — single-dose iv bolus, 5개 정맥주사 시간경과</span>
+    </div>
+  </div>
+
+  <p style="margin-top:6px;">→ <strong>"제한된 데이터에서 reduced model이 정당화된 앵커"로 읽어야 함.</strong> "MM이 보편적으로 mechanistic이다"라는 증거가 아님.</p>
+</section>
+
+<!-- =================== SLIDE 23 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 5 · M5</span>
+    <h1 class="slide-title">PK27 — MM이 무너지는 정량 흔적 · Occupancy 검증</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="callout warn">
+    <span class="callout-label">MM은 접힌 모델임</span>
+    \(V_{max}/K_m\)은 target biology를 제거한 게 아니라 관찰 가능한 saturable 항으로 압축한 거임. 그래서 \(K_m\)은 \(K_d\)가 아님 — \(K_m\)에는 complex sink \(k_{e(RL)}\)가 들어감. <strong>관찰된 saturation·occupancy 영역 밖에서는 고용량 적합이 아무리 좋아도 MM 외삽을 정당화할 수 없음.</strong>
+  </div>
+
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="card">
+      <h2 class="sub-title">PK27 본문 핵심</h2>
+      <p>PK27에서 MM은 가장 높은 세 농도 곡선은 비교적 잘 맞춤. 그런데 <strong>가장 낮은 농도 곡선에서는 곡선이 따로 놀았고, 추정된 \(K_m\)이 3.7로 잡혀서 Full TMDD의 0.03보다 약 123배 부풀려짐</strong>.</p>
+      <p style="margin-top:6px;">임상 교훈은 "MM을 쓰지 마라"가 아님. 더 좁고 실용적임 — <strong>target saturation이 실증된 농도·occupancy 영역 밖에서는 MM을 쓰지 마라.</strong></p>
+      <div class="chip">G&amp;W p.609</div>
+    </div>
+
+    <div>
+      <div class="formula-card-wrap" style="margin-bottom:6px;">
+        <div class="formula-card">
+          $$\underbrace{\mathrm{Occupancy}}_{\text{target 결합비율}} \gtrsim \underbrace{90\text{--}95\%}_{\text{고포화 영역}}$$
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="sub-title">Occupancy 검증 — 실무 결정 기준</h2>
+        <p>대략 <strong>90–95% 이상의 occupancy</strong>가 유지되는 영역에서는 단순화가 허용될 수 있음. occupancy가 \(K_d\) 또는 biomarker 역가 이하로 떨어지면 MM이 충분하지 않음.</p>
+        <p style="margin-top:4px;"><strong>실무 준칙</strong>: TMDD 가능성이 있는 mAb에 MM을 쓰는 리포트라면, <strong>관찰된 농도 범위, target 농도 범위, 투여 간격 동안의 최소 예측 target occupancy</strong>를 명시해야 함. (소스 경계의 구현 해석)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>MM이 잃어버리는 것 · QSS로 회수</h3>
+    <p>MM은 \(R_0, k_{out}, k_{on}, k_{off}, k_{e(RL)}\)의 명시적 해석을 잃음. 고용량이나 중심 곡선에 가중치가 쏠리면 저농도 편향이 가려지고, 추가 가정 없이는 target recovery나 complex sink 질문에 답할 수 없음. <span class="amber"><strong>이때 한 단계 덜 압축된 도구가 M4½의 QSS 근사</strong></span> — complex만 quasi-steady-state로 두고 \(R_0, k_{out}, K_{ss}\)를 그대로 식별. <span class="chip dark">R&amp;T p.712</span></p>
+    <p style="margin-top:6px;"><span class="accent"><strong>M5 한 줄</strong></span> — <strong>"적합이 잘 됨"과 "target biology를 올바르게 외삽함"은 같은 말이 아님.</strong> 고용량 적합이 좋다고 MM이면 충분하다고 결론지으면 <em>PK27처럼 \(K_m\) 과대예측과 저용량 구조 편향이 그대로 임상 결정에 들어감.</em></p>
+  </div>
+</section>
+
+<!-- =================== SLIDE 24 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6</span>
+    <h1 class="slide-title">자주 혼동되는 4 쌍 — Pair 1 · Pair 2 (Critical Blow)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <h2 class="sub-title" style="margin-top:0;">▌ Pair 1 — \(k_{in}\) vs \(k_{out}\)</h2>
+  <div class="tbl-wrap" style="margin-bottom:6px;">
+    <table>
+      <thead><tr><th>비교 기준</th><th>\(k_{in}\)</th><th>\(k_{out}\)</th></tr></thead>
+      <tbody>
+        <tr><td>단위</td><td>mass/time</td><td>time⁻¹</td></tr>
+        <tr><td>수식 위치</td><td>\(A_0=k_{in}/k_{out}\)의 분자</td><td>\(A_0\) 분모, \(t_t=1/k_{out}\)의 분모</td></tr>
+        <tr><td>변화 원인</td><td>합성·입력 증가/감소</td><td>catabolism 속도 변화</td></tr>
+        <tr><td>혼동 시 결과</td><td>level만 보고 시간 척도 변화로 오해</td><td>level과 회복 시간 변화 모두 놓침</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">한 줄로 박아두기: \(k_{in}\)은 수도꼭지, \(k_{out}\)은 배수구임. <strong>수위만 보지 말고 새 수위에 도달하는 시간까지 같이 봐야 함.</strong></p>
+
+  <h2 class="sub-title" style="margin-top:10px;">▌ Pair 2 — Full TMDD vs MM 근사 <span class="chip coral">Critical Blow</span></h2>
+  <div class="grid-2">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>비교</th><th>Full TMDD</th><th>MM</th></tr></thead>
+        <tbody>
+          <tr><td>차원</td><td>state ODE system</td><td>한 항 압축</td></tr>
+          <tr><td>수식</td><td>\(k_{on}LR, k_{off}RL, k_{e(RL)}RL\) 분리</td><td>\(Cl_{MM}=V_{max}/(K_m+C)\)</td></tr>
+          <tr><td>혼동 시</td><td>data-rich mechanism 식별</td><td>저용량 trough·occupancy·subgroup 외삽 편향</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>흔한 혼동</th><th>교정</th></tr></thead>
+        <tbody>
+          <tr><td>Full은 복잡, MM은 단순 대체</td><td>MM은 Full의 target/complex 하부 시스템 reduction</td></tr>
+          <tr><td>고용량 적합 좋으면 MM 충분</td><td>PK27: 저용량 따로 놀고 \(K_m\) 123배 부풀려짐</td></tr>
+          <tr><td>target/complex assay는 nice-to-have</td><td>\(k_{on}, k_{off}, k_{e(RL)}\) 정밀도를 결정하는 식별 자료</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:8px;">
+    <span class="callout-label">▶ Critical Blow</span>
+    이 혼동을 안고 first-in-human 저용량 외삽이나 sub-population 외삽으로 임상 의사결정을 강행하면 세 경로의 실패가 옴 — <strong>(i) 저농도 trough 과대평가로 sub-therapeutic 노출 환자군 누락, (ii) dosing interval 동안 target occupancy가 적합 범위 밖으로 떨어져도 검출 안 됨, (iii) sub-population 외삽이 실증된 saturation 영역 밖에서 이뤄짐.</strong>
+  </div>
+
+  <p class="note" style="margin-top:6px;"><strong>기억 고리</strong> — 완전 지도 vs 단순화 지도. drug 농도가 \(K_d\) 또는 \(K_m\) 부근으로 떨어지면 MM은 TMDD 거동을 재현 못함. PK27의 \(K_m\) 0.03 → 3.7 과대예측이 바로 이 "지도 밖 영역"의 정량 흔적.</p>
+</section>
+
+<!-- =================== SLIDE 25 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 6</span>
+    <h1 class="slide-title">4 쌍 — Pair 3 · Pair 4</h1>
+  </div>
+  <hr class="header-rule">
+
+  <h2 class="sub-title" style="margin-top:0;">▌ Pair 3 — TMDD에서 \(K_d\) vs \(K_m\)</h2>
+  <div class="grid-2">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>비교</th><th>\(K_d\)</th><th>\(K_m\)</th></tr></thead>
+        <tbody>
+          <tr><td>단위</td><td>concentration</td><td>concentration</td></tr>
+          <tr><td>수식</td><td>\(k_{off}/k_{on}\)</td><td>\((k_{off}+k_{e(RL)})/k_{on}\)</td></tr>
+          <tr><td>변화 원인</td><td>binding 친화도</td><td>binding + complex 손실/internalization</td></tr>
+          <tr><td>혼동 시</td><td>in vitro 친화도를 in vivo 경계로 오독</td><td>occupancy·sink 영향 오해석</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="formula-card-wrap">
+      <div class="formula-card">
+        $$\underbrace{K_d}_{\text{결합 친화도}} = \frac{\underbrace{k_{off}}_{\text{해리}}}{\underbrace{k_{on}}_{\text{결합}}}, \qquad \underbrace{K_m}_{\text{disposition}} = \frac{\underbrace{k_{off}}_{\text{해리}}+\underbrace{k_{e(RL)}}_{\text{complex sink}}}{\underbrace{k_{on}}_{\text{결합}}}$$
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:4px;"><strong>기억 고리</strong> — 친화력 vs 처리 속도. \(K_d\)는 ligand와 target의 <strong>결합 친화력</strong>. \(K_m\)은 결합 친화력에 complex의 <strong>처리 속도(internalization)</strong>까지 더한 apparent kinetic 상수. 세 파라미터(turnover · \(K_d\) · \(K_m\))가 서로 독립이라서 <strong>in vitro \(K_d\) 하나만으로 in vivo TMDD의 임상적 중요성을 판단할 수 없음.</strong> 한 줄로 박아두기: \(K_d\)는 <strong>결합의 언어</strong>, \(K_m\)은 <strong>결합 이후 sink까지 포함한 disposition의 언어</strong>임.</p>
+
+  <h2 class="sub-title" style="margin-top:10px;">▌ Pair 4 — 저농도 Linear PK vs 고농도 Linear PK</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>농도 영역</th><th>선형으로 보이는 이유</th><th>위험</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Very low ligand</strong></td><td>target 경로가 포화되지 않아 비특이적·target-specific 1차 경로가 공존</td><td>assay 민감도 낮으면 이 구간 놓침</td></tr>
+        <tr><td><strong>Very high ligand</strong></td><td>target 경로 포화로 비특이적 청소율 지배</td><td>고용량 적합만 보고 MM/linear 모델을 과신</td></tr>
+        <tr><td><strong>Middle range</strong></td><td>target saturation이 농도에 따라 변동</td><td>nonlinear clearance가 가장 뚜렷</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout amber" style="margin-top:8px;">
+    <span class="callout-label">기억 고리 — 고속도로 vs 병목 도로</span>
+    고용량에서 mAb PK가 선형으로 보이는 이유는, target이 이미 포화돼서 TMDD 경로가 더 이상 약물을 빨아들이지 못하고 비특이적 제거 경로(FcRn salvage가 작동하는 IgG-like clearance)가 지배하기 때문 — <strong>고속도로</strong>. 저용량에서 PK가 선형처럼 보이는 이유는 다름. target이 포화되지 않은 상태에서 1차 target-mediated 경로와 nonspecific 경로가 함께 작동하는데, <strong>두 1차 경로의 합이므로 여전히 선형</strong>. 그러나 이 구간의 target 경로는 <strong>병목 도로</strong>여서 농도가 조금만 변해도 지배 경로가 바뀜. <strong>두 linear regime 사이의 nonlinear transition이 임상 용량 범위 안에 걸쳐 있을 때 TMDD 모델링이 필수.</strong> <span class="chip">G&amp;W pp.604–605</span>
+  </div>
+</section>
+
+<!-- =================== SLIDE 26 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">능동 회상 — Q1~Q5 (이 데이터가 어떤 항을 가르치는가)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">Q1 ★ — Turnover 단위</h2>
+      <p>\(A_0=k_{in}/k_{out}\)에서 \(k_{in}\)과 \(k_{out}\)의 단위는?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: \(k_{in}\)은 mass/time, \(k_{out}\)은 time⁻¹임. \(A_0\)는 두 값의 비율로 정의되는 baseline 양임. <span class="chip">G&amp;W p.96</span></p>
+      <p class="note">다음 깊이 — \(t_t=1/k_{out}\)이 임상 PK에서 어떤 측정 가능한 양과 같은가? (M1 Eq.2:243)</p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q2 ★★ — Turnover 비대칭</h2>
+      <p>왜 \(k_{out}\) 변화는 정상상태 level과 도달 시간을 <strong>동시에</strong> 바꾸는가?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: \(k_{out}\)은 분획 소실률이라서 baseline \(A_0=k_{in}/k_{out}\)과 time scale \(t_t=1/k_{out}\)에 둘 다 동시에 들어가기 때문. <span class="chip">G&amp;W pp.96–97</span></p>
+      <p class="note">다음 깊이 — 높은 농도에서 \(k_{out}\)이 사실상 saturable이면 \(k_{in}\) 변화와 \(k_{out}\) 변화는 어떻게 구별이 어려워지는가?</p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q3 ★★ — Full TMDD 4 state</h2>
+      <p>Full TMDD의 4개 상태변수는?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: ligand central, ligand tissue/peripheral, free target \(R\), ligand-target complex \(RL\). <span class="chip">G&amp;W pp.604–607</span></p>
+      <p class="note">다음 깊이 — 임상에서 직접 측정이 가장 어려운 state는? 그 결손이 \(k_{on}/k_{off}/k_{e(RL)}\) 정밀도에 어떤 구조 영향?</p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q4 ★★ — 저용량 잔차의 진단</h2>
+      <p>mAb ligand-only 데이터에서 고용량 곡선은 잘 맞는데 가장 낮은 용량에서 체계적 under/over-prediction. 무엇 의심?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: MM 또는 reduced model이 관찰된 고용량 범위에서는 내삽을 잘 하지만, <strong>저농도 TMDD phase를 제대로 설명하지 못할 가능성</strong>이 높음. 측정된 용량·농도 범위에 한정, 외삽 영역에서는 occupancy + sensitivity analysis 필요. <span class="chip">G&amp;W p.609</span></p>
+      <p class="note">다음 깊이 — target/complex assay 추가가 즉시 불가능할 때, 어떤 sensitivity analysis 절차를 어떤 순서로?</p>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2 class="sub-title">Q5 ★★ — \(K_d\) vs \(K_m\)</h2>
+      <p>\(K_m\)과 \(K_d\)가 다를 수밖에 없는 기전 이유는?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: \(K_d=k_{off}/k_{on}\)은 결합/해리 평형이고, \(K_m=(k_{off}+k_{e(RL)})/k_{on}\)은 complex의 비가역적 소실(\(k_{e(RL)}\))까지 포함함. complex sink가 있으면 <strong>\(K_m\)은 thermodynamic 친화도가 아니라 apparent kinetic 상수</strong>가 됨. <span class="chip">G&amp;W p.609; R&amp;T p.712</span></p>
+      <p class="note">다음 깊이 — in vitro SPR/BLI thermodynamic \(K_d\)와 in vivo PK fitting apparent \(K_m\)을 internal report·NDA narrative에서 어떻게 분리해야 reviewer reconciliation 요청을 피하는가?</p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 27 =================== -->
+<section class="slide has-formula">
+  <div class="slide-header">
+    <span class="sec-badge">§ 7</span>
+    <h1 class="slide-title">능동 회상 — Q6~Q10 (보스 딜레마 포함)</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">Q6 ★ — sc mAb terminal slope</h2>
+      <p>sc mAb의 terminal slope를 곧바로 elimination 반감기로 해석하면 왜 위험?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: 큰 단백질은 sc/im 후 림프관 흡수가 느려 <strong>absorption-rate-limited</strong> 프로파일. somatropin처럼 iv 반감기는 짧아도 sc 프로파일은 길게 지속. <span class="chip">R&amp;T pp.718–721</span></p>
+      <p class="note">다음 깊이 — sc mAb terminal phase가 absorption- vs elimination-rate-limited인지 어떤 실험 설계가 결정 신호?</p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q7 ★★ — PK27의 \(V_c\)</h2>
+      <p>PK27에서 \(V_c=0.05\) L·kg⁻¹는 어떻게 처리됐는가?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: \(V_c\)는 <strong>fixed assumption</strong>, Table 27.2는 그 외 <strong>8개 추정·보고 파라미터</strong> 제시. fixed \(V_c\)까지 structural quantity로 세면 9개를 언급할 수 있으나 "8 estimated parameters"와 구분해야 함. <span class="chip">G&amp;W pp.603, 608–609</span></p>
+      <p class="note">다음 깊이 — edema, severe burn, ascites, pediatric subgroup에 같은 fixed \(V_c\)를 적용하면 \(k_{on}\) robustness sensitivity analysis는?</p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q8 ★ — 자료 풍부도 vs 식별성</h2>
+      <p>target과 complex 데이터가 추가되면 왜 \(k_{on}, k_{off}, k_{e(RL)}\)의 정밀도가 좋아지는가?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: ligand-only는 여러 ODE 항의 합성 결과만. target은 saturation·recovery를, complex는 sink를 직접 가르침. PK27 Table 27.2: \(k_{on}\) <strong>17→2→1</strong>, \(k_{off}\) <strong>27→13→3</strong>, \(k_{e(RL)}\) <strong>27→23→2</strong>. <span class="chip">G&amp;W p.609</span></p>
+      <p class="note">다음 깊이 — target/complex assay 가용 안 될 때(예: PK26) 동등한 식별성 차선 전략, reduced model 정당화 조건은?</p>
+    </div>
+
+    <div class="card">
+      <h2 class="sub-title">Q9 ○ — Fig.21-16 해석</h2>
+      <p>R&amp;T Fig.21-16에서 얻어도 되는 결론과 얻으면 안 되는 결론은?</p>
+      <p style="margin-top:4px;"><strong>답</strong>: <strong>OK</strong> — 분자량이 커질수록 림프 회수율 증가의 <strong>방향성</strong>. <strong>NO</strong> — 0.246–19 kDa sheep 데이터를 150 kDa mAb에 선형 외삽해서 구체적 회수율 % 계산. <span class="chip">R&amp;T p.720</span></p>
+      <p class="note">다음 깊이 — 150 kDa mAb sc 림프 회수율을 정량 예측할 수 없다면, 임상 protocol에서 sc 흡수 불확실성을 어떻게 안전하게 다루나?</p>
+    </div>
+  </div>
+
+  <div class="dark-card" style="margin-top:8px;">
+    <h3>Q10 ★★ — 보스 딜레마 (30초 답변)</h3>
+    <p>팀이 <em>"MM 모델로 OFV도 낮고 VPC도 괜찮으니 first-in-human 저용량 외삽에 쓰자"</em>고 주장. 30초 답변은?</p>
+    <p style="margin-top:6px;"><span class="amber"><strong>답</strong></span>: "MM은 관찰된 용량 범위 안에서는 쓸 수 있음. 그런데 저용량 외삽은 <strong>target occupancy가 충분히 높게 유지되는지 확인</strong>해야 함. PK27에서는 고용량 적합이 양호해도 가장 낮은 용량 곡선이 따로 놀았고 \(K_m\)이 0.03에서 3.7로 <strong class="amber">123배 부풀려졌음</strong>. 최소한 dose-stratified 잔차, 예측 occupancy, 저농도 sensitivity analysis를 보고 결정해야 함." <span class="chip dark">G&amp;W p.609</span></p>
+  </div>
+
+  <div class="formula-card-wrap" style="margin-top:6px;">
+    <div class="formula-card">
+      $$\underbrace{K_{m,\mathrm{MM}}}_{\text{reduced}} = \underbrace{3.7}_{\text{PK27 MM}}, \quad \underbrace{K_{m,\mathrm{TMDD}}}_{\text{full}} = \underbrace{0.03}_{\text{PK27 TMDD}}, \quad \frac{K_{m,\mathrm{MM}}}{K_{m,\mathrm{TMDD}}}\approx 123$$
+    </div>
+  </div>
+</section>
+
+<!-- =================== SLIDE 28 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 8</span>
+    <h1 class="slide-title">메타 프레임 — Professional Moat</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="sub-title">이 세션이 놓인 위치</h2>
+      <p>이 세션은 <strong>biologics pharmacometrics의 입구</strong>임. small molecule PK에서는 청소율과 \(V_d\) 중심으로 설명할 수 있었지만, mAb에서는 <strong>target biology, binding kinetics, complex sink, FcRn salvage, lymphatic input</strong>이 함께 PK 곡선의 형태를 만듦.</p>
+      <ul style="margin-top:6px;">
+        <li>선행 흐름: linear PK → Michaelis-Menten → turnover → TMDD</li>
+        <li>후속 흐름: mAb PopPK → target occupancy 시뮬레이션 → QSP/PBPK → biologics 임상약리 narrative</li>
+      </ul>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>건너뛰면</th><th>구체 실패</th></tr></thead>
+        <tbody>
+          <tr><td><strong>M1</strong></td><td>target baseline을 predose DV로만 처리 → \(R_0/k_{out}\) 해석 잃음</td></tr>
+          <tr><td><strong>M2</strong></td><td>sc mAb terminal slope를 elimination으로 오해</td></tr>
+          <tr><td><strong>M3</strong></td><td>고용량 적합만 보고 저용량 외삽 편향 놓침</td></tr>
+          <tr><td><strong>M4</strong></td><td>target·complex 데이터를 "nice-to-have"로 오판</td></tr>
+          <tr><td><strong>M4½</strong></td><td>임상 mAb PopPK 실무 출발점 모르고 Full↔MM 두 극단에서 길 잃음</td></tr>
+          <tr><td><strong>M5</strong></td><td>관찰 범위 내 내삽을 임상 외삽으로 착각</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:8px;">
+    <table>
+      <thead><tr><th>변화 상황</th><th>1차 파라미터</th><th>임상 결과</th><th>조치</th></tr></thead>
+      <tbody>
+        <tr><td>target turnover 변화</td><td>\(k_{in}/k_{out}\)</td><td>baseline·recovery·occupancy 해석 변화</td><td>baseline scenario · target 데이터 확인</td></tr>
+        <tr><td>FcRn/slow input</td><td>\(F, T_{max}, t_{1/2}\)</td><td>terminal slope 오독</td><td>iv 비교 · dose-stratified 프로파일</td></tr>
+        <tr><td>저용량 TMDD 경계</td><td>\(K_m, K_d\), occupancy</td><td>trough·subgroup 외삽 편향</td><td>sensitivity + Full TMDD 검토</td></tr>
+        <tr><td>complex sink 관찰 부족</td><td>\(k_{e(RL)}\)</td><td>mechanism fitted but not learned</td><td>target/complex assay · informative prior</td></tr>
+        <tr><td><strong>ADA-매개 면역복합체</strong></td><td><strong>apparent Phase B CL, IOV, \(k_{ADA}(t)\)</strong></td><td><strong>시점 의존 CL 증가, BSV 폭발, sub-therapeutic trough</strong></td><td><strong>ADA assay + dose-occasion IOV, time-varying covariate</strong> <span class="chip">R&amp;T p.712</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout teal" style="margin-top:8px;">
+    <span class="callout-label">두 가지 능력</span>
+    <strong>(첫째) mechanistic 모델 narrative 정당화</strong> — "왜 Full TMDD인가 / 왜 QSS이어도 되는가 / 왜 MM이어도 되는가 / 왜 target assay가 필요한가"를 <em>수식·생리학·관찰된 농도 범위</em>로 설명할 수 있음. <strong>(둘째) 진단 GOF 읽기</strong> — 전체 VPC가 아니라 <em>dose-stratified 잔차, 저용량 프로파일, target/complex coverage</em>를 먼저 보고 구조 misspecification을 의심할 수 있음.
+  </div>
+  <p class="note" style="margin-top:6px;"><strong>실무 한 줄</strong>: mAb TMDD 데이터셋을 처음 받으면 전체 적합 plot보다 먼저 <strong>dose-stratified plot</strong>. 고용량은 맞는데 저용량만 체계적으로 틀리면, "variability problem"보다 <strong>"reduced model 경계 문제"</strong>를 먼저 의심.</p>
+</section>
+
+<!-- =================== SLIDE 29 =================== -->
+<section class="slide">
+  <div class="slide-header">
+    <span class="sec-badge">§ 9</span>
+    <h1 class="slide-title">마지막 한 줄 — 출발 좌표를 다시 묻기</h1>
+  </div>
+  <hr class="header-rule">
+
+  <div class="tbl-wrap" style="margin-bottom:10px;">
+    <table>
+      <thead><tr><th>후속 세션</th><th>이 세션에서 열리는 개념</th><th>없으면 실패</th></tr></thead>
+      <tbody>
+        <tr><td>mAb PopPK</td><td>제한 분포, FcRn, target-mediated CL, QSS as 실무 출발점</td><td>terminal slope · covariate effect 해석</td></tr>
+        <tr><td>TMDD/QSP</td><td>ligand-target-complex ODE topology, 근사 위계 (Full ↔ QSS ↔ MM)</td><td>target biology와 PK coupling 설명</td></tr>
+        <tr><td>Target occupancy 시뮬레이션</td><td>\(K_d, K_{ss}, K_m\), occupancy 경계</td><td>dosing interval pharmacologic coverage 판단</td></tr>
+        <tr><td>Biologics 임상약리 리포트</td><td>모델 경계와 외삽 방어, soluble vs membrane-bound 분기, ADA 매개 time-varying CL</td><td>MM/QSS/Full TMDD 선택 근거 방어</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="closer">
+    <div class="closer-label">Final Sutured Line</div>
+    <div class="closer-body">
+      mAb 비선형 PK의 본질은 "항체가 크다"가 아님. <strong style="color:#faf9f5;">큰 ligand가 제한된 tissue space와 림프관 입력을 거쳐 endogenous target turnover system에 들어가고, binding·complex·sink가 농도의존적 청소율을 만든다</strong>는 것임.<br><br>
+      Full TMDD는 이 과정을 분해하고, QSS는 임상 자료 한계 안에서 식별성을 회복시키고, MM은 일부 조건에서만 이를 한 항으로 압축함. 모델 선택의 기준은 편의성이 아니라 <span style="color:#e8a55a;">데이터셋이 관찰한 phase, 그리고 임상 의사결정이 요구하는 외삽 범위</span>임.<br><br>
+      질문은 처음과 같음 — <span style="color:#cc785c;"><strong>"이 데이터가 실제로 어떤 파라미터를 가르치고 있는가?"</strong></span>
+    </div>
+    <div class="closer-sig">C-260517-114853-9XR · Session 09 · TMDD</div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar">
+  <button id="btn-prev">← 이전</button>
+  <div class="prog-area">
+    <div id="prog-text">1 / 30</div>
+    <div class="prog-track"><div id="prog-fill"></div></div>
+  </div>
+  <button id="btn-next">다음 →</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderMath);
+} else {
+  renderMath();
+}
+
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var TOTAL = slides.length;
+var cur = 0;
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn, i) {
+  btn.addEventListener('click', function() { goTo(i); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 07 — 다중투여·축적·항정상태: 세 개의 자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:30px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:22px 12px 16px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:10px 14px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.65;white-space:pre;overflow-x:auto;border-radius:12px;padding:10px 14px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.45}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.98em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:7px 11px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.45}
+.closer-card{background:#181715;border-radius:12px;padding:24px 30px;text-align:center;margin:10px auto;max-width:780px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#faf9f5;line-height:1.5}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.tag.apex{background:#a9583e}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 07</div>
+        <div class="brand-sub">SS · 세 개의 자</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">§0 cheat-code · 세 자</button>
+    <button class="toc-btn" data-idx="1">§1 두 임상 미스터리</button>
+    <button class="toc-btn" data-idx="2">§1 공통 뿌리 · 세 자 표</button>
+    <button class="toc-btn" data-idx="3">§1A–C 척추 · 카드 흐름</button>
+    <button class="toc-btn" data-idx="4">M1 정속 주입 plateau</button>
+    <button class="toc-btn" data-idx="5">M2 3–4 t½ 규칙</button>
+    <button class="toc-btn" data-idx="6">M3 ⚡ 축적계수 R_ac</button>
+    <button class="toc-btn" data-idx="7">M3 PTF + phenobarbital</button>
+    <button class="toc-btn" data-idx="8">M4 C_av vs A_av</button>
+    <button class="toc-btn" data-idx="9">M4 약물 예시 · 단위</button>
+    <button class="toc-btn" data-idx="10">M5 Flip-flop</button>
+    <button class="toc-btn" data-idx="11">M6 치료역 · TW vs TI</button>
+    <button class="toc-btn" data-idx="12">M6 항균제 PD index</button>
+    <button class="toc-btn" data-idx="13">M6 TDM target</button>
+    <button class="toc-btn" data-idx="14">M7 부하 + 유지</button>
+    <button class="toc-btn" data-idx="15">M7 TCI</button>
+    <button class="toc-btn" data-idx="16">M8 TW 알고리즘</button>
+    <button class="toc-btn" data-idx="17">M9 PD plateau · statin</button>
+    <button class="toc-btn" data-idx="18">M9 EPO · turnover 정량</button>
+    <button class="toc-btn" data-idx="19">M10 Daptomycin</button>
+    <button class="toc-btn" data-idx="20">M10 두 종류의 누적</button>
+    <button class="toc-btn" data-idx="21">§5 혼동쌍 1–2</button>
+    <button class="toc-btn" data-idx="22">§5 혼동쌍 3–4</button>
+    <button class="toc-btn" data-idx="23">§5 혼동쌍 5–7</button>
+    <button class="toc-btn" data-idx="24">§7 회상 Q1–Q5</button>
+    <button class="toc-btn" data-idx="25">§7 적용 Q6–Q12</button>
+    <button class="toc-btn" data-idx="26">§7 보스 딜레마</button>
+    <button class="toc-btn" data-idx="27">§8 실패 모드</button>
+    <button class="toc-btn" data-idx="28">§8 전문가 해자</button>
+    <button class="toc-btn" data-idx="29">§8 28세션 항법 · Closer</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0 -->
+    <section class="slide active has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">cheat-code — 항정상태는 세 개의 자(rulers)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14.5px;line-height:1.6"><strong>"항정상태(steady-state)는 한 개의 숫자가 아니라 세 개의 자(rulers)임."</strong></p>
+        </div>
+        <div class="three-col">
+          <div class="card"><div class="card-title">시계 (언제 도달함?)</div><p>→ \(t_{1/2}\)</p></div>
+          <div class="card"><div class="card-title">무게중심 (평균 수준은?)</div><p>→ \(CL\)과 평균 입력률</p></div>
+          <div class="card"><div class="card-title">출렁임 (얼마나 흔들리고 쌓임?)</div><p>→ \(\tau/t_{1/2}\)</p></div>
+        </div>
+        <p>이 세 자를 손에 들고 가면 챕터 끝까지 길을 안 잃음. 반대로 이걸 못 잡으면 <strong>phenobarbital trough</strong>도, <strong>daptomycin의 4배 독성</strong>도, <strong>NONMEM <code>SS=1</code> 플래그</strong>도, TDM 보정도, 부하용량 근거도 전부 같은 진흙탕에서 헤맴.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\begin{aligned}\overbrace{\underbrace{C_{ss}}_{\text{plateau}}}^{\text{높이}}&=\underbrace{R_{in}/CL}_{\text{입력/CL}}\\\overbrace{\underbrace{R_{ac}}_{\text{축적계수}}}^{\text{배율}}&=\frac{1}{1-e^{-K\tau}}\\\overbrace{\underbrace{C_{av,ss}}_{\text{평균농도}}}^{\text{무게중심}}&=\frac{F\cdot Dose}{CL\cdot\tau}\end{aligned}$$</div></div>
+        <p class="tip"><strong>높이·배율·무게중심</strong> 세 단어가 이 챕터의 모든 카드 라벨임.</p>
+      </div>
+    </section>
+
+    <!-- Slide 1 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1</span>
+        <h1 class="slide-title">두 임상 미스터리 — 같은 단어, 다른 자</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <div class="card-title">장면 1. Phenobarbital trough</div>
+          <p><strong>Phenobarbital</strong>(장기 항경련제) 100 mg q24h, \(t_{1/2}=4\) days. 어느 날 trough가 높게 잡힘. 후배 약사: <em>"아직 plateau 도달 안 해서 그런 거예요."</em></p>
+          <p>이 한 마디가 왜 위험한가? <strong>같은 단어가 두 개의 다른 질문에 동시에 답을 주고 있어서임.</strong> trough가 높다는 건 <strong>축적</strong>의 결과(\(R_{ac}\) 큼 = \(\tau/t_{1/2}\) 작음), plateau 도달 여부는 <strong>시간</strong>의 문제(\(t_{1/2}=4\)일 → 90% 도달 12~16일). <strong>두 자가 다름.</strong></p>
+          <p class="tip">→ 진단을 그대로 받으면 \(\tau\) 조정 방향 거꾸로, NONMEM <code>SS=1</code> 잘못 꽂아서 \(CL/F\)·\(V/F\)·ETA 추정 다 무너짐. <span class="chip">R&amp;T 5e pp.324–326</span></p>
+        </div>
+        <div class="card">
+          <div class="card-title">장면 2. Daptomycin 4배 독성</div>
+          <p><strong>Daptomycin</strong>(MRSA 같은 그람양성균 cyclic lipopeptide 항생제) 동물 실험. 75 mg/kg/day로 일일 총용량 동일. q24h vs q8h CPK = <strong>991 vs 3996 U/L</strong>. 거의 <strong>4배 차이</strong>. <span class="chip">R&amp;T 5e pp.351–353</span></p>
+          <p>→ 같은 일일 용량이 같은 독성을 보장하지 않음. "총량으로 독성을 예측한다"는 흔한 직관이 깨지는 자리.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ 임상 용량 혼동 주의</span>75 mg/kg/day는 <strong>임상 daptomycin 용량이 아니라</strong> dose fractionation toxicity를 분리해서 보기 위한 <strong>실험적(개 모델) design dose</strong>. <strong>임상 daptomycin은 4–6 mg/kg/day</strong>(복잡성 균혈증·심내막증에서 8–12 mg/kg/day까지). 살아남는 교훈은 <em>"같은 daily dose ≠ 같은 toxicity"</em>. <span class="chip">Oleson et al. 2000 AAC 44:2948–2953</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 2 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1'</span>
+        <h1 class="slide-title">공통 뿌리 — 세 질문, 세 자</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>두 장면은 같은 뿌리 — <strong>"항정상태"라는 한 단어 안에 사실은 세 개의 다른 질문</strong>이 들어있는데, 그중 어떤 자(ruler)를 묻고 있는지 분리 안 하면 임상 판단이 어긋남.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>질문</th><th>자(ruler)</th><th>답을 정하는 파라미터</th></tr></thead>
+            <tbody>
+              <tr><td><strong>언제</strong> 거기에 도달함?</td><td>시계</td><td>\(t_{1/2}\)</td></tr>
+              <tr><td>평균 <strong>수준</strong>은 어디임?</td><td>무게중심</td><td>\(CL\), 평균 입력률</td></tr>
+              <tr><td>얼마나 <strong>출렁이고/쌓임?</strong></td><td>출렁임 / 배율</td><td>\(\tau/t_{1/2}\)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px"><strong>이 세 자를 분리하는 게 이 챕터의 척추임.</strong> 이 세션은 <em>"항정상태를 세 개의 자로 분해해서 다시 조립하는 법"</em>을 다루는 것임.</p>
+        </div>
+        <div class="callout teal"><span class="callout-label">큐레이션 맵</span><strong>MUST 10개 카드(M1–M10)</strong> + CONTEXT 12개(C1–C12). MUST 묶음: ① PK 시계(M1–M5), ② 설계 다리(M6–M8), ③ PD/안전성 시계(M9–M10).</div>
+      </div>
+    </section>
+
+    <!-- Slide 3 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1A–C</span>
+        <h1 class="slide-title">척추 한 번 더 + 카드 흐름</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{\text{Timing}}_{t_{1/2}}}^{\text{언제}}\;+\;\overbrace{\underbrace{\text{Level}}_{CL,\;R_{in}}}^{\text{얼마나 높이}}\;+\;\overbrace{\underbrace{\text{Amplitude}}_{\tau/t_{1/2}}}^{\text{얼마나 출렁이게}}$$</div></div>
+        <p>세 축을 손에 들고 있으면, NONMEM의 <code>SS=1</code>이랑 <code>ADDL/II</code>, 부하용량과 유지용량, 치료역 기반 투여 설계가 전부 <strong>같은 문법</strong> 위에서 읽힘.</p>
+        <div class="algo">[선행: single-dose PK, CL·V·t1/2, oral absorption]
+   <span class="arr">→</span> <span class="strong">[이 세션: steady-state 문법, 축적, 치료역 기반 regimen 설계]</span>
+   <span class="arr">→</span> [후속: TDM, PopPK 공변량 해석, exposure-response, Phase 1 MAD 설계]</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>묶음</th><th>카드</th><th>답하는 큰 질문</th></tr></thead>
+            <tbody>
+              <tr><td><strong>① PK 시계</strong></td><td>M1–M5</td><td>약물 쪽 시간 구조 — 언제 도달, 얼마나 축적, 농도/약물량 분리, flip-flop</td></tr>
+              <tr><td><strong>② 설계 다리</strong></td><td>M6–M8</td><td>PK 시계를 임상 투여 설계로 — loading/maintenance, TW 알고리즘</td></tr>
+              <tr><td><strong>③ PD/안전성 시계</strong></td><td>M9–M10</td><td>환자 쪽 시간 — 약물과 다를 수 있는 효과 시계, 분할 독성</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tip">🧭 M1–M10 각 카드는 <strong>"잠그는 자(ruler)"</strong> 라벨을 들고 다니며, M3은 <strong>[⚡Apex Concept]</strong>.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M1</span>
+        <h1 class="slide-title">정속 주입 plateau — 누가 높이를 정함? <span class="tag">level</span></h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 무게중심(level)</strong>. plateau의 <strong>높이</strong>만 답하는 카드. 시간도 진폭도 아님.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\frac{dC}{dt}}_{\text{농도 변화}}=\overbrace{\underbrace{\frac{R_{in}}{V}}_{\text{입력/V}}}^{\text{유입}}-\overbrace{\underbrace{\frac{CL}{V}C}_{\text{제거/V}}}^{\text{유출}}\quad\Rightarrow\quad\underbrace{C(t)}_{\text{t농도}}=\overbrace{\underbrace{\frac{R_{in}}{CL}}_{\text{plateau}}}^{C_{ss}}\;\underbrace{\left(1-e^{-(CL/V)t}\right)}_{\text{접근분율}}$$</div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_{ss}}_{\text{SS 농도}}=\frac{\overbrace{\underbrace{R_{in}}_{\text{입력률}}}^{\text{단위시간당 들어오는 양}}}{\overbrace{\underbrace{CL}_{\text{청소율}}}^{\text{단위시간당 지워지는 용적}}}$$<div class="formula-cite"><span class="chip">G&amp;W 5e p.23</span><span class="chip">R&amp;T 5e p.288</span></div></div></div>
+        <div class="callout teal"><span class="callout-label">💡 비유 — 욕조</span>수도꼭지(\(R_{in}\)) 일정 + 배수구(\(CL\)). 수위는 들어오는 물의 양과 배수구 크기의 균형. <strong>욕조 크기(\(V\))는 도달 속도에 영향 — 수위 위치는 아님.</strong></div>
+        <div class="callout warn"><span class="callout-label">⚠️ 실무 함정 — "낮은 농도 = CL 증가"는 너무 빠른 점프</span>주입 중 농도가 기대 plateau보다 낮다고 곧바로 "\(CL\)이 늘었네"로 점프 금지. <strong>실제 입력률·라인 중단·sampling time·infusion stop/start 기록</strong>부터 확인. 교과서가 보증하는 건 \(C_{ss}=R_{in}/CL\)이라는 <strong>구조</strong>지, 현장 오류 빈도는 아님.</div>
+        <p class="tip">한 줄 마무리: plateau <strong>농도</strong>의 지배자는 청소율. <strong>도달 시간</strong>의 지배자는 반감기(→ M2).</p>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M2</span>
+        <h1 class="slide-title">3–4 \(t_{1/2}\) 규칙 — 누가 시계를 정함? <span class="tag">timing</span></h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 시계(timing)</strong>. 도달은 <strong>비율</strong>의 문제, 목표 높이의 문제가 아님. 도달 시간표는 <strong>\(K\)와 \(t_{1/2}\)만</strong> 정함.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{C(t)}_{\text{t농도}}=\overbrace{\underbrace{C_{ss}}_{\text{plateau}}}^{\text{높이(=결정됨)}}\;\overbrace{\underbrace{(1-e^{-Kt})}_{\text{도달률}}}^{\text{비율(시간만의 함수)}}$$</div></div>
+        <p>핵심은 <strong>높이(\(C_{ss}\))와 도달률(\(1-e^{-Kt}\))이 곱셈으로 분리</strong>. 도달률은 시간만의 함수. plateau 높이를 두 배로 올려도 도달률 곡선의 모양은 똑같음.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{1-e^{-Kt}}_{\text{도달률}},\qquad \underbrace{K}_{\text{소실 K}}=\frac{\ln 2}{\underbrace{t_{1/2}}_{\text{반감기}}},\qquad \overbrace{\underbrace{t_{90}}_{\text{90\% 도달}}}^{\approx\,3.32\,t_{1/2}}=\frac{\ln 10}{K}$$<div class="formula-cite"><span class="chip">R&amp;T 5e p.291</span></div></div></div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">💡 비유 — 엘리베이터</div><p>5층이든 50층이든 "남은 거리의 절반을 줄이는 데 걸리는 시간"은 같음. 시간표는 목표와 무관.</p></div>
+          <div class="card-soft"><div class="card-title">약물 예시</div><p><strong>t-PA</strong> (혈전용해제): \(t_{1/2}=5\) min → 90% 도달 \(\approx 17\) min<br><strong>Eptifibatide</strong> (GP IIb/IIIa): \(t_{1/2}=2.5\) h → \(\approx 8\) h<br><strong>Phenobarbital</strong>: \(t_{1/2}=4\) days → \(\approx 13\)일</p></div>
+        </div>
+        <div class="callout"><span class="callout-label">NONMEM 연결 — <code>SS=1</code></span><code>SS=1</code> 플래그는 "이 환자가 평균적으로 충분히 오래 투여받았다"는 <strong>시간 조건</strong>. 실제 투여 이력이 <strong>최소 3–4 half-lives 이상</strong>인지 먼저 확인. 안 채워졌는데 <code>SS=1</code> 꽂으면 NONMEM이 상승 구간을 강제 plateau로 설명 → \(CL/F\), \(V/F\), ETA 추정 다 왜곡.</div>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M3</span>
+        <h1 class="slide-title">[⚡ Apex] 축적계수 — 왜 dose가 안 들어가는가? <span class="tag apex">amplitude</span></h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 출렁임/배율</strong>. 이 카드가 이 챕터의 <strong>정점</strong>. trough가 올라오면 본능적으로 <em>"아직 plateau 도달 안 했네"</em> → <strong>이게 phenobarbital 미스터리의 정체</strong>. trough가 올라오는 건 <strong>축적</strong>(\(\tau/t_{1/2}\) 작음, \(R_{ac}\) 큼), 도달 여부는 <strong>시간</strong>(→ M2). <em>다른 자임.</em></p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{R_{ac}}_{\text{축적계수}}}^{\text{dose-free 배율}}=\frac{1}{1-\overbrace{\underbrace{e^{-K\tau}}_{\text{잔여분}}}^{\text{interval 끝 fraction}}}=\frac{1}{1-\underbrace{2^{-\tau/t_{1/2}}}_{\text{반감기 잔여}}}$$<div class="formula-cite"><span class="chip">G&amp;W 5e pp.44–45</span><span class="chip">R&amp;T 5e pp.325–326</span></div></div></div>
+        <p>이 식에서 가장 먼저 봐야 할 건 <strong>dose가 어디에도 안 보인다는 점</strong>. 선형 PK에서 dose를 두 배로 올리면 농도는 두 배 — 같은 \(\tau/t_{1/2}\)의 \(R_{ac}\) 배율은 그대로.</p>
+        <div class="callout teal"><span class="callout-label">💡 비유 — 저금통 배율</span>\(R_{ac}\)는 매번 남은 잔돈이 다음 입금에 더해지는 <strong>저금통 배율</strong>. 입금액(=dose)이 커져도, 같은 주기로 같은 비율이 남으면 배율 자체는 안 바뀜.</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>질문</th><th>자(ruler)</th><th>결정자</th></tr></thead>
+            <tbody>
+              <tr><td><strong>시간</strong>: plateau 접근 시간</td><td>시계</td><td>\(t_{1/2}\)</td></tr>
+              <tr><td><strong>수준</strong>: 평균 plateau 농도</td><td>무게중심</td><td>\(CL\)과 평균 입력률</td></tr>
+              <tr><td><strong>진폭/배율</strong>: peak-trough fluctuation, 축적계수</td><td>출렁임</td><td>\(\tau/t_{1/2}\)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tip">R&amp;T 5e Fig. 11-3의 200 mg/day 예시 — 평균 투여율이 같으면 평균량 plateau 접근 시간은 같지만, <strong>투여간격이 길어질수록 변동만 커짐</strong>. <span class="chip">R&amp;T 5e p.325, Fig. 11-3</span></p>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M3'</span>
+        <h1 class="slide-title">PTF + Phenobarbital의 두 숫자</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">PTF — 출렁임을 숫자로</h2>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{\mathrm{PTF\%}}_{\text{변동지수}}}^{\text{평균 대비 진폭}}=\overbrace{\frac{\overbrace{\underbrace{C_{max,ss}-C_{min,ss}}_{\text{진폭(peak-trough)}}}^{\text{출렁임 크기}}}{\underbrace{C_{av,ss}}_{\text{평균농도}}}}^{\text{비율}}\times 100\qquad\Rightarrow\quad\overbrace{\mathrm{PTF}\approx K\tau}^{\tau/t_{1/2}만의\;함수}$$<div class="formula-cite"><span class="chip">R&amp;T 5e pp.339–341, Fig. 11-14</span></div></div></div>
+        <p><strong>임상 anchor 숫자</strong>: \(\tau/t_{1/2}=1\)이면 PTF \(\approx 69\%\), \(\tau/t_{1/2}=2\)면 PTF \(\approx 139\%\), \(\tau/t_{1/2}=0.5\)면 PTF \(\approx 35\%\). amoxicillin(짧은 \(t_{1/2}\) → 큰 PTF) / naproxen / piroxicam(긴 \(t_{1/2}\) → 작은 PTF) 비교가 정확히 이 라디칼.</p>
+        <div class="callout"><span class="callout-label">💡 PTF와 \(R_{ac}\)는 짝꿍</span>\(\tau/t_{1/2}\)가 줄어들면 \(R_{ac}\)는 올라가고 PTF는 내려감. 같은 평균에서 변동을 줄이려면(좁은 치료역) <strong>\(\tau\)를 줄이고 dose를 비례적으로 줄여라</strong>.</div>
+        <h2 class="section-h">Phenobarbital의 두 숫자 — 라벨 분리</h2>
+        <div class="card">
+          <p>R&amp;T 5e 본문은 \(t_{1/2}=4\) days, 100 mg q24h에서 축적 지수를 <strong>5.8</strong>로 적음. 같은 책의 Eq. 11-3/11-10 peak/trough 기준으로 계산하면 \(A_{max,ss}/Dose=630/100\approx\) <strong>6.3</strong>. → 두 숫자는 <strong>다른 라벨</strong>: 5.8은 평균 기준(\(A_{av,ss}/Dose\approx5.76\)), 6.3은 peak/trough 기준 \(R_{ac}\).</p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{A_{av,ss}/Dose}_{\text{평균 기준}}}^{\approx 5.76}\qquad;\qquad\overbrace{\underbrace{A_{max,ss}/Dose}_{\text{peak/trough}}}^{\approx 6.3}$$</div></div>
+        <div class="callout warn"><span class="callout-label">⚠️ 유령 Plateau 편향</span>투여 시작 직후 자료에 <code>SS=1</code> 잘못 적용 시 상승 구간을 plateau로 강제 설명 → \(CL\), bioavailability, IIV 추정 연쇄 왜곡.</div>
+        <p class="tip">한 줄: 축적인자는 <strong>dose 독립, \(\tau/t_{1/2}\) 의존</strong>. dose 키우면 수준만 올라가고 축적 비율은 그대로.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M4</span>
+        <h1 class="slide-title">\(C_{av,ss}\) vs \(A_{av,ss}\) — 단위 방화벽</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 무게중심(level) — 다만 단위가 두 개</strong>. 두 값을 한 줄에 쓰는 순간 mg/L와 mg가 섞임. <strong>농도는 \(CL\) 기반 노출 언어, 약물량은 \(MRT\) 기반 체류 언어</strong>.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{C_{av,ss}}_{\text{평균농도}}}^{\text{mg/L}}=\frac{\overbrace{\underbrace{AUC_{0-\tau,ss}}_{\text{간격 AUC}}}^{\text{총 노출}}}{\underbrace{\tau}_{\text{투여간격}}}=\frac{\underbrace{F\cdot Dose}_{\text{유입량}}}{\underbrace{CL\cdot\tau}_{\text{CL×간격}}}$$</div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{A_{av,ss}}_{\text{평균량}}}^{\text{mg}}=\frac{\overbrace{\underbrace{1.44\cdot t_{1/2}}_{\text{MRT 근사}}}^{\text{체류시간}}\;\underbrace{F\cdot Dose}_{\text{유입량}}}{\underbrace{\tau}_{\text{투여간격}}}$$</div></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{MRT}_{\text{MRT}}=\underbrace{V/CL}_{\text{V/CL}}=\underbrace{1.44t_{1/2}}_{\text{반감기 시간}}\quad\Rightarrow\quad\overbrace{\underbrace{C_{av,ss}}_{\text{평균농도}}}^{\text{mg/L}}=\frac{\overbrace{\underbrace{A_{av,ss}}_{\text{평균량}}}^{\text{mg}}}{\underbrace{V}_{\text{용적 (L)}}}$$<div class="formula-cite"><span class="chip">R&amp;T 5e p.289</span><span class="chip">R&amp;T 5e p.324</span></div></div></div>
+        <p><strong>1-구획에서 \(MRT=V/CL=1.44t_{1/2}\)가 성립할 때만</strong> \(C_{av,ss}=A_{av,ss}/V\). 다구획이면 amount-to-concentration 변환은 모델 구조에 따라 달라짐.</p>
+        <div class="callout teal"><span class="callout-label">💡 차원 방화벽</span>평균농도는 mg/L, 평균량은 mg. \(V\)라는 다리 없이 등치 못 함. \(1.44t_{1/2}\)가 식에 들어간다고 농도 식이 되는 게 아님 — 그건 체류시간 기반 <strong>약물량 식</strong>.</div>
+        <div class="callout"><span class="callout-label">💡 욕조 비유</span>\(C_{av,ss}\)는 욕조의 <strong>평균 수위</strong>, \(A_{av,ss}\)는 욕조 안 <strong>물의 평균 양</strong>. 욕조 크기(\(V\)) 모르면 물의 양으로 수위를 알 수 없음. 다구획이면 같은 양이라도 수위가 다름.</div>
+      </div>
+    </section>
+
+    <!-- Slide 9 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M4'</span>
+        <h1 class="slide-title">M4 약물 예시 + 단위 차이 시각화</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>R&amp;T 5e Table 11-1의 200 mg q24h 예시</strong>는 단회 곡선을 시간 이동해 더하는 방식(superposition)으로 반복투여 곡선이 예측됨을 보여줌. <strong>Clobazam</strong>(GABAₐ 양성 알로스테릭 조절제, 항경련제) 예시는 단회 AUC와 투여간격만으로 평균 plateau 농도 예측. <span class="chip">R&amp;T 5e pp.320–321</span><span class="chip">R&amp;T 5e p.336</span></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물</th><th>분류</th><th>\(\tau/t_{1/2}\) 영역</th><th>결과</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Amoxicillin</strong></td><td>짧은 반감기 β-lactam, 페니실린계</td><td>큼 (interval ≫ \(t_{1/2}\))</td><td><strong>변동 크고 축적 작음</strong>. peak-trough가 평균에서 멀리 흔들림</td></tr>
+              <tr><td><strong>Naproxen</strong></td><td>중간 반감기 NSAID</td><td>중간</td><td>변동과 축적이 둘 다 적당한 균형 영역</td></tr>
+              <tr><td><strong>Piroxicam</strong></td><td>긴 반감기 NSAID, \(t_{1/2}\approx 50\) h</td><td>작음 (interval ≪ \(t_{1/2}\))</td><td><strong>변동 작고 축적 큼</strong>. plateau 곡선 거의 평탄</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{C_{av,ss}}_{\text{농도}}}^{\text{mg/L}}=\frac{F\cdot Dose}{CL\cdot\tau}\;\;\not\equiv\;\;\overbrace{\underbrace{A_{av,ss}}_{\text{약물량}}}^{\text{mg}}=\frac{1.44F\cdot Dose\cdot t_{1/2}}{\tau}$$</div></div>
+        <p class="tip">세 약물 다 같은 식으로 평균이 정의되지만, <strong>환자가 실제 경험하는 농도 진폭은 \(\tau/t_{1/2}\) 영역에 따라 본질적으로 달라짐</strong>. → <em>"같은 평균이면 같은 노출"이 아님.</em></p>
+        <div class="callout amber"><span class="callout-label">⚡ 마무리</span>TDM·노출-반응이면 \(C_{av,ss}\), body burden·체류시간이면 \(A_{av,ss}\). \(A_{av,ss}\)를 농도식처럼 쓰는 순간 단위가 무너지고 용량 rationale 깨짐.</div>
+      </div>
+    </section>
+
+    <!-- Slide 10 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M5</span>
+        <h1 class="slide-title">Flip-flop — terminal slope가 흡수를 말한다면</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 시계(timing)의 정체</strong>. terminal slope를 자동으로 elimination으로 번역하면, <strong>제형이 만든 느린 input을 약물 자체의 느린 제거로 오판</strong>.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{K_a<K}_{\text{느린 흡수}}}^{\text{flip-flop 조건}}\;\Rightarrow\;\overbrace{\underbrace{\text{terminal slope}}_{\text{말단 기울기}}}^{\text{둘 중 느린 쪽 반영}}\approx\underbrace{K_a}_{\text{흡수 K}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 비유 — 수도꼭지/배수구</span>수도꼭지(느린 입력)가 작고 배수구(빠른 제거)가 크면 → terminal slope = elimination. 반대로 배수구보다 수도꼭지가 작으면, 욕조 수위 곡선은 결국 <strong>수도꼭지 속도(입력 끊김의 속도)</strong>가 그림. <strong>두 과정 중 율속단계가 tail을 그림</strong>.</div>
+        <h2 class="section-h">의도된 input 제어 — "나쁜 flip-flop"이 아님</h2>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">Morphine MR</div><p>모르핀 서방형, 만성 통증. 모르핀 자체 elimination half-life 짧지만 서방형으로 q24h 가능.</p></div>
+          <div class="card-soft"><div class="card-title">Leuprolide depot</div><p>GnRH 효현제, 전립선암·자궁내막증. half-life 짧지만 depot 제형으로 월 1회 투여.</p></div>
+        </div>
+        <p>→ 두 약 모두 <strong>terminal slope가 \(K_a\)를 반영하는 의도된 flip-flop</strong>의 임상 사례. <span class="chip">R&amp;T 5e pp.337–338</span><span class="chip">G&amp;W 5e pp.45–46, Fig.2.29</span></p>
+        <div class="callout warn"><span class="callout-label">⚠️ 한 줄 함정</span>긴 terminal half-life를 보고 곧바로 "느린 elimination이구나" 하지 말고, <strong>IV 데이터나 제형 정보를 먼저 확인</strong>. <em>"terminal half-life = elimination half-life"</em>로 고정하면 제형·input 효과가 누락되고 투여간격 판단이 거꾸로 감.</div>
+      </div>
+    </section>
+
+    <!-- Slide 11 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M6</span>
+        <h1 class="slide-title">치료역 — TW vs TI vs Concentration Range</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 임상 제약</strong>. 치료역은 PK 식의 결과가 아니라 regimen이 통과해야 하는 <strong>제약</strong>.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>용어</th><th>정의</th><th>출처</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Therapeutic concentration range</strong></td><td>임상 경험상 효과 있고 위해 받아들일 만한 농도 범위</td><td><span class="chip">R&amp;T 5e p.272</span></td></tr>
+              <tr><td><strong>Therapeutic window (TW)</strong></td><td>효용 곡선의 역치 이상으로 정의되는 임상 의사결정 구간</td><td><span class="chip">R&amp;T 5e pp.273–274</span></td></tr>
+              <tr><td><strong>Therapeutic index (TI)</strong></td><td>전임상 \(TD_{50}/ED_{50}\) ratio. <strong>임상에서는 노출 변화에 대한 limiting effect sensitivity</strong></td><td><span class="chip">R&amp;T 5e p.278</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{TI}_{\text{TI}}}^{\text{전임상 ratio}}\sim\frac{\overbrace{\underbrace{TD_{50}}_{\text{독성 TD50}}}^{\text{50\%에서 독성}}}{\overbrace{\underbrace{ED_{50}}_{\text{효과 ED50}}}^{\text{50\%에서 효과}}}\qquad\overbrace{\underbrace{U(C)}_{\text{C별 효용}}}^{\text{교육용 표현}}=\sum_i \underbrace{w_i}_{\text{가중치}}\;\underbrace{P_i(C)}_{\text{결과확률}}$$<div class="formula-cite"><span class="chip">R&amp;T 5e p.273 Fig.9-4 illustrative</span></div></div></div>
+        <div class="callout"><span class="callout-label">💡 PK→임상으로 가는 문턱</span>치료역은 PK 식의 <strong>결과</strong>가 아니라 regimen이 <strong>통과해야 하는 제약</strong>. TW와 TI를 같은 안전성 용어처럼 합치는 순간 용량 근거가 흐려짐.</div>
+        <div class="card">
+          <div class="card-title">PK 시계 ≠ PD 시계 (M9에서 정량 분석)</div>
+          <p><strong>Atorvastatin</strong>: parent PK \(t_{1/2}\approx 14\) h, 활성 대사체 \(\approx 20\text{–}30\) h, cholesterol 반응 plateau <strong>3–4주</strong> — LDL turnover 지배.<br><strong>Erythropoietin (EPO)</strong>: PK \(t_{1/2}\approx 9\) h, hematocrit plateau <strong>약 70일</strong> — RBC lifespan(\(\approx 120\)일) 지배. <span class="chip">R&amp;T 5e pp.343–344</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M6'</span>
+        <h1 class="slide-title">항균제 PK index — Once-daily aminoglycoside의 정량 근거</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>항균제는 <strong>어떤 PK 지표가 효과와 연결되는지</strong>에 따라 dosing logic이 완전히 갈림 <span class="chip">R&amp;T 5e pp.307–312</span><span class="chip">R&amp;T 5e pp.347–348</span>:</p>
+        <div class="two-col">
+          <div class="card"><div class="card-title">β-lactam (time above MIC)</div><p>MIC 위에 머무는 시간이 핵심 → <strong>prolonged/continuous infusion</strong>이 합리적.</p></div>
+          <div class="card"><div class="card-title">Aminoglycoside (peak/MIC + toxicity window)</div><p>peak↑ 효과↑, trough↓ 신독성↓ → <strong>once-daily</strong>이 합리적.</p></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{\text{효과}}_{\text{살균력}}}^{\text{PD outcome}}\;\sim\;\overbrace{\underbrace{C_{max}/\mathrm{MIC}}_{\text{≥8–10 권장}}}^{\text{농도의존 살균}}\;\;+\;\;\overbrace{\underbrace{\mathrm{PAE}}_{\text{2–4 h 잔효}}}^{\text{C\;<\;MIC에서도 성장 지연}}$$</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>인자</th><th>값 anchor</th><th>임상적 의미</th></tr></thead>
+            <tbody>
+              <tr><td>\(C_{max}/\mathrm{MIC}\)</td><td>\(\geq 8\text{–}10\)</td><td>농도의존 살균 — high peak이 효과 핵심</td></tr>
+              <tr><td>post-antibiotic effect (PAE)</td><td>\(\approx 2\text{–}4\) h</td><td>농도 \(<\)MIC 후에도 균 성장 억제</td></tr>
+              <tr><td>신독성 trigger</td><td>누적 노출 + <strong>지속적 trough 노출</strong></td><td>잦은 분할 시 trough 항상 일정 이상 유지 → renal cortex 축적</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout teal"><span class="callout-label">💡 q24h 정당성</span>(1) <strong>high peak</strong>으로 \(C_{max}/\mathrm{MIC}\geq 8\text{–}10\) 확보, (2) PAE 덕분에 다음 dose 전 농도가 MIC 아래로 떨어져도 균 성장 억제, (3) <strong>drug-free interval</strong>이 길어 trough 충분히 낮은 시간 확보 → renal cortex washout 가능 → 신독성 위험 감소. 세 효과가 같은 방향으로 정렬. R&amp;T 5e Fig. 11-20의 <strong>AUC/MIC &gt; 101</strong> 예시는 내성 회피의 정량적 근거. <span class="chip">R&amp;T 5e p.348</span></div>
+        <p class="tip">M3의 PTF 직관과 정합 — once-daily는 <strong>\(\tau/t_{1/2}\)를 일부러 크게</strong> 잡아 PTF↑ → peak은 효과로, trough는 안전성으로 분리 활용.</p>
+        <div class="callout warn"><span class="callout-label">⚠️ DDI 함정</span>DDI 민감도를 protein binding 하나로 정리하려 들면 어긋남. R&amp;T 5e의 low/high 추출률 예시는 plateau 변화의 핵심 변수가 <strong>간 추출률</strong>임을 보여줌. <span class="chip">R&amp;T 5e pp.309–310, 350–351</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 13 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M6''</span>
+        <h1 class="slide-title">TDM 임상 target reference — 알고리즘의 목적지</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>M8에서 보게 될 TW 알고리즘이 작동하려면 \(C_{lower}\)와 \(C_{upper}\)를 채워 넣어야 함. R&amp;T 5e Table 9-1 기본 anchor + 항균제는 2020 ASHP/IDSA consensus 같은 최신 reference.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물</th><th>임상 target (정상 신/간 기능 기준)</th><th>측정 시점/매트릭스</th><th>PD index 근거</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Vancomycin</strong></td><td>\(\mathrm{AUC}_{24}/\mathrm{MIC}\approx \mathbf{400\text{–}600}\) (MRSA 침습)</td><td>2-point Bayesian — trough 단독 deprecated</td><td>AUC-driven, time-above-MIC 보조</td></tr>
+              <tr><td><strong>Aminoglycoside</strong> (gentamicin, tobramycin)</td><td>\(C_{max}\approx 8\text{–}10\,\)mg/L, trough \(<\mathbf{1\text{–}2}\) mg/L (q24h)</td><td>trough = 다음 dose 직전</td><td>\(C_{max}/\mathrm{MIC}\geq 8\text{–}10\) + PAE</td></tr>
+              <tr><td><strong>Digoxin</strong></td><td>\(\mathbf{0.5\text{–}2}\) ng/mL (HF: 0.5–0.9)</td><td>다음 dose 전 ≥ 6 h</td><td>narrow window, 분포 평형 후 측정</td></tr>
+              <tr><td><strong>Lithium</strong></td><td>\(\mathbf{0.6\text{–}1.2}\) mmol/L (급성 1.0–1.2, 유지 0.6–0.8)</td><td>마지막 dose 후 12 h trough</td><td>narrow TI, dose dependence</td></tr>
+              <tr><td><strong>Tacrolimus</strong></td><td>\(\mathbf{5\text{–}20}\) ng/mL (이식 phase별)</td><td><strong>whole blood</strong> trough (RBC 분배 큼)</td><td>exposure-rejection-toxicity 삼각</td></tr>
+              <tr><td><strong>Phenytoin</strong></td><td>total \(\mathbf{10\text{–}20}\) mg/L, <strong>unbound \(1\text{–}2\)</strong> mg/L</td><td>저알부민·요독에선 unbound 직접 측정</td><td>비선형 PK + 단백결합 변화</td></tr>
+              <tr><td><strong>Cyclosporine</strong></td><td>이식 phase별 (C0 또는 C2)</td><td><strong>whole blood</strong></td><td>분획 매트릭스 의존성 큼</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">💡 목적지 없이 알고리즘 없음</span>M8 TW 알고리즘의 \(C_{lower}\), \(C_{upper}\)는 이 표가 채워줌. 단, <strong>임상 reference이지 절대 기준이 아님</strong> — 적응증, 기능, 단백결합, 매트릭스에 따라 조정. <strong>vancomycin trough 단독은 2020 consensus 이후 deprecated</strong>, AUC-based로 옮겨감.</div>
+        <div class="callout warn"><span class="callout-label">⚠️ 매트릭스 함정</span>tacrolimus·cyclosporine은 <strong>whole blood</strong>, phenytoin·warfarin은 <strong>plasma</strong>, digoxin은 <strong>serum</strong>. 보고서가 어느 매트릭스인지 확인 안 하면 PopPK fitting의 noise가 신호로 잘못 들어감.</div>
+      </div>
+    </section>
+
+    <!-- Slide 14 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M7</span>
+        <h1 class="slide-title">부하 + 유지 — 시작점과 평균 입력률 분리</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 시계의 시작점 + 무게중심의 유지</strong>. \(D_L\)은 시작점, \(D_M\)은 반복 입력률.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{D_M}_{\text{유지용량}}}^{\text{interval당 보충}}=\overbrace{\underbrace{D_L}_{\text{부하용량}}}^{\text{시작점 형성}}\;\underbrace{(1-e^{-K\tau})}_{\text{보충분율}}$$</div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{D_L}_{\text{부하용량}}}^{\text{시작점}}=\frac{\underbrace{D_M}_{\text{유지}}}{\underbrace{1-e^{-K\tau}}_{\text{보충분율}}}=\overbrace{\underbrace{R_{ac}}_{\text{축적계수}}}^{\text{ratio}}\;\underbrace{D_M}_{\text{유지}}$$</div></div>
+        </div>
+        <p>→ <strong>부하용량은 유지용량의 \(R_{ac}\)배.</strong> M3에서 본 \(R_{ac}\)가 여기서 부하/유지 ratio로 재등장.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{LD}_{\text{부하}}}^{\text{시작점}}=\frac{\underbrace{V}_{\text{V}}\;\underbrace{\text{target}}_{\text{목표}}}{\underbrace{F}_{\text{F}}},\qquad\overbrace{\underbrace{MD}_{\text{유지}}}^{\text{입력 속도}}=\underbrace{CL}_{\text{청소율}}\;\underbrace{\text{target}}_{\text{목표}}\;\underbrace{\tau}_{\text{간격}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 비유 — 가속페달 + 크루즈</span>부하용량 = <strong>가속페달</strong>(한 번 강하게), 유지용량 = <strong>크루즈 컨트롤</strong>(끊임없이 미세 조정).</div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">Doxycycline (테트라사이클린계)</div><p>\(t_{1/2}=24\) h, \(D_L=200\) mg, \(D_M=100\) mg/day, \(R_{ac}=2\). \(D_L=R_{ac}\times D_M=2\times 100=200\) mg — 가장 단순한 anchor. <span class="chip">R&amp;T 5e p.327</span></p></div>
+          <div class="card-soft"><div class="card-title">Sirolimus (mTOR 억제제, 신장이식)</div><p>\(t_{1/2}=2.5\) days, loading 6 mg, maintenance 2 mg/day. 식대로면 \(R_{ac}\approx 4.3\), \(D_L\approx 8.6\) mg이지만 실제 임상은 6/2 — <strong>이론식과 내약성 사이 조정</strong>. <span class="chip">R&amp;T 5e pp.326–327</span></p></div>
+        </div>
+        <div class="callout amber"><span class="callout-label">Bolus + Infusion anchor (PK13)</span><strong>400 µg/kg bolus + 800 µg/kg over 26 min</strong>, 치료역 50–300 µg/L, \(V_c=2.0\) L/kg, \(CL=1.0\) L/min/kg, \(CL_d=1.0\) L/min/kg, \(V_t=5.0\) L/kg. <span class="chip">G&amp;W 5e pp.537–539</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 15 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M7'</span>
+        <h1 class="slide-title">TCI — bolus+infusion의 임상 자동화</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>위 bolus+infusion이 <strong>한 시점</strong>의 즉시 plateau 진입 문제라면, <strong>TCI</strong>(target controlled infusion)는 그걸 <strong>연속 시간 축</strong>에서 자동화한 임상 시스템. 마취과에서 propofol·remifentanil로 매일 사용 — <strong>M7 + M5 + M3을 합쳐놓은 것</strong>.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{C_{target}(t)}_{\text{시간별 목표}}}^{\text{임상가 설정}}\;\rightarrow\;\overbrace{\underbrace{\text{펌프}}_{\text{내장 PK 모델}}}^{\text{3구획 PK 풀이}}\;\rightarrow\;\overbrace{\underbrace{R_{in}(t)}_{\text{실시간 가변 주입}}}^{\text{출력}}=\overbrace{CL\cdot C_{target}}^{D_M}+\overbrace{V\cdot \frac{dC_{target}}{dt}}^{D_L}+\overbrace{Q\cdot(C_p-C_t)}^{\text{재분포 보정}}$$</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>구성요소</th><th>임상 의미</th><th>M7과의 연결</th></tr></thead>
+            <tbody>
+              <tr><td>\(C_{target}\) 설정</td><td>임상가가 "혈장(또는 effect-site) 목표농도" 직접 지정</td><td>M6의 TW 안쪽 목표점</td></tr>
+              <tr><td>펌프 내장 PK</td><td>보통 3-구획 (Marsh / Schnider for propofol, Minto for remifentanil)</td><td>M5/§4의 다구획 구조</td></tr>
+              <tr><td>초기 bolus</td><td>목표농도로 즉시 진입</td><td>M7-A의 \(D_L\)</td></tr>
+              <tr><td>가변 infusion</td><td>재분포·elimination에 맞춰 실시간 조정</td><td>M7-A의 \(D_M\)의 시간 연속 버전</td></tr>
+              <tr><td>effect-site mode</td><td>\(k_{e0}\)를 추가해 효과 부위 농도를 직접 target</td><td>M9의 PK-PD 시계 분리 자동화</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">Propofol</div><p>GABAₐ 양성 알로스테릭 조절제, 정맥 마취제. Marsh 또는 Schnider 모델 내장. 혈장 또는 effect-site target. 빠른 onset/offset.</p></div>
+          <div class="card-soft"><div class="card-title">Remifentanil</div><p>초단기 μ-opioid agonist, 비특이 esterase로 분해. Minto 모델. Context-sensitive half-time 거의 일정(\(\approx 3\text{–}4\) min) — 장시간 후에도 회복 빠름.</p></div>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ TCI 실패의 자리</span>알고리즘의 PK 모델은 healthy adult 평균에서 유도. <strong>비만, 소아, 노인, 심한 간/신 기능 저하</strong>에서는 prediction error↑. <em>"펌프가 알아서 한다"</em>가 아니라 <strong>펌프 안의 PK 가정</strong>을 임상가가 알고 있어야 안전 마진 잡힘.</div>
+        <div class="callout"><span class="callout-label">Daptomycin 분할 변수</span>같은 75 mg/kg/day에서 q24h vs q8h CPK = 991 vs 3996 U/L (Study A). Study B: 같은 \(C_{max}=58\) µg/mL인데도 분할 패턴에 따라 AUC와 CPK 달라짐. \(C_{max}\)나 AUC 하나로 독성 설명 불가 → M10. <span class="chip">R&amp;T 5e p.352 Fig.11-24, Table 11-7</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 16 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M8</span>
+        <h1 class="slide-title">TW 알고리즘 — \(C_{upper}/C_{lower}\)만으로 \(\tau\)·dose 상한</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>M1~M7을 한 알고리즘으로 묶는 종착역. <strong>자동 처방기로 읽으면 안 됨 — 타당성 점검(feasibility screen)</strong>으로 읽어야 함.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{C_{lower}}_{\text{하한}}}^{\text{효과 역치}}=\overbrace{\underbrace{C_{upper}}_{\text{상한}}}^{\text{독성 역치}}\;\underbrace{e^{-K\tau_{max}}}_{\text{허용감소}}$$</div></div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{\tau_{max}}_{\text{최대간격}}}^{\text{TW 한계}}=\underbrace{1.44t_{1/2}}_{\text{시간척도}}\;\overbrace{\underbrace{\ln\left(\frac{C_{upper}}{C_{lower}}\right)}_{\text{TW 폭}}}^{\text{무차원 ratio}}$$<div class="formula-cite"><span class="chip">R&amp;T 5e p.334</span></div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{D_{M,max}}_{\text{최대 MD}}}^{\text{용량 상한}}=\overbrace{\underbrace{\frac{V}{F}}_{\text{V/F 보정}}}^{\text{apparent volume}}\;\underbrace{(C_{upper}-C_{lower})}_{\text{허용상승}}$$</div></div>
+        </div>
+        <div class="callout teal"><span class="callout-label">💡 두 비율, 두 답</span>\(C_{upper}/C_{lower}\) <strong>비율</strong>은 interval 제약. \(C_{upper}-C_{lower}\) <strong>차이</strong>는 dose size 제약. ratio가 좁으면 interval 줄여야, difference가 작으면 dose 줄여야.</div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{C_{ss,av}}_{\text{허용평균}}}^{\text{log mean}}=\frac{\underbrace{C_{upper}-C_{lower}}_{\text{선형폭}}}{\underbrace{\ln(C_{upper}/C_{lower})}_{\text{로그폭}}}$$</div></div>
+        <div class="card">
+          <div class="card-title">알고리즘 한 줄씩</div>
+          <ol>
+            <li>\(C_{lower}\), \(C_{upper}\)를 정함 — 임상 자료 기반 (M6-E 표).</li>
+            <li>\(t_{1/2}\)로 \(\tau_{max}\) 계산.</li>
+            <li>\(V/F\)로 \(D_{M,max}\) 계산.</li>
+            <li>실제 제형 강도와 복약 순응도 고려해서 실용적 \(\tau\)와 \(D_M\) 선택.</li>
+            <li>필요하면 \(D_L\)로 initial target 접근 (→ M7).</li>
+          </ol>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ 적용 중단 조건</span><strong>선형 PK 비성립, 즉각적 농도-반응 깨짐, flip-flop, 단회 투여 치료, turnover 지배 PD plateau</strong> 중 하나라도 의심되면 알고리즘에서 끝내고 모델 확장으로 돌아감. <span class="chip">R&amp;T 5e p.279</span><span class="chip">R&amp;T 5e pp.341–345</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 17 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M9</span>
+        <h1 class="slide-title">PD plateau — "이 반감기는 누구의 반감기인가?"</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 새로운 시계 — turnover 시계</strong>. PK plateau를 효과 plateau로 옮겨 쓰면 statin이나 EPO 같은 turnover 지배 약물에서 평가 시점을 너무 일찍 잡게 됨.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{t_{1/2,\;PK}}_{\text{PK 시계}}}^{\text{약물 분자의 반감기}}\;\not\equiv\;\overbrace{\underbrace{t_{\text{PD plateau}}}_{\text{PD 시계}}}^{\text{반응변수 turnover 시상수}}$$</div></div>
+        <h2 class="section-h">Indirect Response Model (Type I/III)</h2>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{\frac{dR}{dt}}_{\text{반응 변화}}}^{\text{IDR}}=\overbrace{\underbrace{k_{in}}_{\text{생성률}}}^{\text{약물 자극/억제}}-\overbrace{\underbrace{k_{out}\cdot R}_{\text{1차 소실}}}^{\text{내인성 turnover}}\quad\Rightarrow\quad\overbrace{\underbrace{t_{PD\;plateau}}_{\text{90\% 접근}}}^{\text{접근 시간}}\approx\frac{\ln 10}{k_{out}},\quad t_{1/2,PD}=\frac{\ln 2}{k_{out}}$$</div></div>
+        <p>이게 M2의 <em>"3–4 half-lives 규칙"</em>과 같은 식 구조인데, <strong>\(K\)가 \(k_{out}\)으로 바뀌었을 뿐</strong>. M2 식 자체는 그대로 통하지만 <em>"어떤 K인가"의 답만 바뀐 것</em>.</p>
+        <div class="card">
+          <div class="card-title">Atorvastatin (cholesterol)</div>
+          <p>Parent \(t_{1/2}=14\) h, <strong>활성 대사체</strong>(2-/4-hydroxy atorvastatin) \(t_{1/2}\approx 20\text{–}30\) h. 그런데 PD plateau 3–4주의 진짜 정체는 PK 시계가 아님 — <strong>LDL 수용체와 cholesterol pool turnover</strong> (\(t_{1/2,\,LDL\;receptor}\approx 14\)일 → \(k_{out}\approx \ln 2/14\,\text{일}\approx 0.05\,\text{day}^{-1}\), \(t_{PD\;90\%}\approx 2.3/0.05\approx 46\)일). 실제 임상 plateau 3–4주는 LDL 수용체 upregulation + 빠른 경로 섞임.</p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{14\;\mathrm{h}}_{\text{parent }t_{1/2}}}^{\text{PK 시계}}\;\ll\;\overbrace{\underbrace{20\text{–}30\;\mathrm{h}}_{\text{활성 대사체}}}^{\text{보정 PK}}\;\ll\;\overbrace{\underbrace{3\text{–}4\;\text{주}}_{\text{LDL turnover}}}^{\text{PD 시계}}$$<div class="formula-cite"><span class="chip">R&amp;T 5e p.343, Fig.11-16</span></div></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 18 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M9'</span>
+        <h1 class="slide-title">EPO + PD plateau 정량 anchor</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <div class="card-title">EPO (hematocrit)</div>
+          <p>\(t_{1/2,\,PK}\approx 9\) h이지만, 반응 변수인 hematocrit의 turnover는 <strong>RBC lifespan \(\approx 120\)일</strong>이 정함. \(k_{out}\approx \ln 2/120\,\text{일}\approx 0.0058\,\text{day}^{-1}\), 따라서 \(t_{PD\;90\%}\approx 2.3/0.0058\approx 400\)일이지만, 실제로는 RBC 생성률 자극 + 순환 RBC 누적이라 plateau <strong>70일</strong> 도달.</p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{9\;\mathrm{h}}_{\text{PK }t_{1/2}}}^{\text{PK 시계}}\;\ll\;\overbrace{\underbrace{70\;\text{일}}_{\text{관찰 PD plateau}}}^{\text{PD 시계}}\;\lesssim\;\overbrace{\underbrace{120\;\text{일}}_{\text{RBC lifespan}}}^{\text{생리적 상한}}$$<div class="formula-cite"><span class="chip">R&amp;T 5e p.344</span></div></div></div>
+        <div class="callout teal"><span class="callout-label">💡 PD plateau 시상수 = \(\ln 2/k_{out}\)</span>무엇의 반감기인지 확정하는 방법은 단순함. <strong>반응 변수의 turnover 시상수</strong>를 먼저 식별. cholesterol → LDL pool 동역학, hematocrit → RBC lifespan, blood pressure(β차단제) → baroreceptor 적응 시상수, glucose(SGLT2 억제제) → renal threshold 회복 — 각각 다른 \(k_{out}\). 이 분리가 안 되면 임상시험 PD endpoint 측정 시점이 통째로 어긋남.</div>
+        <h2 class="section-h">M2 / M8과의 연결</h2>
+        <div class="card">
+          <p>M2의 "3–4 half-lives ≈ 90%" 규칙은 <strong>PK plateau에만 해당</strong>. atorvastatin의 cholesterol 반응에 그대로 옮기면 <em>"2–3일"</em>로 예측 — 실제는 <strong>3–4주</strong>. <strong>거의 10배 앞당기는 셈.</strong></p>
+          <p>M8 TW 알고리즘은 <strong>즉각적 농도-반응 가정</strong>이 성립할 때만 유효. turnover 지배 약물에서는 알고리즘 적용 전 <strong>PD 시간척도 검토 먼저</strong>.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ PD Plateau 시점 오류</span>효과 평가 시점 잡기 전 <strong>"이 시간상수는 누구의 반감기인가 — 약물인가, turnover/세포 수명인가"</strong>를 확인해야 함. 같은 숫자(예: 9 h)라도 약물 반감기와 hematocrit plateau를 결정하는 시계는 <strong>완전히 다른 시계</strong>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 19 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M10</span>
+        <h1 class="slide-title">Daptomycin — 같은 일일 용량 ≠ 같은 독성</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>잠그는 자: 두 번째 새 시계 — 조직 회복 시계</strong>. <em>"같은 일일 용량 = 같은 독성"</em>이라고 읽으면 회복 시간이 짧아진 조직 손상을 놓침.</p>
+        <h2 class="section-h">Study A — 가장 깨끗한 사례</h2>
+        <div class="card">
+          <p><strong>75 mg/kg q24h vs 25 mg/kg q8h.</strong> 둘 다 75 mg/kg/day로 일일 용량 같지만 CPK = <strong>991 vs 3996 U/L</strong>, 약 <strong>4배 차이</strong>. <span class="chip">R&amp;T 5e pp.351–353, Table 11-7, Fig. 11-24</span><span class="chip">Oleson et al. 2000 AAC</span></p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ 재확인</span>이 75 mg/kg/day는 <strong>임상 daptomycin 용량이 아님</strong>. fractionation toxicity를 분리해서 보기 위한 <strong>개 모델 등 실험적 design dose</strong>. 임상 daptomycin은 4–6 mg/kg/day(8–12 mg/kg/day까지). 임상에서 75 mg/kg/day로 처방하면 안 됨.</div>
+        <h2 class="section-h">Study B — \(C_{max}\) 같을 때도 분할 효과</h2>
+        <div class="card">
+          <p><strong>같은 \(C_{max}=58\) µg/mL</strong> 조건에서도 분할 패턴에 따라 AUC와 CPK가 달랐음. 이 Study B의 dose 영역(5 mg/kg q24h vs 5 mg/kg q8h)은 임상 용량에 더 가까움. <span class="chip">R&amp;T 5e p.353</span></p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{C_{max}}_{\text{최대농도}}}^{\text{같음 (58 µg/mL)}}\quad\not\Rightarrow\quad\overbrace{\underbrace{\text{동일독성}}_{\text{AUC·회복}}}^{\text{분할 패턴이 가름}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 비유 — 운동과 회복</span>같은 양의 운동도 휴식 없이 세 번 나눠서 하면 근육 손상이 훨씬 큼. <strong>분할은 총량 문제가 아니라 "회복 틈을 얼마나 남기는지의 문제"</strong>. "주 3회 한 시간씩" ≠ "매일 20분씩".</div>
+      </div>
+    </section>
+
+    <!-- Slide 20 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2-M10'</span>
+        <h1 class="slide-title">두 종류의 누적 — plasma vs 조직 손상</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>가장 중요한 통찰. <strong>M3의 \(R_{ac}\)는 plasma 구획 안에서의 약물 누적</strong>만 다룸. M10은 다른 차원 — <strong>"약물 자체의 누적"이 아니라 "조직 손상의 누적"</strong>.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>누적의 종류</th><th>무엇이 쌓이는가</th><th>결정자</th><th>카드</th></tr></thead>
+            <tbody>
+              <tr><td><strong>약물 누적 (plasma)</strong></td><td>약물 농도</td><td>\(\tau/t_{1/2}\)</td><td>M3</td></tr>
+              <tr><td><strong>조직 손상 누적</strong></td><td>표적 조직의 미회복 손상</td><td>\(\tau\) vs 조직 회복 시간</td><td>M10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <p>표적 조직이 회복하지 못한 상태에서 다음 노출이 시작되면 손상이 쌓임. <strong>회복 시간이 분할 간격보다 길면 plasma의 \(R_{ac}\)가 작은 경우에도 조직 손상은 누적될 수 있음.</strong> M7에서 부하 + 유지를 나눌 때도 용량 크기만 보지 말고 분할 패턴과 회복 시간을 같이 봐야 하는 이유.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ 비교군 정의 오류</span>분할 독성 논문에서 비교군을 잘못 잡으면 결론 전체가 뒤집힘. Daptomycin Study A의 비교군은 정확히 <strong>75 mg/kg q24h vs 25 mg/kg q8h</strong>. 25 mg/kg q24h vs 25 mg/kg q8h로 오독하면 일일 총량이 3배 차이가 나서 분할의 순수 효과를 분리할 수 없음. 문헌의 "same dose"는 <strong>분자와 분모를 직접 계산해서 실제 일일 총량부터 확인하는 습관</strong>이 필수.</div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px"><strong>같은 일일 용량 ≠ 같은 독성.</strong> 회복 시간이 분할 간격보다 길면 누적 손상이 발생. <em>"same daily dose = same toxicity"로 고정하면 조직 회복 시간이 누락되고 regimen 선택이 거꾸로 감.</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 21 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5</span>
+        <h1 class="slide-title">혼동쌍 1–2 — \(C\) 삼중쌍 + NONMEM SS</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">§5-쌍1. \(C_{ss}\) vs \(C_{av,ss}\) vs \(A_{av,ss}\)</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>항목</th><th>정확한 분리</th><th>왜 중요한가</th></tr></thead>
+          <tbody>
+            <tr><td>\(C_{ss}\)</td><td>정속 주입 plateau: \(R_{in}/CL\)</td><td>infusion 유지 target</td></tr>
+            <tr><td>\(C_{av,ss}\)</td><td>다중투여 간격 평균: \(F\text{Dose}/(CL\tau)\)</td><td>TDM/노출-반응 target</td></tr>
+            <tr><td>\(A_{av,ss}\)</td><td>plateau 평균 약물량: \(1.44F\text{Dose}t_{1/2}/\tau\)</td><td>residence time/body burden</td></tr>
+          </tbody>
+        </table></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{C_{ss}}_{\text{plateau}}}^{\text{infusion}},\quad \overbrace{\underbrace{C_{av,ss}}_{\text{평균농도}}}^{\text{multi-dose}},\quad \overbrace{\underbrace{A_{av,ss}}_{\text{평균량}}}^{\text{body burden}}$$</div></div>
+        <p class="tip"><strong>가장 치명적</strong>: \(1.44F\text{Dose}t_{1/2}/\tau\)를 농도 식으로 쓰면 단위 틀림. <strong>1-구획에 알려진 \(V\)가 같이 명시되지 않으면 약물량-농도 변환 성립 안 함</strong>. <span class="chip">R&amp;T 5e p.324, p.337</span></p>
+        <h2 class="section-h">§5-쌍2. NONMEM <code>SS=1</code> vs <code>SS=2</code></h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>항목</th><th><code>SS=1</code></th><th><code>SS=2</code></th></tr></thead>
+          <tbody>
+            <tr><td>의미</td><td>정상상태 dose event (과거형 깃발)</td><td>정상상태 infusion/input condition (현재진행형 깃발)</td></tr>
+            <tr><td>위험</td><td>실제 축적 단계를 plateau로 오인</td><td>bolus/infusion 초기조건 잘못 설정</td></tr>
+            <tr><td>선행 질문</td><td>충분한 투여 이력이 있었는가?</td><td>input이 어떤 형태였는가?</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tip"><strong>가장 치명적</strong>: SS 플래그는 <em>"편의상 넣는 옵션"</em>이 아니라 <strong>초기 조건을 수학적으로 바꾸는 명령</strong>. 두 깃발 모두 <strong>시제(時制)를 잘못 꽂는 순간 NONMEM이 존재하지 않는 history를 만들어냄</strong>.</p>
+      </div>
+    </section>
+
+    <!-- Slide 22 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5'</span>
+        <h1 class="slide-title">혼동쌍 3–4 — Flip-flop + 도달/축적/변동</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">§5-쌍3. Flip-flop vs Ordinary extravascular</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th></th><th>Ordinary</th><th>Flip-flop</th></tr></thead>
+          <tbody>
+            <tr><td>조건</td><td>\(K_a>K\)</td><td>\(K_a<K\)</td></tr>
+            <tr><td>terminal slope</td><td>\(\approx K\) (elimination)</td><td>\(\approx K_a\) (absorption)</td></tr>
+            <tr><td>terminal half-life 의미</td><td>약물 elimination 정보</td><td>제형/input 정보를 줄 수 있음</td></tr>
+          </tbody>
+        </table></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{K_a>K}_{\text{일반형}}}^{\text{absorption 빠름}}\Rightarrow\text{terminal slope}\approx K,\qquad \overbrace{\underbrace{K_a<K}_{\text{flip-flop}}}^{\text{absorption 느림}}\Rightarrow\text{terminal slope}\approx K_a$$</div></div>
+        <p class="tip">terminal phase가 보여주는 건 항상 <strong>"두 과정 중 더 느린 쪽의 속도"</strong> — 율속단계인 쪽.</p>
+        <h2 class="section-h">§5-쌍4. 도달 시간 vs 축적 정도 vs Fluctuation</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>질문</th><th>결정자</th><th>대표식</th></tr></thead>
+          <tbody>
+            <tr><td>plateau에 언제 도달함?</td><td>\(t_{1/2}\)</td><td>\(1-e^{-Kt}\)</td></tr>
+            <tr><td>얼마나 축적됨?</td><td>\(\tau/t_{1/2}\)</td><td>\(R_{ac}=1/(1-e^{-K\tau})\)</td></tr>
+            <tr><td>평균 수준은 어디임?</td><td>\(CL\)과 평균 입력률</td><td>\(C_{av,ss}=F\text{Dose}/(CL\tau)\)</td></tr>
+            <tr><td>peak-trough 진폭은?</td><td>\(\tau/t_{1/2}\)</td><td>투여간격이 길수록 커짐</td></tr>
+          </tbody>
+        </table></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{1-e^{-Kt}}_{\text{도달률}}}^{\text{시간}},\quad \overbrace{\underbrace{R_{ac}}_{\text{축적}}=\frac{1}{1-e^{-K\tau}}}^{\text{배율}},\quad \overbrace{\underbrace{C_{av,ss}}_{\text{평균}}=\frac{F\text{Dose}}{CL\tau}}^{\text{무게중심}}$$</div></div>
+        <p class="tip"><strong>가장 치명적</strong>: 용량을 두 배로 하면 농도 수준은 올라가지만 <strong>\(R_{ac}\) 자체는 안 바뀜</strong>. <strong>네 개의 자가 같은 약 한 방울에서 갈라져 나가는 것</strong>임.</p>
+      </div>
+    </section>
+
+    <!-- Slide 23 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5''</span>
+        <h1 class="slide-title">혼동쌍 5–7 — TW/TI · MRT/t½ · Resistance/Tolerance</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">§5-쌍5. TW vs TI</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>개념</th><th>정확한 의미</th><th>오해</th></tr></thead>
+          <tbody>
+            <tr><td>Therapeutic Window</td><td>효용 역치 이상의 농도 영역 (<strong>공간 척도</strong>)</td><td>"경험적 치료농도범위"와 동의어로 사용</td></tr>
+            <tr><td>Concentration Range</td><td>임상 경험상 효과·허용 위해 만족 농도 범위</td><td>TW와 항상 같은 수치라고 가정</td></tr>
+            <tr><td>Therapeutic Index</td><td>전임상 ratio 또는 임상 노출 민감도 (<strong>변동성/민감도 척도</strong>)</td><td>high TI가 모든 환자 안전을 보장한다고 해석</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tip"><strong>wide TW + low TI</strong> 환자는 임상에서 아주 흔한 시나리오 — 두 개념을 같다고 보면 이 환자군 전체가 안 보임. <span class="chip">R&amp;T 5e pp.272–278</span></p>
+        <h2 class="section-h">§5-쌍6. MRT vs half-life</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>항목</th><th>의미</th><th>주의</th></tr></thead>
+          <tbody>
+            <tr><td>\(t_{1/2}\)</td><td>곡선의 <strong>기울기</strong>가 만든 시간 (slope 기반 \(\ln2/K\))</td><td>곡선 모양에 종속</td></tr>
+            <tr><td>MRT</td><td>곡선 아래 면적의 <strong>무게중심</strong> (moment-based: \(AUMC/AUC\))</td><td>—</td></tr>
+            <tr><td>1-구획</td><td>\(MRT=1/K=1.44t_{1/2}=V/CL\)</td><td>우연한 단순식</td></tr>
+            <tr><td>다구획</td><td>\(MRT=AUMC_{0-\infty}/AUC_{0-\infty}\)</td><td>\(V/CL\) 단순 치환 위험</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tip">\(1.44\times t_{1/2}\)를 어느 구획의 시간척도로 바로 옮기는 순간 <strong>moment를 slope로 압축</strong>하는 차원 함몰. <span class="chip">R&amp;T 5e pp.289, 299–304</span></p>
+        <h2 class="section-h">§5-쌍7. Acquired Resistance vs Tolerance</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>항목</th><th>Acquired resistance</th><th>Tolerance</th></tr></thead>
+          <tbody>
+            <tr><td>본질</td><td>"적이 변한 것" — population/mutation 변화</td><td>"내가 변한 것" — 환자/시스템 PD 적응</td></tr>
+            <tr><td>시간 구조</td><td>선택 압력, population shift</td><td>수용체 둔감화, 항상성 feedback</td></tr>
+            <tr><td>관리 논리</td><td>노출 target, resistance window 회피</td><td>drug holiday, modified release, rate 제어</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tip"><strong>nitrate</strong>(혈관확장제, 협심증), <strong>nicotine</strong>(중추신경), <strong>nifedipine</strong>(칼슘채널, 고혈압)에서는 PD 적응이 핵심일 수 있음. <span class="chip">R&amp;T 5e pp.346–348</span></p>
+      </div>
+    </section>
+
+    <!-- Slide 24 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7</span>
+        <h1 class="slide-title">자기 테스트 — 회상 Q1–Q5</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q1. 정속 주입에서 \(C_{ss}\)를 결정하는 파라미터는?</div><div class="a">\(C_{ss}=R_{in}/CL\)이므로 plateau 농도 수준은 <strong>청소율과 입력률</strong>이 정함. <span class="chip">G&amp;W 5e p.23</span><span class="chip">R&amp;T 5e p.288</span></div></div>
+        <div class="q-block"><div class="q">Q2. 90% plateau에 도달하는 데 필요한 시간은 대략 몇 half-lives인가?</div><div class="a">약 3.3 half-lives, 실무적으로 3–4 half-lives. <span class="chip">G&amp;W 5e p.22</span><span class="chip">R&amp;T 5e p.291</span></div></div>
+        <div class="q-block"><div class="q">Q3. 다중투여 축적계수에 dose가 안 들어가는 이유는?</div><div class="a">같은 dose가 반복될 때 잔여분의 비율은 \(e^{-K\tau}\)이고, 반복합은 등비수열이라 ratio가 <strong>\(\tau/t_{1/2}\)에만</strong> 의존함. <span class="chip">G&amp;W 5e pp.44–45</span><span class="chip">R&amp;T 5e pp.795–797 Appendix I</span></div></div>
+        <div class="q-block"><div class="q">Q4. \(C_{av,ss}\)와 \(A_{av,ss}\)의 차원은 각각 무엇인가?</div><div class="a">\(C_{av,ss}\)는 농도, \(A_{av,ss}\)는 약물량. <strong>\(A_{av,ss}\)를 농도처럼 쓰면 차원 오류</strong>. <span class="chip">R&amp;T 5e p.324, p.337</span></div></div>
+        <div class="q-block"><div class="q">Q5. Flip-flop에서 말단 기울기는 무엇을 반영하는가?</div><div class="a">\(K_a<K\)이면 말단 기울기가 <strong>흡수속도</strong>를 반영함. <span class="chip">G&amp;W 5e pp.45–46</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 25 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7'</span>
+        <h1 class="slide-title">자기 테스트 — 적용 Q6–Q12</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q6. 어떤 약물의 \(t_{1/2}=8\) h이고 q24h 투여함. 축적은 큼?</div><div class="a">\(\tau/t_{1/2}=3\)이므로 \(R_{ac}=1/(1-2^{-3})\approx 1.14\)로 별로 안 큼.</div></div>
+        <div class="q-block"><div class="q">Q7. 같은 일일 용량을 q24h에서 q8h로 바꾸면?</div><div class="a">평균 입력률이 같으니까 <strong>\(C_{av,ss}\)는 원칙적으로 같음. 다만 peak-trough 변동은 줄어듦.</strong> 단, 독성이 회복 시간/분할에 의존하면 결과가 달라질 수 있음. <span class="chip">R&amp;T 5e p.325, pp.351–353</span></div></div>
+        <div class="q-block"><div class="q">Q8. \(C_{av,ss}=F\text{Dose}/(CL\tau)=1.44F\text{Dose}t_{1/2}/\tau\)라고 쓴 문장을 교정.</div><div class="a">앞 식은 농도, 뒤 식은 약물량. \(C_{av,ss}=F\text{Dose}/(CL\tau)\)이고 \(A_{av,ss}=1.44F\text{Dose}t_{1/2}/\tau\). <strong>1-구획에서만 \(C_{av,ss}=A_{av,ss}/V\)</strong>.<div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{C_{av,ss}}_{\text{농도}}=\frac{F\text{Dose}}{CL\tau}}^{\text{mg/L}}\quad\neq\quad \overbrace{\underbrace{A_{av,ss}}_{\text{약물량}}=\frac{1.44F\text{Dose}t_{1/2}}{\tau}}^{\text{mg}}$$</div></div></div></div>
+        <div class="q-block"><div class="q">Q9. Phenobarbital 100 mg q24h, \(t_{1/2}=4\) days에서 5.8과 6.3을 설명.</div><div class="a">5.8은 \(A_{av,ss}/Dose\approx 5.76\) <strong>평균 축적</strong>, 6.3은 R&amp;T 5e Eq.11-10 기준 peak/trough <strong>\(R_{ac}\)</strong>. 둘을 같은 라벨로 쓰면 안 됨. <span class="chip">R&amp;T 5e pp.324–326</span></div></div>
+        <div class="q-block"><div class="q">Q10. Atorvastatin PK plateau ≠ PD plateau 이유?</div><div class="a">Parent \(t_{1/2}\approx 14\) h, 활성 대사체 20–30 h, cholesterol 반응 plateau는 <strong>LDL turnover 시상수</strong>(약 14일, \(k_{out}\approx \ln 2/14\)일)가 정해서 3–4주. \(t_{PD\;plateau}\approx \ln 10/k_{out}\)로 잠금. <span class="chip">R&amp;T 5e p.343, Fig.11-16</span></div></div>
+        <div class="q-block"><div class="q">Q11. Daptomycin Study A "같은 일일 용량" 비교군?</div><div class="a"><strong>75 mg/kg q24h와 25 mg/kg q8h</strong>. 둘 다 75 mg/kg/day, CPK 991 vs 3996 U/L. 단, 이 75 mg/kg/day는 <strong>실험적 design dose</strong>(개 모델). 임상은 4–6 mg/kg/day. <span class="chip">R&amp;T 5e pp.351–353, Table 11-7</span></div></div>
+        <div class="q-block"><div class="q">Q12. TW 알고리즘에서 \(C_{upper}/C_{lower}\) ratio가 결정하는 것은?</div><div class="a"><strong>허용 가능한 투여간격의 상한</strong>. \(\tau_{max}=1.44t_{1/2}\ln(C_{upper}/C_{lower})\). <span class="chip">R&amp;T 5e p.334</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 26 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7''</span>
+        <h1 class="slide-title">보스 딜레마 — Phase 1 MAD 프로토콜</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>가상 연습 문제</strong>: 새 경구약 선형 PK, \(F=0.6\), \(V=100\) L, \(t_{1/2}=4\) h, 치료역 1–4 mg/L. Phase 1 MAD 두 regimen 검토 중.</p>
+        <div class="two-col">
+          <div class="card"><div class="card-title">Regimen A — Steady aim</div><p>200 mg q8h, <strong>부하용량 없음</strong>. <em>장점</em>: peak \(C_{upper}=4\)를 안정적으로 유지(peak safety 우선). <em>단점</em>: plateau 도달까지 12–16 h, 초기 1 interval은 효과 sub-window.</p></div>
+          <div class="card"><div class="card-title">Regimen B — Hit and hold</div><p>400 mg loading + 200 mg q8h. <em>장점</em>: 즉시 window 중앙 진입(time-to-effect 우선). <em>단점</em>: \(C_{max}\approx F\cdot D_L/V=2.4\) mg/L. IIV 30% 가정 시 <strong>상부 95% CI</strong>가 \(C_{upper}\) 일시 침범 가능.</p></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{\tau_{max}}_{\text{최대간격}}}^{\text{TW 한계}}=1.44\times\underbrace{4}_{t_{1/2}}\times\underbrace{\ln(4/1)}_{\text{TW 비}}\approx7.98\ \mathrm{h}$$</div></div>
+        <p>q8h는 TW 알고리즘이 허용하는 <strong>이론적 상한</strong>에 거의 정확히 맞춰진 interval (q12h는 window 벗어남).</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:12.5px;line-height:1.55"><strong>정답 — Regimen A 1차 선택 권고:</strong></p>
+          <ul style="font-size:11.5px">
+            <li><strong>이유 ① Phase 1 특수성</strong> — IIV 미정량 상태. peak-safety가 time-to-effect보다 불확실성 우선순위 위.</li>
+            <li><strong>이유 ② M9 PD-driven plateau</strong> — 효과 plateau가 turnover 종속이면 부하해도 효과 안 빨라짐, B 실익 사라짐.</li>
+            <li><strong>이유 ③ M5 flip-flop 가능성</strong> — \(K_a<K\) 배제 안 됐다면 \(t_{1/2}=4\) h가 elimination이 아닐 수 있음, 부하 전제 무너짐.</li>
+          </ul>
+          <p style="color:#faf9f5;font-size:12px;line-height:1.5"><strong>Regimen B를 1차로 정당화하려면:</strong> 활성 대사체 없음, PD-driven plateau 부재, \(K_a>K\) 사전 확인 + 적응증의 효과 발현 임상 중요도(예: 급성 항생제).</p>
+          <p style="color:#faf9f5;font-size:12px;line-height:1.5"><strong>IRB 응답 프레임:</strong> <em>"우리는 X와 Y 중 X(또는 Y)를 우선시했습니다. 그 이유는…"</em> trade-off 논리 명시. <em>"이 regimen이 안전하다"</em>고 단정하면 두 목표 동시 만족 가능하다는 잘못된 함의를 줌.</p>
+        </div>
+        <p class="tip">§7 핵심: <strong>계산 문제의 핵심은 숫자를 넣는 게 아니라 "어떤 식이 어떤 조건에서만 유효한가"를 먼저 잠그는 것</strong>임.</p>
+      </div>
+    </section>
+
+    <!-- Slide 27 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8B</span>
+        <h1 class="slide-title">실패 모드 — 어디서 무너지는가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>§8A 위치 설정:</strong> 이 세션이 만드는 건 pharmacometrics의 <strong>"steady-state 문법"</strong>. 이후 TDM, PopPK 공변량 해석, 노출-반응, Phase 1 MAD 설계는 전부 이 문법 위에 올라감.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>실패 모드</th><th>원인</th><th>결과</th></tr></thead>
+            <tbody>
+              <tr><td>초기 자료에 <code>SS=1</code> 적용</td><td>plateau 시간 조건 무시</td><td>CL/F, V/F, ETA 추정 왜곡</td></tr>
+              <tr><td>\(A_{av,ss}\)를 \(C_{av,ss}\)로 표기</td><td>약물량/농도 차원 혼합</td><td>용량 근거 오류</td></tr>
+              <tr><td>dose 크기로 축적 비율 설명</td><td>\(R_{ac}\)의 dose 독립성 미이해</td><td>regimen 변경 효과 오판</td></tr>
+              <tr><td>terminal half-life를 elimination으로 고정</td><td>flip-flop 미인식</td><td>제형/흡수 해석 오류</td></tr>
+              <tr><td>TW와 TI 혼용</td><td>농도 경계와 안전 민감도 혼동</td><td>용량 근거 불명확</td></tr>
+              <tr><td>PD plateau를 PK plateau로 가정</td><td>turnover/세포 수명 무시</td><td>효과 발현/지속시간 예측 실패</td></tr>
+              <tr><td>\(C_{max}\) 또는 AUC 단일 변수로 독성 설명</td><td>분할/회복 시간 무시</td><td>regimen 선택 오류</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout amber"><span class="callout-label">⚡ 일곱 모드</span>각 실패 모드는 본문 어딘가 카드의 잠그는 자를 놓친 결과임. 즉 실패 모드는 본문 카드와 1:1 대응.</div>
+      </div>
+    </section>
+
+    <!-- Slide 28 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8C</span>
+        <h1 class="slide-title">전문가 해자 + 1차 진단표</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>전문가의 해자는 복잡한 식을 많이 외우는 데 있지 않음. <strong>같은 regimen 질문을 다음 결정자 표로 즉시 분해</strong>하는 능력이 해자임.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>질문</th><th>결정자</th><th>대표 사용처</th></tr></thead>
+            <tbody>
+              <tr><td>목표 평균 농도는?</td><td>\(CL\), 평균 입력률</td><td>유지용량, TDM</td></tr>
+              <tr><td>목표에 얼마나 빨리 도달?</td><td>\(t_{1/2}\)</td><td>washout, Day-to-SS, sampling 일정</td></tr>
+              <tr><td>peak-trough 진폭은?</td><td>\(\tau/t_{1/2}\)</td><td>투여간격, 순응도, 독성</td></tr>
+              <tr><td>loading이 필요?</td><td>target onset, \(V/F\), \(R_{ac}\)</td><td>urgent therapy, bolus+infusion</td></tr>
+              <tr><td>TW 안에 머무름?</td><td>\(C_{upper}\), \(C_{lower}\), \(V/F\), \(t_{1/2}\)</td><td>투여 설계</td></tr>
+              <tr><td>효과가 늦게 옴?</td><td>turnover/세포 수명</td><td>statin, EPO, 간접 반응</td></tr>
+              <tr><td>제형이 terminal slope를 바꿈?</td><td>absorption/input duration</td><td>MR/depot/flip-flop</td></tr>
+              <tr><td>독성이 회복 시간에 의존?</td><td>분할, 최소 노출 지속시간</td><td>daptomycin류</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">1차 진단표 — 변화가 들어왔을 때</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>변화 상황</th><th>1차 파라미터</th><th>→ 임상 결과</th><th>조치</th></tr></thead>
+            <tbody>
+              <tr><td>목표 평균 농도 변화</td><td>\(CL\), 평균 입력률</td><td>유지용량 변경</td><td>\(R_{in}\) 또는 \(D_M/\tau\) 재계산</td></tr>
+              <tr><td>도달 시간 지연</td><td>\(t_{1/2}\)</td><td>sampling·washout 일정 변경</td><td>3–4 half-lives 기준 확인</td></tr>
+              <tr><td>peak-trough 진폭 과다</td><td>\(\tau/t_{1/2}\)</td><td>독성 또는 trough failure</td><td>투여간격 재설계</td></tr>
+              <tr><td>효과 plateau 지연</td><td>turnover/세포 수명</td><td>효과 평가 시점 오류</td><td>PD endpoint timing 분리</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">💼 실무 인사이트</span>이 표는 규제 제출 문장을 대신 쓰는 게 아니라, <strong>교과서 수식을 제출 가능한 정량 논리로 번역하는 내부 검토 틀</strong>임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 29 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8D</span>
+        <h1 class="slide-title">28세션 항법 + 한 줄로 들고 갈 문장</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>후속 세션</th><th>이 세션에서 열리는 개념</th><th>이 세션 없으면 실패하는 것</th></tr></thead>
+            <tbody>
+              <tr><td><strong>TDM</strong></td><td>\(C_{ss}=R_{in}/CL\)와 \(C_{av,ss}\)</td><td>농도 보정에서 \(CL\)·입력률·sampling time 혼동</td></tr>
+              <tr><td><strong>PopPK 공변량 해석</strong></td><td>\(CL\), \(V\), \(t_{1/2}\), \(\tau/t_{1/2}\) 분리</td><td>공변량 효과를 level·timing·fluctuation에 잘못 연결</td></tr>
+              <tr><td><strong>노출-반응</strong></td><td>TW, PD plateau, turnover clock</td><td>PK plateau를 효과 plateau로 오독</td></tr>
+              <tr><td><strong>Phase 1 MAD 설계</strong></td><td>축적, 부하/유지, 분할</td><td><code>SS=1</code>, interval, 독성 회복 판단 실패</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="closer-card">
+          <div class="closer-label">SESSION 07 — THE THESIS</div>
+          <p class="closer-text"><em>"항정상태는 하나의 숫자가 아니라, 시간 · 수준 · 진폭 · 임상제약을 따로 분리해서 다시 조립하는 작업임."</em></p>
+        </div>
+        <p class="tip">이 한 줄이 hook의 phenobarbital trough도, daptomycin CPK 4배 차이도, 앞으로 만날 TDM 조정, PopPK 공변량, Phase 1 MAD 설계도 같은 문법으로 읽히게 해줌.</p>
+        <div class="callout teal"><span class="callout-label">에피그래프</span><em>"같은 약 한 방울에서 네 개의 자가 갈라져 나온다 — 시계, 무게중심, 출렁임, 그리고 임상 제약. 보고서가 어느 자를 묻고 있는지 라벨을 붙이는 것이 첫 줄이고, 마지막 줄이다."</em></div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() { goTo(parseInt(btn.dataset.idx)); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ renderMath(); goTo(0); });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>

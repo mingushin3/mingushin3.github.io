@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 10 — PK/PD 모델 기초: Emax·Hill·AUEC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:30px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:22px 12px 16px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:10px 14px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.65;white-space:pre;overflow-x:auto;border-radius:12px;padding:10px 14px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.45}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.98em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:7px 11px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.45}
+.closer-card{background:#181715;border-radius:12px;padding:20px 26px;text-align:center;margin:6px auto;max-width:820px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#faf9f5;line-height:1.55}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.tag.apex{background:#a9583e}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+.axis-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#a09d96;letter-spacing:0.6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 10</div>
+        <div class="brand-sub">PK/PD · Emax·Hill·AUEC</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">§0 마스터 프레임 — 3축 decoupling</button>
+    <button class="toc-btn" data-idx="1">출처와 범위</button>
+    <button class="toc-btn" data-idx="2">§1 임상 장면 세 개</button>
+    <button class="toc-btn" data-idx="3">§1 다섯 단계 분해</button>
+    <button class="toc-btn" data-idx="4">§2.1 Kd vs EC50 첫 분리</button>
+    <button class="toc-btn" data-idx="5">§2.1 질량작용법칙 도출</button>
+    <button class="toc-btn" data-idx="6">§2.1 왜 EC50 ≠ Kd</button>
+    <button class="toc-btn" data-idx="7">§2.1 임상 시나리오 · 실무</button>
+    <button class="toc-btn" data-idx="8">§2.2 Hill γ — Apex 개념 ⚡</button>
+    <button class="toc-btn" data-idx="9">§2.2 임상 안전 마진</button>
+    <button class="toc-btn" data-idx="10">§2.2 그래프 복원 · 비결합</button>
+    <button class="toc-btn" data-idx="11">§2.3 PD3 사례연구</button>
+    <button class="toc-btn" data-idx="12">§2.3 협동성 함정</button>
+    <button class="toc-btn" data-idx="13">§2.4 Black-Leff Operational</button>
+    <button class="toc-btn" data-idx="14">§2.4 극한 · 임상 함의</button>
+    <button class="toc-btn" data-idx="15">§2.5 Block A 종합</button>
+    <button class="toc-btn" data-idx="16">§3 히스테리시스 진단</button>
+    <button class="toc-btn" data-idx="17">§3 고리 방향 · 진단 신호</button>
+    <button class="toc-btn" data-idx="18">§4.1 Effect Compartment</button>
+    <button class="toc-btn" data-idx="19">§4.2 Indirect Response</button>
+    <button class="toc-btn" data-idx="20">§4.3 외삽 갈라짐 ⚡</button>
+    <button class="toc-btn" data-idx="21">§5.1 AUEC · §5.2 지속시간</button>
+    <button class="toc-btn" data-idx="22">§5.3 PK 율속 vs PD 율속</button>
+    <button class="toc-btn" data-idx="23">§5.3 율속은 스펙트럼</button>
+    <button class="toc-btn" data-idx="24">§5.4 Aspirin COX-1 보강</button>
+    <button class="toc-btn" data-idx="25">§5.5 Methylprednisolone</button>
+    <button class="toc-btn" data-idx="26">§6 정상상태 E-R 평면</button>
+    <button class="toc-btn" data-idx="27">§7 혼동 쌍 4 정리</button>
+    <button class="toc-btn" data-idx="28">§8 자기 테스트</button>
+    <button class="toc-btn" data-idx="29">§9 메타 + Closer</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0: Master Frame -->
+    <section class="slide active">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">마스터 프레임 — 세 축의 동기화가 깨질 때</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px;line-height:1.6">🎯 <strong>한 줄로 꿴 큰 그림</strong> — 임상에서 약을 주면 머릿속에 자동으로 그려지는 그림이 있음 — <em>농도가 10이면 효과도 10</em>. 그런데 <strong>이 그림은 거의 항상 틀림</strong>. 농도-시간 곡선을 반응-시간 곡선으로 번역하는 과정에서 <strong>세 군데서 동기화가 깨지기 때문</strong>임.</p>
+        </div>
+        <div class="three-col" style="margin-top:8px">
+          <div class="card">
+            <div class="card-title">① 수직축 decoupling</div>
+            <p style="font-size:11.5px">같은 농도라도 반응 크기가 안 맞음 (천장 있음 + 가파름 다름) → <strong>Emax / Hill 모델</strong></p>
+          </div>
+          <div class="card">
+            <div class="card-title">② 수평축 decoupling</div>
+            <p style="font-size:11.5px">같은 농도라도 <em>언제</em> 그 농도에 있는지에 따라 반응이 다름 → <strong>Hysteresis → Effect Compartment / Indirect Response</strong></p>
+          </div>
+          <div class="card">
+            <div class="card-title">③ 종결시점 decoupling</div>
+            <p style="font-size:11.5px">약이 사라져도 효과는 안 사라짐 → <strong>PK 율속 vs PD 율속</strong></p>
+          </div>
+        </div>
+        <div class="callout amber"><span class="callout-label">통합 메시지</span>이 강의의 모든 개념(<span class="chip">Kd</span><span class="chip">EC50</span><span class="chip">Hill γ</span><span class="chip">AUEC</span><span class="chip">duration</span><span class="chip">ke0</span><span class="chip">kin/kout</span>)은 이 셋 중 어디서 깨진 동기화를 어떻게 모델에 흡수할지에 대한 도구일 뿐. 임상 케이스 하나 만나면 <strong>"이건 어느 축에서 깨진 거지?"</strong> 한 번만 물으면 됨. 그 다음엔 도구 상자에서 맞는 모델을 꺼내면 됨.</div>
+      </div>
+    </section>
+
+    <!-- Slide 1: 출처와 범위 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">출처</span>
+        <h1 class="slide-title">출처와 범위 — 두 교과서의 안과 밖</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>이 강의는 <strong>Gabrielsson &amp; Weiner 5e Ch.3</strong> (수용체 결합, \(E_{max}\)/Hill, 비정상상태 반응과 AUEC, 사례연구 PD3) 와 <strong>Rowland &amp; Tozer 5e Ch.8</strong> (시간 지연, 히스테리시스, 효과 구획, 간접 반응, 효과 지속 시간) 두 책의 범위 안에서 만들었음. 이 두 책을 벗어난 보강은 모두 <span class="chip">📌 교과서 외 보강</span> 박스로 분리하고 1차 문헌을 명시함.</p>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">사용 범위 (교과서 안)</div>
+            <ul style="font-size:11.5px">
+              <li>Gabrielsson &amp; Weiner 5e p.199–224</li>
+              <li>Gabrielsson &amp; Weiner 5e p.229–234</li>
+              <li>Gabrielsson &amp; Weiner 5e p.732–741</li>
+              <li>Rowland &amp; Tozer 5e p.233–264</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">본문 외 보강 출처</div>
+            <ul style="font-size:11.5px">
+              <li>Black &amp; Leff (1983) — Operational model</li>
+              <li>Sheiner-Holford (1981) — 정상상태 E-R</li>
+              <li>Awtry-Loscalzo (2000) — Aspirin COX-1</li>
+              <li>Patrono et al. (2017) — 항혈소판 기전</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">경계</span>범위 밖 구간은 <span class="chip">[확인 필요 — 첨부 PDF 미포함 구간]</span>으로 명시. <strong>G&amp;W §3.6.2–§3.6.5</strong> (p.225–228 competitive antagonism 후속 interaction), <strong>G&amp;W §3.12</strong> baseline modeling 상세, <strong>FDA guidance</strong> PD 율속 특수 집단 용량 조정 — 모두 본 PDF 범위 밖.</div>
+      </div>
+    </section>
+
+    <!-- Slide 2: §1 임상 장면 세 개 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1</span>
+        <h1 class="slide-title">임상 장면 세 개 — 문제 정의하기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>강의를 추상적으로 시작하지 않겠음. 진료실에서 마주칠 수 있는 <strong>세 장면</strong>부터 깔고 가겠음. 이 세 장면이 강의 전체의 출발점임.</p>
+        <div class="three-col">
+          <div class="card">
+            <div class="card-title">장면 ① — Digoxin</div>
+            <p style="font-size:11.5px"><strong>1 mg IV bolus</strong>. 첫 4시간 채혈 + 좌심실 구출 시간 측정. <em>혈장 농도는 떨어지는데 효과 지표는 오히려 올라감</em>. 둘이 같이 움직여야 하는데 따로 놂. → <strong>수평축 decoupling.</strong> <span class="chip">R&amp;T p.234</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">장면 ② — Naproxen</div>
+            <p style="font-size:11.5px"><strong>500 mg PO</strong> 치과 통증 모델. 비결합 혈장 농도와 통증 완화를 분 단위로 측정. <em>농도-효과 평면</em>에 점을 찍으면 <strong>반시계 방향 고리</strong>가 그려짐. 같은 농도인데 시간 순서에 따라 효과가 다름. → <strong>수평축 decoupling ②.</strong> <span class="chip">R&amp;T p.234–235</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">장면 ③ — Aspirin</div>
+            <p style="font-size:11.5px"><strong>650 mg PO</strong>. 혈장 반감기 약 <strong>15분</strong>. 그런데 항혈소판 효과는 <em>수일</em> 감. 약은 진작에 사라졌는데 효과는 안 사라짐. → <strong>종결시점 decoupling.</strong> <span class="chip">R&amp;T p.251</span></p>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>세 장면이 던지는 메시지</strong> — "농도가 얼마인가"만 보고 PK/PD를 끝낼 수 없다. 그 농도가 <em>어떤 시간 지연과 어떤 반응 시스템을 통과해서 효과로 번역되는가</em> — 거기까지 읽어야 임상 결정을 할 수 있음.</p>
+        </div>
+        <p class="tip">세 장면이 각각 수직축·수평축·종결시점에 매핑됨. 강의 전체가 이 3축 안에서 움직임.</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: §1 다섯 단계 분해 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1</span>
+        <h1 class="slide-title">다섯 단계로 분해 — 번역 과정의 지도</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="algo"><span class="strong">[수직축 decoupling]</span>
+  Block A. 천장과 가파름 — 왜 농도 두 배가 효과 두 배가 아닌가?
+            <span class="arr">└</span> Kd vs EC50 분리, Emax 골격, Hill γ 가 임상 안전의 진짜 키
+
+<span class="strong">[수평축 decoupling]</span>
+  Block B. 시간 지연 진단 — 같은 농도 다른 효과 (히스테리시스)
+  Block C. 시간 지연 구조화 — 부위 평형화인가, 시스템 전환인가?
+
+<span class="strong">[종결시점 decoupling]</span>
+  Block D. 효과 적분과 지속 시간 — 약이 사라져도 효과가 남는 이유
+            <span class="arr">└</span> AUEC, duration-log dose, PK 율속 vs PD 율속
+
+<span class="strong">[종합]</span>
+  Block E. 만성 투여로 가는 다리 — 정상상태 E-R 평면과 의사결정</div>
+        <p style="font-size:12px">선행: 선형 PK · 농도-시간 해석 → <strong>이 강의</strong> → 후속: PopPK/PD 공변량 · 시뮬레이션 · 용량 최적화.</p>
+        <div class="callout"><span class="callout-label">G&amp;W 5e p.199 Fig.3.1</span>이 그림 한 장이 강의 전체를 묶어줌. 왼쪽 패널 = <strong>농도-반응 감수성</strong> (potency/efficacy) = Block A (수직축). 오른쪽 패널 = <strong>반응-시간 거동</strong> (onset/intensity/duration) = Block B·C·D (수평축 + 종결시점).</div>
+        <div class="card-soft">
+          <p style="font-size:12px"><strong>PD 모델링의 본질 (G&amp;W 명시)</strong> — 반응 크기와 시간 경과를 예측하는 <em>in vivo</em> 특성을 식별하는 것. 이상적 PD 지표 5가지 — <strong>민감 · 점진 · 임상적 의미 · 객관 · 재현</strong>. 최소 설계 요건 — <strong>대조군 + 2~4개 용량 수준, 그중 최소 한 용량은 최대 반응 도달</strong>. 이 요건의 임팩트는 Block A 끝의 PD3 사례에서 직접 보게 됨. <span class="chip">G&amp;W p.199–200</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: §2.1 Kd vs EC50 첫 분리 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.1</span>
+        <h1 class="slide-title">첫 번째 분리 — Kd와 EC50은 같은 숫자가 아님</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>가장 흔한 임상약사·약리학 교과서 함정부터 잡고 시작. 둘이 같은 농도 단위라서 자주 같은 표에 나란히 놓이는데, <strong>이렇게 놓으면 안 됨</strong>. 둘은 다른 층위의 이야기임.</p>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">\(K_d\) — 결합층</div>
+            <p style="font-size:12px">약물이 수용체에 <em>얼마나 잘 붙는가</em> — <strong>분자 수준 결합 친화도</strong>.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">\(EC_{50}\) — 기능층</div>
+            <p style="font-size:12px">약물이 <em>그 결합을 거쳐서 절반 효과를 내는 농도</em> — <strong>시스템 수준 기능적 감수성</strong>.</p>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px;line-height:1.6">💡 <strong>치트키 비유 — 비밀번호와 회사 운영</strong></p>
+          <p style="margin-top:4px">\(K_d\)는 <em>회사 출입 비밀번호 정확도</em>. 비밀번호를 맞춰야 들어감.</p>
+          <p>\(EC_{50}\)은 <em>비밀번호를 맞춰서 회사 전체가 절반 가동되는 데 필요한 출입자 수</em>.</p>
+          <p style="margin-top:4px">비밀번호가 강한 거랑(=\(K_d\)가 낮은 거랑) 회사가 잘 돌아가는 거(=\(EC_{50}\)이 낮은 거)는 다른 얘기임. 직원 한 명만 들어와도 회사 전체가 풀가동되도록 시스템이 설계되어 있으면(여분 수용체 + 증폭 연쇄), <strong>출입자가 적어도 가동률이 높음</strong> — 즉 \(EC_{50} < K_d\).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: §2.1 질량작용법칙 도출 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.1</span>
+        <h1 class="slide-title">질량작용법칙에서 Emax 골격까지</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">가역적 1:1 결합, 평형, 단일 구획 농도 가정. 평형 결합 → 해리상수 → 점유율 → 효과식의 순서로 도출.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{d[RC]}{dt}}_{\text{복합체 변화}}=\underbrace{k_1[R][C]}_{\text{결합 생성}}-\underbrace{k_{-1}[RC]}_{\text{해리 손실}}=\underbrace{0}_{\text{평형}}$$<div class="formula-cite">평형 결합</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{K_d}_{\text{해리상수}}=\underbrace{\frac{k_{-1}}{k_1}}_{\text{해리/결합비}}=\underbrace{\frac{[C][R]}{[RC]}}_{\text{유리/결합비}}$$<div class="formula-cite">해리상수 정의</div></div></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{[RC]}{[R_T]}}_{\text{점유율}}=\underbrace{\frac{[C]}{[C]+K_d}}_{\text{농도-친화도 관계}}\qquad\Longrightarrow\qquad\underbrace{E}_{\text{반응}}=\frac{\underbrace{E_{max}}_{\text{천장}}\cdot\underbrace{[C]}_{\text{농도}}}{\underbrace{[C]+K_d}_{\text{농도+Kd}}}$$<div class="formula-cite">총 수용체 보존 + \(E_{max}=\alpha[R_T]\) (\(\alpha\) = 고유활성)</div></div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E}_{\text{효과}}=\frac{\underbrace{E_{max}}_{\text{천장}}\cdot\underbrace{C}_{\text{농도}}}{\underbrace{EC_{50}}_{\text{절반효과}}+\underbrace{C}_{\text{농도}}}$$<div class="formula-cite">기능 반응 단 — \(K_d\) 자리에 \(EC_{50}\)이 들어옴. G&amp;W 5e Ch.3 p.202–204, Eq.3:1–3:10</div></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 6: §2.1 왜 EC50 ≠ Kd -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.1</span>
+        <h1 class="slide-title">왜 EC50 ≠ Kd 인가 — 두 가지 핵심</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">여분 수용체 (spare receptor)</div>
+            <p style="font-size:11.5px">조직이 수용체를 <em>많이</em> 갖고 있어서, 다 점유 안 해도 최대 효과 근처에 도달함.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">증폭 연쇄 (cascade amplification)</div>
+            <p style="font-size:11.5px">수용체 한 개가 신호를 켜면 하류에서 다단계로 증폭됨. <strong>10% 점유가 90% 반응</strong>으로 번질 수 있음.</p>
+          </div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{EC_{50}}_{\text{기능 EC50}}\neq\underbrace{K_d}_{\text{결합 Kd}}$$<div class="formula-cite">G&amp;W Fig.3.5: 10% 점유 → 90% 반응 증폭 / Fig.3.6: 같은 반응 다른 조직 점유율. G&amp;W p.205–206</div></div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>단위</th><th>생물학적 의미</th><th>변하는 원인</th></tr></thead>
+            <tbody>
+              <tr><td>\(E_{max}\)</td><td>반응 단위</td><td>점유×고유활성의 최대 효과</td><td>총 수용체량, 조직 반응성, 고유활성</td></tr>
+              <tr><td>\(K_d\)</td><td>농도</td><td>결합층 해리상수</td><td>결합/해리 속도</td></tr>
+              <tr><td>\(EC_{50}\)</td><td>농도</td><td>기능층 절반 효과 농도</td><td>결합 + 수용체 밀도 + 증폭 + 조직 반응</td></tr>
+              <tr><td>\(C\)</td><td>농도</td><td>관련 생체구획 농도</td><td>투여량, 분포, 결합, 제거</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: §2.1 임상 시나리오 + 실무 인사이트 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.1</span>
+        <h1 class="slide-title">임상에서 안 분리하면 어떻게 깨지나</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">시나리오</span>Phase 2 PopPK/PD 보고서에서 어떤 공변량(예: <strong>신기능 저하군</strong>)에서 \(EC_{50}\)이 50% 낮게 추정. "신기능 저하군이 약에 더 민감하다"고 결론.</div>
+        <p><strong>왜 위험한가</strong> — 세 가지 가능한 기전이 모두 같은 \(EC_{50}\) 변화로 보일 수 있음:</p>
+        <ul>
+          <li>단백결합 감소 → <strong>비결합</strong> 농도 증가 → 총 \(EC_{50}\)만 낮아 보임 (약물 측, PK 변화)</li>
+          <li>활성 대사체 축적 → 추가 약리 활성 (약물 측, 대사 변화)</li>
+          <li>수용체 감수성 증가 → <strong>진짜 PD 변화</strong> (시스템 측)</li>
+        </ul>
+        <p style="font-size:12px">비결합 농도 분석 없이 총 \(EC_{50}\) 변화만 보고 "감수성 증가"로 단정하면, 신기능 저하군 용량 조정이 <em>잘못된 기전 가정</em> 위에 세워짐. 라벨 deficiency 발행 위험.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💼 실무 인사이트 — 새 EC50 값 만나면 자동 체크 2개</strong></p>
+          <p>① <strong>결합 분석(binding assay)인지 기능 분석(functional assay)인지</strong> 먼저 확인.</p>
+          <p>② <strong>총 농도 기반인지 비결합 농도 기반인지</strong> 확인. 단백결합 변화는 apparent potency를 지배함.</p>
+          <p style="color:#e8a55a;font-style:italic;margin-top:4px">이거 안 하고 \(K_d = EC_{50}\)으로 단정하면 공변량 기전 해석이 통째로 망가짐.</p>
+        </div>
+        <div class="callout teal"><span class="callout-label">Block A 첫 매듭</span>\(K_d\)는 <em>결합 강도</em>, \(EC_{50}\)은 <em>결합 + 증폭 + 조직 반응까지 포함한 기능적 감수성</em>. \(E_{max}\) 식의 쌍곡선 모양은 수용체 보존 + 질량작용에서 자연 도출. 경험식이 아니라 <strong>점유율과 신호 증폭을 한 줄로 압축한 구조식</strong>임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 8: §2.2 Hill γ Apex -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.2</span>
+        <h1 class="slide-title">두 번째 분리 — Hill γ가 임상 안전의 진짜 키 ⚡</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">임상에서 한 번쯤 — 항부정맥제·면역억제제를 약간만 증량했는데 <em>갑자기</em> 독성이 터짐. 어떤 약은 두 배 올려도 효과가 별로 안 늘어남. 이 두 현상이 같은 식에서 나옴 — <strong>Sigmoid \(E_{max}\) / Hill 모델</strong>.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E}_{\text{효과}}=\frac{\underbrace{E_{max}}_{\text{천장}}\cdot\underbrace{C^n}_{\text{농도^n}}}{\underbrace{EC_{50}^n}_{\text{중간점^n}}+\underbrace{C^n}_{\text{농도^n}}}$$<div class="formula-cite">Sigmoid Emax (자극 반응)</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E}_{\text{관찰반응}}=\underbrace{E_0}_{\text{기저치}}-\frac{\underbrace{I_{max}}_{\text{억제천장}}\cdot\underbrace{C^n}_{\text{농도^n}}}{\underbrace{IC_{50}^n}_{\text{절반억제}}+\underbrace{C^n}_{\text{농도^n}}}$$<div class="formula-cite">기저치 있는 억제 반응 (혈압, 위산)</div></div></div>
+        </div>
+        <p style="font-size:10.5px;text-align:center;color:#6c6a64;font-family:'JetBrains Mono',monospace">[출처: Gabrielsson &amp; Weiner 5e Ch.3 p.216, p.218, Eq.3:32, Eq.3:34–3:35]</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>의미</th><th>직관</th></tr></thead>
+            <tbody>
+              <tr><td>\(E_{max}\) / \(I_{max}\)</td><td><strong>천장</strong> — 효과가 최대 어디까지 갈 수 있나</td><td>곡선의 <em>높이</em></td></tr>
+              <tr><td>\(EC_{50}\) / \(IC_{50}\)</td><td><strong>중간점</strong> — 절반 효과가 어디서 나오나</td><td>곡선의 <em>위치</em></td></tr>
+              <tr><td>Hill \(\gamma\) (=\(n\))</td><td><strong>가파름</strong> — 얼마나 좁은 농도 구간에서 0→100%로 전환</td><td>곡선의 <em>경사</em></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💡 치트키 — 스위치 vs 다이얼</strong></p>
+          <p>\(\gamma = 1\)이면 <em>다이얼</em>처럼 부드럽게 — 농도 5배 차이가 효과 5배 차이. \(\gamma = 5\)면 거의 <em>on/off 스위치</em> — 농도 1.5배 차이가 효과 0%→100%. 같은 \(EC_{50}\)이라도 \(\gamma\)가 1이냐 5냐에 따라 <strong>치료 허용 폭이 완전히 달라짐</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: §2.2 임상 안전 마진 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.2 ⚡</span>
+        <h1 class="slide-title">왜 이 식이 Apex 개념인가 — 안전 마진 결정자</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">흔한 오해</span>"\(EC_{50}\)만 알면 그 농도에서 임상 효과를 예측할 수 있다." → <strong>틀림</strong>. 임상 반응 크기와 안전 마진은 \(E_{max}\), \(EC_{50}\), \(\gamma\)가 <strong>함께</strong> 결정. 특히 <strong>협역 치료역 약물</strong>에서는 \(\gamma\)가 결정적임.</div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{\gamma=1}_{\text{완만한 다이얼}}\;:\;\underbrace{EC_{50}\pm30\%}_{\text{농도 변화}}\;\to\;\underbrace{40\%\to 60\%\text{ 반응}}_{\text{20\%p 변화}}}^{\text{넓은 치료 허용 폭}}$$</div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{\gamma=3}_{\text{급한 스위치}}\;:\;\underbrace{EC_{50}\pm30\%}_{\text{같은 농도 변화}}\;\to\;\underbrace{20\%\to 80\%\text{ 반응}}_{\text{60\%p 변화}}}^{\text{매우 좁은 치료 허용 폭}}$$</div></div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>⚡ 보고서에서 빠지면 어떻게 되나</strong></p>
+          <p>Exposure-response 보고서에 \(EC_{50}\)만 적고 \(\gamma\)를 빼버리면, 협역 치료역 약물(<em>vancomycin, tacrolimus, 항부정맥제, 일부 vitamin K antagonist</em>)의 임상 용량 조절 가이드가 <strong>과관대</strong>하게 설계됨 → 독성과 치료 실패가 모두 빗나감 → 규제 심사관이 "Hill coefficient의 임상적 의의" 섹션에 deficiency 발행 → NDA/BLA 일정 지연. <span class="chip">교과서 외 규제 해석</span></p>
+        </div>
+        <div class="gem">💡 \(EC_{50}\)은 "곡선이 어디 있나"(위치), \(\gamma\)는 "그 곡선이 얼마나 가파른가"(안전 마진). <strong>위치보다 가파름이 협역 치료역 약물의 안전을 결정한다는 게 Apex 개념의 핵심.</strong></div>
+      </div>
+    </section>
+
+    <!-- Slide 10: §2.2 그래프 복원 + 비결합 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.2</span>
+        <h1 class="slide-title">그래프에서 파라미터 복원 · 비결합 환산</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">그래프에서 파라미터 복원</h2>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{m}_{\text{중간기울기}}=\frac{\underbrace{n}_{\text{Hill n}}\cdot\underbrace{E_{max}}_{\text{천장}}}{\underbrace{4}_{\text{중간점 보정}}}\;\Rightarrow\;\underbrace{n}_{\text{추정 n}}=\frac{4\,\underbrace{m}_{\text{관찰 m}}}{\underbrace{E_{max}}_{\text{최대효과}}}$$<div class="formula-cite">중간 기울기에서 γ 역산</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_0}_{\text{절편 C0}}=\underbrace{EC_{50}}_{\text{EC50}}\cdot\underbrace{e^{-2/n}}_{\text{Hill 보정}}$$<div class="formula-cite">절편 C0 복원. G&amp;W p.219, Eq.3:38–3:42</div></div></div>
+        </div>
+        <h2 class="section-h">단백결합 환산 — 식 그대로 보존</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E}_{\text{효과}}=\frac{\underbrace{E_{max}}_{\text{천장}}\cdot\underbrace{C_u^n}_{\text{비결합농도^n}}}{\underbrace{EC_{u50}^n}_{\text{비결합 EC50^n}}+\underbrace{C_u^n}_{\text{비결합농도^n}}}$$<div class="formula-cite">비결합 농도로 옮겨도 γ는 보존. G&amp;W p.216–217</div></div></div>
+        <p style="font-size:12px">단백결합 차이 큰 비교에서는 <strong>반드시</strong> 비결합 농도 기준. 그래야 단백결합 변화와 역가 변화가 안 섞임.</p>
+        <div class="callout teal"><span class="callout-label">치트키</span>💡 총 농도는 <em>항구에 도착한 모든 컨테이너</em>, 비결합 농도는 <em>실제로 공장 안으로 들어간 화물</em>. 효과를 만드는 건 후자임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 11: §2.3 PD3 사례 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.3</span>
+        <h1 class="slide-title">PD3 사례 — 설계가 모델 식별을 결정한다</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px"><strong>"파라미터 추가는 무조건 과적합"이라는 흔한 통념이 항상 맞지 않는다는 걸 같은 약 같은 모델 다른 설계로 증명한 케이스</strong>. 같은 PD3 혈압 억제 \(I_{max}\) 데이터, 두 가지 농도 범위 설계.</p>
+        <div class="two-col">
+          <div class="card-soft">
+            <div class="card-title">0–500 µg/L 설계 (고원부 미도달)</div>
+            <p style="font-size:12px">Sigmoid 우월성 입증 <strong>실패</strong>. F-test 통과 안 함.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">0–800 µg/L 설계 (G&amp;W 최소 요건 만족)</div>
+            <p style="font-size:12px">모델 판별 <strong>성공</strong>.</p>
+            <ul style="font-size:11px">
+              <li>Sigmoid \(I_{max}\): \(E_0=171\), \(I_{max}=34.7\), \(IC_{50}=140\), \(n=2.03\), <strong>AIC=45.6</strong></li>
+              <li>일반 \(I_{max}\): \(E_0=177\), \(I_{max}=49.8\), \(IC_{50}=175\), <strong>AIC=50.8</strong></li>
+            </ul>
+          </div>
+        </div>
+        <p style="font-size:10.5px;color:#6c6a64;font-family:'JetBrains Mono',monospace">[Gabrielsson &amp; Weiner 5e p.200, p.733–741]</p>
+        <div class="callout amber"><span class="callout-label">결정적 증거 — IC50 CV 방향</span>진짜 과적합이면 정밀도가 <em>악화</em>되어야 정상. 그런데 PD3에서는 반대 — 일반 \(I_{max}\)의 \(IC_{50}\) CV가 약 <strong>31%</strong>에서 sigmoid에서 약 <strong>11%</strong>로 <em>향상</em>. <strong>추가 파라미터가 데이터를 진정으로 설명한다</strong>는 직접 증거. F-test/AIC가 임계값 근처에서 흔들릴 때 결정적 보조 증거. <span class="chip">G&amp;W p.735 Table 3.2</span></div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💼 실무 인사이트 — Sigmoid 적합 정석 순서</strong></p>
+          <ul style="margin-top:3px">
+            <li>① 일반 \(E_{max}\)/\(I_{max}\)로 \(E_0/E_{max}/EC_{50}\) 초기값 잡기</li>
+            <li>② \(n=1\)에서 출발해서 자유화</li>
+            <li>③ Sigmoid에서 \(IC_{50}\) CV가 <em>향상</em>되면 → \(n\) 추가 정당화</li>
+            <li>④ 정밀도가 악화되거나 \(n\)이 1로 수렴하면 → 알고리즘 문제가 아니라 <strong>농도 범위 정보 부족</strong> (고원부 미도달)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12: §2.3 협동성 함정 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.3</span>
+        <h1 class="slide-title">Hill γ &gt; 1을 "협동성 증명"으로 쓰면 왜 틀리나</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>이게 흔한 함정. Hill 식 자체는 <strong>현상학적</strong>이라서, \(\gamma > 1\)이 나왔다는 사실만으로는 협동성을 증명 못 함. 결합 단의 독립 근거 없이 \(\gamma\)를 협동성으로 해석하면 <strong>출처 충실성이 깨짐</strong>. 가능한 <em>가설</em>로 제시할 수는 있지만 <em>증명</em>은 아님. <span class="chip">G&amp;W p.216, p.220</span></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>\(\gamma\) 값</th><th>가능한 해석</th></tr></thead>
+            <tbody>
+              <tr><td>\(\gamma = 1\)</td><td>일반 Emax 쌍곡선 (단일 점유 모델)</td></tr>
+              <tr><td>\(\gamma > 1\)</td><td>급격 전환. 협동성? 다중 부위? 이질성? — <strong>가설 후보들, 증명 아님</strong></td></tr>
+              <tr><td>\(\gamma < 1\)</td><td>활성 대사체? 다중 수용체 부위? 이질성? — <strong>마찬가지로 가설</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">왜 중요한가</span>같은 \(\gamma = 2.03\)이라는 숫자가 — 협동 결합일 수도, 두 개의 비협동 결합 부위일 수도, 조직 이질성일 수도, 측정 오차 구조일 수도 있음. 모델 식이 같다고 기전이 같지는 않음. 독립 결합 데이터(saturation binding, kinetic experiments)가 있어야 협동성 결론.</div>
+        <div class="card">
+          <div class="card-title">정리</div>
+          <p style="font-size:12px">Hill \(\gamma\)는 <strong>가파름 파라미터</strong>임. 임상적으로는 <em>안전 마진의 진짜 결정자</em>로 충분히 가치 있음. 하지만 <em>분자 기전의 직접 증거</em>로 쓰면 안 됨. 두 가지 의미를 섞어버리는 게 가장 흔한 보고서 함정.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13: §2.4 Black-Leff Operational -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.4 📌</span>
+        <h1 class="slide-title">교과서 외 보강 — Black-Leff Operational Model</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px"><strong>부분효현제(partial agonist)</strong> (Buprenorphine, aripiprazole, brexpiprazole, pindolol, TRV130) — 표준 \(E_{max}\)/Hill 식만으로는 <strong>약물 측 친화도(\(K_A\))와 약물·시스템 결합 측 고유효능(\(\tau\))을 수학적으로 분리할 수 없음</strong>. 관찰된 \(E_{max}^{obs}\)와 \(EC_{50}^{obs}\) 두 숫자가 이 두 양의 <em>조합</em>이라서, 같은 곡선 모양이 서로 다른 \((K_A, \tau)\) 쌍에서 나옴.</p>
+        <p style="font-size:11.5px">Black &amp; Leff (1983) 이 이 두 양을 명시적으로 분리.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{E}_{\text{관찰 효과}}=\frac{\underbrace{E_m}_{\text{시스템 최대}}\cdot\underbrace{\tau^n}_{\text{전환비^n (효능)}}\cdot\underbrace{[A]^n}_{\text{작용제^n}}}{\underbrace{(K_A+[A])^n}_{\text{친화도 항}}+\underbrace{\tau^n\cdot [A]^n}_{\text{효능 항}}}}^{\text{Black-Leff 1983, Hill-form 일반화}}$$</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>의미</th><th>표준 식과의 관계</th></tr></thead>
+            <tbody>
+              <tr><td>\(E_m\)</td><td><strong>시스템</strong> 최대 (조직 상한, 약물 비의존)</td><td>\(E_{max}^{obs}\)가 <em>아님</em></td></tr>
+              <tr><td>\(K_A\)</td><td><strong>약물-수용체</strong> 해리상수 (친화도, \(K_d\)와 같은 결합층)</td><td>\(EC_{50}^{obs}\)가 <em>아님</em></td></tr>
+              <tr><td>\(\tau\)</td><td><strong>Transducer ratio</strong> (고유효능). 완전효현제 \(\tau\gg 1\), 부분효현제 작음, 길항제 0</td><td>§2.1 "신호 증폭 이득"의 정량화</td></tr>
+              <tr><td>\(n\)</td><td>Transducer slope</td><td>§2.2 Hill \(\gamma\)의 일반화</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E_{max}^{obs}}_{\text{관찰 천장}}=\frac{E_m\cdot\tau^n}{1+\tau^n},\qquad\underbrace{EC_{50}^{obs}}_{\text{관찰 EC50}}=\frac{K_A}{(2+\tau^n)^{1/n}-1}$$<div class="formula-cite">관찰값과의 관계 (Hill-form 일반)</div></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 14: §2.4 극한 분석 + 임상 함의 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.4 📌</span>
+        <h1 class="slide-title">Black-Leff 극한 분석 — 부분효현제 임상 직관</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{E_{max}^{obs}\bigg|_{n=1}}_{\text{n=1 관찰 천장}}=\frac{E_m\cdot\tau}{1+\tau},\qquad\underbrace{EC_{50}^{obs}\bigg|_{n=1}}_{\text{n=1 관찰 EC50}}=\frac{K_A}{1+\tau}}^{\text{n=1 단순 hyperbolic 해 — Black &amp; Leff 1983}}$$<div class="formula-cite">Hill n=1 단순 hyperbolic 특수 경우 (직관 잡기에 가장 좋음)</div></div></div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{EC_{50}^{obs}}_{\text{관찰 EC50}}=\frac{K_A}{1+\tau}\;\xrightarrow{\tau\gg 1}\;\underbrace{\frac{K_A}{\tau}}_{\text{spare receptor 극한}},\quad\underbrace{E_{max}^{obs}}_{\text{관찰 천장}}\to E_m$$<div class="formula-cite"><strong>완전효현제 극한</strong> (\(\tau\gg 1\)): 관찰 EC50이 친화도보다 훨씬 낮음. §2.1 "EC50 &lt; Kd 가능성"의 정량화</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{EC_{50}^{obs}}_{\text{관찰 EC50}}\approx K_A,\quad\underbrace{E_{max}^{obs}}_{\text{관찰 천장}}\approx E_m\cdot\tau$$<div class="formula-cite"><strong>부분효현제 극한</strong> (\(\tau\ll 1\)): 관찰 EC50이 친화도와 거의 같지만 <strong>천장이 낮게 정착</strong>. "천장이 낮은 약" 임상 직관의 정량화</div></div></div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>임상 함의</strong></p>
+          <p>Aripiprazole 같은 도파민 부분효현제는 <em>고용량에서도 천장이 낮아 안전 마진이 넓지만 효능이 제한적</em>. 완전효현제는 <em>천장이 높지만 부작용 마진이 좁음</em>. 표준 \(E_{max}\)/Hill로 적합한 두 약을 같은 표에 놓으면 이 차이가 안 보임. <strong>Operational model로 분리해야 보임</strong>.</p>
+        </div>
+        <p style="font-size:10.5px;color:#6c6a64;font-family:'JetBrains Mono',monospace">[교과서 외 보강 — Black JW, Leff P. <em>Operational models of pharmacological agonism.</em> Proc R Soc Lond B Biol Sci. 1983;220(1219):141-62. G&amp;W 5e Ch.3 p.203–206 직관의 후속 정량화.]</p>
+      </div>
+    </section>
+
+    <!-- Slide 15: §2.5 Block A 종합 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.5</span>
+        <h1 class="slide-title">Block A 종합 — 수직축 decoupling의 세 층</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>한 줄 정리</strong> — 수직축 decoupling은 세 층으로 분해됨:</p>
+        <div class="three-col">
+          <div class="card">
+            <div class="card-title">결합층</div>
+            <p style="font-size:11.5px"><span class="chip">Kd</span> <span class="chip">KA</span> — 약물이 수용체에 얼마나 잘 붙나</p>
+          </div>
+          <div class="card">
+            <div class="card-title">효능층</div>
+            <p style="font-size:11.5px"><span class="chip">τ</span> <span class="chip">증폭 이득</span> — 같은 점유율이 얼마나 큰 반응으로 번지나</p>
+          </div>
+          <div class="card">
+            <div class="card-title">관찰층</div>
+            <p style="font-size:11.5px"><span class="chip">E_max_obs</span> <span class="chip">EC50_obs</span> <span class="chip">Hill γ</span> — 임상에서 실제로 잡히는 곡선 모양</p>
+          </div>
+        </div>
+        <p>표준 \(E_{max}\)/Hill 식은 <strong>결합층과 효능층을 한 덩어리(\(EC_{50}\))로 묶은 식</strong>임. 그래서:</p>
+        <ul>
+          <li>공변량 효과 해석 시 → <strong>비결합 농도</strong>와 <strong>결합 분석</strong>으로 결합층/효능층 가르기</li>
+          <li>부분효현제 외삽 시 → <strong>Operational model</strong>로 친화도와 효능 분리</li>
+          <li>협역 치료역 보고서 작성 시 → <strong>Hill \(\gamma\)를 빼지 말 것</strong>. 위치보다 가파름이 안전 마진 결정</li>
+          <li>모델 비교 시 → <strong>농도 범위가 고원부 도달했는지 먼저 확인</strong>. 안 했으면 sigmoid 우월성 판별 자체가 불가능</li>
+        </ul>
+        <div class="callout teal"><span class="callout-label">📊 §2 큰 그림</span>\(K_d \to K_A\) (친화도) — \(EC_{50}\) (효능 + 결합 혼합) — Hill \(\gamma\) (가파름, 안전 마진의 진짜 키) — Black-Leff \(\tau\) (효능 분리). <strong>이 네 개념이 수직축 decoupling을 완전히 설명함.</strong></div>
+      </div>
+    </section>
+
+    <!-- Slide 16: §3 히스테리시스 진단 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3</span>
+        <h1 class="slide-title">Block B — 수평축 decoupling 진단: 히스테리시스</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">지금까지는 <em>정적</em>인 농도-반응 곡선. 농도가 X면 효과는 Y, 정해진 함수 관계. 그런데 임상 데이터에서 이 그림이 자주 깨짐 — <em>시간</em>이 끼어들기 때문. 같은 농도라도 농도가 올라가는 중이냐 내려가는 중이냐에 따라 효과가 다름. 농도-효과 평면에 시간 순서대로 점을 찍어 선으로 이으면 <strong>고리(loop)</strong> — 이게 히스테리시스(hysteresis).</p>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Digoxin (분포 지연)</div>
+            <p style="font-size:11.5px"><strong>1 mg IV bolus</strong>, 첫 4시간. 혈장 떨어지는데 좌심실 구출 시간 올라감. 표면적으로 "낮은 농도에서 더 큰 효과"처럼 보임. 진실은 — 심장 조직 분포와 수용체 결합이 느려서 <strong>혈장-효과 평형까지 약 6시간</strong>. <span class="chip">R&amp;T p.234</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">Naproxen (시각적 진단)</div>
+            <p style="font-size:11.5px"><strong>500 mg PO</strong> 치과 통증 모델. 시간-농도와 시간-효과 곡선을 따로 보면 지연이 잘 안 보임. <em>그런데 농도-효과 평면에 그리면 반시계 방향 고리가 명확</em>. <strong>같은 데이터를 어떤 평면에 그리느냐가 진단을 좌우함.</strong> <span class="chip">R&amp;T p.234–235</span></p>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💡 치트키 — 두 평면을 항상 같이 봐라</strong></p>
+          <p>시간-농도 / 시간-효과 두 도표만 보면 약한 지연은 잘 안 보임. <strong>농도-효과 평면</strong>에서 시간 순서대로 점을 이으면 고리가 시각적으로 드러남. <em>이게 히스테리시스 진단의 첫 단계임.</em></p>
+        </div>
+        <div class="callout"><span class="callout-label">R&amp;T 5e p.234 Fig.8-1; p.235 Fig.8-2</span>시각적 고리를 직접 봐야 와닿음. Fig.8-2에서 sampling number 순서를 따라가면, 농도-반응 관계가 <strong>경로 의존적(path-dependent)</strong>이라는 게 그림으로 보임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 17: §3 고리 방향 + 진단 신호 + 함정 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3</span>
+        <h1 class="slide-title">고리 방향 · 진단 신호 · 잡음 처리의 함정</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">반시계 방향 고리</div>
+            <p style="font-size:11.5px">효과가 농도보다 <em>늦게</em> 따라옴. 가장 흔한 패턴. 두 원천:</p>
+            <ul style="font-size:11px">
+              <li><strong>동력학적 지연</strong>: 작용 부위 도달/결합 느림 → Block C effect compartment</li>
+              <li><strong>역학적 지연</strong>: 하류 시스템 전환이라 늦게 변함 → Block C indirect response</li>
+            </ul>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">시계 방향 고리</div>
+            <p style="font-size:11.5px">효과가 농도보다 <em>먼저</em> 떨어짐. 내성(tolerance), 길항 대사체, 음성 피드백. 본 강의 범위에서는 깊이 안 들어감. <span class="chip">R&amp;T p.235–244</span></p>
+          </div>
+        </div>
+        <h2 class="section-h">진단 신호 — 다음 단계로 가는 다리</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>진단 항목</th><th>Effect Compartment 신호</th><th>Indirect Response 신호</th></tr></thead>
+            <tbody>
+              <tr><td>고리 폭 / 약물 반감기 비율</td><td>작은 폭, 빠른 평형 가능</td><td>큰 폭, 느린 회복</td></tr>
+              <tr><td><strong>최대 효과 시점의 용량 의존성</strong></td><td><strong>용량 의존적</strong></td><td><strong>용량 비의존적</strong></td></tr>
+              <tr><td>측정 종말점이 표적 결합에 얼마나 가까운가</td><td>가까움 (수용체 측 지연)</td><td>멀음 (하류 시스템 측 지연)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💼 실무 인사이트 — Peak-time test</strong></p>
+          <p>용량 군별로 최대 효과 시점을 잼. 용량이 올라갈수록 peak time이 <em>바뀌면</em> → effect compartment 가능성. 용량이 바뀌어도 peak time이 <em>거의 일정</em>하면 → indirect response 가능성. <strong>이게 모델 선택의 1차 분기점.</strong></p>
+        </div>
+        <div class="callout warn"><span class="callout-label">함정 — 고리를 잡음 처리하면</span>"혈장이 효과 부위를 즉시 대표한다"는 틀린 가정이 모델에 박혀버림. → 투여 간격 결정 빗나감 / 특수 집단 외삽 빗나감 / Peak/trough 시점 예측 빗나감. <strong>히스테리시스는 잡음이 아니라 모델 구조를 바꾸라는 알람</strong>. 디폴트는 "혈장 ≠ 효과 부위, 평형 빠른지 확인 필요". <span class="chip">R&amp;T p.244</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 18: §4.1 Effect Compartment -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.1</span>
+        <h1 class="slide-title">Effect Compartment — 부위 평형화 지연</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">Block B에서 히스테리시스로 <em>지연을 감지</em>. 이제 그 지연을 <strong>모델 안에 흡수</strong>할 차례. 두 가지 도구 — Effect Compartment / Indirect Response. <em>둘은 결코 호환되는 패치가 아님</em>. 어느 쪽을 고르느냐에 따라 외삽이 완전히 갈라짐.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C(t)}_{\text{혈장 농도}}\to\underbrace{C_e(t)}_{\text{효과부위}}\to\underbrace{E(t)}_{\text{관찰반응}}$$<div class="formula-cite">전체 변환 사슬</div></div></div>
+        <h2 class="section-h">핵심 개념</h2>
+        <p style="font-size:12px">혈장과 작용 부위 사이에 가상의 구획을 하나 더 둠. 약물이 그 구획으로 옮겨가는 데 시간 걸림. 이 시간을 \(k_{e0}\) 한 파라미터로 흡수.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dC_e}{dt}}_{\text{효과부위 변화}}=\underbrace{k_{e0}}_{\text{평형화 속도}}\left(\underbrace{C(t)}_{\text{혈장}}-\underbrace{C_e(t)}_{\text{효과부위}}\right)$$<div class="formula-cite">그 다음 \(C_e(t)\)를 Emax/Hill 식에 넣어 \(E(t)\) 계산</div></div></div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💡 치트키 — 복도의 지연</strong></p>
+          <p>Effect compartment는 <strong>약물이 표적 방까지 가는 복도의 지연</strong>. 복도가 길고 좁으면 약이 늦게 도착함. 도착 후엔 즉시 반응. \(k_{e0}\)는 <em>그 복도의 통과 속도</em>.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">중요한 경고</span>\(C_e\)는 <em>실제 미시적 장기 구획이 아님</em>. 조직 관류, 투과성, 조직 친화도, 결합 동역학, 신호전달 지연이 다 한 가상 구획에 묶인 <strong>lumped delay representation</strong>. 그래서 <strong>\(k_{e0}\)를 특정 생리 상수처럼 외삽하면 안 됨</strong>. <span class="chip">R&amp;T p.235–236, p.245–246</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 19: §4.2 Indirect Response -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.2</span>
+        <h1 class="slide-title">Indirect Response — 시스템 전환 지연</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px"><strong>핵심 개념</strong> — 약물은 반응을 직접 만들지 않음. 약물이 <strong>반응 변수의 생성/소멸을 바꿈</strong>. 반응 자체가 자기 시간 척도(\(k_{in}/k_{out}\))로 천천히 변함.</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dR}{dt}}_{\text{반응 변화}}=\underbrace{k_{in}}_{\text{생성}}-\underbrace{k_{out}\cdot R}_{\text{소실}}$$<div class="formula-cite">기본 골격 (turnover model)</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dR}{dt}}_{\text{반응 변화}}=\underbrace{0}_{\text{peak / 평형}}\;\Longleftrightarrow\;\underbrace{\text{input}}_{\text{유입}}=\underbrace{\text{output}}_{\text{유출}}$$<div class="formula-cite">peak 조건</div></div></div>
+        </div>
+        <p style="font-size:11.5px">약물은 \(k_{in}\)이나 \(k_{out}\)을 <strong>자극</strong> 또는 <strong>억제</strong>할 수 있음. <strong>네 가지 모델 변형</strong> — \(k_{in}\) 자극, \(k_{in}\) 억제, \(k_{out}\) 자극, \(k_{out}\) 억제. <span class="chip">G&amp;W p.229–230; R&amp;T p.241–248</span></p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>💡 치트키 — 생산라인의 지연</strong></p>
+          <p>Indirect response는 <strong>표적 방 안의 생산라인이 천천히 바뀌는 지연</strong>. 약을 줘서 생산을 멈춰도, 이미 만들어진 제품이 소비되기까지 시간이 걸림. <em>생산라인의 회전 시간이 시스템 시간 척도.</em></p>
+        </div>
+        <div class="callout amber"><span class="callout-label">Warfarin 정전(canonical) 사례</span>Vitamin K antagonist. <strong>Sodium warfarin 1.5 mg/kg PO</strong>. 혈장 농도가 빨리 변해도 항응고 효과는 <strong>프로트롬빈 복합체 전환 (반감기 1–2일)</strong>에 묶여서 천천히 따라옴. 약은 진작에 정상상태에 들어갔는데도 INR은 며칠 더 움직임. <span class="chip">R&amp;T p.241–248</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 20: §4.3 외삽 갈라짐 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.3 ⚡</span>
+        <h1 class="slide-title">두 구조가 외삽에서 갈라지는 지점</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">같은 히스테리시스 고리에 두 모델을 각각 적합하면 — <strong>현재 데이터 적합은 비슷할 수 있음</strong>. AIC도 비슷할 수 있음. 그런데 <strong>외삽이 완전히 다름</strong>.</p>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Peak-time test — Effect compartment</div>
+            <p style="font-size:11.5px">Peak 시점은 \(C(t)\)와 \(C_e(t)\)의 평형 시점. 용량을 바꾸면 \(C(t)\) 모양이 바뀌고 → \(C_e(t)\) 모양도 바뀌고 → <strong>peak time이 용량 의존적</strong>.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Peak-time test — Indirect response</div>
+            <p style="font-size:11.5px">Peak 시점은 \(dR/dt = 0\) 시점, 즉 시스템의 유입=유출 시점. 시스템 시간 척도(\(k_{out}\))가 같으면 → 용량이 진폭만 바꿈 → <strong>peak time이 용량 비의존적</strong>.</p>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">시나리오 — 외삽 차이의 임상 임팩트</span>Phase 2에서 두 모델이 비슷하게 적합. 그냥 effect compartment 선택. 그런데 진짜 기전이 indirect response. → <strong>투여 간격 추천</strong> 빗나감 (시스템 회복 시간 무시) / <strong>특수 집단 외삽</strong> 빗나감 (\(k_{e0}\) 변할 거라고 잘못 가정) / <strong>Onset 예측</strong> 빗나감 (며칠 후 안정화될 텐데 짧게 예측).</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>비교 항목</th><th>Effect Compartment</th><th>Indirect Response</th></tr></thead>
+            <tbody>
+              <tr><td>지연 원천</td><td>부위 평형화</td><td>시스템 전환</td></tr>
+              <tr><td>비유</td><td>복도의 지연</td><td>생산라인의 지연</td></tr>
+              <tr><td>Peak time</td><td>용량 의존적</td><td>용량 비의존적</td></tr>
+              <tr><td>임상 예시</td><td>Digoxin, Naproxen</td><td>Warfarin (vitamin K antagonist)</td></tr>
+              <tr><td>외삽 시 핵심</td><td>\(k_{e0}\)를 생리상수 취급 금지</td><td>\(k_{in}/k_{out}\) 단순 적합 파라미터 취급 금지</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:12.5px"><strong>💼 실무 — 모델 선택 순서</strong> ① 혈장 직접 연결 적합 → 잔차 systematic pattern → 시간 지연 의심. ② Effect compartment 적합 → 잔차 깨끗해지는지. ③ Peak-time 용량 의존성 보존 → effect compartment 유지. ④ Peak-time 용량 비의존적 → indirect response로 갈아탐. ⑤ \(k_{e0}\)가 혈장 제거 속도와 너무 가깝게 추정되면 (서로 분리 추정 안 됨) — <em>모델 식별 실패</em>. 채혈 밀도 늘리거나 모델 단순화.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 21: §5.1 AUEC + §5.2 지속시간 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.1·2</span>
+        <h1 class="slide-title">AUEC와 효과 지속 시간 — 용량의 로그</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:11.5px">이제 마지막 축. <em>약은 사라졌는데 효과는 안 사라지는 현상</em>. 이게 임상 결정의 종착점 — <em>총 효과량, 효과는 언제까지, 그래서 투여 간격을 어떻게.</em></p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUEC}_{\text{반응 총량}}=\int_{\underbrace{0}_{\text{시작}}}^{\underbrace{\infty}_{\text{추적 끝}}}\underbrace{E(t)}_{\text{순간반응}}\,dt$$<div class="formula-cite">AUC가 농도-시간 면적이면 AUEC는 반응-시간 면적</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUEC}_{\text{AUEC}}=\underbrace{\frac{E_{max}}{K}}_{\text{천장 × 시간}}\ln\left(1+\underbrace{\frac{D}{EC_{50}\cdot V}}_{\text{용량/감수성}}\right)$$<div class="formula-cite">1구획 1차 제거 + 일반 Emax (n=1) 조건. G&amp;W p.233–234, Eq.3:72–3:73</div></div></div>
+        </div>
+        <div class="callout warn"><span class="callout-label">중요</span>이 식은 <strong>일반 Emax (n=1) + 1차 제거</strong> 조건에서만 출처에 근거. <strong>Sigmoid Emax (n ≠ 1)의 AUEC 폐쇄형은 출처에 없음</strong>. 수치 적분 필요 <span class="chip">수학적 추론</span>.</div>
+        <div class="gem">💡 로그식 duration의 직관 — 물통 크기를 두 배로 해도 배수 시간이 두 배가 아님. 감소가 1차면 <strong>용량 증가가 지속 시간을 선형이 아니라 로그로 늘림</strong>.</div>
+        <h2 class="section-h">§5.2 효과 지속 시간 — 용량의 로그</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{t_D}_{\text{지속시간}}=\underbrace{\frac{1}{K}}_{\text{감소시간상수}}\ln\left(\underbrace{\frac{D}{A_{min}}}_{\text{용량/역치}}\right)$$<div class="formula-cite">중간 영역(80–20% 최대치) 거의 선형 감소. 용량 두 배 → 지속 시간 약 반감기 1회분 연장. <strong>Succinylcholine 0.5 mg/kg IV</strong>, k≈0.2 min⁻¹, t½≈4 min — 일치. R&amp;T p.249–256</div></div></div>
+        <div class="callout teal"><span class="callout-label">R&amp;T 5e p.255 Fig.8-23; p.256 Fig.8-24</span>각 용량 곡선이 역치를 어디서 통과하는지 따라가 보면, "용량 두 배가 지속 시간 한 번의 반감기만큼 연장"이 그림으로 보임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 22: §5.3 PK 율속 vs PD 율속 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.3</span>
+        <h1 class="slide-title">PK 율속 vs PD 율속 — 종결시점 decoupling 핵심</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">지금까지 식은 <strong>PK가 율속</strong>이라고 암묵적으로 가정 (효과 감소 속도 = 약물 농도 감소 속도). 임상에서 이 가정이 깨지는 약이 한둘이 아님.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th></th><th>PK 율속</th><th>PD 율속</th></tr></thead>
+            <tbody>
+              <tr><td>효과 감소 결정 요인</td><td><strong>약물 농도 감소 속도</strong></td><td><strong>수용체/시스템 회복 속도</strong></td></tr>
+              <tr><td>시간 척도</td><td>혈장 \(t_{1/2}\)</td><td>\(t_{recovery}\), \(\tau_{system}\)</td></tr>
+              <tr><td>도구</td><td>§5.2 식</td><td>시스템 회복 시간 분석</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">세 가지 임상 사례 — "혈장에서는 빨리 사라지는데 효과는 오래 감"</h2>
+        <div class="three-col">
+          <div class="card">
+            <div class="card-title">Aspirin 650 mg PO</div>
+            <p style="font-size:11px">혈장 \(t_{1/2}\) 약 <strong>15분</strong>, 항혈소판 활성 <strong>수일</strong>. <span class="chip">R&amp;T p.251</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">Omeprazole 40 mg PO</div>
+            <p style="font-size:11px">혈장 \(t_{1/2}\) <strong>1시간 미만</strong>, 3시간 후 혈장 거의 0인데 위산 분비 억제 <strong>수일</strong>. <span class="chip">R&amp;T p.252</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">Paclitaxel</div>
+            <p style="font-size:11px">혈장에 2일 후 거의 없는데 백혈구 분율 변화 <strong>수주</strong> 척도. <span class="chip">R&amp;T p.253</span></p>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>💡 치트키 — 0.5초 진단법</strong></p>
+          <p>두 도표의 x축 시간 단위를 봐라. 혈장 도표가 <em>hours</em>, 효과 도표가 <em>days</em>면 — <strong>무조건 PD 율속</strong>. 적합 통계 보기도 전에 도표 두 개만 비교해도 즉시 판별. <em>시간축 자릿수 차이 자체가 율속 과정이 다르다는 직접 증거.</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 23: §5.3 Acenocoumarol vs Phenprocoumon -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.3</span>
+        <h1 class="slide-title">율속은 라벨이 아니라 스펙트럼</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">Acenocoumarol vs Phenprocoumon — 둘 다 vitamin K antagonist</h2>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Acenocoumarol</div>
+            <ul style="font-size:11.5px">
+              <li>\(t_{1/2}\) <strong>15시간</strong></li>
+              <li>기저치 회복 약 <strong>3 days</strong></li>
+              <li>두 시간 척도가 비슷 → <strong>PK가 율속에 가까움</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">Phenprocoumon</div>
+            <ul style="font-size:11.5px">
+              <li>\(t_{1/2}\) <strong>6 days</strong></li>
+              <li>기저치 회복 약 <strong>2 weeks</strong></li>
+              <li>혈장 반감기가 시스템 전환 시간 안에 들어감 → <strong>PD 시스템이 율속의 일부</strong></li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout amber"><span class="callout-label">핵심 메시지</span><strong>PK/PD 율속은 약물 분류 라벨이 아님</strong>. 두 시간 척도의 비율 \(\tau_{drug}/\tau_{system}\)에서 결정되는 <strong>스펙트럼</strong>. 약 이름 하나로 정해지지 않음. <span class="chip">R&amp;T p.243–244, Fig.8-11</span></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\tau_{drug}}_{\text{약물 t1/2}}\quad\text{vs}\quad\underbrace{\tau_{system}}_{\text{시스템 회복 시간}}\;\Rightarrow\;\begin{cases}\tau_{drug}\gg\tau_{system}&:\text{PK 율속}\\\tau_{drug}\ll\tau_{system}&:\text{PD 율속}\\\tau_{drug}\approx\tau_{system}&:\text{스펙트럼 중간}\end{cases}$$</div></div>
+      </div>
+    </section>
+
+    <!-- Slide 24: §5.4 Aspirin COX-1 보강 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.4 📌</span>
+        <h1 class="slide-title">교과서 외 보강 — Aspirin의 진짜 율속 기전</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:11.5px">R&amp;T p.251이 인용한 aspirin 사례는 메시지(<em>PD 율속 = 시스템 회복</em>)는 정확. 그런데 학습자가 모약물과 활성 대사체를 <em>구분하지 않으면</em>, "수일 지속"의 진짜 기전을 잘못 일반화할 위험.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{\text{Aspirin}}_{\text{acetylsalicylic acid, 모약물}}\xrightarrow{\underbrace{\text{esterase 가수분해}}_{\text{혈장·간}}}\underbrace{\text{Salicylate}}_{\text{활성 대사체}}}^{\text{모약물·대사체 사슬}}$$</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>화학종 / 효과</th><th>\(t_{1/2}\)</th><th>비고</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Aspirin (acetylsalicylic acid)</strong></td><td>≈ 15–20 분</td><td>R&amp;T 인용값. esterase로 빠르게 가수분해</td></tr>
+              <tr><td><strong>Salicylate (활성 대사체)</strong></td><td><strong>2–30 시간, 용량 의존적</strong></td><td>Michaelis-Menten 포화 제거 (glycine·glucuronide conjugation 포화). 고용량에서 비선형 연장</td></tr>
+              <tr><td><strong>항혈소판 활성</strong></td><td><strong>수일 (≈7–10일)</strong></td><td>혈소판 수명에 가까운 시간 척도</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">결정적</span>"수일 지속"의 율속은 <strong>salicylate 잔존이 아님</strong>. 모약물 aspirin이 혈소판 COX-1 효소의 Ser529 잔기를 <strong>비가역적으로 acetylation</strong> → 혈소판이 새로 만들어질 때까지 (혈소판은 핵이 없어 자체 단백질 합성 불가) <strong>효소 회복 불가</strong>.</div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\text{COX-1}_{\text{Ser529-OH}}}_{\text{활성형}}+\underbrace{\text{Aspirin}}_{\text{모약물}}\xrightarrow{\underbrace{\text{비가역}}_{\text{covalent}}}\underbrace{\text{COX-1}_{\text{Ser529-O-acetyl}}}_{\text{불활성, 회복 불가}}+\underbrace{\text{Salicylate}}_{\text{부산물}}$$</div></div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:12.5px"><strong>PD 율속의 진짜 원천 — 공통 구조</strong></p>
+          <ul style="font-size:11.5px">
+            <li>Aspirin → COX-1 비가역 acetylation + 혈소판 회전</li>
+            <li>Omeprazole → H+/K+ ATPase 비가역 결합 + 위벽세포 회전</li>
+            <li>Paclitaxel → 미세소관 결합 + 세포 회전</li>
+          </ul>
+          <p style="color:#e8a55a;font-style:italic;margin-top:3px">셋 다 "비가역 효소·구조 결합 + 표적 세포 회전"이 율속. 약물(모약물이든 대사체든) 잔존이 율속이 <strong>아님</strong>.</p>
+        </div>
+        <p style="font-size:10px;color:#6c6a64;font-family:'JetBrains Mono',monospace">[교과서 외 보강 — Awtry EH, Loscalzo J. Aspirin. Circulation. 2000;101(10):1206-18. Patrono C, et al. Drugs. 2017;77(10):1059-72.]</p>
+      </div>
+    </section>
+
+    <!-- Slide 25: §5.5 Methylprednisolone + Block D 정리 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.5</span>
+        <h1 class="slide-title">Methylprednisolone 함정 · Block D 정리</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">PK 선형성 ≠ PD 선형성</span><strong>Methylprednisolone</strong>은 PK AUC가 용량에 비례해도 림프구 반응이 고용량 구간에서 <em>포화</em>됨. 곧 더 높은 용량은 정보를 추가하지 않고 <strong>고원부를 반복 확인</strong>하는 셈. 하류 바이오마커나 투여 간격 종말점을 다시 설계해야 함. <span class="chip">R&amp;T p.257–258</span></div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>Block D 한 줄 정리</strong></p>
+          <p>종결시점 decoupling은 <em>약물 시간 척도와 시스템 시간 척도의 비</em>에서 결정. 혈장 반감기로 효과 지속 시간을 결정하면 PD 율속 약물에서 항상 빗나감. 진단은 <strong>두 도표의 x축 자릿수 차이</strong>를 보는 것에서 시작. 그 다음 율속 기전(비가역 결합 + 표적 세포 회전 같은)을 식별.</p>
+        </div>
+        <div class="card-soft">
+          <div class="card-title">Block D 체크리스트 — 임상 보고서 작성 시</div>
+          <ul style="font-size:12px">
+            <li>혈장 \(t_{1/2}\)와 PD 시스템 \(\tau_{system}\) 함께 명시했는가?</li>
+            <li>PD 율속 약물에서 투여 간격을 PK 반감기로 계산하지 않았는가?</li>
+            <li>AUEC 폐쇄형 식 적용 조건(일반 \(E_{max}\), 1차 제거)이 만족되는가? 아니면 수치 적분으로 명시했는가?</li>
+            <li>PK 선형성 = PD 선형성으로 잘못 가정하지 않았는가? (Methylprednisolone 같은 케이스)</li>
+            <li>비가역 결합 + 표적 세포 회전이 율속인 약물은 약리효과 누적 모델로 가야 하는가?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 26: §6 정상상태 E-R 평면 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6 📌</span>
+        <h1 class="slide-title">정상상태 E-R 평면 — 만성 dosing의 의사결정</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:11.5px">지금까지는 단회 투여 후 시간 지연. 실제 만성 투여 의사결정에서는 다른 평면이 필요. <strong>정상상태 도달 조건</strong>: 다회 투여로 약 \(4\text{–}5\times t_{1/2}\) (PK 율속) 또는 \(4\text{–}5\times\tau_{system}\) (PD 율속, 더 긴 쪽이 율속) 후, 평균 정상상태 농도 \(\overline{C}_{ss}\)와 그 시점 평균 반응 \(\overline{E}_{ss}\)가 한 점에 모임. 이 점들을 환자군 전체에서 모으면 <strong>정상상태 E-R 곡선</strong>.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{\overline{E}_{ss}}_{\text{정상상태 평균 반응}}=\underbrace{E_0}_{\text{기저치}}-\frac{\underbrace{I_{max}}_{\text{억제 천장}}\cdot\underbrace{\overline{C}_{ss,u}^n}_{\text{비결합 정상상태^n}}}{\underbrace{EC_{u50}^n}_{\text{비결합 EC50^n}}+\underbrace{\overline{C}_{ss,u}^n}_{\text{비결합 정상상태^n}}}}^{\text{만성 dosing의 의사결정 평면}}$$</div></div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\text{관찰 }\overline{E}_{ss}\text{ 변이}}_{\text{개체간 변이}}=\overbrace{f(\underbrace{\text{CL 변이}}_{\text{PK 측}})}^{\text{PK 변이}}\;\circ\;\overbrace{f(\underbrace{EC_{u50},E_{max},\gamma\text{ 변이}}_{\text{PD 측}})}^{\text{PD 변이}}$$<div class="formula-cite">① 개체간 변이의 두 축 분해</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{C(t)\to C_e(t)\to E(t)}_{\text{단회 — 시간 지연 명시적}}\xrightarrow{\underbrace{\text{정상상태 도달}}_{4\text{–}5\,t_{1/2}}}\underbrace{\overline{C}_{ss,u}\to\overline{E}_{ss}}_{\text{만성 — 시간 지연 한 점에 흡수}}}^{\text{시간축 → 농도축 평면 전환}}$$<div class="formula-cite">② 시간 지연의 한 점 수렴</div></div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물 유형</th><th>의사결정 평면</th><th>titration 단계</th></tr></thead>
+            <tbody>
+              <tr><td><strong>PK 율속 만성 투여</strong></td><td>정상상태 E-R 평면</td><td>\(\overline{C}_{ss,u}\) 조정</td></tr>
+              <tr><td><strong>PD 율속 만성 투여</strong></td><td>반응 회복 시간 + 효과 지속 시간</td><td>투여 간격 또는 누적 약리 효과 조정</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:10px;color:#6c6a64;font-family:'JetBrains Mono',monospace">[교과서 외 보강 — Sheiner LB, Holford NH. Clin Pharmacol Ther. 1981;30(6):817-23; Holford NH, Sheiner LB. Clin Pharmacokinet. 1981;6(6):429-53.] 단, PD 율속 약물에서는 \(\overline{C}_{ss}\)가 0에 가까워도 효과는 유지됨 → <strong>반응-시간 평면</strong>에서 직접 dosing 결정.</p>
+      </div>
+    </section>
+
+    <!-- Slide 27: §7 혼동 쌍 4 정리 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7</span>
+        <h1 class="slide-title">혼동 쌍 빠른 정리 — 네 쌍이 같은 질문</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div class="card-soft">
+            <div class="card-title">Pair 1 — Kd vs EC50 (결합층 vs 기능층)</div>
+            <p style="font-size:11px">\(EC_{50}<K_d\) <em>가능</em>. 여분 수용체 10% 점유로 90% 효과. <strong>혼동 시</strong>: 공변량 효과를 수용체 감수성 변화로 단정. <strong>교정</strong>: 비결합 농도 + 결합 분석으로 약물 측 vs 시스템 측 가르기.</p>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">Pair 2 — 일반 Emax vs Sigmoid (n≠1) ⚡</div>
+            <p style="font-size:11px">위치 vs 가파름. <strong>혼동 시</strong>: \(\gamma\) 빼고 \(EC_{50}\)만 → 협역 치료역(vancomycin, tacrolimus, 항부정맥제, VKA) 안전 마진 과대평가 → 규제 deficiency. <strong>n>1은 협동성 증명 아님</strong> — 가설로만.</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card-soft">
+            <div class="card-title">Pair 3 — Effect Compartment vs Indirect Response</div>
+            <p style="font-size:11px"><em>복도의 지연</em> vs <em>생산라인의 지연</em>. <strong>빠른 진단</strong>: 용량 군별 peak-time. 변하면 effect compartment, 일정하면 indirect response. 외삽 함정 — \(k_{e0}\) 생리상수 취급 / \(k_{in}/k_{out}\) 단순 적합 파라미터 취급.</p>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">Pair 4 — PK 율속 vs PD 율속</div>
+            <p style="font-size:11px"><strong>0.5초 진단법</strong> — 도표 두 개의 x축 자릿수 비교. 한 자릿수 차이면 즉시 PD 율속. 사례: Acenocoumarol vs Aspirin/Omeprazole/Paclitaxel. <strong>혼동 시</strong>: 투여 간격 과조밀 → 독성.</p>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>§7 한 줄 정리</strong></p>
+          <p>네 쌍이 결국 같은 질문 하나로 환원됨: <em>"지금 보는 숫자가 결합, 부위 농도, 측정 반응, 시스템 회복 중 어느 층위를 대표하는가?"</em></p>
+          <p style="color:#e8a55a;font-style:italic;margin-top:4px">가장 위험한 혼동은 <strong>"농도가 반응을 즉시 구동한다"</strong>는 가정. 이게 깨지는 순간 네 쌍 전부 연결됨.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 28: §8 자기 테스트 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8</span>
+        <h1 class="slide-title">자기 테스트 (능동 회상)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <div class="q-block"><div class="q">Q1. 질량작용법칙에서 \(E = E_{max}C/(K_d+C)\) 도출.</div><div class="a">평형: \(k_1[R][C]=k_{-1}[RC]\), \(K_d=[C][R]/[RC]\). \([R_T]=[R]+[RC]\) 대입 → \([RC]/[R_T]=C/(C+K_d)\). \(E=\alpha[RC]\), \(E_{max}=\alpha[R_T]\) 대입. <span class="chip">G&amp;W p.202–204</span></div></div>
+            <div class="q-block"><div class="q">Q2. \(K_d\)와 \(EC_{50}\)이 다른 이유를 한 문장.</div><div class="a">\(K_d\)는 수용체 결합 친화도, \(EC_{50}\)은 결합 + 신호전달 + 반응 증폭까지 포함하므로 여분 수용체나 증폭 연쇄가 있으면 둘이 다를 수 있음. <span class="chip">G&amp;W p.204–206</span></div></div>
+            <div class="q-block"><div class="q">Q3. Hill \(n=2.03\)을 "협동성 증거"라고 쓰면 왜 틀리는가?</div><div class="a">G&amp;W는 Hill 지수가 직접적 생물학적 해석을 갖지 않는다고 명시. \(n=2.03\)은 데이터 가파름을 설명하는 현상학적 파라미터. 협동성은 <em>가능한 가설</em>이지 증명이 아님. <span class="chip">G&amp;W p.216, p.220, p.735</span></div></div>
+            <div class="q-block"><div class="q">Q4. Sigmoid 억제 \(I_{max}\) 모델에서 절대값 vs 기저치 상대값 구분.</div><div class="a">절대 반응 \(E_{target}\)이 주어지면 먼저 \(I=E_0-E_{target}\)로 억제 크기 계산, 그 다음 \(I/I_{max}\)를 분율로 두고 농도 역산. 기저치 상대 반응을 절대 반응처럼 넣으면 부호와 비율이 둘 다 틀어짐. <span class="chip">G&amp;W p.218–221</span></div></div>
+            <div class="q-block"><div class="q">Q5. Naproxen 히스테리시스에서 출처에 근거한 결론만.</div><div class="a">R&amp;T는 naproxen 500 mg PO 치과 통증 모델에서 비결합 농도와 통증 완화가 반시계 방향 히스테리시스 보임. effect compartment가 이 히스테리시스를 줄이는 개념적 모델 제시. \(k_{e0}\) 특정 수치는 본 PDF 범위 안에서 확인 안 됨. <span class="chip">R&amp;T p.234–246</span></div></div>
+          </div>
+          <div>
+            <div class="q-block"><div class="q">Q6. Warfarin 반응이 혈장 농도를 즉시 따라가지 않는 이유?</div><div class="a">Warfarin 효과는 <strong>프로트롬빈 복합체 전환</strong>(반감기 1–2일)을 통해 나타나므로 혈장 농도 변화와 반응 변화가 분리됨. Sodium warfarin 1.5 mg/kg PO 사례. <span class="chip">R&amp;T p.242, p.247</span></div></div>
+            <div class="q-block"><div class="q">Q7. AUEC 폐쇄형 식의 적용 조건?</div><div class="a">\(AUEC=(E_{max}/K)\ln(1+D/(EC_{50}V))\)는 <strong>일반 \(E_{max}\) + 1차 제거</strong> 조건에서만. Sigmoid \(E_{max}\)의 폐쇄형은 출처에 없음 (수치 적분 필요). <span class="chip">G&amp;W p.233–234</span></div></div>
+            <div class="q-block"><div class="q">Q8. Aspirin과 omeprazole 사례로 PD 율속 설명.</div><div class="a">Aspirin 650 mg PO: 혈장 \(t_{1/2}\) 15분, 항혈소판 수일. Omeprazole 40 mg PO: 혈장 \(t_{1/2}\) 1시간 미만, 위산 억제 수일. 효과 지속이 약물 반감기가 아니라 <strong>시스템/수용체 회복</strong>에 제한됨. <span class="chip">R&amp;T p.251–252</span>. 📌 보강 — Aspirin 15분은 모약물값. 활성 대사체 salicylate \(t_{1/2}\) 2–30시간. "수일 지속" 진짜 율속은 <strong>COX-1 비가역 acetylation + 혈소판 회전</strong>.</div></div>
+            <div class="q-block"><div class="q">Q9. Phase 2 반시계 히스테리시스. 모델 선택 순서?</div><div class="a">① 혈장 직접 적합 잔차 systematic pattern. ② Effect compartment 적용 → 히스테리시스 축소. ③ Peak time 용량 의존성 — 변하면 effect compartment, 일정하면 indirect response. ④ AIC만 보지 말고 <strong>peak-time + 채혈 밀도 + 생물학적 타당성</strong> 같이.</div></div>
+            <div class="q-block"><div class="q">Q10. Black-Leff n=1: \(EC_{50}^{obs}\)와 \(K_A\), \(\tau\) 관계?</div><div class="a">\(EC_{50}^{obs}=K_A/(1+\tau)\), \(E_{max}^{obs}=E_m\tau/(1+\tau)\). 완전효현제 (\(\tau\gg1\)): \(EC_{50}^{obs}\to K_A/\tau\), \(E_{max}^{obs}\to E_m\). 부분효현제 (\(\tau\ll1\)): \(EC_{50}^{obs}\approx K_A\), \(E_{max}^{obs}\approx E_m\tau\). 표준 \(E_{max}\)/Hill로는 \(K_A\)와 \(\tau\) 분리 불가. <span class="chip">Black &amp; Leff 1983</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 29: §9 메타 + Closer -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 9</span>
+        <h1 class="slide-title">메타 프레임 · 다음 세션 다리 · Closer</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">다섯 가지 실패 모드와 1차 조치</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>실패 모드</th><th>1차 파라미터</th><th>임상 결과</th><th>1차 조치</th></tr></thead>
+            <tbody>
+              <tr><td>\(K_d\)를 \(EC_{50}\)처럼 사용</td><td>결합/기능 층위 혼동</td><td>기능적 역가 오인</td><td>Assay source + unbound 기준 확인</td></tr>
+              <tr><td>Hill \(n\)을 기전 증명으로 과해석</td><td>가파름 파라미터</td><td>용량 조절 위험 과소평가</td><td>농도 범위 + 고원부 + 정밀도 동시 검토</td></tr>
+              <tr><td>히스테리시스를 잡음 처리</td><td>시간 지연</td><td>지연 원천 누락 → 외삽 실패</td><td>고리 방향 + 폭 + peak-time 진단</td></tr>
+              <tr><td>PK 반감기로 투여 간격 결정</td><td>\(t_{1/2}\) vs \(t_{recovery}\)</td><td>PD 율속 약물 지속 시간 오판</td><td>\(\tau_{drug}/\tau_{system}\) 비교</td></tr>
+              <tr><td>AUEC를 단순 AUC처럼 취급</td><td>반응 적분 조건</td><td>endpoint 정의 누락</td><td>역치 + 반응 변수 + 시간 척도 명시</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">계량약리학자의 진짜 일</div>
+            <p style="font-size:11.5px">복잡한 식을 많이 아는 자리가 아님. 같은 농도-효과 데이터를 두고 <strong>무엇이 부족한지 구분할 줄 아는 자리</strong>. 더 좋은 최적화기? 더 넓은 농도 범위? 더 가까운 바이오마커? 더 긴 반응 채취? — 이 네 갈래 가르기가 진짜 실력. PD3가 그 예 — 0–500에서는 sigmoid 판별 불가, 0–800에서는 가능. <strong>모델 선택은 통계 기법만이 아니라 실험 설계 문제.</strong></p>
+          </div>
+          <div class="card">
+            <div class="card-title">다음 세션 다리</div>
+            <ul style="font-size:11px">
+              <li><strong>PopPK/PD 공변량</strong>: \(EC_{50},E_{max},\gamma\) 층위 분리 + 정상상태 E-R 두 축 분해</li>
+              <li><strong>Exposure-response 시뮬레이션</strong>: 농도 범위, 고원부, sigmoid 식별 가능성</li>
+              <li><strong>Delay/turnover 모델링</strong>: EC vs IR 분기</li>
+              <li><strong>투여 간격 최적화</strong>: AUEC, duration, PK/PD 율속</li>
+              <li><strong>부분효현제 외삽</strong>: Black-Leff (\(K_A,\tau\) 분리)</li>
+              <li><strong>만성 dosing titration</strong>: 정상상태 E-R + PD 율속 분기</li>
+            </ul>
+          </div>
+        </div>
+        <div class="closer-card">
+          <div class="closer-label">🎯 세 줄 최종 결론</div>
+          <div class="closer-text">
+            ① <em>수직축</em>: \(E_{max}\)/Hill은 결합층 + 효능층 + 가파름을 분리. <strong>Hill γ가 협역 치료역의 진짜 안전 마진 결정자.</strong><br>
+            ② <em>수평축</em>: 히스테리시스는 잡음이 아니라 모델 구조 알람. EC와 IR는 <strong>바꿔 쓸 수 없는 다른 인과 구조</strong> — peak-time 용량 의존성이 분기점.<br>
+            ③ <em>종결시점</em>: 효과 지속 시간은 약물 반감기가 아니라 <strong>그보다 더 느린 시스템 회복 과정</strong>이 결정.<br>
+            <span style="display:inline-block;margin-top:6px;color:#e8a55a">임상 케이스 하나 만나면 — "이건 어느 축에서 깨진 거지?" 한 번만 물으면 됨.</span>
+          </div>
+        </div>
+        <p style="font-size:9.5px;color:#8e8b82;text-align:right;font-family:'JetBrains Mono',monospace;margin-top:3px">고유번호: C-260518-094215-J3R</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() { goTo(parseInt(btn.dataset.idx)); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ renderMath(); goTo(0); });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 08 — 비선형 PK: 분모 하나의 변신술</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:30px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:22px 12px 16px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:10px 14px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.65;white-space:pre;overflow-x:auto;border-radius:12px;padding:10px 14px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.45}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.98em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:7px 11px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.45}
+.closer-card{background:#181715;border-radius:12px;padding:24px 30px;text-align:center;margin:10px auto;max-width:780px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#faf9f5;line-height:1.5}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.tag.apex{background:#a9583e}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 08</div>
+        <div class="brand-sub">Nonlinear PK · 분모 다섯</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">§0 Phenytoin 9배 충격</button>
+    <button class="toc-btn" data-idx="1">§0 한 줄 · 분모 다섯</button>
+    <button class="toc-btn" data-idx="2">§1.1 다섯 얼굴 한 번에</button>
+    <button class="toc-btn" data-idx="3">§1.2 5초 triage 6 시그널</button>
+    <button class="toc-btn" data-idx="4">§1.3 진단 순서 · 카드 흐름</button>
+    <button class="toc-btn" data-idx="5">Card 1 진단 첫 그림</button>
+    <button class="toc-btn" data-idx="6">Card 2 ⚡ Capacity 분모</button>
+    <button class="toc-btn" data-idx="7">Card 2' Phenytoin 정량</button>
+    <button class="toc-btn" data-idx="8">Card 2'' Plateau · Ridge</button>
+    <button class="toc-btn" data-idx="9">Card 3 시간 분모 + 시계</button>
+    <button class="toc-btn" data-idx="10">Card 3' Autoinduction</button>
+    <button class="toc-btn" data-idx="11">Card 3'' MBI Clarithromycin</button>
+    <button class="toc-btn" data-idx="12">Card 3''' 세 패턴 진단</button>
+    <button class="toc-btn" data-idx="13">Card 4 Binding 분모</button>
+    <button class="toc-btn" data-idx="14">Card 4' Drug anchors</button>
+    <button class="toc-btn" data-idx="15">Card 4'' TMDD · Drug-Met</button>
+    <button class="toc-btn" data-idx="16">Card 5 DDI · 세 식이 하나</button>
+    <button class="toc-btn" data-idx="17">Card 5' DDI 4 anchor</button>
+    <button class="toc-btn" data-idx="18">Card 5'' Fluconazole · PM</button>
+    <button class="toc-btn" data-idx="19">Card 6 매트릭스 · transporter</button>
+    <button class="toc-btn" data-idx="20">Card 6' Renal · Metformin</button>
+    <button class="toc-btn" data-idx="21">Card 6'' PD 상호작용</button>
+    <button class="toc-btn" data-idx="22">§3 CP1–CP3</button>
+    <button class="toc-btn" data-idx="23">§3 CP4–CP6</button>
+    <button class="toc-btn" data-idx="24">§3 CP7–CP8</button>
+    <button class="toc-btn" data-idx="25">§4 Q1–Q5</button>
+    <button class="toc-btn" data-idx="26">§4 Q6–Q11</button>
+    <button class="toc-btn" data-idx="27">§4 Q12–Q17</button>
+    <button class="toc-btn" data-idx="28">§4 Q18 보스 딜레마</button>
+    <button class="toc-btn" data-idx="29">§5 7문장 · Closer</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0 -->
+    <section class="slide active">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">9배의 충격 — Phenytoin 입구 사례</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <p>진료실에 phenytoin 환자가 한 명. 어제까지 <strong>300 mg/day</strong>에 농도 <strong>4 mg/L</strong>. 발작이 안 잡혀서 <strong>500 mg/day</strong>로 올림 — 용량 <strong>67%</strong> 증가. 일주일 뒤 농도 <strong>36 mg/L</strong>. <strong>9배.</strong></p>
+        </div>
+        <p>선형 PK였다면 농도는 1.67배 → 4 × 1.67 ≈ 6.7 mg/L. 그런데 9배. 추가 <strong>5.4배 증폭</strong>은 어디서? 환자가 약을 더 먹은 것도, 신장이 망가진 것도 아님. <strong>수식 안에 숨어 있던 분모 하나가 무너졌기 때문</strong>.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px"><strong>그 분모가 \(V_m - R_0\)</strong>임. 환자의 \(V_m\)이 약 500 mg/day인데 dosing rate \(R_0\)가 거기에 너무 가까워지면 <em>분모가 0에 수렴</em>. 분모가 0에 수렴하면 농도는 발산. 이게 phenytoin이라는 약이 평생 좁은 치료역을 갖는 진짜 이유. <span class="chip">R&amp;T pp.491, 503–506</span></p>
+        </div>
+        <p class="tip">이 장의 목적: phenytoin 환자가 다시 들어왔을 때 머릿속에서 <strong>5초 안에</strong> "아, 지금 분모 어디가 무너지고 있구나"를 잡아내는 감각.</p>
+      </div>
+    </section>
+
+    <!-- Slide 1 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0'</span>
+        <h1 class="slide-title">한 줄 — 분모 하나의 다섯 얼굴</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14.5px;line-height:1.65">🎯 <strong>이 장 전체를 꿰는 한 줄:</strong> 비선형 PK는 따로따로 외워야 하는 다섯 개의 chapter가 아님. <em>mass action이 만든 분모 하나(\(K_m + C\))가 다섯 얼굴로 변신하는 이야기임.</em></p>
+        </div>
+        <ul>
+          <li>① <strong>Capacity</strong>: 효소 처리분모로</li>
+          <li>② <strong>Time</strong>: 시간에 따라 변하는 효소 풀 분모로</li>
+          <li>③ <strong>Binding</strong>: 결합자리 분모로</li>
+          <li>④ <strong>DDI</strong>: inhibitor가 추가된 경쟁분모로</li>
+          <li>⑤ <strong>PD</strong>: 수용체 경쟁 분모로</li>
+        </ul>
+        <p>이 통찰 하나가 있으면 챕터 전체가 <strong>"지금 어느 분모가 흔들리고 있나?"</strong>라는 단 하나의 triage 질문으로 환원됨. 다섯 분모를 알면 외울 게 거의 없음.</p>
+        <div class="callout teal"><span class="callout-label">출처</span>G&amp;W = Gabrielsson &amp; Weiner, <em>Pharmacokinetic and Pharmacodynamic Data Analysis</em>, 5e / R&amp;T = Rowland &amp; Tozer, <em>Clinical Pharmacokinetics and Pharmacodynamics</em>, 5e. 다루는 범위: <strong>비선형 PK, Michaelis–Menten, mechanism-based inhibition, nonlinear binding, drug–metabolite model, DDI, mass-action equivalence triangle</strong>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 2 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.1</span>
+        <h1 class="slide-title">분모 다섯 얼굴 — 한 번에 보기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>선형 PK에서 분모는 그냥 상수. 비선형 PK는 이 분모가 <strong>흔들리는</strong> 이야기. 흔들리는 자리와 방식에 따라 다섯 얼굴:</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{K_m + C}^{\text{① Capacity 분모}}\;\;\Rightarrow\;\;\overbrace{K_m(1+C_{u,I}/K_I) + C}^{\text{④ DDI 분모 (경쟁 추가)}}$$</div></div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{K_d + C_u}^{\text{③ Binding 분모}}\;;\;\overbrace{K_T + C}^{\text{Transport 분모}}$$</div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\frac{dE}{dt}=R_{in}-k_{out}E}^{\text{② 시간 분모 (효소 풀)}}$$</div></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{C + EC_{50}(1+A/EA_{50})}^{\text{⑤ PD 분모 (수용체 경쟁)}}$$</div></div>
+        <div class="callout amber"><span class="callout-label">⚡ 통합</span>다섯 식이 사실 <strong>같은 골격</strong>. 분자에 처리능 상한(\(V_{max}\), \(T_m\), \(E_{max}\), \(nP_t\)), 분모에 affinity scale(\(K_m\), \(K_T\), \(K_d\), \(EC_{50}\)) + 현재 노출(\(C\), \(C_u\)). 전부 <strong>기질-효소 가역 결합의 quasi-steady-state assumption (QSSA)</strong>이 만든 한 가족. 외워야 할 식이 <strong>사실상 하나</strong>라는 뜻.</div>
+      </div>
+    </section>
+
+    <!-- Slide 3 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.2</span>
+        <h1 class="slide-title">5초 triage — 6 시그널 → 분모 매핑</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>데이터 시그널</th><th>흔들리는 분모</th><th>1차 의심</th><th>검증</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>semi-log에서 <strong>terminal slope이 dose마다 다름</strong></td><td>① Capacity (\(K_m+C\))</td><td>MM saturable elimination</td><td>dose-normalized curve 겹침 여부 <span class="chip">G&amp;W p.116</span></td></tr>
+              <tr><td>2</td><td>같은 dose 반복에서 <strong>trough가 한 방향으로 슬슬 이동</strong></td><td>② Time (\(dE/dt\))</td><td>autoinduction or time-dep CL</td><td>single vs multi-dose fit 차이 <span class="chip">G&amp;W pp.580–585</span></td></tr>
+              <tr><td>3</td><td>total CL_R은 그대로인데 <strong>unbound CL_R이 변함</strong></td><td>③ Binding (\(K_d+C_u\))</td><td>nonlinear protein binding</td><td>용량별 \(f_u\) 직접 측정 <span class="chip">R&amp;T pp.511–516</span></td></tr>
+              <tr><td>4</td><td>같은 inhibitor 병용인데 <strong>oral DDI ≫ IV DDI</strong></td><td>④ DDI + first-pass</td><td>gut wall/first-pass 우세</td><td>IV/oral crossover, \(F_G\)·\(F_H\) 분리 <span class="chip">R&amp;T pp.553–554</span></td></tr>
+              <tr><td>5</td><td>\(V_{max}/K_m \approx Q_H\)</td><td>분모보다 <strong>혈류가 율속</strong></td><td>flow-limited (high-extraction)</td><td>\(E_H = CL_H/Q_H\) 계산 <span class="chip">G&amp;W p.140</span></td></tr>
+              <tr><td>6</td><td>single-dose fit이 multi-dose에서 <strong>체계적 over/under</strong></td><td>② Time (\(k_{out}\) 시계)</td><td>autoinduction, MBI, withdrawal trap</td><td>enzyme turnover compartment 추가 <span class="chip">G&amp;W pp.580–585</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E_H}_{\text{간 추출분율}}=\frac{\underbrace{CL_H}_{\text{간 CL}}}{\underbrace{Q_H}_{\text{QH 혈류}}}\qquad;\qquad\underbrace{V_{max}/K_m}_{\text{저농도 처리능}}\approx \underbrace{Q_H}_{\text{혈류한계}}$$</div></div>
+      </div>
+    </section>
+
+    <!-- Slide 4 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.3</span>
+        <h1 class="slide-title">진단 순서 + 카드 흐름</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="algo"><span class="strong">[1단계: 분모가 흔들렸나?]</span>
+  <span class="arr">→</span> dose-normalized concentration-time plot
+  <span class="arr">→</span> AUC/Dose vs Dose plot
+  <span class="arr">→</span> 겹치면 선형, 안 겹치면 다음 단계
+
+<span class="strong">[2단계: 어느 분모가 흔들렸나?]</span>
+  <span class="arr">→</span> AUC/Dose ↑ vs ↓  방향성
+  <span class="arr">→</span> 시간에 따라 변하나?
+  <span class="arr">→</span> total vs unbound 차이 있나?
+  <span class="arr">→</span> 다른 약 같이 먹나?
+
+<span class="strong">[3단계: 어떤 파라미터가 상수가 아니게 됐나?]</span>
+  <span class="arr">→</span> <span class="em">V_max, K_m, f_u, f_m, k_out, E_max 중 어디?</span>
+  <span class="arr">→</span> 그게 임상적으로 무엇을 의미?</div>
+        <div class="callout warn"><span class="callout-label">⚠️ 순서 뒤집지 말 것</span>순서를 뒤집으면 비선형 모델을 fitting시키는 건 가능하지만 <strong>왜 파라미터가 흔들리는지는 영영 설명 못 함</strong>. 즉 NONMEM RUN은 돌아가는데 보고서는 못 쓰는 상황. <span class="chip">G&amp;W p.113</span><span class="chip">R&amp;T p.492</span></div>
+        <p>🧭 <strong>읽는 흐름:</strong> §2 분모 다섯 얼굴 하나씩 해부 (Card 1~6) → §3 헷갈리는 쌍 8개 (CP1~CP8) → §4 5초 triage 자기 테스트 (Q1~Q18) → §5 한 페이지 압축.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 1</span>
+        <h1 class="slide-title">진단 — 첫 그림 두 장 + Gabapentin 함정</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout"><span class="callout-label">거장의 첫 손</span>비선형성을 보면 "MM이다", "induction이다", "DDI다" 하고 <strong>모델 이름부터 부르려는 본능</strong> — 그게 함정. 진짜 첫 손은 <strong>dose-normalized plot과 AUC/Dose 방향</strong>.</div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">그림 1: dose-normalized C-t plot</div><p>모든 용량의 농도-시간 곡선을 dose로 나눠서 한 그래프에. 선형이면 모든 곡선이 정확히 겹침. 안 겹치면 비선형.</p></div>
+          <div class="card-soft"><div class="card-title">그림 2: AUC/Dose vs Dose plot</div><p>\(AUC/Dose\)가 dose↑와 함께 <strong>올라가면</strong> → CL↓ or F↑. <strong>내려가면</strong> → CL↑ or F↓.</p></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC/Dose}_{\text{용량당 노출}}\quad\xrightarrow{\text{dose}\uparrow}\quad\overbrace{\uparrow}^{\text{CL↓ or F↑}}\;\;\text{or}\;\;\overbrace{\downarrow}^{\text{CL↑ or F↓}}$$</div></div>
+        <div class="callout warn"><span class="callout-label">⚠️ 함정 — Gabapentin (LAT1 saturable absorption)</span>\(AUC/Dose\) 내려간다고 "elimination↑" 닫지 말 것. <strong>Gabapentin</strong>(항경련제·항신경통제): 300 mg → F ≈ 60%, 1600 mg → F ≈ 27%. dose↑와 함께 F가 절반 이하로 떨어짐 — LAT1 흡수 transporter 포화. saturable absorption은 elimination 비선형성과 <strong>정확히 같은 mass action 골격</strong>. 분모가 luminal \(K_T^{abs}+C^{lumen}\)일 뿐. <span class="chip">R&amp;T pp.495–499</span></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\text{흡수 속도}}_{\text{Rate}_{abs}}=\frac{\overbrace{T_m^{abs}}^{\text{흡수상한}}\cdot\underbrace{C^{lumen}}_{\text{관강 C}}}{\underbrace{K_T^{abs}+C^{lumen}}_{\text{흡수분모}}}\quad\xrightarrow{C^{lumen}\uparrow}\quad\underbrace{F\downarrow}_{\text{F 감소}}$$</div></div>
+        <div class="callout amber"><span class="callout-label">시간 의존성 정의</span>농도가 변해서 apparent CL이 달라 보이는 것은 <strong>시간 의존성이 아님 — 농도 의존성</strong>. <strong>효소량·수송체 활성·관류 같은 생리/생화학 상태 자체가 시간에 따라 변해야</strong> 진짜 시간 의존성. <span class="chip">G&amp;W p.112</span><span class="chip">R&amp;T p.492</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 2</span>
+        <h1 class="slide-title">⚡ Capacity 분모 \(K_m+C\) — phenytoin이 카드 자체</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout amber"><span class="callout-label">거장의 시각</span>"포화되면 zero-order"라는 한 줄로 외우는 건 약함. 진짜 위력은 <strong>\(K_m + C\) 이 분모 하나가 \(CL(C)\) 감소, rate plateau, \(C_{ss}\) 폭증, DDI 분모를 전부 같은 골격으로 묶어줌</strong>. <strong>이 카드가 이번 장에서 임상 파급력이 가장 큰 카드.</strong></div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{K_m+C}_{\text{Card 2 분모}}\quad\xrightarrow{\text{inhibitor 추가}}\quad\underbrace{K_m(1+C_{u,I}/K_I)+C}_{\text{Card 5 분모}}$$</div></div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL(C)}_{\text{농도 CL}}=\frac{\overbrace{V_{max}}^{\text{Vmax}}}{\underbrace{K_m}_{\text{Km}}+\underbrace{C}_{\text{현재 C}}}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:266, p.115</span></div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dC}{dt}}_{\text{C 변화율}}=-\frac{\overbrace{V_{max}}^{\text{제거상한}}\cdot\underbrace{C}_{\text{현재 C}}}{\underbrace{K_m+C}_{\text{포화분모}}}$$</div></div>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC}_{\text{AUC}}=\frac{\underbrace{C^0}_{\text{초기 C}}}{2\overbrace{V_{max}}^{\text{제거상한}}}\left(\underbrace{K_m}_{\text{Km}}+\frac{\underbrace{C^0}_{\text{초기 C}}}{2}\right)\quad\text{(IV bolus)}\qquad\overbrace{\underbrace{C\ll K_m}_{\text{저농도}}\Rightarrow CL\approx V_{max}/K_m}^{\text{1차}}\;;\;\overbrace{\underbrace{C\gg K_m}_{\text{고농도}}\Rightarrow Rate\approx V_{max}}^{\text{0차}}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:271, p.117</span></div></div></div>
+        <div class="callout teal"><span class="callout-label">💡 톨게이트 비유</span>좁은 톨게이트 한 곳에 차가 몰리는 상황. 최대 처리량이 \(V_{max}\), 정체가 시작되는 교통량 scale이 \(K_m\). 한산할 땐 두 배 와도 두 배 통과(저농도 linear). 정체 시작되면 한 대 추가마다 통과 속도가 비대칭으로 무너짐(capacity 근처 비선형성).</div>
+        <p class="tip">⚠️ AUC 식 안에 \(K_m\)이 들어 있다는 것 자체가 <strong>"용량 한계의 수학적 흔적"</strong>. 선형 PK라면 \(K_m\)이 들어올 자리가 없음.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 2'</span>
+        <h1 class="slide-title">Phenytoin 9배 — \(V_m\) 탄력성 (portable rule 아님)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">Phenytoin (CYP2C9 substrate, 좁은 치료역 항경련제)</div><p>성인 환자 \(V_m \approx 500\) mg/day, \(K_m \approx 0.4\) mg/L (unbound), \(f_u \approx 0.1\). total 기준 \(K_m' \approx 4\) mg/L. 치료역이 total 10–20 mg/L — <strong>이미 \(K_m'\)의 2.5–5배 영역</strong>. <em>우리가 임상에서 노리는 농도 자체가 capacity 한계 근처</em>라는 뜻.</p></div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{C_{u,ss}}_{\text{Css,u}}=\frac{\underbrace{K_m}_{\text{Km,u}}\cdot\underbrace{R_0}_{\text{투여 속도}}}{\underbrace{V_m-R_0}_{\text{capacity 여유}}}$$<div class="formula-cite"><span class="chip">R&amp;T Eq.16-7, p.503</span></div></div></div>
+        <p><strong>\(R_0\)가 \(V_m\)에 가까워질수록 분모 \(V_m - R_0\)가 작아지고, 그래서 \(C_{u,ss}\)가 발산.</strong></p>
+        <h2 class="section-h">\(V_m\) 민감도 — 조건부 정량 (R&amp;T p.506)</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\frac{C_{u,ss,2}}{C_{u,ss,1}}}^{\text{R\&T Eq.16-7 비}}=\underbrace{\frac{V_{m1}-R_0}{V_{m2}-R_0}}_{\text{capacity 분모 비}}=\frac{\underbrace{500-300}_{=200}}{\underbrace{400-300}_{=100}}=\overbrace{2}^{\text{2배 발산}}$$</div></div>
+        <div class="callout warn"><span class="callout-label">⚠️ portable rule 아님</span><strong>이 특정 anchor에서만</strong> \(V_m\) 20% 감소 → \(C_{ss}\) 정확히 2배. \(V_m\)이 300 mg/day로 떨어지면 분모 \(V_m - R_0 = 0\) → \(C_{ss} \to \infty\), \(V_m < 300\)이면 정상상태 자체가 도달 불가.</div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{\Delta C_{ss}/C_{ss}}{\Delta V_m/V_m}}_{\text{Vm 탄력성}}\approx-\overbrace{\frac{V_m}{V_m-R_0}}^{\text{capacity 증폭인자}}$$</div></div>
+        <p class="tip">\(R_0 \ll V_m\) → 탄력성 ≈ −1, 거의 비례. \(R_0 \to V_m\) → 발산. capacity 근처(\(R_0/V_m > 0.8\))에서는 같은 변화가 \(C_{ss}\)를 <strong>4배 이상 증폭</strong>.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 2''</span>
+        <h1 class="slide-title">Plateau 시간 발산 + Ridge Lock + Ascorbic acid</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">⚠️ 정상상태 도달 시간도 발산</span>R&amp;T Eq.16-10: 300/350/400/425 mg/day일 때 plateau 농도 6/9.3/16/22.7 mg/L. <strong>그 plateau 도달 시간은 용량이 \(V_m\)에 가까울수록 수일에서 수주로 늘어남.</strong> capacity 근처에서는 모니터링 간격을 정상상태 도달 시점 <strong>이후로</strong> 옮겨야. 1주에 측정해 9.3이라고 안심하면 안 됨 — 아직 plateau 도달 전. <span class="chip">R&amp;T p.505</span></div>
+        <div class="card"><div class="card-title">Alcohol (ethanol) — capacity 근처 pseudo-steady state prototype</div><p>\(V_m \approx 10\) g/hr, \(K_m \approx 100\) mg/L, \(V_d \approx 42\) L (70 kg). 1 drink ≈ 14 g. <strong>4 drinks/hr = 56 g/hr</strong> → \(V_m\) 크게 초과 → 농도 무한정 누적. <strong>0.5 drinks/hr = 7 g/hr</strong> → \(V_m\) 안 → pseudo-SS \(C_{ss} \approx 233\) mg/L (혈중 약 0.23%). <span class="chip">R&amp;T pp.501–502</span></p></div>
+        <div class="card"><div class="card-title">Ascorbic acid (vitamin C) — phenytoin의 거울상</div><p>75 mg/day → 9 mg/L, 10,000 mg/day → 약 19 mg/L. <strong>133배 용량 증가가 약 2배 농도 증가만</strong>. 이유: \(CL_R < 0.5\) mL/min → 21 mL/min, <strong>42배 이상 증가</strong>. 포화성 재흡수가 풀리면서 약물이 빠져나가는 밸브가 열리는 효과. <strong>같은 mass action 분모지만 방향 반대.</strong></p></div>
+        <div class="callout"><span class="callout-label">🔑 식별성 — Vmax–Km Ridge Lock</span>단일 용량 또는 좁은 용량 범위 데이터로 \(V_{max}, K_m, V_d\) 동시 추정하면 \(\rho(V_{max}, K_m) > 0.9\) 부근 강한 상관. G&amp;W p.116에서 <strong>−0.96 사례</strong> 보고. \(V_d\)와 \(K_m\) 사이도 −0.95 부근. <strong>구제 세 가지:</strong> 용량 수준 추가, 외부 정보로 \(K_m\) 사전 고정, sampling을 \(K_m\) 근방까지 낮춰 곡률 잡기.</div>
+        <div class="callout warn"><span class="callout-label">⚠️ Single-dose Fit Trap</span>단일 용량 fit이 좋으면 다중 투여 예측도 정확할 거라고 가정 — <strong>틀린 가정</strong>. 단일 용량에서 여러 \((V_{max}, K_m)\) 조합이 비슷한 OFV. 다중 투여 예측에서 trough envelope 오예측. <strong>OFV 잘 수렴인데 RSE 둘 다 50% 초과 + 강한 음의 상관?</strong> → 용량 사다리 추가 또는 \(K_m\) 외부 정보 사전 고정.</div>
+      </div>
+    </section>
+
+    <!-- Slide 9 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 3</span>
+        <h1 class="slide-title">시간 분모 — 농도 시계와 효소 시계는 다름</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout"><span class="callout-label">거장의 시각</span>시간 의존성을 농도 변화로만 읽으면 induction, autoinduction, MBI, washout trap이 한 데 뒤섞임. 푸는 방법은 딱 하나 — <strong>약물 농도 시계와 enzyme pool 시계를 따로 떼서</strong> 보는 것.</div>
+        <h2 class="section-h">사실 시계는 셋임 (master clock 위계)</h2>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\text{Master clock}}_{\text{지배 시계}}=\max\left(\overbrace{t_{1/2}^{drug}}^{\text{약물}},\overbrace{t_{1/2}^{perpetrator}}^{\text{유도/억제제}},\overbrace{t_{1/2}^{enzyme}}^{\text{효소}}\right)$$</div></div>
+        <p>관찰되는 dynamics는 셋 중 <strong>가장 느린 시계가 지배</strong>. 곧 만날 Phenobarbital–Dicumarol에서 plateau 도달이 3–4주 걸리는 이유가 phenobarbital 자체 \(t_{1/2} \approx 4\) days가 가장 느려서 induction이 그것에 묶이기 때문. <span class="chip">R&amp;T pp.560–561</span></p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\frac{dE}{dt}}_{\text{효소 변화율}}=\underbrace{R_{in}}_{\text{효소 생성}}-\underbrace{k_{out}E}_{\text{효소 소실}}\qquad;\qquad\underbrace{E_{ss}}_{\text{효소 정상상태}}=\frac{\underbrace{R_{in}}_{\text{생성속도}}}{\underbrace{k_{out}}_{\text{소실상수}}}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:275–278, pp.120–121</span></div></div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL_H}_{\text{간 CL (well-stirred)}}=\frac{\underbrace{Q_H}_{\text{QH 혈류}}\cdot\underbrace{f_u}_{\text{fu}}\cdot\underbrace{CL_{int}}_{\text{CLint}}}{\underbrace{Q_H}_{\text{혈류한계}}+\underbrace{f_u\cdot CL_{int}}_{\text{fu·CLint}}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 공장 비유</span>농도 시계 = 혈액 속 약물이 사라지는 시계. 효소 시계 = 공장 설비가 새로 설치/교체되는 시계. <strong>MBI에서는 약물이 사라져도 설비 교체가 끝날 때까지 처리능이 회복되지 않음.</strong> 약은 다 빠졌는데 공장은 정상화 안 된 상태.</div>
+      </div>
+    </section>
+
+    <!-- Slide 10 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">Card 3'</span>
+        <h1 class="slide-title">자가유도 — Carbamazepine + Phenobarbital-Dicumarol</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">PK22 자가유도 (Compound X)</h2>
+        <div class="card">
+          <p>모델 파라미터 7개 (\(V_c\), \(V_t\), \(a\), \(k_{12}\), \(k_{21}\), \(k_{out}\), \(E_0\)). Table 22.2 핵심 추정값 \(a \approx 0.041\), \(k_{out} \approx 0.023\) h⁻¹. → 효소 시상수 \(1/k_{out} \approx 43\) h, <strong>\(t_{1/2}^{enzyme} \approx 30\) h</strong>. <strong>design의 강점:</strong> trough sampling이 효소 동역학 시간 척도를 직접 잡아냄. \(a\)(농도-CL 기울기)와 \(k_{out}\)(시간 차원)이 따로 식별됨. <span class="chip">G&amp;W pp.580–585</span></p>
+        </div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">Carbamazepine (항경련제, 자가유도 prototype)</div><p>전환 시간 약 <strong>5일</strong>. 반복투여 첫 1–2주 동안 청소율이 시간에 따라 변하는 임상 anchor. → 도입기 TDM에서 "trough가 떨어진다 = adherence 문제"가 아니라 <strong>자가유도로 CL이 올라가는 정상 dynamics</strong>일 수 있음. <span class="chip">R&amp;T p.518</span></p></div>
+          <div class="card-soft"><div class="card-title">Phenobarbital–Dicumarol (barbiturate × 항응고제)</div><p>유도 시작/종료가 즉시 일어나지 않고 <strong>3–4주 scale</strong>로 보이는 이유 — inducer/효소 전환 시계. <strong>phenobarbital \(t_{1/2} \approx 4\) days</strong>가 sustained release처럼 작용해 induction plateau가 \(4\)–\(5\,t_{1/2} \approx 16\)–\(20\)일 영역에서 도달. <span class="chip">R&amp;T pp.560–561</span></p></div>
+        </div>
+        <div class="callout amber"><span class="callout-label">⚡ 통찰</span><strong>유도(induction)</strong> = 효소량이 늘어 \(V_{max}\)나 \(CL_{int}\) capacity를 끌어올림. <strong>탈유도 또는 MBI</strong> = 효소 활성 회복을 \(k_{out}\) 시계에 묶어서 처리 능력 회복을 지연. 단순 농도 의존이 아니라 <strong>효소 풀 자체의 dynamics</strong>가 카드 핵심.</div>
+        <div class="callout teal"><span class="callout-label">🔑 실무 규칙</span>자가유도 연구에서 <strong>dense single-dose sampling만 늘리는 건 \(k_{out}\) 식별에 충분하지 않을 수 있음.</strong> multiple-dose trough envelope가 enzyme clock을 훨씬 더 직접적으로 보여줌.</div>
+      </div>
+    </section>
+
+    <!-- Slide 11 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 3''</span>
+        <h1 class="slide-title">MBI Clarithromycin — 11배 vs 1.025배 자릿수 차이</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>MBI는 가역적 억제와 차원이 다름. <strong>효소를 기능적으로 제거</strong> — 효소 활성이 회복 전까지 유효하지 않음. 회복은 inhibitor 농도 사라지는 속도뿐 아니라 <strong>효소 재합성/분해 시계</strong>에 의해 제한됨.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{CL_{inhibited}}_{\text{억제 후 CL}}=\frac{\underbrace{CL_{normal}}_{\text{기저 CL}}}{1+\overbrace{\dfrac{k_{inact}}{k_E}}^{\text{turnover 대비 불활성화}}\cdot\overbrace{\dfrac{C_u}{K_I}}^{\text{유효 노출}}}$$<div class="formula-cite"><span class="chip">R&amp;T Eq.17-13, p.557</span></div></div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>지표</th><th>정의</th><th>의미</th><th>차원</th></tr></thead>
+            <tbody>
+              <tr><td>\(k_{inact}/K_I\)</td><td><strong>in-vitro MBI potency</strong></td><td>단위 inhibitor 노출당 효소 불활성화 속도 — 표준 보고 지표</td><td>(1/time)/(conc)</td></tr>
+              <tr><td>\(k_{inact}/k_E\)</td><td><strong>in-vivo magnitude factor</strong></td><td>baseline 효소 turnover 대비 불활성화 — CL 감소 자릿수 결정</td><td>dimensionless</td></tr>
+              <tr><td>\(C_u/K_I\)</td><td>유효 노출</td><td>임상 \(C_u\)가 \(K_I\) 대비 얼마나 큰가</td><td>dimensionless</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card"><div class="card-title">Clarithromycin (macrolide 항생제, CYP3A4 MBI prototype) — 정량 anchor</div>
+          <ul style="font-size:11.5px">
+            <li>\(k_{inact} \approx 0.07\) min⁻¹, \(K_I \approx 7\) mg/L</li>
+            <li>\(k_E \approx 0.23\) day⁻¹ → 효소 자연 \(t_{1/2} \approx 3\) days</li>
+            <li>\(C_{u,I}/K_I \approx 0.025\), <strong>\(k_{inact}/k_E\) 비율 ≈ 438</strong></li>
+          </ul>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px;line-height:1.55">같은 \(C_{u,I}/K_I = 0.025\)에서:</p>
+          <ul style="font-size:12px">
+            <li><strong>가역적 억제 식</strong>으로 평가: CL 감소 <strong>1.025배</strong> (\(1 + 0.025\))</li>
+            <li><strong>MBI 식 (Eq.17-13/14)</strong>으로 평가: 약 <strong>11배</strong> (\(1 + 438 \times 0.025 = 11.95\))</li>
+          </ul>
+          <p style="color:#e8a55a;font-size:13px;font-style:italic">→ 같은 inhibitor 노출인데 두 기전의 결과가 <strong>한 자릿수 단위로 갈림</strong>.</p>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ 회복 시계</span>CYP3A4 활성 회복은 inhibitor 중단 후 효소 재합성에 묶여서 <strong>2주 또는 그 이상</strong> 필요 (\(3.3 \times t_{1/2}^{enzyme} \approx 10\)일 이상). "inhibitor 중단했으니 안전하다"는 timing 가정은 위험. <strong>MBI는 "약물이 빠진 시점이 아니라 효소가 회복된 시점이 안전 기준이다"</strong>의 정량 앵커. <span class="chip">R&amp;T p.558</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 12 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">Card 3'''</span>
+        <h1 class="slide-title">임상 데이터에서 보이는 세 가지 패턴</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>이 셋만 잡으면 시간 의존성 진단의 8할이 끝남.</p>
+        <div class="card">
+          <div class="card-title">① "Trough Envelope Drift"</div>
+          <p>반복투여 trough가 한 방향으로 슬슬 움직임. IIV(개인 간 변동)로 설명하려 들지 말고 <strong>time-varying CL을 먼저 의심</strong>. autoinduction이면 trough가 점차 낮아지고, MBI나 자기억제에서는 점차 높아짐. <span class="chip">G&amp;W pp.126–129, 580–585</span></p>
+        </div>
+        <div class="card">
+          <div class="card-title">② "Single-dose Fit Trap"</div>
+          <p>단일 용량만 잘 맞는 모델이 반복투여에서 체계적 over/underprediction. autoinduction 또는 time-dependent inhibition 의심. PK22 design의 핵심 — <strong>single-dose data만으로는 효소 compartment가 식별 안 됨</strong>. <span class="chip">R&amp;T pp.516–519</span></p>
+        </div>
+        <div class="card">
+          <div class="card-title">③ "Washout Trap"</div>
+          <p>MBI에서 perpetrator 중단 후 substrate exposure가 즉시 정상화된다고 가정하는 실수. 회복은 enzyme clock(\(2\)–\(3\,t_{1/2}^{enzyme}\))에 묶임. Clarithromycin MBI에서 회복 2주가 그 예. <span class="chip">R&amp;T pp.557–558</span></p>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px;line-height:1.55"><strong>Card 3 핵심 질문은 "약물 농도가 낮아졌나?"가 아니라 "enzyme pool이 회복됐나?"</strong>임. 이 질문 하나가 induction, autoinduction, MBI, withdrawal trap을 한 줄로 묶음.</p>
+        </div>
+        <p class="tip">§1.2 시그널 <strong>#2번(반복투여 trough 한 방향 이동)과 #6번(single-dose vs multi-dose 체계적 차이)</strong>이 Card 3 판정 신호.</p>
+      </div>
+    </section>
+
+    <!-- Slide 13 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 4</span>
+        <h1 class="slide-title">결합 분모 — total은 거짓말, unbound가 진실</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout"><span class="callout-label">거장의 시각</span>total concentration을 그대로 노출로 읽으면 protein binding displacement와 실제 unbound exposure 변화를 혼동. <strong>open system mass balance를 먼저 놓으면</strong> displacement-only DDI가 왜 지속적인 unbound exposure 증가가 아닌지 설명됨.</div>
+        <h2 class="section-h">물질수지가 강제하는 한 줄</h2>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{C_u}_{\text{Css,u}}=\frac{\underbrace{K^0}_{\text{비결합 입력}}}{\underbrace{CL_u}_{\text{비결합 CL}}}$$<div class="formula-cite"><span class="chip">G&amp;W §2.7.5, Eq.2:303</span></div></div></div>
+        <p>열린 계 정상상태에서는 <strong>단백 결합이 어떻게 변하든 정상상태 \(C_u\)는 이 비율에 묶임.</strong> total concentration은 free fraction 변화에 맞춰 알아서 조정. → <em>"열린 계에서 displacement-only는 unbound steady state를 지속적으로 바꾸지 못한다"</em>는 결론의 수학적 출처.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{C_b}_{\text{결합 C}}=\frac{\underbrace{n}_{\text{자리 수}}\cdot\underbrace{P_t}_{\text{총 결합자리}}\cdot\underbrace{C_u}_{\text{자유 C}}}{\underbrace{K_d}_{\text{Kd}}+\underbrace{C_u}_{\text{포화구동 C}}}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:294, p.129</span></div></div></div>
+        <p>이 분모 \(K_d + C_u\)가 Card 2의 \(K_m + C\)와 <strong>완전히 같은 골격</strong>. 분자에 결합 자리 상한(\(nP_t\)), 분모에 affinity(\(K_d\)) + 노출(\(C_u\)).</p>
+        <div class="two-col">
+          <div class="callout teal"><span class="callout-label">💡 강의실 좌석 비유</span>좌석 수가 정해진 강의실 — 빈 좌석 많을 땐 대부분 앉지만 좌석이 차면 추가는 서 있음 → unbound fraction 증가.</div>
+          <div class="callout"><span class="callout-label">⚡ 열린 vs 닫힌</span><strong>닫힌 시험관:</strong> 총량 고정, 치환이 곧 비결합 분율 증가처럼 보임. <strong>열린 생체:</strong> 유입·청소율·분포가 같이 작동, 총 농도 변화가 곧 약리학적 효과 변화가 아님.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 14 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 4'</span>
+        <h1 class="slide-title">포화성 결합 + Salicylic acid — 같은 약물, 두 비선형성</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물</th><th>분류 / 기전</th><th>관찰</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Naproxen</strong></td><td>NSAID, albumin 결합 포화</td><td>0–4 g 경구에서 AUC 비선형, unbound AUC가 total보다 가파르게 ↑ <span class="chip">R&amp;T Fig.16-17</span></td></tr>
+              <tr><td><strong>Cefonicid</strong></td><td>cephalosporin 항생제</td><td>30 mg/kg i.v. saturable albumin binding prototype <span class="chip">Fig.16-18</span></td></tr>
+              <tr><td><strong>Disopyramide</strong></td><td>항부정맥제, AAG 결합</td><td>total \(CL_R\)과 unbound \(CL_R\)이 <strong>반대 방향</strong> 신호 <span class="chip">Fig.16-16</span></td></tr>
+              <tr><td><strong>Trandolaprilat</strong></td><td>ACE 억제제, ACE 결합</td><td>\(f_u\) 0.05→0.20 영역으로 dose 따라 변함 <span class="chip">R&amp;T p.514</span></td></tr>
+              <tr><td><strong>Bosentan</strong></td><td>endothelin 수용체 길항제, TMDD prototype</td><td>dose↑ 시 \(V_{ss}\) <strong>0.67 → 0.16 L/kg 감소</strong>. 저분자에서도 TMDD <span class="chip">Fig.16-20</span></td></tr>
+              <tr><td><strong>Dicloxacillin</strong></td><td>penicillin 항생제</td><td>1 g \(CL_R\)=104, 2 g \(CL_R\)=63 mL/min — saturable renal secretion <span class="chip">Fig.16-13</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">Salicylic acid — 반대 방향 비선형성 두 개 동시</h2>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px;line-height:1.55">같은 약물에서 두 비선형성이 반대 방향으로 동시 작동:</p>
+          <ul style="font-size:12px">
+            <li><strong>단백 결합 포화</strong> → \(f_u\) ↑ (방향: unbound 노출 ↑)</li>
+            <li><strong>대사 capacity 포화</strong> → unbound CL ↓ (방향: unbound 노출 ↑↑)</li>
+          </ul>
+          <p style="color:#e8a55a;font-size:12.5px;font-style:italic">→ total \(C_{ss}\) vs dosing rate 곡선이 <strong>단일 기전으로는 설명 안 됨</strong>. salicylic acid는 "비선형 PK 진단은 후보 기전을 최소 셋 이상 동시에 손에 쥐고 진행해야 한다"의 결정적 임상 앵커.</p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{Rate}_{\text{수송속도}}=\frac{\overbrace{T_m}^{\text{Tm 상한}}\cdot\underbrace{C_u}_{\text{자유 C}}}{\underbrace{K_T}_{\text{KT}}+\underbrace{C_u}_{\text{점유 C}}}\quad\text{(Eq.16-3)}$$</div></div>
+        <p class="tip">renal secretion·reabsorption은 <strong>같은 분모 공유, 방향 반대</strong>. Dicloxacillin saturable secretion → 고용량 \(CL_R\)↓. Ascorbic acid saturable reabsorption escape valve → 고용량 \(CL_R\)↑.</p>
+      </div>
+    </section>
+
+    <!-- Slide 15 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 4''</span>
+        <h1 class="slide-title">TMDD QE/QSS + Drug-Metabolite + Valproate-Phenytoin</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">TMDD 근사 위계</h2>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\text{Full TMDD}}_{\text{Mager–Jusko ODE}}\xrightarrow{\overbrace{k_{on},k_{off}\gg k_{el}}^{\text{빠른 결합·해리}}}\underbrace{\text{QE 근사}}_{\text{Quasi-Equilibrium}}\xrightarrow{\overbrace{k_{int}\text{만 살림}}^{\text{complex 정상상태}}}\underbrace{\text{QSS 근사}}_{\text{Quasi-Steady-State}}$$</div></div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">QE (Quasi-Equilibrium)</div><p>binding-unbinding이 elimination보다 훨씬 빠르다고 가정. free·bound·complex 순간 평형. 식별 파라미터: \(K_D = k_{off}/k_{on}\) 한 덩어리.</p></div>
+          <div class="card-soft"><div class="card-title">QSS (Quasi-Steady-State)</div><p>complex 형성·소실이 정상상태. QE보다 약한 가정 — <strong>target turnover와 \(k_{int}\)가 살아 있음</strong>. \(K_{SS} = (k_{off}+k_{int})/k_{on}\).</p></div>
+        </div>
+        <h2 class="section-h">약물-대사체 비선형 모델 (§2.7.6)</h2>
+        <div class="card">
+          <p>활성 대사체가 효과/독성에 기여하는 약물(carbamazepine-10,11-epoxide, irinotecan-SN38, codeine-morphine)에서, 모약물과 대사체가 <strong>같은 MM 효소를 공유</strong>하면 disposition이 비선형으로 결합. 대사체에 prolonged tail이 보일 때 — <strong>parent–metabolite 동시 관측만으로는 식별 안 됨</strong>: (i) 대사체 자체 분포 kinetics 때문일 수도, (ii) 모약물 MM이 대사체 형성 속도를 제한해서 일 수도. <strong>대사체 단독 투여 disposition study가 식별성 보강 단계로 필요</strong>. <span class="chip">G&amp;W pp.135–139</span></p>
+        </div>
+        <div class="callout amber"><span class="callout-label">Displacement-only DDI 격하</span><strong>Phenytoin–Valproate</strong>: total phenytoin이 낮아져도 unbound는 상대적으로 유지. 이 사례의 진짜 가치는 "용량을 줄여라"가 아니라 <strong>"total만 보고 toxicity/efficacy를 판단하지 마라"</strong>. → 열린 계에서는 displacement가 일시적 total 변화로 끝남. <span class="chip">R&amp;T p.543</span> 단, <strong>Warfarin–Phenylbutazone</strong>은 displacement+inhibition multifaceted — displacement 단독으로 다루면 안 됨. <span class="chip">R&amp;T p.563</span></div>
+        <div class="callout teal"><span class="callout-label">🔑 실무 규칙</span>단백 결합 비선형성 의심되는 Phase 1/PopPK package에서는 <strong>total만 모으지 말고 용량 수준별 \(f_u\)를 측정</strong>. total-only dataset은 binding nonlinearity와 clearance nonlinearity를 구분하기 어렵게 만듦.</div>
+      </div>
+    </section>
+
+    <!-- Slide 16 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 5</span>
+        <h1 class="slide-title">DDI 분모 — 세 식이 사실 하나</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px;line-height:1.6">이 챕터 전체에서 <strong>가장 강력한 통합</strong>이 바로 여기임. <em>세 식이 사실 같은 분모 구조의 다른 표현</em> — 이거 하나 잡으면 외울 식이 사실 셋이 아니라 하나임.</p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{CL=\frac{V_{max}}{K_m+C}}^{\text{Card 2: 농도-CL capacity}}\;\;\Longleftrightarrow\;\;\overbrace{C_{u,ss}=\frac{K_m R_0}{V_m-R_0}}^{\text{Card 2: Css 분모 발산}}\;\;\Longleftrightarrow\;\;\overbrace{\text{AUC ratio}\approx\frac{1}{\frac{f_m}{1+C_{u,I}/K_I}+(1-f_m)}}^{\text{Card 5: DDI 경로몫}}$$</div></div>
+        <p>세 식 모두 <strong>기질-효소 가역 결합의 질량 작용(QSSA)이 만든 같은 골격</strong>을 다른 변수로 표현:</p>
+        <ul>
+          <li><strong>Eq.2:266</strong> = 농도-CL의 질량 작용 직접 표현</li>
+          <li><strong>Eq.16-7</strong> = 그것의 정상상태 분모 발산 형태</li>
+          <li><strong>Eq.17-11</strong> = 억제제가 분모에 추가됐을 때의 노출 비율 형태</li>
+        </ul>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\text{AUC ratio}}_{\text{병용 노출비}}\approx\frac{1}{\underbrace{\frac{f_m}{1+C_{u,I}/K_I}}_{\text{억제경로 잔여몫}}+\underbrace{(1-f_m)}_{\text{우회경로 몫}}}$$</div></div>
+        <div class="callout amber"><span class="callout-label">⚡ 핵심 통찰</span><strong>\(f_m\)이 크면 우회경로가 작아서 강한 inhibitor 효과가 그대로 노출됨.</strong> \(f_m\)이 작으면 우회경로가 커서 강한 inhibitor도 효과가 제한됨. → <em>같은 inhibitor라도 victim에 따라 AUC ratio가 완전히 다름.</em></div>
+      </div>
+    </section>
+
+    <!-- Slide 17 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">Card 5'</span>
+        <h1 class="slide-title">DDI 4 임상 anchor</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">① Theophylline–Enoxacin (CYP1A2; theophylline = bronchodilator, enoxacin = fluoroquinolone)</div>
+          <p>\(t_{1/2}\) 8.8 h → 22 h (<strong>2.5배 연장</strong>), \(C_{ss}\) 4 → 9 mg/L (약 2.25배), \(CL_{inhib}/CL_{normal} = 0.44\), \(f_m \approx 0.67\). → <strong>"\(f_m\)이 중간값(~0.67)이면 single-pathway 억제가 전신 노출을 2배 영역에서 흔든다"</strong>. <span class="chip">R&amp;T pp.546–550, Fig.17-6/7</span></p>
+        </div>
+        <div class="card"><div class="card-title">② Desipramine–Quinidine (CYP2D6; desipramine = TCA, quinidine = CYP2D6/P-gp inhibitor)</div>
+          <p>\(f_m^{CYP2D6} \approx 0.75\), CL이 약 <strong>4배 감소</strong>. → <strong>"\(f_m\)이 높을 때(~0.75) 한 경로 억제가 전신 CL을 거의 같은 비율로 떨어뜨림"</strong>. <span class="chip">R&amp;T pp.549–550</span></p>
+        </div>
+        <div class="card"><div class="card-title">③ Desipramine–Fluoxetine (SSRI/CYP2D6, 긴 \(t_{1/2}\))</div>
+          <p>AUC: 284 → 2110 µg·hr/L (<strong>약 7.4배</strong>), \(t_{1/2}\): 16.1 → 63.8 h, CL/F: 289 → 27.1 L/hr (약 10.7배 감소). 같은 desipramine victim인데 fluoxetine > quinidine 효과 — 긴 \(t_{1/2}\) + 활성 대사체 norfluoxetine. → <strong>"perpetrator의 \(t_{1/2}\)와 활성 대사체가 같은 victim에서 더 큰 AUC ratio를 만듦"</strong>. <span class="chip">R&amp;T p.552, Table 17-11</span></p>
+        </div>
+        <div class="card"><div class="card-title">④ Diltiazem–Lovastatin (CCB/CYP3A4 inhibitor × statin/CYP3A4)</div>
+          <p>AUC ratio: <strong>1.27 (i.v.) vs 3.57 (oral)</strong> → 경구가 IV보다 약 3배 큼. → <strong>장벽/초회통과 component가 크다는 직접 증거</strong>. 간 청소율 억제만으로는 경구·IV 차이를 설명할 수 없음. → "oral interaction > IV interaction이면 gut wall/first-pass가 우세하다"의 정량 anchor. <span class="chip">R&amp;T p.553, Table 17-7</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 18 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 5''</span>
+        <h1 class="slide-title">Fluconazole-Midazolam + 분류 + PM 발산</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">⑤ Fluconazole–Midazolam (azole 항진균제/CYP3A4 × BZD/CYP3A4)</div>
+          <p>경구 AUC: ↑<strong>5.6배</strong>, IV AUC: ↑<strong>2배</strong>. F: 24% → 63%. <strong>\(F_H\): 0.42 → 0.72</strong>, <strong>\(F_G\): 0.57 → 0.88</strong>. → \(F_G\)가 \(F_H\)보다 더 큰 비율로 변함 — midazolam 경구 초회통과가 <strong>장에 상당 부분 위치</strong>. → diltiazem-lovastatin과 짝을 이루는 "gut wall metabolism이 oral DDI를 키운다"의 두 번째 정량 anchor. <span class="chip">R&amp;T p.554, Fig.17-10</span></p>
+        </div>
+        <h2 class="section-h">억제제 분류 — Table 17-5</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>분류</th><th>기준 (기질 AUC 배수 증가)</th><th>추가 표시</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Strong</strong></td><td>≥5배 또는 &gt;80% CL 감소</td><td>MBI는 별도 (b) 표시</td></tr>
+              <tr><td><strong>Moderate</strong></td><td>2–5배</td><td>—</td></tr>
+              <tr><td><strong>Weak</strong></td><td>1.25–2배</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">PM × 억제제 — 분모가 발산하는 위험</h2>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\text{Maximum exposure ratio}}_{\text{최대 노출비}}=\frac{1}{\underbrace{1-f_m^{POLY}-f_m^{NP}}_{\text{잔여 CL}}}$$<div class="formula-cite"><span class="chip">R&amp;T Eq.17-18, pp.558–559</span></div></div></div>
+        <div class="callout teal"><span class="callout-label">💡 두 배수구 비유</span>두 배수구 중 하나가 원래 막힌 상태(PM)에서, 남은 배수구까지 막으면 물이 갑자기 차오름. \(f_m^{POLY} + f_m^{NP}\)가 1에 가까워지면 분모가 0에 가까워지고 ratio가 발산. → <strong>Card 2의 \(V_m - R_0 \to 0\) 발산과 수학적으로 같은 모양</strong>. 분모가 0으로 가면 농도가 솟구친다는 mass action 골격이 또 한 번 재현.</div>
+        <div class="callout warn"><span class="callout-label">🔑 DDI 판독 규칙</span>inhibitor 추가와 제거는 <strong>대칭 사건이 아님</strong>. MBI와 induction에서는 회복 시계가 별도. <strong>induction/MBI에서는 특히 회복 지연이 치명적</strong>. DDI 예측표에는 최소한 <strong>\(f_m\) uncertainty band</strong>를 붙일 것.</div>
+      </div>
+    </section>
+
+    <!-- Slide 19 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">Card 6</span>
+        <h1 class="slide-title">복합 분모 — 매트릭스 + Transporter Signature</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout"><span class="callout-label">거장의 시각</span>AUC 하나만 보면 transporter도, distribution도, induction도, PD interaction도 전부 metabolic inhibition처럼 보임. <strong>\(C_{max}\), \(t_{1/2}\), V/F, route, timing을 한 표에 놓아야</strong> 복합 DDI의 방향성이 분리됨.</div>
+        <div class="card"><div class="card-title">① Digoxin–Quinidine (digoxin = 강심배당체/P-gp substrate, quinidine = P-gp inhibitor)</div>
+          <p>CL: 140 → 72 mL/min (약 절반), \(CL_R\): 101 → 51 mL/min, <strong>\(V_d\): 500 → 240 L</strong>, F: 0.75 → 0.85. <strong>한 perpetrator가 한 victim의 CL·V·F를 동시에 흔드는 P-gp 통합 효과</strong>의 임상 prototype. <span class="chip">R&amp;T p.564, Table 17-8</span></p>
+        </div>
+        <div class="card"><div class="card-title">② Atorvastatin–Rifampin <em>acute IV</em> (transporter signature)</div>
+          <p>\(C_{max}\) ↑<strong>10배</strong>, AUC ↑<strong>7배</strong>, <strong>\(t_{1/2}\): 8 h → 3 h (감소)</strong> — 단순 metabolic inhibition과 반대 방향. 기전: 급성 rifampin이 <strong>OATP1B1</strong>(간 uptake transporter)을 억제 → 간 분포 차단 → 혈중 누적. distribution-limited terminal phase가 사라져 \(t_{1/2}\)↓. → <strong>"AUC↑ + \(t_{1/2}\)↓ = transporter signature"</strong>의 결정적 anchor. 활성 대사체(2-/4-hydroxy)가 cholesterol response에 기여 — PK ratio ≠ PD ratio. <span class="chip">R&amp;T p.565, Fig.17-19</span></p>
+        </div>
+        <h2 class="section-h">급성/만성 × 경구/정맥 진단 매트릭스</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>조건</th><th>우세 기전</th><th>예</th></tr></thead>
+            <tbody>
+              <tr><td>급성 정맥(Acute IV)</td><td>Transporter inhibition (OATP1B1)</td><td>Atorvastatin–rifampin acute</td></tr>
+              <tr><td>급성 경구(Acute oral)</td><td>수송체 + 장벽/초회통과</td><td>Rosuvastatin–cyclosporine</td></tr>
+              <tr><td>만성 정맥(Chronic IV)</td><td>Enzyme induction onset</td><td>Carbamazepine 자가유도</td></tr>
+              <tr><td>만성 경구(Chronic oral)</td><td>효소 유도 × 초회통과 × 수송체</td><td>Long-term rifampin/rifabutin</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tip">→ <strong>"같은 약이 투여 경로와 시간에 따라 정반대 방향의 interaction을 만드는 사례"</strong>가 rifampin. Timing × Route × Mechanism의 3차원 매트릭스 없이는 방향 예측 불가.</p>
+      </div>
+    </section>
+
+    <!-- Slide 20 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 6'</span>
+        <h1 class="slide-title">Renal Transporter DDI — Metformin-Cimetidine</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">③ Rosuvastatin–Cyclosporine (OATP1B1 + BCRP 동시 억제)</div>
+          <p>\(C_{max}\) ↑<strong>11배</strong>, AUC ↑<strong>7배</strong>. cyclosporine이 간 흡수와 담즙 배출을 둘 다 차단. → <strong>"한 perpetrator가 두 transporter를 동시에 막을 때 노출 증폭이 배가된다"</strong>. <span class="chip">R&amp;T p.555, Fig.17-11</span></p>
+        </div>
+        <div class="card"><div class="card-title">④ Phenobarbital–Dicumarol — Master clock anchor</div>
+          <p>Plateau 도달까지 <strong>3–4주</strong>. <strong>phenobarbital \(t_{1/2} \approx 4\) days가 유도 시작의 rate-limiter</strong>. \(4\)–\(5\,t_{1/2} \approx 16\)–\(20\)일에 inducer 정상상태 도달. → Card 3의 master clock 위계 직접 anchor. <span class="chip">R&amp;T p.561, Fig.17-17</span></p>
+        </div>
+        <h2 class="section-h">신장 transporter DDI — 같은 mass action 골격</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Transporter</th><th>Inhibitor</th><th>Affected drug</th><th>임상 영향</th></tr></thead>
+            <tbody>
+              <tr><td>OCT2/MATE</td><td><strong>Cimetidine</strong></td><td><strong>Metformin</strong></td><td><strong>AUC ↑50%, \(CL_R\) ↓27%</strong></td></tr>
+              <tr><td>OCT2/MATE</td><td>Cimetidine</td><td>Pindolol</td><td>\(CL_R\) ↓34%</td></tr>
+              <tr><td>OAT1/OAT3</td><td><strong>Probenecid</strong></td><td>Cidofovir</td><td>\(CL_R\) ↓32%</td></tr>
+              <tr><td>OAT1/OAT3</td><td>Probenecid</td><td><strong>Acyclovir</strong></td><td><strong>\(CL_R\) ↓32%, AUC ↑40%</strong></td></tr>
+              <tr><td>OAT1/OAT3</td><td>Probenecid</td><td>Furosemide</td><td>\(CL_R\) ↓66%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\text{AUC ratio}_{\text{renal}}}_{\text{신장 DDI}}\approx\frac{1}{\underbrace{\dfrac{f_e}{1+C_{u,I}/K_I}}_{\text{억제 신분비 잔여}}+\underbrace{(1-f_e)}_{\text{우회 경로}}}$$<div class="formula-cite"><span class="chip">R&amp;T Table 17-3, p.535</span></div></div></div>
+        <div class="callout amber"><span class="callout-label">⚡ 임상 시그너처 차이</span><strong>Hepatic OATP DDI</strong>(atorvastatin-rifampin acute) = 간 uptake 차단으로 \(t_{1/2}\) <strong>단축</strong>. <strong>Renal transporter DDI</strong> = 소실 경로 차단으로 \(t_{1/2}\) <strong>연장 + AUC 증가</strong>가 동시 — 시그너처 차이. <strong>Imipenem–Cilastatin</strong>(요중 회수율 25→70%)은 의도적 transporter 억제 사례 — "DDI = 항상 나쁜 것"이 아님.</div>
+      </div>
+    </section>
+
+    <!-- Slide 21 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">Card 6''</span>
+        <h1 class="slide-title">PD 상호작용 — 경쟁/비경쟁/Isobologram</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>PD interaction도 결국 같은 mass action 분모. 작용제 \(C\)와 길항제 \(A\)가 수용체 자리에서 경쟁하는 모양이 Card 5의 효소 자리 경쟁과 수학적으로 동일.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{E=\frac{E_{max}\cdot C}{C+EC_{50}\cdot(1+A/EA_{50})}}^{\text{경쟁: EC50↑, Emax 보존}}\qquad\text{vs}\qquad\overbrace{E=\frac{E_{max}}{1+A/EA_{50}}\cdot\frac{C}{C+EC_{50}}}^{\text{비경쟁: Emax↓}}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.3:49–3:50, pp.225–226</span></div></div></div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">경쟁적 길항</div><p>\(EC_{50}\)이 \((1+A/EA_{50})\) factor만큼 <strong>오른쪽 이동</strong>하지만 \(E_{max}\) 보존. <strong>더 높은 농도를 쓰면 같은 효과 회복 가능</strong>. Card 5의 mass action 분모가 PD에서 그대로 재현.</p></div>
+          <div class="card-soft"><div class="card-title">비경쟁적 길항</div><p>\(E_{max}\)가 \((1+A/EA_{50})\)로 <strong>감소</strong>, \(EC_{50}\) 보존. 효현제 농도 무한정 올려도 원래 \(E_{max}\) 회복 불가 — 임상적으로 다른 결과.</p></div>
+        </div>
+        <h2 class="section-h">동일 수용체 두 완전 효현제 — \(E_{max}\) ceiling 공유</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{E}_{\text{공유효과}}=\frac{\overbrace{E_{max}}^{\text{공유 Emax}}\cdot\left(\underbrace{C_A/EC_{50,A}}_{\text{A drive}}+\underbrace{C_B/EC_{50,B}}_{\text{B drive}}\right)}{1+\underbrace{C_A/EC_{50,A}}_{\text{A drive}}+\underbrace{C_B/EC_{50,B}}_{\text{B drive}}}$$<div class="formula-cite"><span class="chip">R&amp;T Eq.17-21, p.568</span></div></div></div>
+        <div class="card"><div class="card-title">등효능선(Isobologram, Fig.17-21)</div>
+          <ul style="font-size:11.5px">
+            <li><strong>직선</strong> = 가산적 (단순 mass action 합산)</li>
+            <li><strong>직선 아래로 휨</strong> = 상승작용 (synergy, 예: midazolam–propofol)</li>
+            <li><strong>직선 위로 휨</strong> = less-than-additive (예: isoproterenol–propranolol antagonism)</li>
+          </ul>
+        </div>
+        <div class="callout teal"><span class="callout-label">🔑 실무 규칙</span>DDI 사례 검토 시 "AUC가 증가했다"로 끝내지 말 것. 함께 움직인 \(C_{max}\), \(t_{1/2}\), V/F, oral/IV ratio를 함께. <strong>AUC↑와 \(t_{1/2}\)↓가 같이 나오면 단순 metabolic inhibition만으로는 설명 불가 — distribution/transporter 의심.</strong></div>
+      </div>
+    </section>
+
+    <!-- Slide 22 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3</span>
+        <h1 class="slide-title">혼동쌍 CP1–CP3</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">CP1. 용량 의존 capacity vs 진성 시간 의존</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>dose/concentration capacity</td><td>시간에 따른 효소·수송체·생리 변화</td></tr>
+            <tr><td>수식</td><td>\(K_m+C\), \(V_m-R_0\)</td><td>\(dE/dt = R_{in} - k_{out}E\)</td></tr>
+            <tr><td>오해</td><td>dose ladder를 time-dep CL로 오해</td><td>시간 변화를 단순 dose nonlinearity로</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"농도 때문인가, 시간 때문인가"</strong>. 진단: "같은 농도에서 시간이 달라도 CL이 다른가?" → Yes면 time-dependent.</p>
+        </div>
+        <div class="card"><div class="card-title">CP2. Autoinduction vs 일반 축적</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>반복투여에 따른 효소량 변화</td><td>선형 PK 투여간격별 축적</td></tr>
+            <tr><td>수식</td><td>\(k_{out}\), enzyme pool, time-varying CL</td><td>축적비, 반감기, dosing interval</td></tr>
+            <tr><td>오해</td><td>trough 감소를 adherence 문제로</td><td>자가유도 모델 필요성 누락</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"수위 상승 vs 배수구가 넓어짐"</strong>. <strong>single-dose fit으로 multiple-dose 예측 시 trough 체계적 과대추정</strong>.</p>
+        </div>
+        <div class="card"><div class="card-title">CP3. Capacity-limited vs 혈류/초회통과</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>수식</td><td>\(V_{max}/(K_m+C)\), \(V_m-R_0\)</td><td>\(Q_H\), \(F_G\), \(F_H\), extraction ratio</td></tr>
+            <tr><td>오해</td><td>AUC↑를 F vs CL 중 하나로 단정</td><td>oral/IV 근거 없이 F 결론</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"공장 한계 vs 도로 한계"</strong>. 공장 한계는 <em>고용량에서 폭발적 비선형성</em>, 도로 한계는 <em>고혈류 상황에서 선형</em>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 23 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3'</span>
+        <h1 class="slide-title">혼동쌍 CP4–CP6</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">CP4. 열린 생체 내 결합 vs 닫힌 시험관 내 결합</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>유입·청소율·분포 작동</td><td>총량 고정</td></tr>
+            <tr><td>수식</td><td>\(C_u = K^0/CL_u\)</td><td>binding equilibrium</td></tr>
+            <tr><td>오해</td><td>displacement-only를 지속적 unbound↑로</td><td>시험관 결과를 생체 용량조정으로</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>In vitro는 닫힌 계, in vivo는 열린 계.</strong> 시험관 강한 displacement라도 생체에서 임상적으로 의미 없을 수 있는 이유.</p>
+        </div>
+        <div class="card"><div class="card-title">CP5. Displacement-only vs Inhibition DDI</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>결합 자리 치환</td><td>대사/수송 경로 억제</td></tr>
+            <tr><td>수식</td><td>\(f_u\), \(C_u\)</td><td>\(CL_{int}\), \(f_m/(1+C_{u,I}/K_I)\)</td></tr>
+            <tr><td>오해</td><td>total 감소만 보고 dose 감량</td><td>지속 AUC↑를 displacement로 축소</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"자리 뺏기 vs 공장 멈추기"</strong>. Displacement는 일시적, Inhibition은 지속적 AUC↑. Warfarin-phenylbutazone은 두 기전 겹침.</p>
+        </div>
+        <div class="card"><div class="card-title">CP6. 가역적 억제 vs MBI</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>inhibitor 농도 감소로 회복</td><td>enzyme pool 재합성 뒤 회복</td></tr>
+            <tr><td>수식</td><td>\(1+C_{u,I}/K_I\) 경쟁 분모</td><td>\(k_{inact}/K_I\) (in-vitro) + \(k_{inact}/k_E\) (in-vivo)</td></tr>
+            <tr><td>오해</td><td>washout을 inhibitor t½만으로</td><td>carry-over + 회복 지연 누락</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"문 막기 vs 자물쇠 교체"</strong>. MBI 약물 중단해도 enzyme resynthesis 기간(CYP3A4 ≈ 2주) 동안 지속. <strong>두 강도 지표(\(k_{inact}/K_I\) potency, \(k_{inact}/k_E\) magnitude) 분리</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 24 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3''</span>
+        <h1 class="slide-title">혼동쌍 CP7–CP8</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><div class="card-title">CP7. 억제 vs 유도, Rifampin 급성/만성</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>급성 transporter/enzyme inhibition</td><td>만성 enzyme/transporter induction</td></tr>
+            <tr><td>수식</td><td>\(C_{u,I}/K_I\)</td><td>\(R_{in}\)↑, enzyme turnover</td></tr>
+            <tr><td>오해</td><td>같은 rifampin을 항상 exposure 감소로</td><td>timing·route별 상반 방향 예측 실패</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"방향 전환 스위치"</strong>. Rifampin: 만성=inducer (CYP3A4, P-gp↑ → exposure↓), 급성 IV=OATP 억제자 (uptake 차단 → atorvastatin \(C_{max}\) 10배, AUC 7배). <strong>같은 약, 정반대 방향</strong>. Timing × Route × Mechanism 3차원 매트릭스 필수.</p>
+        </div>
+        <div class="card"><div class="card-title">CP8. PK DDI vs PD DDI</div>
+          <div class="tbl-wrap"><table><tbody>
+            <tr><td>차원</td><td>농도-시간 프로파일 변화</td><td>같은 농도에서 response 변화</td></tr>
+            <tr><td>수식</td><td>AUC, CL, F, \(C_{max}\), \(t_{1/2}\)</td><td>\(EC_{50}\) shift, \(E_{max}\) 감소, isobologram</td></tr>
+            <tr><td>오해</td><td>response 변화를 모두 농도 변화로</td><td>PD interaction을 PK 모델 오류로</td></tr>
+          </tbody></table></div>
+          <p class="tip">⚡ <strong>"농도 바꾸기 vs 반응 바꾸기"</strong>. <strong>unbound concentration이 안 변하는데 response가 달라지면 PD interaction 의심</strong>. Isobologram이 그 분리를 보여주는 실험 도구.</p>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px;line-height:1.55">⚡ <strong>8 혼동쌍 통합:</strong> CP1–CP3는 진단(농도/시간/혈류), CP4–CP6은 결합과 억제 차원, CP7–CP8은 timing/mechanism과 PK/PD 분리. 각 쌍이 본문 카드의 잠그는 자(ruler)와 1:1 대응.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 25 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4</span>
+        <h1 class="slide-title">자기 테스트 — Q1 ~ Q5</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q1. 비선형성 진단에서 dose-normalized concentration-time plot과 AUC/Dose vs Dose plot을 먼저 그리는 이유는?</div><div class="a">선형이면 dose-normalized 관측값이 겹침. 안 겹치면 <strong>CL, F, V/distribution, binding, time-dependent process 중 하나가 dose/time의 함수라는 신호</strong>. 이 그림은 "어떤 파라미터가 상수가 아니게 됐는가?"를 묻는 첫 필터. <span class="chip">G&amp;W pp.112–114</span></div></div>
+        <div class="q-block"><div class="q">Q2. AUC/Dose가 dose와 함께 증가합니다. 가능한 두 가지 기전은?</div><div class="a"><strong>CL 감소 또는 F 증가</strong>. capacity-limited elimination뿐 아니라 first-pass saturation도 가능하니까 <strong>IV/oral 근거 필요</strong>. <span class="chip">G&amp;W p.113</span><span class="chip">R&amp;T pp.499–506</span></div></div>
+        <div class="q-block"><div class="q">Q3. 왜 Eq.2:264를 MM ODE citation으로 쓰면 안 되나?</div><div class="a">Eq.2:264는 linear superposition 식. MM clearance/rate/bolus/infusion/input 식은 <strong>Eq.2:266–2:274</strong> 영역. <span class="chip">G&amp;W pp.114–118</span></div></div>
+        <div class="q-block"><div class="q">Q4. Phenytoin 300 mg/day에서 4 mg/L, 500 mg/day에서 36 mg/L가 된 이유를 Eq.16-7의 분모 관점에서 설명.</div><div class="a">\(C_{u,ss} = K_m R_0/(V_m-R_0)\)에서 dosing rate \(R_0\)가 <strong>\(V_m \approx 500\) mg/day에 가까워지면 분모가 작아져서</strong> 농도가 비선형으로 솟구침. 전형값 \(K_m \approx 0.4\) mg/L (unbound), \(f_u \approx 0.1\) → total \(K_m' \approx 4\) mg/L. <strong>치료역 10–20 mg/L는 이미 capacity 근처</strong>. <span class="chip">R&amp;T pp.491, 503</span></div></div>
+        <div class="q-block"><div class="q">Q5. Ascorbic acid는 <strong>133배 dose 증가</strong>에도 농도가 약 2배만 증가. phenytoin과 반대 방향 비선형성?</div><div class="a">농도 상승과 함께 <strong>renal clearance가 saturable reabsorption escape valve로 증가</strong> (\(CL_R < 0.5\) mL/min → 21 mL/min, <strong>42배 이상</strong>). saturable reabsorption은 고농도에서 약물 제거를 가속하는 역방향 비선형성. <span class="chip">R&amp;T pp.507–510</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 26 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4'</span>
+        <h1 class="slide-title">자기 테스트 — Q6 ~ Q11</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q6. MM 모델에서 \(V_{max}\)와 \(K_m\)를 따로 추정하려면? "Vmax–Km Ridge Lock"?</div><div class="a"><strong>곡률을 포함하고, 특히 \(K_m\) 주변 또는 그 이하의 농도</strong>가 필요. high-concentration plateau만으로는 \(V_{max}/K_m\) ridge가 생김 — single-dose data에서 흔히 \(|\rho| > 0.9\) (G&amp;W p.116에서 −0.96 사례). <strong>구제:</strong> 용량 수준 추가 또는 \(K_m\) prior fix. <span class="chip">G&amp;W p.116, 117</span></div></div>
+        <div class="q-block"><div class="q">Q7. 반복투여 중 trough가 계속 낮아지고 single-dose model은 잘 맞음. 어떤 기전을 먼저 의심?</div><div class="a"><strong>autoinduction 또는 time-dependent CL 증가</strong> — "Trough Envelope Drift" + "Single-dose Fit Trap"의 결합. enzyme turnover compartment와 \(k_{out}\) 식별. PK22 design에서 \(k_{out} \approx 0.023\) h⁻¹, <strong>enzyme \(t_{1/2} \approx 30\) h</strong>. <span class="chip">G&amp;W pp.580–585</span></div></div>
+        <div class="q-block"><div class="q">Q8. Clarithromycin 병용 후 midazolam exposure가 multiple dosing에서 더 커지고 회복도 느림. reversible inhibition과 어떻게 다른가? <strong>MBI의 두 강도 지표 구분.</strong></div><div class="a"><strong>MBI는 enzyme activity를 제거</strong>하니까 회복이 inhibitor 농도뿐 아니라 <strong>enzyme resynthesis</strong>에 묶임. <strong>두 강도 지표:</strong> \(k_{inact}/K_I\) (in-vitro potency) vs \(k_{inact}/k_E\) (in-vivo magnitude factor). 정량: clarithromycin \(k_{inact} \approx 0.07\) min⁻¹, \(K_I \approx 7\) mg/L, \(k_E \approx 0.23\) day⁻¹, \(k_{inact}/k_E \approx 438\), \(C_{u,I}/K_I \approx 0.025\) → <strong>reversible 식 1.025배 vs MBI 식 약 11배.</strong> CYP3A4 회복 약 <strong>2주</strong>. <span class="chip">R&amp;T pp.556–558</span></div></div>
+        <div class="q-block"><div class="q">Q9. Valproate 병용 후 total phenytoin은 낮아졌지만 unbound는 유지. 용량을 줄여야 하나?</div><div class="a"><strong>displacement-only에서는 total이 misleading</strong>. <strong>unbound 농도와 임상 반응 기준으로 판단</strong>해야 하고, total 감소만으로 dose 감량하면 안 됨. 열린 계 mass balance \(C_u = K^0/CL_u\)에서 unbound clearance가 안 변하면 unbound steady state 유지. <span class="chip">R&amp;T p.543</span></div></div>
+        <div class="q-block"><div class="q">Q10. Affected drug의 \(f_m\)이 0.8이고 inhibitor가 해당 경로를 강하게 억제. 왜 \(f_m = 0.3\)인 약물보다 AUC ratio가 훨씬 커지나?</div><div class="a">Eq.17-11에서 inhibited pathway term이 작아져도 <strong>residual \((1-f_m)\)가 exposure ratio의 바닥을 정함.</strong> \(f_m = 0.8\)이면 <strong>남은 경로가 0.2뿐</strong>이라 ratio가 크게 뛰지만, \(f_m = 0.3\)이면 0.7의 우회 경로가 있어서 상승이 제한됨.</div></div>
+        <div class="q-block"><div class="q">Q11. Oral midazolam interaction이 IV midazolam보다 큼. 어떤 기전? Fluconazole–midazolam 정량 anchor 인용.</div><div class="a"><strong>gut wall/first-pass metabolism component가 크다</strong>는 뜻. fluconazole 400 mg 병용: oral AUC ↑5.6배, IV ↑2배; F 24%→63%; \(F_H\) 0.42→0.72; <strong>\(F_G\) 0.57→0.88로 더 큰 비율로 변함</strong> → midazolam oral first-pass에 gut wall 기여 상당. <span class="chip">R&amp;T pp.553–554</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 27 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4''</span>
+        <h1 class="slide-title">자기 테스트 — Q12 ~ Q17</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q12. Eq.17-18의 PM × inhibitor risk가 큰 이유?</div><div class="a">다형성 경로가 <strong>이미 결손된 PM</strong>에서 남은 비다형성 경로가 inhibitor에 의해 막히면 <strong>잔여 청소율이 매우 작아질 수 있음</strong>. ratio = \(1/(1-f_m^{POLY}-f_m^{NP})\), <strong>두 항의 합이 1에 가까울수록 발산</strong>. <span class="chip">R&amp;T pp.558–559</span></div></div>
+        <div class="q-block"><div class="q">Q13. Rifampin 병용에서 acute IV는 AUC↑, chronic oral은 AUC↓. 왜 모순이 아닌가? Atorvastatin acute IV에서 활성 대사체는?</div><div class="a"><strong>acute rifampin은 OATP1B1 transporter 억제</strong>로 hepatic uptake 차단 → 혈중 누적. <strong>chronic rifampin은 enzyme induction</strong>으로 CL↑ → 노출↓. <strong>timing과 route가 기전을 바꿈</strong>. Atorvastatin-rifampin acute IV: \(C_{max}\) 10×, AUC 7×, \(t_{1/2}\) 8→3h가 직접 anchor (transporter signature). 활성 대사체(2-/4-hydroxy)가 cholesterol response에 기여 → parent AUC ratio 7배는 PK 시계, PD effect(3–4주 plateau)는 합산 활성 노출 × cholesterol turnover. <strong>PK ratio ≠ PD ratio.</strong> <span class="chip">R&amp;T pp.343, 564–565</span></div></div>
+        <div class="q-block"><div class="q">Q14. Response는 크게 변했지만 unbound 농도-시간은 거의 안 변함. 무엇을 의심? 경쟁 vs 비경쟁 한 줄로?</div><div class="a"><strong>PK DDI보다 PD interaction을 의심.</strong> 경쟁: \(E_{max}\) 보존 + \(EC_{50}\) shift. 비경쟁: \(E_{max}\) 감소. <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{E=\frac{E_{max}\cdot C}{C+EC_{50}\cdot(1+A/EA_{50})}}^{\text{경쟁}}\quad\text{vs}\quad\overbrace{E=\frac{E_{max}}{1+A/EA_{50}}\cdot\frac{C}{C+EC_{50}}}^{\text{비경쟁}}$$</div></div>같은 receptor의 두 full agonist는 Eq.17-21로 \(E_{max}\) ceiling 공유.</div></div>
+        <div class="q-block"><div class="q">Q15. Drug–metabolite nonlinear model에서 활성 대사체 disposition을 parent–metabolite 동시 관측만으로 외삽하면 안 되는 이유?</div><div class="a">G&amp;W p.137 명시 — <strong>대사체 단독 투여 데이터 없이는 추가 외삽 안 됨</strong>. 모약물과 대사체가 같은 MM 효소 공유 시 prolonged tail이 (i) 자체 분포 kinetics, (ii) 모약물 saturable elimination이 대사체 형성 속도 제한 — 둘 식별 안 됨. → <strong>대사체 단독 disposition study가 식별성 보강 단계로 필요</strong>.</div></div>
+        <div class="q-block"><div class="q">Q16. R&amp;T Table 17-5 inhibitor strength 분류? MBI 별도 표시 이유?</div><div class="a"><strong>Strong = ≥5배 AUC 또는 &gt;80% CL 감소; Moderate = 2–5배; Weak = 1.25–2배.</strong> MBI는 reversible 식만으로 분류하면 <strong>강도를 과소평가</strong> — 같은 \(C_{u,I}/K_I\)에서도 <strong>reversible 1.025× vs MBI 11× CL 감소처럼 자릿수 단위 다름</strong>. <span class="chip">R&amp;T p.549</span></div></div>
+        <div class="q-block"><div class="q">Q17. Metformin이 cimetidine과 병용 시 AUC 50%↑. hepatic OATP DDI와 어떻게 다른 임상 함의?</div><div class="a"><strong>같은 mass action 분모 골격</strong> — \(f_m\) 자리에 <strong>\(f_e\)(renal active secretion 분율)</strong>가 들어갈 뿐. <strong>Cimetidine = OCT2 + MATE1 동시 억제</strong>. metformin은 간 대사가 거의 없어 renal transporter DDI가 유일한 노출 변동 기전. <strong>임상적 차이:</strong> hepatic OATP DDI는 \(t_{1/2}\) 단축, 신장 transporter DDI는 \(t_{1/2}\) 연장 + AUC 증가가 시그너처 차이. <span class="chip">R&amp;T Table 17-3, p.535</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 28 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4'''</span>
+        <h1 class="slide-title">Q18 보스 딜레마 — 8단계 검토 순서</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">상황</span>Sponsor가 <em>"inhibitor 병용 시 AUC가 증가하니 label에 일괄 dose reduction을 쓰자"</em>고 함. 10분 안에 기전 기반 검토 순서는?</div>
+        <div class="dark-card">
+          <ol style="font-size:12.5px;line-height:1.7">
+            <li><strong>affected drug의 \(f_m\)과 inhibited pathway 확인</strong> — \(f_m\)이 작으면 강한 inhibitor라도 whole-body AUC ratio는 제한 (Eq.17-11)</li>
+            <li><strong>\(C_{u,I}/K_I\)와 reversible vs MBI 구분</strong> — MBI면 \(k_{inact}/K_I\) (in-vitro potency)와 \(k_{inact}/k_E\) (in-vivo factor) 평가 + enzyme recovery clock</li>
+            <li><strong>oral/IV route effect 확인</strong> — Diltiazem-Lovastatin 1.27 vs 3.57 패턴이면 gut wall first-pass component 우세</li>
+            <li><strong>PM 또는 잔여 경로 risk 확인</strong> — Eq.17-18 분모 발산 위험</li>
+            <li><strong>acute/chronic perpetrator effect와 withdrawal sequence 확인</strong> — phenobarbital-dicumarol 3–4주 plateau onset, MBI 2주 recovery washout trap</li>
+            <li><strong>transporter/multifaceted signature 확인</strong> — AUC↑ + \(t_{1/2}\)↓ 패턴이면 metabolic inhibition이 아니라 transporter; <em>신장 transporter도 같은 framework</em> (metformin-cimetidine AUC↑50%, probenecid-acyclovir \(CL_R\)↓32%)</li>
+            <li><strong>활성 대사체 기여 확인</strong> — atorvastatin처럼 활성 대사체가 PD에 기여하면 parent AUC ratio가 PD ratio와 분리</li>
+            <li><strong>세 식이 같은 골격임을 점검</strong> — Eq.2:266 ↔ Eq.16-7 ↔ Eq.17-11이 같은 기전의 다른 표현임을 sponsor에게 명확히 전달</li>
+          </ol>
+        </div>
+        <div class="callout teal"><span class="callout-label">⚡ 한 줄 결론</span>"AUC 증가했으니 일괄 dose reduction"은 위험. <strong>victim의 \(f_m\), perpetrator의 reversible/MBI/transporter 기전, route, timing, PM, 활성 대사체</strong>를 차례로 분리해야 안전 마진과 효과 발현이 모두 보존됨.</div>
+        <p class="tip">단, textbook 기반 기전 체크리스트로만 둠. <span class="chip">R&amp;T pp.546–565</span><span class="chip">G&amp;W pp.115–118</span></p>
+      </div>
+    </section>
+
+    <!-- Slide 29 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5</span>
+        <h1 class="slide-title">7 문장 압축 — 한 페이지 기억 모델</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card"><p><strong>1.</strong> 비선형성은 <strong>중첩 원리 실패(superposition failure)</strong>로 발견됨. 첫 그림은 항상 dose-normalized profile과 AUC/Dose vs Dose. <span class="chip">G&amp;W pp.112–114</span></p></div>
+        <div class="card"><p><strong>2.</strong> <strong>용량 한계(capacity limitation)</strong>는 \(CL(C)\)를 만들고, \(R_0 \to V_m\)에서 정상상태가 발산. ⚠️ "\(V_m\) 20% 감소 → \(C_{ss}\) 2배"는 R&amp;T p.506의 anchor prototype, <strong>portable rule 아님</strong>. 탄력성 \(-V_m/(V_m-R_0)\)이 시작점에 따라 다름.</p></div>
+        <div class="card"><p><strong>3.</strong> <strong>시간 의존성</strong>은 효소/수송체/생리학 시계가 약물 농도 시계와 분리될 때. Master clock = \(\max(t_{1/2}^{enzyme}, t_{1/2}^{inducer}, t_{1/2}^{drug})\). ⚠️ <strong>MBI 강도는 \(k_{inact}/K_I\)와 \(k_{inact}/k_E\) 두 차원으로 분리</strong>.</p></div>
+        <div class="card"><p><strong>4.</strong> <strong>결합</strong>은 total을 속이고, 열린 계에서는 \(C_u = K^0/CL_u\) 물질 수지가 비결합 노출을 강제.</p></div>
+        <div class="card"><p><strong>5.</strong> <strong>DDI 예측</strong>은 \(f_m\), 억제제 강도(\(C_{u,I}/K_I\), \(k_{inact}/k_E\)), 투여 경로, PM/잔여 경로, 유도/MBI 회복을 함께. <span class="chip">R&amp;T pp.546–561</span></p></div>
+        <div class="card"><p><strong>6.</strong> <strong>복합 DDI와 PD 상호작용</strong>은 "AUC 하나"로 기전을 단정 못 함. \(C_{max}\), \(t_{1/2}\), V/F, 경구/정맥, 등효능선을 함께. ⚠️ <strong>신장 transporter DDI도 같은 mass action 분모로 회수</strong>.</p></div>
+        <div class="dark-card"><p style="color:#faf9f5;font-size:13px;line-height:1.55"><strong>7. 세 식은 결국 하나:</strong> 비선형 PK·TDM·DDI 직관은 같은 분모 구조의 다른 표현 (Eq.2:266 ↔ Eq.16-7 ↔ Eq.17-11).</p></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{CL=\frac{V_{max}}{K_m+C}}^{\text{Card 2}}\;\Longleftrightarrow\;\overbrace{C_{u,ss}=\frac{K_m R_0}{V_m-R_0}}^{\text{Css 발산}}\;\Longleftrightarrow\;\overbrace{\text{AUC ratio}\approx\frac{1}{\frac{f_m}{1+C_{u,I}/K_I}+(1-f_m)}}^{\text{Card 5}}$$</div></div>
+        <div class="closer-card">
+          <div class="closer-label">FINAL ONE-LINER</div>
+          <p class="closer-text"><em>"비선형성 진단 → 다섯 분모 중 어느 분모인지 식별 → DDI 예측으로 옮기기 → route/timing/unbound/PM/active metabolite 함정 피하기 → 세 식이 하나의 mass action 분모로 회수된다는 사실 확인."</em></p>
+        </div>
+        <p class="tip">phenytoin 환자가 또 들어오면, 이제 당황하지 않게 됨. 5초 안에 머릿속에서 — <em>"아, 지금 \(V_m - R_0\) 분모가 무너지고 있구나"</em>가 떠오르게 됨. 그게 이 챕터의 진짜 목표.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() { goTo(parseInt(btn.dataset.idx)); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ renderMath(); goTo(0); });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>

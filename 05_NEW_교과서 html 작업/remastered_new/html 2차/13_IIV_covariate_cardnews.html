@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 13 — IIV와 공변량 모델링: 어느 그릇에 들어가야 하는가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:34px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:26px 12px 18px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:11px 16px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px;line-height:1.55}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;white-space:pre;overflow-x:auto;border-radius:12px;padding:12px 16px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11.5px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11.5px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.5}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.97em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:8px 12px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.5}
+.closer-card{background:#181715;border-radius:12px;padding:22px 28px;text-align:center;margin:6px auto;max-width:860px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#faf9f5;line-height:1.6}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+.code-block{background:#1f1e1b;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;border-radius:8px;padding:10px 14px;margin:5px 0;white-space:pre;overflow-x:auto}
+.code-block .kw{color:#e8a55a}
+.code-block .str{color:#5db8a6}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 13</div>
+        <div class="brand-sub">IIV·공변량 · 어느 그릇에 들어가야 하는가</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">§0 마스터 질문 · 변이 보존</button>
+    <button class="toc-btn" data-idx="1">§0 그릇 4종 · 강제 순서</button>
+    <button class="toc-btn" data-idx="2">§1 PK50 Hook — 28%→9%</button>
+    <button class="toc-btn" data-idx="3">§2 IIV / IOV / RUV / TVC</button>
+    <button class="toc-btn" data-idx="4">§2 IIV vs IOV NONMEM 식</button>
+    <button class="toc-btn" data-idx="5">§2 IOV vs TVC 분기점</button>
+    <button class="toc-btn" data-idx="6">§3 ε 그릇부터 잠그기</button>
+    <button class="toc-btn" data-idx="7">§3 세 잔차 모델 · Combined</button>
+    <button class="toc-btn" data-idx="8">§3 Sig.1 — Leakage Funnel</button>
+    <button class="toc-btn" data-idx="9">§3 BQL M3 + 임계값 출처</button>
+    <button class="toc-btn" data-idx="10">§4 공변량 정의 · CRCL</button>
+    <button class="toc-btn" data-idx="11">§4 Centering 90의 정체</button>
+    <button class="toc-btn" data-idx="12">§4 추가 vs 재모수화 · PK50</button>
+    <button class="toc-btn" data-idx="13">§4 Total vs Unbound 안전</button>
+    <button class="toc-btn" data-idx="14">§4 Sig.2 — Vanishing Cov.</button>
+    <button class="toc-btn" data-idx="15">§4 SCM 비대칭 임계</button>
+    <button class="toc-btn" data-idx="16">§4 다층 범주형 df 보정</button>
+    <button class="toc-btn" data-idx="17">§4 OFV–VPC 두 관문</button>
+    <button class="toc-btn" data-idx="18">§5 매끄러운 분포 무너짐</button>
+    <button class="toc-btn" data-idx="19">§5 약물별 유전 다형성</button>
+    <button class="toc-btn" data-idx="20">§5 PM 빈도 · Sig.3</button>
+    <button class="toc-btn" data-idx="21">§5 CYP3A4 단봉 변이</button>
+    <button class="toc-btn" data-idx="22">§6 세 시그니처 통합</button>
+    <button class="toc-btn" data-idx="23">§7 EBE · Shrinkage</button>
+    <button class="toc-btn" data-idx="24">§7 OMEGA BLOCK 상관</button>
+    <button class="toc-btn" data-idx="25">§8 혼동 쌍 Pair 1·2·3</button>
+    <button class="toc-btn" data-idx="26">§8 Pair 4·5 (Reparam)</button>
+    <button class="toc-btn" data-idx="27">§9 자기점검 Q1–Q5</button>
+    <button class="toc-btn" data-idx="28">§9 자기점검 Q6–Q10</button>
+    <button class="toc-btn" data-idx="29">§10 거장의 다섯 질문 · Closer</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0 -->
+    <section class="slide active">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">마스터 질문 — 어느 그릇에 들어가야 하는가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">이 세션을 절반쯤 듣다 보면 자꾸 길을 잃게 됨. \(\theta\), \(\eta\), \(\varepsilon\), \(\omega^2\), \(\sigma^2\), IIV, IOV, RUV, covariate, reparameterization, mixture, phenotype… 기호가 한꺼번에 쏟아짐. 그래서 모든 걸 끌고 가는 <strong>단 하나의 마스터 질문</strong>을 먼저 박고 시작.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px;text-align:center"><strong>🎯 마스터 질문 (Session 13의 모든 문제는 이 한 줄로 환원됨)</strong></p>
+          <p class="gem" style="color:#e8a55a;text-align:center;font-size:16px;margin:8px 0">"지금 내가 보고 있는 이 <em>흔들림</em>은, 도대체 <em>어느 그릇</em>에 들어가야 하는가?"</p>
+        </div>
+        <h2 class="section-h">변이 보존 법칙</h2>
+        <div class="callout warn"><span class="callout-label">Variance is Conserved</span>같은 데이터셋에서 네 그릇의 합은 <strong>고정</strong>되어 있음 — "전체 미설명 분산"은 zero-sum으로 다툼. 한 그릇에 잘못 담으면 다른 그릇에서 새거나 부풀어 오름. 그래서 그릇 배정 순서를 잘못 잡으면 NONMEM은 돌아가는데, <em>용량 개체화는 무너짐</em>.</div>
+        <div class="callout"><span class="callout-label">이 세션 한 줄</span><em>"\(\omega^2\)이 줄었다"가 아니라 "어느 좌표에서 무엇이 설명되었느냐"가 진짜 질문임.</em></div>
+      </div>
+    </section>
+
+    <!-- Slide 1 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0.B</span>
+        <h1 class="slide-title">그릇 4종 + 강제 순서</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>그릇</th><th>무엇을 담는가</th><th>NONMEM 위치</th></tr></thead>
+            <tbody>
+              <tr><td>① \(\theta\) 구조 (covariate로 설명됨)</td><td>측정 가능한 변수로 이름 붙일 수 있는 변이</td><td><span class="chip">$THETA + 구조식</span></td></tr>
+              <tr><td>② \(\eta\) (IIV)</td><td>사람 사이의 <strong>지속적</strong>·이름 못 붙인 차이</td><td><span class="chip">$OMEGA 대각 (개체별)</span></td></tr>
+              <tr><td>③ \(\eta\) (IOV)</td><td>같은 사람 안의 occasion 간 변동</td><td><span class="chip">$OMEGA (occasion 차원)</span></td></tr>
+              <tr><td>④ \(\varepsilon\) (RUV)</td><td>한 관측 시점의 측정·모델 잔차</td><td><span class="chip">$SIGMA</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">강제 순서 — 어기면 매 단계마다 망함</h2>
+        <div class="diagram"><span class="step">0단계:</span> 마스터 질문 + 변이 보존 법칙 박기
+<span class="step">1단계:</span> 그릇 4종을 머리에 띄우기 (IIV/IOV/RUV/covariate)
+<span class="step">2단계:</span> <span class="anno">ε 그릇 먼저 잠그기</span> (잘못된 ε는 ω²로 새서 가짜 covariate)
+<span class="step">3단계:</span> ω² 안의 설명 가능한 부분을 θ로 옮기기
+        — 좌표 회전(reparameterization)과 변수 추가(covariate) 구분
+<span class="step">4단계:</span> 남은 η의 분포 모양 검사 (smooth vs 다봉/하위군)
+<span class="step">5단계:</span> 같은 법칙이 만드는 3가지 진단 시그니처 통합
+<span class="step">6단계:</span> 혼동쌍 정리 + 자기 테스트 + 큰 그림</div>
+        <p style="font-size:11.5px"><em>순서 자체가 카드의 본문임.</em></p>
+      </div>
+    </section>
+
+    <!-- Slide 2 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1</span>
+        <h1 class="slide-title">Hook — 같은 12명, CV 28% → 9%로 바뀐 장면</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">CpD라는 약을 566 µg, 5시간 IV infusion으로 12명 환자에게 줌. <strong>같은 환자, 같은 자료</strong>를 두 좌표로 본 결과 <span class="chip">G&amp;W p.704–709</span>:</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL = 11.4\ \mathrm{L\cdot h^{-1}}}_{\text{총 농도(total) 기준}}\ (\overbrace{CV = 28\%}^{\text{사람 사이 흔들림}})$$<div class="formula-cite">Total 좌표</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL_u = 720\ \mathrm{L\cdot h^{-1}}}_{\text{비결합(unbound) 기준}}\ (\overbrace{CV = 9\%}^{\text{1/3로 줄어듦}})$$<div class="formula-cite">Unbound 좌표 · \(f_u=0.016\pm 0.0049\)</div></div></div>
+        </div>
+        <div class="callout warn"><span class="callout-label">🚨 가장 흔한 오해 — 결정적 분기점</span>"와, 단백결합을 covariate로 넣었더니 IIV가 28%에서 9%로 줄어든 거구나!" — <strong>틀림.</strong> 우리가 한 일은 covariate를 추가한 게 아님. <em>같은 12명을 다른 좌표에서 다시 본 것</em>뿐. 안전 경계는 <strong>total C &gt; 50 µg·L⁻¹</strong>.</div>
+        <div class="dark-card">
+          <p>이게 §4에서 다룰 <strong>재모수화(reparameterization) vs covariate addition</strong>의 결정적 차이. 두 작업은 NONMEM 코드 한두 줄 차이로 보이지만, <em>임상적·규제적 의미가 완전히 다름</em>. 이 장면을 머리 한쪽에 띄워놓고 §2부터 그릇 분류로.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.1</span>
+        <h1 class="slide-title">그릇 4종 — IIV / IOV / RUV / TVC</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">PopPK 초보자가 가장 자주 망하는 지점 — "변동이 크네요, IIV가 크네요"라는 한 줄로 그릇 분류 없이 넘어감. 같은 "변동"이라도 어느 그릇에 들어가느냐에 따라 처치가 완전히 다름.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>그릇</th><th>핵심 질문</th><th>처치</th></tr></thead>
+            <tbody>
+              <tr><td><strong>IIV</strong> (inter-individual)</td><td>사람마다 <em>지속적으로</em> 다른가?</td><td>covariate 탐색, \(\omega^2\) 분해</td></tr>
+              <tr><td><strong>IOV</strong> (inter-occasion)</td><td>같은 사람도 visit/cycle마다 달라지는가?</td><td>occasion-level ETA 추가</td></tr>
+              <tr><td><strong>RUV</strong> (residual unexplained)</td><td>한 관측값 자체에 남는 흔들림인가?</td><td>\(\sigma^2\) 구조(additive/proportional/exp) 재선택</td></tr>
+              <tr><td><strong>TVC</strong> (time-varying covariate)</td><td>측정 가능한 변수가 시점별로 변해서 PK를 흔드는가?</td><td>\(\theta\) 구조 안에 시점별 covariate</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">한 줄 요약</span><strong>IIV는 사람이 달라서</strong> 생기는 변동, <strong>IOV는 같은 사람의 시간(occasion)이 달라서</strong> 생기는 변동.</div>
+        <div class="callout warn"><span class="callout-label">잘못 다루면</span>같은 사람 안의 occasion 간 변동을 IOV로 안 잡고 IIV에 그냥 묻으면, \(\omega^2\)이 부풀고, 그 부풀어 오른 \(\omega^2\)를 설명하려고 <strong>가짜 covariate가 detect</strong>됨. 또는 RUV로 흡수되어 \(\sigma^2\)가 비현실적으로 커지면서 잔차 진단이 망가짐 — 변이 보존 법칙의 첫 번째 장면.</div>
+      </div>
+    </section>
+
+    <!-- Slide 4 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.2</span>
+        <h1 class="slide-title">IIV vs IOV — NONMEM 표현</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">NONMEM에서 IOV는 occasion-level ETA로 표현됨 — 같은 환자 안의 visit/cycle 차이를 별도 \(\eta\) 그릇에:</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{CL_{ij}}_{\text{i번째 환자, j번째 occasion}}=\underbrace{\theta_1}_{\text{모집단 CL}}\cdot\overbrace{\exp(\eta_i)}^{\text{IIV: 지속적 개체차}}\cdot\overbrace{\exp(\eta_{ik})}^{\text{IOV: occasion k의 변동}}$$<div class="formula-cite">crossover 시험·oncology cycle·TDM 재방문</div></div></div>
+        <div class="card">
+          <div class="card-title">잘못 다루면 어떻게 망가지는가</div>
+          <ul>
+            <li>같은 사람 안의 occasion 변동을 IIV로 묻음 → <strong>\(\omega^2\) 부풀음</strong></li>
+            <li>그 부풀어 오른 \(\omega^2\)를 줄이려고 → <strong>가짜 covariate가 detect</strong></li>
+            <li>또는 RUV로 흡수 → <strong>\(\sigma^2\) 비현실적</strong>, 잔차 진단 망가짐</li>
+          </ul>
+        </div>
+        <div class="dark-card">
+          <p><strong>왜 그릇이 중요한가:</strong> 한 줄 변이 보존 — 잘못된 그릇에 부어 넣으면 <em>다른 그릇이 부풀거나 새는 신호</em>가 무조건 나타남. 그 신호를 읽을 줄 알면 모델 진단이 됨.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.3</span>
+        <h1 class="slide-title">IOV vs TVC — 결정적 분기점</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">"시간에 따라 변하는 신호"가 같은 사람 안에서 보이면 두 해석이 가능. <strong>흔한 오류 — "시간에 따라 변하니까 IOV"라는 직관은 틀림.</strong> 변동의 원인이 측정 가능한 변수면 <strong>TVC</strong>. 측정 불가능하면 <strong>IOV</strong>.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>구분</th><th>IOV</th><th>TVC</th></tr></thead>
+            <tbody>
+              <tr><td>변동 원인</td><td><strong>측정 불가능</strong>한 무작위 변동</td><td><strong>측정 가능</strong>한 변수(SCr, 체중, 동반약물)</td></tr>
+              <tr><td>어디로 들어가나</td><td>random effect (\(\eta_{ik}\), $OMEGA)</td><td>구조식 (\(\theta\) 구조 안의 시간 가변 변수)</td></tr>
+              <tr><td>임상 예시</td><td>crossover period 간 흡수 변동</td><td>ICU 환자 일별 SCr, oncology cycle 간 체중 손실, rifampin 추가 시점</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL_{ij}}_{\text{i번째 환자, j번째 시점}}=\underbrace{\theta_1}_{\text{기준 CL}}\cdot\overbrace{\left(\frac{SCr_{ij}}{SCr_{ref}}\right)^{\theta_2}}^{\text{TVC: 시점별 신기능 배율}}\cdot\underbrace{\exp(\eta_i)}_{\text{지속 IIV}}\cdot\underbrace{\exp(\eta_{ik})}_{\text{occasion IOV}}$$<div class="formula-cite">ICU 환자 일별 SCr — Vanishing Covariate Cascade 시간축</div></div></div>
+        <div class="callout warn"><span class="callout-label">⚠ Vanishing Covariate 시간축 버전</span>ICU 환자 SCr이 매일 변하는데 baseline 한 점만 잡고 fixed covariate로 처리하면, 신기능 변동이 <strong>IOV나 RUV로 흡수</strong>됨 — "SCr이 CL을 결정한다"는 mechanistic 신호가 random effect에 묻혀 사라짐 <span class="chip">R&amp;T p.371</span>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.1</span>
+        <h1 class="slide-title">강제 순서 1단계 — ε 그릇부터 잠그기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">학습자는 "covariate가 핵심이지!"라고 곧장 covariate 탐색으로 뛰어들고 싶어함. <strong>그러면 100% 망함</strong>. 이유는 단순.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🔑 변이 보존 법칙의 첫 번째 발현</strong></p>
+          <p>\(\varepsilon\)이 못 흡수한 분산은 <strong>반드시</strong> \(\eta\)로 새어 나감. 그 새어 나간 분산을 \(\eta\)로 받으면 \(\omega^2\)이 부풀고, 부풀어 오른 \(\omega^2\)를 줄이려고 covariate를 넣으면, 그 covariate는 <em>생리학이 아니라 \(\varepsilon\) 모델의 실패를 설명</em>하게 됨.</p>
+        </div>
+        <div class="callout"><span class="callout-label">규제 관점</span>잔차 모델이 틀린 채 covariate를 채택하면, 그 covariate는 <strong>실재하는 인과관계가 아니라 모델 결함의 메아리</strong>. 규제 reviewer가 가장 먼저 잡는 deficiency가 이거임.</div>
+        <div class="card">
+          <p style="font-size:12.5px"><strong>강제 순서의 첫 단추:</strong></p>
+          <ol>
+            <li>잔차 모델(\(\varepsilon\)) 잠그기 — 좌표 결정</li>
+            <li>BLOQ 처리 결정 (M1/M3/M5/M6)</li>
+            <li>잔차에 추세가 남으면 → <em>covariate 전에 구조/오차 모델부터 재검토</em></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.2</span>
+        <h1 class="slide-title">세 가지 잔차 모델 + Combined</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>모델</th><th>식</th><th>언제 쓰나 (데이터 시그니처)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Additive</strong></td><td>\(Y = F + \varepsilon\)</td><td>농도 범위가 좁고 절대오차가 일정</td></tr>
+              <tr><td><strong>Proportional</strong></td><td>\(Y = F(1+\varepsilon)\)</td><td>농도 범위 전반에서 CV가 거의 일정</td></tr>
+              <tr><td><strong>Exponential</strong></td><td>\(Y = F\cdot\exp(\varepsilon)\)</td><td>양수 보장 + 로그 스케일에서 가법 <span class="chip">R&amp;T p.373</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px">실무에서 진짜 자주 쓰는 건 <strong>combined model</strong> — additive와 proportional을 합쳐서 LLOQ 근처와 고농도를 한 렌즈로:</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{Y}_{\text{관측값}}=\underbrace{IPRED}_{\text{개인 예측}}+\overbrace{\sqrt{\underbrace{(\theta_{prop}\cdot IPRED)^2}_{\text{비례 성분}}+\underbrace{\theta_{add}^2}_{\text{가법 성분}}}}^{\text{W: 결합 잔차 스케일}}\cdot\underbrace{\varepsilon}_{\text{표준 잔차}}$$<div class="formula-cite">combined RUV — proportional + additive</div></div></div>
+        <div class="code-block"><span class="kw">$ERROR</span>
+IPRED = F
+W     = SQRT((THETA(3)*IPRED)**2 + THETA(4)**2)   <span class="str">; 비례 + 가법 결합 스케일</span>
+Y     = IPRED + W*EPS(1)</div>
+        <div class="callout"><span class="callout-label">W의 직관</span>카메라 흔들림 보정 같은 거임. <strong>어두운 곳(LLOQ 근처)의 절대 흔들림</strong>과 <strong>밝은 곳(고농도)의 상대 흔들림</strong>을 한 렌즈로 동시에 잡음.</div>
+      </div>
+    </section>
+
+    <!-- Slide 8 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.3</span>
+        <h1 class="slide-title">진단 시그니처 1 — Leakage Funnel</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🔬 Signature 1 — \(\omega^2\)–\(\sigma^2\) Leakage Funnel</strong></p>
+          <p><strong>어떻게 생겼나:</strong> Proportional-only RUV로 LLOQ-rich 자료를 적합하면, <span style="color:#e8a55a">CWRES vs PRED plot에서 저농도 영역이 깔때기처럼 벌어짐</span>. 동시에 \(\omega^2\)(CL)이 비현실적으로 부풀고, \(\eta\)-shrinkage가 치솟음.</p>
+          <p><strong>왜 생기나:</strong> 저농도의 절대오차가 큰데 proportional만 쓰면, 그 흔들림을 \(\sigma^2\)가 못 잡음 → 남은 분산이 \(\eta\)로 새어 \(\omega^2\) 부풀림 → 변이 보존 법칙.</p>
+        </div>
+        <div class="diagram"><span class="anno">CWRES vs PRED — funnel pattern</span>
+  CWRES
+   │
+ +3│  ·     <span class="anno">LLOQ-rich</span>
+   │ ·  ·   ·
+ +1│·  ·  ·   ·  ·    ·    ·
+  0│·  ·  ·  ·   ·  ·   ·    ·
+ -1│  · · ·   ·    ·     ·
+   │·   ·    ·
+ -3│  ·
+   └─────────────────────── PRED
+       <span class="step">↑</span>
+    <span class="anno">funnel mouth: ε 못 잡음 → η²로 새어</span></div>
+        <div class="two-col">
+          <div class="callout warn"><span class="callout-label">잘못된 처치</span>"\(\omega^2\) 크네, covariate를 찾아보자!"</div>
+          <div class="callout teal"><span class="callout-label">올바른 처치</span>"잔차 모델 좌표가 틀렸다, additive 성분을 추가하자."</div>
+        </div>
+        <p style="font-size:12px"><strong>핵심:</strong> \(\omega^2\)이 너무 크다는 느낌이 들 때 가장 먼저 의심할 건 <em>새 covariate가 아니라 잔차 모델 좌표</em>.</p>
+      </div>
+    </section>
+
+    <!-- Slide 9 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.4</span>
+        <h1 class="slide-title">BQL 처리 — M3 + 임계값의 진짜 출처</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">현대 PopPK 분석의 5–30%는 LLOQ 미만(<strong>BQL</strong>) 관측을 어떻게 처리하느냐로 결과가 달라짐. Leakage Funnel이 가장 심한 영역. Beal (2001) 표준 처리:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>방법</th><th>처리</th><th>편향</th><th>권고</th></tr></thead>
+            <tbody>
+              <tr><td><strong>M1</strong></td><td>BQL 단순 제외</td><td>큰 편향 — 분포 꼬리 잘림</td><td>권고 안 함</td></tr>
+              <tr style="background:#fdf4e0"><td><strong>M3</strong></td><td>BQL을 <strong>censored data</strong>로 likelihood 통합</td><td>가장 작음</td><td><strong>현대 표준</strong></td></tr>
+              <tr><td><strong>M5</strong></td><td>BQL을 LLOQ/2로 대입</td><td>중간</td><td>보조</td></tr>
+              <tr><td><strong>M6</strong></td><td>첫 BQL만 LLOQ/2, 이후 연속 BQL 제외</td><td>M5보다 작음</td><td>보조</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{L_i^{BQL}}_{\text{BQL likelihood}}=\overbrace{\Phi\!\left(\frac{\underbrace{LLOQ}_{\text{정량한계}}-\underbrace{F_{ij}}_{\text{개인 예측}}}{\underbrace{W_{ij}}_{\text{잔차 스케일}}}\right)}^{\text{관측이 LLOQ 미만일 확률}}$$<div class="formula-cite">Beal SL. J Pharmacokinet Pharmacodyn. 2001;28(5):481–504</div></div></div>
+        <div class="callout amber"><span class="callout-label">📚 임계값의 진짜 출처</span>"BQL fraction &gt; 15%면 M3 필수"라는 임계는 <strong>Beal 2001 원전에 없음</strong>. 후속 검증 연구에서 정착: <strong>Bergstrand &amp; Karlsson (AAPS J. 2009)</strong> — 5–10%부터 M1 편향 의미 있음, 15–20%부터 M3 필수. 규제 보고서에 "Per Beal (2001), BQL &gt; 15% requires M3"라고 쓰면 <em>부정확함</em>.</div>
+        <div class="callout warn"><span class="callout-label">⚠ 흔한 silent failure</span>M3는 <strong>FOCE-LAPLACE 이상</strong> 필요. M3 켜고 FOCE 그대로 돌리면 NONMEM이 <em>silently fail</em>함 — 추정은 끝나는데 BQL 처리가 적용되지 않은 결과.</div>
+      </div>
+    </section>
+
+    <!-- Slide 10 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.1</span>
+        <h1 class="slide-title">공변량의 진짜 정의 + 표준식</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">학습자 대부분이 공변량 모델링을 <em>"\(\omega^2\)을 깎는 통계 기술"</em>로 이해. NONMEM이 그렇게 행동하기도 함 — covariate 넣으면 \(\Delta OFV\) 떨어지고 \(\omega^2\) 줄어듦. 그런데 진짜 본질은 다름.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🎯 공변량 모델링의 정의 (외워둘 것)</strong></p>
+          <p>공변량은 \(\omega^2\)을 <strong>줄이는</strong> 게 아니라, \(\omega^2\) 안에 섞여 있던 <em>설명 가능한 생리학을 \(\theta\) 구조로 옮기고 이름을 붙이는 작업</em>임. 결과적으로 \(\omega^2\)이 작아지는 거지, \(\omega^2\)을 작게 만드는 게 목표인 게 아님.</p>
+        </div>
+        <div class="callout teal"><span class="callout-label">비유</span>방 안의 소음을 그냥 줄이는 게 아니라, "이건 냉장고 소리, 이건 창밖 차 소리, 이건 옆방 목소리"라고 <strong>이름을 붙이는 일</strong>. 이름이 붙은 순간 그 소음은 \(\eta\) 그릇에서 \(\theta\) 그릇으로 자리를 옮김.</div>
+        <h2 class="section-h">표준 형태 — 신기능을 CL에 옮기기</h2>
+        <div class="code-block">CL = THETA(1) * (CRCL/90)**THETA(2) * EXP(ETA(1))</div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL_i}_{\text{개인 CL}}=\underbrace{\theta_1}_{\text{기준 CL}}\cdot\overbrace{\left(\frac{CRCL_i}{90}\right)^{\theta_2}}^{\text{기준 신기능 대비 배율}}\cdot\underbrace{\exp(\eta_i)}_{\text{이름 못 붙인 나머지}}$$<div class="formula-cite">R&amp;T p.369–371</div></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 11 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.2</span>
+        <h1 class="slide-title">Centering value 90의 정체</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">자주 놓치는 디테일이 <strong>분모 90의 정체</strong>. NONMEM이나 R&amp;T가 정해준 표준이 아님. <strong>Dataset-specific choice</strong>임.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>선택지</th><th>\(\theta_1\)의 임상적 의미</th></tr></thead>
+            <tbody>
+              <tr><td>모집단 중앙값 (가장 흔함)</td><td>표본 중심의 신기능을 가진 환자의 CL</td></tr>
+              <tr><td>정상 신기능 (120 mL·min⁻¹)</td><td>정상 신기능 환자의 CL</td></tr>
+              <tr><td>임상 cutoff (60, CKD stage 3 경계)</td><td>신기능 저하 진입 시점의 CL</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\theta_1}_{\text{보고서의 CL}}=\overbrace{CL\big|_{CRCL=90}}^{\text{centering value에서의 CL}}\ \neq\ \underbrace{CL_{\text{normal}}}_{\text{정상 환자 CL (일반적 기대)}}$$<div class="formula-cite">centering 좌표 ≠ 임상 해석 좌표</div></div></div>
+        <div class="callout warn"><span class="callout-label">⚠</span>Centering value를 명시 안 하면 reviewer가 \(\theta_1\)을 "정상 환자 CL"로 잘못 읽음. Centering이 90이고 정상이 120이면, 보고된 \(\theta_1\)은 <em>이미 신기능이 약간 저하된 환자 기준</em>.</div>
+        <div class="dark-card">
+          <p>Centering 값은 단순한 정규화 상수가 아니라 <strong>\(\theta_1\) 해석 좌표 자체</strong>를 결정. 보고서에 "centering = X"를 명시하지 않으면 reviewer는 보편 기준으로 잘못 읽음.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.3</span>
+        <h1 class="slide-title">공변량 추가 vs 좌표 재모수화 — PK50 풀이</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>작업</th><th>무엇을 하는가</th><th>NONMEM 코드 변화</th><th>\(\omega^2\)에 일어나는 일</th></tr></thead>
+            <tbody>
+              <tr><td><strong>공변량 추가</strong></td><td>\(\eta\) 안의 설명 가능한 부분을 \(\theta\) 구조로 <em>옮김</em></td><td>covariate term 추가</td><td>\(\omega^2\) 줄어듦 (분산이 \(\theta\) 설명분으로 이동)</td></tr>
+              <tr><td><strong>재모수화</strong></td><td>같은 데이터를 <em>다른 좌표</em>로 다시 표현</td><td>파라미터 정의 자체 변경 (\(CL → CL_u\))</td><td>\(\omega^2\)의 <em>수치가 달라짐</em> (실제로 변이가 준 게 아니라 좌표축 회전)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL}_{\text{total}}=\underbrace{f_u}_{\text{비결합분율}}\cdot\underbrace{CL_u}_{\text{unbound}}$$<div class="formula-cite">PK50 — Total과 Unbound 좌표 변환</div></div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>Total estimate (CV%)</th><th>Unbound estimate (CV%)</th></tr></thead>
+            <tbody>
+              <tr><td>CL</td><td>11.4 L·h⁻¹ (<strong>28%</strong>)</td><td>720 L·h⁻¹ (<strong>9%</strong>)</td></tr>
+              <tr><td>Cld</td><td>4.35 L·h⁻¹ (39%)</td><td>265 L·h⁻¹ (33%)</td></tr>
+              <tr><td>Vc</td><td>19.9 L (29%)</td><td>1270 L (18%)</td></tr>
+              <tr><td>Vt</td><td>30.9 L (35%)</td><td>2030 L (51%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5"><strong>🚨 PK50의 진짜 메시지 (회수)</strong></p>
+          <p>Total 좌표에서 CV 28%, unbound 좌표에서 CV 9%는 <em>NONMEM이 공변량 모델로 \(\omega^2\)을 깎은 결과가 아님</em>. 같은 12명을 다른 좌표에서 봤더니 변이가 다르게 보이는 것뿐. Total과 unbound는 <strong>같은 도시를 보는 두 장의 지도</strong>. 좌표축을 바꾸면 거리가 다르게 보이지만, 도로가 새로 생긴 건 아님 <span class="chip">G&amp;W p.708 Table 50.1</span>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.4</span>
+        <h1 class="slide-title">안전 좌표 — Total vs Unbound가 임상에서 결정적</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">CpD의 안전 경계는 <strong>total C &gt; 50 µg·L⁻¹ 회피</strong> <span class="chip">G&amp;W p.705</span>. 즉 safety threshold는 total 좌표. 그런데 dose individualization은 unbound 기반 안전 여유로 해야 정확.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_{total}}_{\text{총 농도, 안전 경계}}>\underbrace{50\ \mu\mathrm{g\cdot L^{-1}}}_{\text{회피 임계}}$$<div class="formula-cite">G&amp;W p.705 — safety threshold (total)</div></div></div>
+        <div class="callout warn"><span class="callout-label">결정 규칙</span>저알부민혈증 환자에서 \(f_u\)가 올라가면, total 농도가 안 변해도 unbound 농도(실제 작용 약물)는 올라감 → <strong>total 기준으로는 안전해 보이는데 실제로는 독성</strong>. 좌표를 잘못 잡으면 환자가 다침. NDA Section 5.2 deficiency 중 하나가 "safety threshold(total)와 dose recommendation(unbound) 좌표 면 불일치" <span class="chip">G&amp;W p.705, p.709</span>.</div>
+        <div class="card">
+          <p style="font-size:12.5px"><strong>\(f_u\) 사용 분기:</strong></p>
+          <ul>
+            <li>\(f_u\)를 <strong>결정론적 재모수화</strong>로 → \(CL = f_u \cdot CL_u\) 좌표 변환으로 처리</li>
+            <li>\(f_u\)를 <strong>집단 공변량 모델</strong>로 → \(CL_u\)에 남길 \(\eta\)와 \(f_u\) 자체의 측정 변이를 분리</li>
+          </ul>
+          <p style="font-size:12.5px">둘을 섞으면 ETA가 생리학을 흡수하는 게 아니라 <em>회계 오차를 흡수</em>함.</p>
+        </div>
+        <h2 class="section-h">PD 변이는 PK 좌표로 도달 못함</h2>
+        <p style="font-size:12px">CpD에서 비슷한 노출을 받은 환자들 사이에서도 <strong>반응이 8배(0.5–4.0 response units)까지 갈렸음</strong>. 비결합 농도로 다시 표현해도 EC50 변이는 오히려 더 커짐. \(E_{max} &lt; 1\) 무반응자는 <em>유전적 구성/수용체 밀도</em>로 연결 <span class="chip">G&amp;W p.707–709</span>.</p>
+        <div class="callout teal"><span class="callout-label">PK 좌표의 한계</span>공변량이 PK 파라미터 변이를 다 설명해도, <strong>PD variability는 별도 source로 남음</strong>. 단일 공변량으로 모든 변이를 설명하려는 야심은 위험.</div>
+      </div>
+    </section>
+
+    <!-- Slide 14 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.5</span>
+        <h1 class="slide-title">진단 시그니처 2 — Vanishing Covariate Cascade</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🔬 Signature 2 — Vanishing Covariate Cascade</strong></p>
+          <p><strong>어떻게 생겼나:</strong> 진짜 mechanistic covariate(예: 신청소율 약물의 CrCl)가 모델 base에 빠져 있음. \(\eta_{CL}\)이 그 효과를 흡수해 버림. 그 다음 stepwise selection 돌리면 상관 covariate(체중, BSA)가 가짜로 detect됨.</p>
+          <p><strong style="color:#e8a55a">\(\eta_{EBE}\) vs CrCl scatter는 평탄해 보이는데, raw observation의 \(CL_{obs}\) vs CrCl scatter는 명확한 기울기</strong>가 나옴.</p>
+          <p><strong>왜 생기나:</strong> Stepwise는 \(\eta\)에 남은 잔여 신호로 covariate를 평가. \(\eta\)가 이미 covariate를 흡수해 버린 다음에는 그 covariate가 통계적으로 사라져 보임.</p>
+        </div>
+        <div class="callout amber"><span class="callout-label">꿀팁</span>\(\eta\) 기반 covariate scan과 raw observation 기반 scan을 <em>둘 다 돌려서</em>, 두 결과가 일치하지 않으면 "효과 없음"이 아니라 <strong>"효과 흡수됨"</strong>을 의심.</div>
+        <div class="callout teal"><span class="callout-label">실무 처방</span>Domain knowledge 기반 candidate covariate(CL 결정 생리학적 변수: CrCl, body size, hepatic function)를 <strong>a priori</strong> 정의해서 모델 base에 포함시킨 뒤 stepwise 시작. Stepwise에 모든 판단을 위임하지 말 것.</div>
+      </div>
+    </section>
+
+    <!-- Slide 15 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.6</span>
+        <h1 class="slide-title">SCM 비대칭 임계 — Forward vs Backward</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">R&amp;T p.373이 말하는 \(\Delta OFV \geq 3.84\) 한 줄을 SCM 전체에 그대로 쓰면 <strong>통계적으로 잘못된 결정</strong>. Jonsson-Karlsson SCM (1998)의 설계는 <em>forward와 backward가 비대칭</em>:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>단계</th><th>방향</th><th>α (df=1)</th><th>임계 \(\Delta OFV\)</th><th>목적</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Forward Selection</strong></td><td>covariate 추가</td><td>0.05</td><td><strong>3.84</strong></td><td>후보를 관대하게 포함</td></tr>
+              <tr><td><strong>Backward Elimination</strong></td><td>covariate 제거</td><td>0.01</td><td><strong>6.63</strong></td><td>엄격한 기준으로 multiple testing 보정</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\text{Forward}}^{\text{관대}}:\ \Delta OFV\geq\underbrace{3.84}_{\chi^2_{df=1,\,\alpha=0.05}}\qquad \overbrace{\text{Backward}}^{\text{엄격}}:\ \Delta OFV\geq\underbrace{6.63}_{\chi^2_{df=1,\,\alpha=0.01}}$$<div class="formula-cite">Jonsson EN, Karlsson MO. Pharm Res. 1998;15(9):1463–1468</div></div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{P_{\text{FWE, Forward}}}_{\text{누적 위양성}}\approx\overbrace{1-(1-\alpha)^k}^{\text{k개 후보의 가족별 오류}}\xrightarrow[\alpha=0.05,\,k=10]{}\underbrace{0.40}_{\approx 40\%}$$<div class="formula-cite">왜 비대칭인가 — multiple testing 보정</div></div></div>
+        <div class="callout warn"><span class="callout-label">⚠</span>Forward만 돌리고 backward 생략하면 PopPK 보고서에서 reviewer가 거의 반드시 deficiency를 찾음 — multiple testing 보정 없이 통계적 유의성을 주장한 결과. <strong>SCM은 양방향이 한 묶음</strong>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 16 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.7</span>
+        <h1 class="slide-title">다층 범주형 covariate의 df 자동 보정</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px"><strong>Race(3-level), CYP2D6 phenotype(4-level)</strong> 같은 multi-level categorical에 df=1 임계 3.84를 그대로 쓰면 안 됨. df = K − 1 (K는 level 수).</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\mathrm{df}}_{\text{자유도}}=\underbrace{K}_{\text{level 수}}-\underbrace{1}_{\text{reference level}}$$<div class="formula-cite">df 자동 보정 공식</div></div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>level 수 K</th><th>df</th><th>Forward 임계 (α=0.05)</th><th>Backward 임계 (α=0.01)</th></tr></thead>
+            <tbody>
+              <tr><td>2 (binary)</td><td>1</td><td>3.84</td><td>6.63</td></tr>
+              <tr><td>3</td><td>2</td><td><strong>5.99</strong></td><td><strong>9.21</strong></td></tr>
+              <tr><td>4</td><td>3</td><td><strong>7.81</strong></td><td><strong>11.34</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11.5px">3-level race에 3.84를 그대로 적용하면 실제 임계보다 관대해져서 false positive 발생. <strong>Reviewer가 가장 자주 잡는 지점.</strong></p>
+        <h2 class="section-h">다층 범주형 구현 결정 트리</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Cell 크기</th><th>추천 처리</th></tr></thead>
+            <tbody>
+              <tr><td>모든 cell n ≥ 30</td><td>Multiple THETA full stratification, interaction 평가 가능</td></tr>
+              <tr><td>일부 cell n ∈ [5, 30)</td><td>Indicator + 곱셈 가정 (main effect만)</td></tr>
+              <tr><td>일부 cell n &lt; 5</td><td>Hierarchical 또는 인접 level 통합 (예: IM/PM 묶음)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 17 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.8</span>
+        <h1 class="slide-title">OFV–VPC Discordance + Covariate 두 관문</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">⚠ 흔한 오해 — "ΔOFV &gt; 3.84면 covariate 채택"</span>이 한 줄이 모델 선택을 끝내는 것처럼 보임. 그런데 잔차 모델이 불안정하거나 phenotype cell이 작으면, covariate가 \(\varepsilon\) 변동이나 ETA 흡수를 대신 설명하면서 <strong>OFV는 떨어지는데 VPC는 오히려 악화</strong>됨. 이걸 <strong>OFV-VPC Discordance</strong>라고 부름. 임상에서는 covariate 극단값에서 노출 예측이 빗나가고, 규제에서는 FDA Deficiency Letter.</div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>Covariate 채택의 두 관문</strong></p>
+          <ol>
+            <li><strong>통계적 관문</strong> — SCM 비대칭 임계 (forward α=0.05, backward α=0.01) + df 자동 보정</li>
+            <li><strong>Mechanistic 관문</strong> — VPC 일관성 + phenotype cell size + a priori physiology</li>
+          </ol>
+          <p style="margin-top:6px">둘 다 통과해야 covariate가 최종 모델에 들어감.</p>
+        </div>
+        <div class="callout teal"><span class="callout-label">규제 방어 문구</span><em>"Covariate selection followed a stepwise approach (Jonsson &amp; Karlsson, 1998): forward inclusion at \(\Delta OFV \geq 3.84\) (df=1, α=0.05) and backward elimination at \(\Delta OFV \geq 6.63\) (df=1, α=0.01). Final model retention required both thresholds, supplemented by VPC consistency and a priori physiological plausibility."</em></div>
+      </div>
+    </section>
+
+    <!-- Slide 18 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.1</span>
+        <h1 class="slide-title">3단계 — 매끄러운 단봉이라는 가정이 무너지는 순간</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">§3에서 잔차 잠그고, §4에서 설명 가능한 부분을 \(\theta\)로 옮겼음. 그러면 남은 \(\eta\)는 매끄러운 로그정규 단봉형이어야 함 — 그게 이론적 가정. 실제로는 그렇지 않을 수 있음.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🎯 이 단계의 핵심 통찰</strong></p>
+          <p>\(\eta\) 분포가 매끄러운 로그정규처럼 보이는 건 우리 가정일 뿐. 실제로는 <strong>PM/IM/EM/UM 같은 불연속 phenotype subgroup의 혼합</strong>일 수 있음. 평균을 그어버리면 그 평균이 <em>실제 환자 누구도 대표하지 못하는 계곡 한가운데 값</em>이 됨.</p>
+        </div>
+        <div class="callout"><span class="callout-label">R&amp;T Figure 13-6 (p.402)</span>R&amp;T가 든 결정적 예시 — <strong>Isoniazid 483명에게 9.8 mg/kg 경구 투여 후 6시간째 농도가 두 봉우리로 갈라짐</strong>. NAT2 acetylator status가 분포 모양 자체를 바꿈.</div>
+        <div class="diagram">     <span class="anno">η-EBE histogram</span>
+  freq │
+       │        <span class="step">▄▄</span>           <span class="step">▄▄</span>
+       │      <span class="step">▄</span>  <span class="step">▄</span>         <span class="step">▄</span>  <span class="step">▄</span>
+       │    <span class="step">▄</span>      <span class="step">▄</span>     <span class="step">▄</span>      <span class="step">▄</span>
+       │  <span class="step">▄</span>          <span class="step">▄</span>  <span class="step">▄</span>          <span class="step">▄</span>
+       │<span class="step">▄</span>             <span class="step">▄▄</span>             <span class="step">▄</span>
+       └────────────────────────── η
+            <span class="anno">slow acetyl.</span>  <span class="anno">fast acetyl.</span>
+       — 평균을 그어버리면 누구도 대표 못함</div>
+      </div>
+    </section>
+
+    <!-- Slide 19 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.2</span>
+        <h1 class="slide-title">약물별 유전 다형성 — 패턴을 보는 것</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물</th><th>분류·기전</th><th>유전 인자</th><th>임상 의미</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Warfarin</strong></td><td>비타민K 길항 항응고제</td><td>CYP2C9 (PK) + VKORC1 (PD)</td><td>같은 INR을 얻는 용량이 유전형별로 갈라짐 — 단일 유전자만으로 용량 결정 불가 <span class="chip">R&amp;T p.398, p.406</span></td></tr>
+              <tr><td><strong>Nortriptyline</strong></td><td>삼환계 항우울제</td><td>CYP2D6 사본 수</td><td>기능적 사본 수가 많을수록 CL ↑, 노출 ↓ <span class="chip">R&amp;T p.397</span></td></tr>
+              <tr><td><strong>Codeine</strong></td><td>Opioid prodrug</td><td>CYP2D6 (morphine 생성)</td><td>UM(초고속 대사자)에서 morphine 과량 → 호흡 억제 위험 <span class="chip">R&amp;T p.399, p.404</span></td></tr>
+              <tr><td><strong>Thiopurines</strong> (6-MP, AZA)</td><td>백혈병·IBD 치료제</td><td>TPMT</td><td>TPMT 결핍자에서 표준 용량 시 골수 독성 치명적 <span class="chip">R&amp;T p.400</span></td></tr>
+              <tr><td><strong>Isoniazid</strong></td><td>항결핵제</td><td>NAT2 acetylator</td><td>농도 분포 자체가 이봉형 <span class="chip">R&amp;T p.402</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p>외울 게 아니라 <em>패턴을 보는 것</em>. 유전형이 PK뿐 아니라 <strong>PD(VKORC1, 표적 변이)</strong>까지 흔드는 경우가 흔함. 단일 유전자 결정은 거의 없고, <strong>여러 유전형이 함께 작용</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 20 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.3</span>
+        <h1 class="slide-title">PM 빈도 + 진단 시그니처 3 (Empty Cell)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">PM(poor metabolizer) 빈도 — 출처 값 보존 <span class="chip">R&amp;T p.395</span></h2>
+        <div class="card">
+          <ul style="font-size:11.5px">
+            <li><strong>CYP2D6 PM:</strong> 백인 5–10%, 아프리카계 미국인 3.8%, 아시아인 0.9%</li>
+            <li><strong>CYP2C9 PM:</strong> 백인 1%</li>
+            <li><strong>CYP2C19 PM:</strong> 백인 3–5%, 아시아인 16%</li>
+            <li><strong>TPMT 결핍:</strong> 백인 0.3%, 아시아인 0.04%</li>
+            <li><strong>NAT2 느린 acetylator:</strong> 백인/아프리카계 미국인 60%, 아시아인 10–20%</li>
+            <li><strong>UGT1A1 poor metabolizer:</strong> 백인 11%, 아시아인 1–3%</li>
+          </ul>
+        </div>
+        <div class="callout"><span class="callout-label">PM 빈도표 읽는 법</span>평균 용량 결정용이 아님. <strong>어느 phenotype cell이 작아서 모델 식별성이 흔들리는지를 미리 알려주는 표</strong>. 인종(ethnicity)은 유전형(genotype)의 <em>불완전한 proxy</em>임 — 그룹 내 변이가 커서 ethnicity term을 mechanistic genotype처럼 해석하면 안 됨 <span class="chip">R&amp;T p.395, p.409</span>.</div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🔬 Signature 3 — Empty Phenotype Cell</strong></p>
+          <p><strong>어떻게 생겼나:</strong> Phenotype을 4-level(PM/IM/EM/UM)로 처음부터 펼쳤는데, 희귀 cell(PM n=3)의 THETA factor RSE가 80%를 넘고 $COV step이 "covariance matrix is non-positive definite"로 실패. PM 환자 5명의 ETA(1)이 다 0 근처에 모여.</p>
+          <p><strong>결정적 분기:</strong> PM(n=3) 결과 받았을 때 자문해야 할 질문은 <em>"효과가 있는가?"가 아니라 "효과를 식별할 정보가 데이터에 있는가?"</em>.</p>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{RSE}_{\text{상대 표준오차}}>\underbrace{80\%}_{\text{불안정 경고}}$$<div class="formula-cite">small cell 식별성 경고</div></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 21 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.4</span>
+        <h1 class="slide-title">단봉형 η 안에서도 변이가 큰 약물 — CYP3A4</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">마지막 함정. CYP3A4 같은 효소는 큰 IIV가 있지만 <strong>명확한 유전 인자가 없음</strong> <span class="chip">R&amp;T p.399, p.410</span>. 큰 \(\omega^2\)가 항상 genotype peak를 뜻하는 게 아님 — <em>다른 인구학 요인, 동반약물, 복약 순응, 식이</em> 등이 섞여 있을 수 있음.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🔑 이 단계의 마지막 한 줄</strong></p>
+          <p>\(\eta\) histogram이 <em>두 봉우리로 보일 때</em> → genotype/phenotype 영역.</p>
+          <p>\(\eta\) histogram이 <em>단봉이어도 변이가 클 때</em> → 모든 게 유전이라고 단정하지 말고 <strong>인구학·순응·병태 요인도 의심</strong>.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">CYP3A4 케이스 — 단봉형, 큰 분산의 흔한 원인 후보</div>
+          <ul>
+            <li>동반약물 (CYP3A4 inducer/inhibitor: rifampin, ketoconazole, grapefruit juice)</li>
+            <li>복약 순응 (adherence) — 특히 외래 환자</li>
+            <li>식이 (high-fat meal, 식이 보충제)</li>
+            <li>병태생리 (간 기능, 염증 상태)</li>
+            <li>genotype × phenotype mismatch (functional vs predicted)</li>
+          </ul>
+        </div>
+        <div class="callout amber"><span class="callout-label">⚠</span>"큰 \(\omega^2\)" → 곧장 "유전 다형성" 점프 금지. <em>구체적 candidate covariate가 a priori 없으면 stepwise는 답 못 줌</em>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 22 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6</span>
+        <h1 class="slide-title">세 진단 시그니처 통합 — 같은 법칙의 세 발현</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">§3, §4, §5의 진단 시그니처 1·2·3은 모두 <strong>변이 보존 법칙의 세 변주</strong>. 한 표로 압축:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>시그니처</th><th>어디서 새나</th><th>어디로 새나</th><th>잘못된 처치</th><th>올바른 처치</th></tr></thead>
+            <tbody>
+              <tr><td><strong>1</strong></td><td>Leakage Funnel</td><td>\(\varepsilon\) 모델 (RUV)</td><td>\(\eta\) (IIV)로 부풀림</td><td>"\(\omega^2\) 크네, covariate"</td><td>잔차 모델 좌표 재선택 (combined·log·exp)</td></tr>
+              <tr><td><strong>2</strong></td><td>Vanishing Covariate Cascade</td><td>진짜 mechanistic covariate가 base 누락</td><td>\(\eta\)가 그 효과를 흡수</td><td>"효과 없음" 결론</td><td>A priori covariate를 base에 포함 후 stepwise</td></tr>
+              <tr><td><strong>3</strong></td><td>Empty Phenotype Cell</td><td>Phenotype 작은 cell의 정보 부족</td><td>\(\theta\) factor가 식별 안 됨 → \(\eta\) 흡수</td><td>"유의하지 않음" 결론</td><td>Cell size별 결정 트리, 인접 통합</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🎯 한 표로 회수</strong></p>
+          <p>세 시그니처 모두 같은 메커니즘 — <em>분산이 잘못된 그릇으로 흘러감 → 잘못된 결론 → 잘못된 dose</em>. 변이 보존 법칙이 작동하는 방식은 항상 똑같음. <strong>"어느 그릇에 들어갔어야 할 분산이 어디로 새고 있는가?"</strong>를 진단할 수 있으면, 세 시그니처는 같은 질문의 세 가지 표현일 뿐.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 23 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7.1</span>
+        <h1 class="slide-title">η를 봤다는 착각 — EBE와 Shrinkage</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">NONMEM이 출력하는 <strong>\(\eta_{EBE}\)</strong>(empirical Bayes estimate)를 "그 사람의 참 \(\eta\)"로 읽으면 안 됨. EBE는 모집단 수준 파라미터(\(\theta\), \(\omega^2\), \(\sigma^2\))와 그 사람의 관측치를 같이 써서 나온 <em>사후추정치</em>. 자료가 부족하면 EBE가 모집단 평균(0) 쪽으로 끌려감 — 이게 <strong>shrinkage</strong>.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\eta\text{-shrinkage}}_{\text{EBE 압축률}}=1-\frac{\overbrace{SD(\eta_{EBE,i})}^{\text{EBE 표본 SD}}}{\underbrace{\omega}_{\text{모집단 SD}}}$$<div class="formula-cite">Savic RM, Karlsson MO. AAPS J. 2009;11(3):558–569</div></div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Shrinkage</th><th>해석</th><th>EBE 진단 신뢰도</th></tr></thead>
+            <tbody>
+              <tr><td>&lt; 20%</td><td>자료가 \(\eta\)를 잘 식별</td><td>신뢰 가능</td></tr>
+              <tr><td>20–30%</td><td>주의 영역</td><td>해석 조심</td></tr>
+              <tr style="background:#fcf0ef"><td><strong>&gt; 30%</strong></td><td><strong>자료 정보 부족; EBE가 평균으로 압축</strong></td><td><strong>EBE 기반 plot 신뢰 불가</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px"><strong>🔑 EBE plot의 정체</strong></p>
+          <p>EBE plot은 현미경이 아니라, <em>모델·자료·추정법이 함께 만든 그림자</em>. Shrinkage &gt; 30%면 \(\eta_{EBE}\) vs covariate scatter, \(\eta\) histogram, GOF의 individual prediction plot이 <strong>모두 분해능을 잃음</strong>. 진짜 covariate 신호와 estimation artifact를 구분하기 어려워짐.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 24 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7.2</span>
+        <h1 class="slide-title">상관된 random effect — OMEGA BLOCK</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">지금까지 \(\eta\)를 각 파라미터에 독립으로 부여(diagonal \(\Omega\)). 그런데 실무에서는 <strong>CL과 V의 \(\eta\)는 거의 항상 상관</strong> — 체격이 큰 환자는 CL도 크고 V도 큼. 이걸 무시하고 diagonal로만 가면 \(\omega^2(CL)\)과 \(\omega^2(V)\)가 과대 추정, Bayesian TDM posterior 부정확, \(\eta\)-shrinkage 진단 왜곡.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\Omega}_{\text{IIV 분산-공분산}}=\begin{pmatrix}\overbrace{\omega^2_{CL}}^{\text{CL 분산}} & \overbrace{\omega_{CL,V}}^{\text{공분산}} \\ \underbrace{\omega_{CL,V}}_{\text{공분산}} & \underbrace{\omega^2_{V}}_{\text{V 분산}}\end{pmatrix}\qquad \underbrace{\rho_{CL,V}}_{\text{상관계수}}=\frac{\omega_{CL,V}}{\omega_{CL}\cdot\omega_{V}}$$<div class="formula-cite">$OMEGA BLOCK(2) 구조</div></div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>\(|\rho|\)</th><th>해석</th><th>조치</th></tr></thead>
+            <tbody>
+              <tr><td>&lt; 0.3</td><td>약한 상관</td><td>Diagonal 유지 가능</td></tr>
+              <tr><td>0.4–0.7</td><td>의미 있는 상관</td><td><strong>BLOCK 구조 정당화</strong></td></tr>
+              <tr><td>&gt; 0.9</td><td>거의 완전 상관</td><td>모델 식별성 재점검</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-block"><span class="kw">$OMEGA</span> BLOCK(2)
+ 0.09             <span class="str">; ω²(CL)</span>
+ 0.04  0.09       <span class="str">; ω(CL,V), ω²(V)</span></div>
+        <div class="callout teal"><span class="callout-label">실무 순서</span>Diagonal로 시작 → OFV·shrinkage·VPC 안정 확인 → BLOCK으로 확장. 처음부터 BLOCK 잡으면 $COV step이 "non-positive definite"로 실패하기 쉬움 — 그 자체가 <em>자료 정보량 부족 신호</em>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 25 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8</span>
+        <h1 class="slide-title">혼동 쌍 Pair 1·2·3 — 어느 좌표 문제인가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">Pair 1. \(\omega^2\) (IIV) vs \(\sigma^2\) (RUV)</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>기준</th><th>\(\omega^2\) / \(\eta\)</th><th>\(\sigma^2\) / \(\varepsilon\)</th></tr></thead>
+            <tbody>
+              <tr><td>위치</td><td>$OMEGA, 개인 파라미터 수준</td><td>$SIGMA, 관측값 수준</td></tr>
+              <tr><td>원인</td><td>생리학, 유전형, 미포착 covariate</td><td>assay 오차, sampling, 모델 misspecification</td></tr>
+              <tr><td>처치</td><td>covariate 추가</td><td>residual model 재선택</td></tr>
+              <tr><td>혼동 시</td><td>covariate 아무리 늘려도 \(\sigma^2\) 그대로</td><td>error model 바꿔도 IIV 그대로</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">Pair 2. Total CL vs Unbound \(CL_u\)</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>기준</th><th>Total</th><th>Unbound</th></tr></thead>
+            <tbody>
+              <tr><td>좌표</td><td>\(CL = f_u \cdot CL_u\) left side</td><td>\(CL_u = CL/f_u\) left side</td></tr>
+              <tr><td>PK50 수치</td><td>CV 28%</td><td>CV 9%</td></tr>
+              <tr><td>안전 경계 위치</td><td>total C &gt; 50 µg·L⁻¹</td><td>unbound 기반 안전 여유</td></tr>
+              <tr><td>혼동 시</td><td colspan="2">저알부민혈증 환자에서 total 정상인데 unbound 독성</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">Pair 3. PK 변이 vs PD 변이</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>기준</th><th>PK</th><th>PD</th></tr></thead>
+            <tbody>
+              <tr><td>질문</td><td>같은 용량에서 <strong>농도가</strong> 왜 다른가</td><td>같은 농도에서 <strong>반응이</strong> 왜 다른가</td></tr>
+              <tr><td>파라미터</td><td>CL, V, F</td><td>EC50, Emax, γ</td></tr>
+              <tr><td>독립성</td><td colspan="2">PK IIV 작아도 PD variability 클 수 있음 — PK 좌표로 도달 못함</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 26 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8</span>
+        <h1 class="slide-title">혼동 쌍 Pair 4·5 — 모양 / Reparam (핵심)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">Pair 4. 평균 분포 vs 분포 모양</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>기준</th><th>평균 중심 (mean/CV)</th><th>모양 중심 (shape)</th></tr></thead>
+            <tbody>
+              <tr><td>표현</td><td>\(\theta\)와 단일 \(\omega^2\)</td><td>\(\eta\) histogram, mixture</td></tr>
+              <tr><td>놓치는 것</td><td>다봉형, skewness, subgroup</td><td>—</td></tr>
+              <tr><td>혼동 시</td><td colspan="2">이봉형 분포의 계곡 평균을 dose 기준으로 사용 → subgroup 위험 누락</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">Pair 5. Covariate 추가 vs 좌표 재모수화 (이 세션의 핵심 분기)</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>기준</th><th>Covariate 추가</th><th>Reparameterization</th></tr></thead>
+            <tbody>
+              <tr><td>무엇을 하나</td><td>\(\eta\) 안의 설명분을 \(\theta\)로 옮김</td><td>같은 데이터를 다른 좌표에서 다시 표현</td></tr>
+              <tr><td>NONMEM 코드</td><td>covariate term 추가</td><td>파라미터 정의 자체 변경</td></tr>
+              <tr><td>\(\omega^2\) 변화</td><td>실제 분산이 \(\theta\)로 이동</td><td>수치가 다르게 나옴 (축이 회전)</td></tr>
+              <tr><td>예시</td><td>\(CL = \theta_1 \cdot (CRCL/90)^{\theta_2}\)</td><td>\(CL = f_u \cdot CL_u\)</td></tr>
+              <tr><td>혼동 시</td><td colspan="2">PK50을 "\(\omega^2\) 28% → 9% 감소"로 잘못 해석</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p>이 세션의 모든 혼동은 단 하나의 질문으로 환원됨 — <strong>"지금 보고 있는 변이가 어느 좌표/그릇에 있느냐?"</strong> 다섯 Pair는 같은 질문의 다섯 변주.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 27 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">자기점검</span>
+        <h1 class="slide-title">Q1 ~ Q5</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q1 — \(CL_i = CL\cdot\exp(\eta_i)\)를 쓰는 가장 직접적인 이유?</div><div class="a">CL이 음수가 되지 않도록 보장하면서 \(\eta\)를 정규분포로 둘 수 있음. 지수형은 근사적 일정 CV를 주고 계산상 어려움을 줄임 <span class="chip">R&amp;T p.371</span>.</div></div>
+        <div class="q-block"><div class="q">Q2 — 잔차가 평균 0의 무작위가 아니면?</div><div class="a">구조 모델 또는 오차 모델이 중요한 변이의 원인을 아직 설명 못 한 것. 이 상태에서 covariate를 찾으면 <strong>covariate가 생물학이 아니라 잔차 모델 실패를 설명</strong>하게 됨 <span class="chip">R&amp;T p.372</span>.</div></div>
+        <div class="q-block"><div class="q">Q3 — PK50의 "total CV 28% → unbound CV 9%"를 어떻게 해석?</div><div class="a">\(f_u\)를 covariate로 넣어 \(\omega^2\)을 줄인 게 아님. 같은 12명을 total 좌표와 unbound 좌표로 표현했을 때, 단백 결합 변이가 total parameter variability의 일부를 설명한다는 뜻 — <strong>재모수화이지 covariate 추가가 아님</strong> <span class="chip">G&amp;W p.706–709</span>.</div></div>
+        <div class="q-block"><div class="q">Q4 — \(CV(CL)^2 \approx CV(f_u)^2 + CV(CL_u)^2\)를 안 쓰는 이유?</div><div class="a">이 분산 전파식은 <em>로그 스케일에서 \(f_u\)와 \(CL_u\)가 독립일 때만</em> 성립하는 일차 근사. <strong>독립성 가정이 임상에서 비현실적</strong> — 알부민 변동이 \(f_u\)와 \(CL_u\) 둘 다에 영향. 본 자료는 PK50을 좌표 재모수화로 처리:
+        <div class="formula-card-wrap" style="margin-top:6px"><div class="formula-card compact">$$CV(CL)^2 \approx CV(f_u)^2 + CV(CL_u)^2 + \overbrace{2\rho\cdot CV(f_u)\cdot CV(CL_u)}^{\text{상관 보정항 (종종 ≠ 0)}}$$<div class="formula-cite">상관 보정항 비고려 → 잘못된 분해</div></div></div>
+        </div></div>
+        <div class="q-block"><div class="q">Q5 — PK50에서 unbound 좌표로 봐도 PD 변이가 남는 이유?</div><div class="a">단백 결합은 PK 좌표 변이의 일부를 설명. 반응 변이는 <strong>수용체 밀도·유전적 구성</strong>같은 PD 영역에 속함. \(E_{max} < 1\) 무반응자는 표적의 완전 발현 결여로 해석 <span class="chip">G&amp;W p.707–709</span>.</div></div>
+      </div>
+    </section>
+
+    <!-- Slide 28 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">자기점검</span>
+        <h1 class="slide-title">Q6 ~ Q10</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q6 — \(\eta\)-EBE histogram이 두 봉우리로 보이면?</div><div class="a">매끄러운 로그정규 IIV가 아니라 <strong>유전형/표현형 subgroup 혼합</strong>을 의심. 단, 희소 표본이면 histogram 자체의 정보량을 먼저 점검 (shrinkage &gt; 30% 여부) <span class="chip">R&amp;T p.366, p.393–397</span>.</div></div>
+        <div class="q-block"><div class="q">Q7 — 인종 covariate를 유전형처럼 해석하면 위험한 이유?</div><div class="a">인종은 개인 유전 형질의 <strong>불완전한 proxy</strong>이며 그룹 내 변이도 큼. 탐색적 covariate일 수는 있어도 mechanistic 유전형의 대체물이 아님 <span class="chip">R&amp;T p.395, p.409</span>.</div></div>
+        <div class="q-block"><div class="q">Q8 — 잔차 모델 오지정 vs 공변량 추가 — 무엇을 먼저?</div><div class="a"><strong>표층 정답:</strong> 잔차 모델 오지정을 먼저. \(\varepsilon\) 구조가 틀린 상태에서 covariate 넣으면 \(\omega^2\)와 \(\sigma^2\) 경쟁이 왜곡되어 covariate가 오차 모델 실패를 설명.<br><strong>실무 trade-off:</strong> A(잔차 먼저)가 default이되 무한 재탐색 루프 방지를 위해 잔차 후보 2–3개를 a priori 정의하고 단 한 번의 비교로 결정한 뒤 covariate로 넘어감. B(covariate 먼저) 택하면 <em>민감도 분석</em> 필수.</div></div>
+        <div class="q-block"><div class="q">Q9 — SCM forward/backward 임계가 비대칭인 이유?</div><div class="a">Forward는 다수 후보에 대한 multiple testing을 거치므로 family-wise error 누적 (10 후보 × α=0.05면 약 40%). Backward에서 더 엄격한 α=0.01를 통과해야 살아남도록 설계해서 이 누적 위험 보정. Jonsson-Karlsson (1998)의 핵심 설계 원리.
+        <div class="formula-card-wrap" style="margin-top:6px"><div class="formula-card compact">$$\underbrace{P_{\text{FWE}}}_{\text{family-wise error}}\approx\overbrace{1-(1-\alpha)^k}^{\text{누적 위험}}$$<div class="formula-cite">multiple testing 누적 risk</div></div></div>
+        </div></div>
+        <div class="q-block"><div class="q">Q10 — 3-level race covariate에 \(\Delta OFV \geq 3.84\)를 그대로 쓰면 왜 잘못?</div><div class="a">3-level race는 reference 외 2 indicator 추가, df = K - 1 = 2. 임계는 \(\chi^2_{df=2,\,\alpha=0.05} = 5.99\) (forward), \(\chi^2_{df=2,\,\alpha=0.01} = 9.21\) (backward). df=1의 3.84/6.63을 그대로 쓰면 실제보다 관대해져서 <strong>false positive 발생</strong>.</div></div>
+      </div>
+    </section>
+
+    <!-- Slide 29 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 10</span>
+        <h1 class="slide-title">거장의 다섯 질문 + Closer</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">초급자는 "IIV가 큽니다"라고 함. 중급자는 "CL에 covariate를 넣겠습니다"라고 함. <strong>전문가는 다섯 질문을 던지고, 각 질문을 NONMEM 출력 한 곳에 1:1로 매핑</strong>함.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>거장의 질문</th><th>NONMEM/진단 출력 시그니처</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>PK인가 PD인가?</td><td>PK·PD 별도 적합 후 \(\omega^2\)(PK)와 \(\omega^2\)(PD) 비교. \(\eta_{CL}\)와 \(\eta_{EC50}\) 상관이 낮으면 독립</td></tr>
+              <tr><td>2</td><td>\(\eta\)인가 \(\varepsilon\)인가?</td><td>잔차 모델 변경 전후 OMEGA 대각·SIGMA 추정값 비교. \(\varepsilon\) 모델 변경 시 \(\omega^2\)(CL)이 크게 움직이면 Leakage Funnel</td></tr>
+              <tr><td>3</td><td>Total인가 unbound인가?</td><td>Total 적합의 \(\omega^2\)(CL)과 unbound 적합의 \(\omega^2\)(\(CL_u\)) 나란히 비교. PK50 패턴(28% vs 9%) 재현 여부</td></tr>
+              <tr><td>4</td><td>Smooth인가 subgroup 구조인가?</td><td>\(\eta\)-EBE histogram 이봉형 여부. $MIX \(\Delta OFV\). 단 shrinkage &lt; 30%, RSE &lt; 80% 선행 점검</td></tr>
+              <tr><td>5</td><td>Mechanistic인가 proxy인가?</td><td>Bootstrap/SIR 95% CI. $COV step condition number &gt; 1000 (ill-conditioned), covariate 상관 |r| &gt; 0.7 (다중공선성)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\eta\text{-shrinkage}}_{\text{EBE 분해능}}<\underbrace{30\%}_{\text{경고}},\ \underbrace{RSE}_{\text{불확실성}}>\underbrace{80\%}_{\text{불안정}},\ \underbrace{\kappa}_{\text{condition number}}>\underbrace{1000}_{\text{조건성}},\ \underbrace{|r|}_{\text{상관}}>\underbrace{0.7}_{\text{공선성}}$$<div class="formula-cite">모델 lock 전 cross-check 임계</div></div></div>
+        <div class="callout teal"><span class="callout-label">NDA Section 5.2 cross-check</span>\(\sigma^2\) ↔ bioanalytical CV / Safety threshold (total) ↔ dose recommendation (unbound) / \(\eta\) 분포 모양 ↔ 모집단 약리유전 reference.</div>
+        <div class="closer-card">
+          <div class="closer-label">Master One-Liner</div>
+          <p class="closer-text"><em>\(\omega^2\)은 "남은 변이"가 아니라, 아직 이름 붙이지 못한 생리학·유전학·행동·측정 구조의 혼합물임.</em></p>
+          <p class="closer-text" style="margin-top:10px"><strong style="color:#cc785c">"지금 내가 보고 있는 이 흔들림은, 도대체 어느 그릇에 들어가야 하는가?"</strong></p>
+          <p style="color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:10px;letter-spacing:1px">C-260518-024715-K4M</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() { goTo(parseInt(btn.dataset.idx)); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ renderMath(); goTo(0); });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 12 — 지연의 정체를 찾아서: 약물·시스템·신호 시계</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.toc-btn.indent{padding-left:22px;font-size:11.5px;color:#6c6a64}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:34px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:26px 12px 18px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:11px 16px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px;line-height:1.55}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;white-space:pre;overflow-x:auto;border-radius:12px;padding:12px 16px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11.5px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11.5px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.5}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.97em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:8px 12px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.5}
+.closer-card{background:#181715;border-radius:12px;padding:22px 28px;text-align:center;margin:6px auto;max-width:860px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#faf9f5;line-height:1.6}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.tag.apex{background:#a9583e}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+.icon-clock{font-family:'Cormorant Garamond',serif;font-style:italic;color:#cc785c}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 12</div>
+        <div class="brand-sub">지연의 정체 · 약물·시스템·신호 시계</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">§0 마취과 의사의 5초</button>
+    <button class="toc-btn" data-idx="1">§0 PD21 — 같은 단위, 다른 의미</button>
+    <button class="toc-btn" data-idx="2">§0 4막 사고법 큰 그림</button>
+    <button class="toc-btn" data-idx="3">§1 Hysteresis 방향 의미</button>
+    <button class="toc-btn" data-idx="4">§1 방향→후보→검증 + Loop Collapse</button>
+    <button class="toc-btn" data-idx="5">§1 Input-rate 함정 · 핵심정리</button>
+    <button class="toc-btn" data-idx="6">§2 약물시계 — Ce ODE</button>
+    <button class="toc-btn" data-idx="7">§2 닫힌 해 · 파라미터 표</button>
+    <button class="toc-btn" data-idx="8">§2 마취과 임상 함의</button>
+    <button class="toc-btn" data-idx="9">§2 G&amp;W Table 3.9 · Sux 경계</button>
+    <button class="toc-btn" data-idx="10">§2 PD20 · EC50 용량 분기 ☠</button>
+    <button class="toc-btn" data-idx="11">§2 2막 핵심 정리</button>
+    <button class="toc-btn" data-idx="12">§3 Nitroglycerin 작업자 일주일</button>
+    <button class="toc-btn" data-idx="13">§3 Moderator M ODE · 부호</button>
+    <button class="toc-btn" data-idx="14">§3 자극 크면 반감기 짧아짐</button>
+    <button class="toc-btn" data-idx="15">§3 AUC 비대칭 시그니처</button>
+    <button class="toc-btn" data-idx="16">§3 PD13 Model II 비교</button>
+    <button class="toc-btn" data-idx="17">§3 대안구조 · 3막 핵심정리</button>
+    <button class="toc-btn" data-idx="18">§4 신호시계 — Single vs Relay</button>
+    <button class="toc-btn" data-idx="19">§4 Transit chain ODE</button>
+    <button class="toc-btn" data-idx="20">§4 PD35 · n 선택 가이드</button>
+    <button class="toc-btn" data-idx="21">§4 MTT 패턴</button>
+    <button class="toc-btn" data-idx="22">§4 Friberg-Karlsson</button>
+    <button class="toc-btn" data-idx="23">§4 Black-Leff Operational</button>
+    <button class="toc-btn" data-idx="24">막간 Pair 1 — 세 시계</button>
+    <button class="toc-btn" data-idx="25">Pair 2·3 — Comp / CCW·CW</button>
+    <button class="toc-btn" data-idx="26">Pair 4·5 — Tol / Single·Transit</button>
+    <button class="toc-btn" data-idx="27">진단 시그니처 4종</button>
+    <button class="toc-btn" data-idx="28">자기점검 Q1–Q10</button>
+    <button class="toc-btn" data-idx="29">Capstone · 마스터 한 줄</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0 -->
+    <section class="slide active">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">마취과 의사의 5초 — 같은 표적, 100배 다른 임상</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px;line-height:1.65">마취과 의사가 수술 끝나갈 무렵 환자 옆에서 약을 끌지 말지 고민함. <strong>Remifentanil</strong>을 infusion으로 주고 있었다면 — 끄고 <em>1분</em>이면 환자가 깸. 같은 자리에서 <strong>morphine</strong>을 같은 양으로 줬다면? 끄고 <em>2시간</em> 기다려도 회복실 못 보냄. 둘 다 μ-opioid receptor 작용제고, 같은 표적에 같은 방식으로 붙음. 그런데 임상 거동이 완전히 다른 약처럼 보임.</p>
+        </div>
+        <div class="callout"><span class="callout-label">핵심 질문</span><em>"왜 같은 표적 약물인데 plasma 농도가 떨어진 뒤 환자 상태가 회복되는 속도가 100배 차이나는가?"</em> 답은 plasma kinetics가 아님. plasma \(t_{1/2}\)만 봐서는 절대 못 맞춤. 답은 — <strong>약물이 effect site에 도달하고 떠나는 다리의 통행 속도</strong> \(k_{e0}\) 가 100배 다르기 때문임.</div>
+        <div class="card">
+          <p style="font-size:13px"><strong>이 강의 전체가 가르치려는 단 하나는 이거임 —</strong></p>
+          <p class="gem" style="text-align:center;font-size:16px;margin:8px 0">"농도와 반응이 시간상 어긋날 때, 그 어긋남을 만드는 <em>시계가 어디 있는지 이름부터 붙이는</em> 훈련."</p>
+        </div>
+        <p>지연이 보이면 손이 먼저 \(k_{e0}\)로 가는 게 학생 모델러의 습관. <strong>마스터 모델러는 정반대 순서로 감</strong> — <em>"지금 늦는 게 누구냐?"</em>를 먼저 묻고, 답이 나온 다음에야 ODE 모양을 고름. 이 강의 끝나면 그 5초 안의 사고를 자기 것으로.</p>
+      </div>
+    </section>
+
+    <!-- Slide 1 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0.B</span>
+        <h1 class="slide-title">본질 한 줄 — 같은 단위가 같은 의미는 아님</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>본격적으로 들어가기 전에 <strong>PD21 데이터</strong>부터. 길항제 X 실험에서 G&amp;W가 보고하는 세 값 <span class="chip">G&amp;W p.846</span>:</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{k_{e0}=0.025}^{\text{생체상 평형}},\quad \overbrace{k_{out}=0.031}^{\text{시스템 회전}},\quad \overbrace{k_{off}=0.018\ \text{min}^{-1}}^{\text{수용체 해리}}$$<div class="formula-cite">PD21 — G&amp;W p.846</div></div></div>
+        <p style="font-size:12px">세 값이 거의 비슷함. 단위도 같음. 학생 모델러가 보면 <em>"어차피 다 비슷한 시간 상수네"</em> 하고 넘어감. <strong>이게 함정.</strong> 셋은 완전히 다른 시계를 가리킴.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>기호</th><th>비유</th><th>실제 의미</th></tr></thead>
+            <tbody>
+              <tr><td>\(k_{e0}\)</td><td><strong>다리 통행 속도</strong></td><td>약이 plasma에서 effect site로 건너가는 속도</td></tr>
+              <tr><td>\(k_{out}\)</td><td><strong>수조 배수 속도</strong></td><td>시스템이 반응을 만들고 비우는 속도</td></tr>
+              <tr><td>\(k_{off}\)</td><td><strong>빗장 풀림 속도</strong></td><td>약물–표적 결합이 해체되는 속도</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout amber"><span class="callout-label">PD21 trap</span>다리·수조·빗장 — 이 세 비유가 강의 끝까지 따라옴. PD21에서 세 값이 비슷하게 나온 건 <em>우연</em>이지 <em>동치</em>가 아님. 그래서 single-dose 데이터만 보고 셋 중 어느 시계가 율속하는지 못 가림. 구분하려면 <strong>dose stratification, 반복투여, washout</strong> 같은 더 풍부한 실험 설계 필수.</div>
+      </div>
+    </section>
+
+    <!-- Slide 2 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0.C</span>
+        <h1 class="slide-title">큰 그림 — 5초 안에 도는 4막 사고법</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>농도-반응 시간 지연이 보일 때, 마스터 모델러의 머릿속에서 순서대로 도는 질문:</p>
+        <div class="diagram"><span class="anno">관찰:</span> 농도와 반응이 시간상 떨어져있다.
+       <span class="arr">↓</span>
+<span class="step">1막 — Hysteresis 방향은? (CCW or CW)</span>
+       <span class="arr">→</span> 후보 family 좁히기 <span class="anno">(단, 결론 아님)</span>
+       <span class="arr">↓</span>
+<span class="step">2막 — 약물 시계인가?</span> dose-invariant <span class="anno">t_max</span> + k_e0 loop collapse 검사
+       Yes <span class="arr">→</span> Effect compartment
+       No  <span class="arr">→</span> 다음 막
+       <span class="arr">↓</span>
+<span class="step">3막 — 시스템 시계인가?</span> 반복투여 trough drift, washout 후 rebound 검사
+       Yes <span class="arr">→</span> Indirect response + Moderator M
+       No  <span class="arr">→</span> 다음 막
+       <span class="arr">↓</span>
+<span class="step">4막 — 신호 시계인가?</span> onset이 즉각 지수형이 아니라 delayed sigmoid?
+       Yes <span class="arr">→</span> Transit chain (n × τ)</div>
+        <div class="callout teal"><span class="callout-label">G&amp;W 챕터 escalation</span>이 흐름이 정확히 G&amp;W 챕터 순서(<strong>§3.9 → §3.11 → §3.13</strong>)와 일치함. 우연이 아님 — Gabrielsson이 책을 쓸 때 의도한 escalation 사슬. 학생이 외워야 할 건 챕터 번호가 아니라 <strong>이 escalation 순서 그 자체</strong>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 3 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1</span>
+        <h1 class="slide-title">1막 — Hysteresis Triage: 방향은 결론이 아니라 필터</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>CCW(반시계방향) loop가 보이면 반사적으로 <em>"아 effect compartment 붙이면 되겠네"</em> 라고 가는 게 학생의 첫 실수. 마스터의 첫 질문은 다름 — <strong><em>"이 loop 방향이 다른 hidden state로도 만들어질 수 있는가?"</em></strong> 답은 <strong>그렇다</strong>. 그래서 방향은 <em>진단의 첫 단서</em>일 뿐 <em>최종 판결</em>이 아님.</p>
+        <h2 class="section-h">방향이 뜻하는 것 — 두 임상 사례</h2>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Digoxin (강심배당체)</div>
+            <p style="font-size:11.5px">IV 투여 후 첫 4시간 동안 plasma는 <em>감소</em>하는데 심장 효과는 <em>증가</em>함 → 약이 표적 조직으로 늦게 들어가는 <strong>분포 지연</strong>의 임상 그림 <span class="chip">R&amp;T p.234</span></p>
+          </div>
+          <div class="card">
+            <div class="card-title">Naproxen (NSAID)</div>
+            <p style="font-size:11.5px">경구 500 mg 투여 후 통증 완화에서 명확한 <strong>CCW hysteresis</strong> → loop collapse가 깨끗하게 작동하는 분포 지연 사례 <span class="chip">R&amp;T pp.234–235</span></p>
+          </div>
+        </div>
+        <div class="callout"><span class="callout-label">R&amp;T Fig.8-2 (p.235)</span>Naproxen loop에서 <strong>같은 농도가 두 시점에 서로 다른 반응에 대응</strong>하는 모습 — 방향을 단어 레이블이 아니라 <em>시간순 경로</em>로 보여줌.</div>
+        <p style="font-size:12px"><strong>이력현상(hysteresis):</strong> 농도가 상승할 때와 하강할 때 반응이 서로 다른 경로를 따르는 현상. — 같은 산을 오르내리는 두 길의 고도 기록처럼, 같은 농도라도 올라가는 중이냐 내려오는 중이냐에 따라 반응이 다르면 농도 하나로는 설명이 끝나지 않음.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.2</span>
+        <h1 class="slide-title">방향 → 후보 → 검증 + Loop Collapse</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>방향</th><th>1차 해석</th><th>후보 hidden state</th><th>검증할 단서</th></tr></thead>
+            <tbody>
+              <tr><td><strong>CCW</strong></td><td>반응이 농도보다 늦음</td><td>분포 지연, turnover, 느린 결합, 동조성 대사체</td><td>dose-invariant \(t_{max}\), loop collapse, 반복투여 거동</td></tr>
+              <tr><td><strong>CW</strong></td><td>반응이 농도보다 일찍 약화</td><td>내성/탈감작, 길항성 대사체, down-regulation</td><td>반복투여 trough, washout 후 rebound, 대사체 약리</td></tr>
+              <tr><td><strong>8자형/혼합</strong></td><td>경쟁하는 시간 척도</td><td>다중 기전 + 희소 샘플링 artifact</td><td>조밀한 샘플링 + 기전 기반 실험 설계</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">Loop Collapse — 직관을 수치로</h2>
+        <p style="font-size:12px">농도-반응 데이터를 그냥 그리면 CCW loop가 보이는데, \(C\) 대신 \(C_e\)(아직 모르는 추정 농도)에 대해 다시 그리면 — <strong>분포 지연이 정말 율속이면 loop가 단일 곡선으로 collapse됨</strong> <span class="chip">R&amp;T pp.245–246, Fig.8-14</span>. 그리고 <em>가장 깨끗하게 collapse를 만드는 \(k_{e0}\) 값</em>이 곧 분포 지연 추정치.</p>
+        <div class="dark-card">
+          <p style="color:#faf9f5"><strong>PD21이 이 도구의 운영을 보여줌</strong> — 길항제 X 실험에서 \(k_{e0}\approx 0.025\ \text{min}^{-1}\)이 <em>상승부와 하강부를 하나의 매끄러운 곡선으로 묶는 값</em>으로 보고됨 <span class="chip">G&amp;W PD21 pp.840–846</span>. 이게 <strong>1막 → 2막으로 넘어가는 정식 다리</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.3</span>
+        <h1 class="slide-title">Input-Rate 함정 + 1막 핵심 정리</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">함정 — Input-Rate Artifact</span>R&amp;T가 중요한 경고를 함 <span class="chip">R&amp;T p.236</span>. <em>약물 주입 속도가 분포 속도나 tolerance 발달 속도를 압도하면</em> — 예컨대 매우 빠른 IV bolus — <strong>CW loop가 나타날 수 있음</strong>. 이건 tolerance가 아니라 <em>input-rate artifact</em>. 더 느린 infusion이나 경구 데이터로 재검증하면 사라짐. 이 아티팩트를 tolerance로 오인하면 불필요한 Moderator 모델 피팅으로 이어짐.</div>
+        <div class="callout amber"><span class="callout-label">현장 팁</span>희소 샘플링은 가짜 8자형을 만들어냄. 방향을 해석하기 전에 <em>농도와 반응 양쪽에서 상승/하강을 포착할 만큼 샘플링 밀도가 충분한지</em>부터 확인할 것. 안 그러면 loop 기하학은 <strong>기전이 아니라 플롯팅 아티팩트</strong>.</div>
+        <h2 class="section-h">1막 핵심 정리</h2>
+        <div class="card">
+          <ul>
+            <li>Loop 방향은 후보를 좁히는 <strong>필터</strong>지 <strong>판결</strong>이 아님.</li>
+            <li><strong>CCW</strong> 보이면 → loop collapse 시도 → 깨끗하면 2막(\(k_{e0}\)), 안 깨끗하면 3막(turnover/Moderator)로.</li>
+            <li><strong>CW</strong> 보이면 → input-rate artifact 먼저 배제 → 통과하면 3막(tolerance).</li>
+            <li>"CCW = effect compartment 확정"으로 직행하면 <strong>turnover와 transduction을 link 하나로 흡수해버림</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2</span>
+        <h1 class="slide-title">2막 — 약물 시계 (k<span style="font-size:0.7em">e0</span>): 다리 통행 속도</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">왜 \(C_e\)가 필요한가</h2>
+            <p style="font-size:12px">plasma 농도 \(C(t)\)는 측정됨. 그런데 약이 <em>실제로 작용하는 곳</em>(effect site, biophase)의 농도는 측정 안 됨. plasma에서 effect site로 가는 길에 시간 지연이 있으면, 농도-반응 곡선에서 CCW loop가 나타남.</p>
+            <p style="font-size:12px">해결책 — <strong>가짜 구획</strong>을 하나 만듦. plasma에서 effect site로 1차 분포 link로 약물이 흘러간다 가정. 그 가상의 농도를 \(C_e\)라고 부름. <strong>측정값이 아니라 반응 곡선으로부터 역추정되는 hidden state.</strong></p>
+            <div class="callout"><span class="callout-label">비유</span>\(C\)는 plasma라는 큰 도로의 차량 밀도, \(C_e\)는 effect site 골목으로 들어간 차량 밀도. \(k_{e0}\)는 그 골목 입구가 얼마나 빨리 열리는지 — <em>문 열리는 속도</em>.</div>
+          </div>
+          <div>
+            <h2 class="section-h">핵심 ODE — 외울 거 하나</h2>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dC_e}{dt}}_{\text{Ce 변화율}}=\underbrace{k_{e0}}_{\text{추종 속도}}\left(\overbrace{C}^{\text{혈장 농도}}-\overbrace{C_e}^{\text{생체상 농도}}\right)$$<div class="formula-cite">G&amp;W p.269; PD21 pp.840–841</div></div></div>
+            <p style="font-size:12px">복잡한 닫힌 해 안 외워도 됨. 운영에 쓰는 형태는 이 한 줄. 왜 좋냐 — <strong>구동 함수 \(C(t)\)에 뭘 넣든 작동</strong>. 선형 PK든, 비선형 PK든, table function이든. NONMEM에서 받아들이기 매우 깔끔.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.2</span>
+        <h1 class="slide-title">IV bolus 1구획 PK 닫힌 해 + 파라미터</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">참고로 IV bolus 1구획 PK일 때의 닫힌 해 — 직관용:</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{C_e}_{\text{생체상 농도}}=\overbrace{\frac{k_{e0}\,D}{V_c\,(k_{e0}-K)}}^{\text{농도 스케일}}\left(\overbrace{e^{-Kt}}^{\text{혈장 감소}}-\overbrace{e^{-k_{e0}t}}^{\text{생체상 추종}}\right)$$<div class="formula-cite">G&amp;W pp.263, 265</div></div></div>
+        <div class="callout amber"><span class="callout-label">왜 k_1e = k_e0 인가</span>이 형태가 단순화 가정 두 개를 깔고 있음 — <strong>\(k_{1e}=k_{e0}\)</strong>(유입 = 평형화)와 \(K_p=1\)(분배비=1). 이건 <em>보편적 물리 등식이 아니라</em>, 두 파라미터를 따로 식별할 수 없어서 적용하는 <strong>표준 단순화</strong>. 즉 — 데이터가 너에게 <em>"\(k_{e0}\) 하나만 줄게"</em> 라고 양보한 거지, 자연이 그렇게 생겼다는 게 아님.</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>단위</th><th>의미</th></tr></thead>
+            <tbody>
+              <tr><td>\(C_e\)</td><td>concentration</td><td>effect site 농도(역추정)</td></tr>
+              <tr><td>\(C\)</td><td>concentration</td><td>plasma 농도(측정/구동)</td></tr>
+              <tr><td>\(k_{e0}\)</td><td>\(\text{time}^{-1}\)</td><td>plasma–biophase 평형 속도</td></tr>
+              <tr><td>\(K\)</td><td>\(\text{time}^{-1}\)</td><td>plasma 제거 속도</td></tr>
+              <tr><td>\(V_c\)</td><td>volume</td><td>central dilution space</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.3</span>
+        <h1 class="slide-title">k<span style="font-size:0.7em">e0</span> 임상 함의 — 마취과 의사가 외우는 그 시간</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{t_{1/2,\,\text{equilibrium}}}^{\text{Ce가 Cp에 평형 도달하는 반감기}} = \frac{\ln 2}{k_{e0}}$$<div class="formula-cite">step-input response 정의</div></div></div>
+        <p style="font-size:12px">이게 마취·중환자 의사들이 외워두는 <em>실제로 의사결정을 바꾸는</em> 시간. <em>"새 dose의 effect는 언제 시작되나?"</em>의 답은 plasma \(t_{1/2}\)가 아니라 <strong>이 평형 반감기</strong>.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물 (분류)</th><th>\(t_{1/2,k_{e0}}\)</th><th>임상적 onset/offset 특성</th><th>출처</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Remifentanil</strong> (μ-opioid, ultra-short-acting)</td><td>≈ 1 min</td><td>초고속 onset/offset, TCI 마취 표준</td><td>마취 임상약리</td></tr>
+              <tr><td><strong>Fentanyl</strong> (μ-opioid)</td><td>≈ 6 min</td><td>spectral edge 반응 기준 6.4 min</td><td>G&amp;W Table 3.9, p.269</td></tr>
+              <tr><td><strong>Morphine</strong> (μ-opioid, hydrophilic)</td><td>≈ 2 h</td><td>BBB 침투 느림, onset 지연 큼</td><td>R&amp;T 5e Ch.8</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p>세 약물이 같은 receptor에 작용하지만 <em>분포 시계의 길이만으로</em> 임상에서 완전히 다른 약물처럼 행동함. <strong>Remifentanil은 plasma에서 사라지면 그 자리에서 effect도 사라짐. Morphine은 plasma 농도가 peak를 찍은 뒤에도 한참 동안 effect가 여전히 상승 중</strong>. → 2막의 분포 지연 개념이 <em>infusion 중단 시각, 추가 bolus 결정, recovery room 관찰 시간</em> 같은 임상 의사결정 timing에 그대로 떨어짐.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.4</span>
+        <h1 class="slide-title">G&amp;W Table 3.9 카탈로그 + Succinylcholine 경계</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout amber"><span class="callout-label">출처 경계 주의</span>Fentanyl 6.4 min은 G&amp;W Table 3.9가 <strong>spectral edge 반응 기준으로 명시한 anchor</strong> <span class="chip">G&amp;W p.269</span>. Remifentanil ~1 min과 morphine ~2 h는 R&amp;T 5e Ch.8 pp.236–248의 onset–offset 논의와 마취 임상약리 문헌의 통상 anchor — <em>교과서가 동일 표로 묶어 제시하지는 않으니</em>, 인용 시 1차 문헌(Minto et al. <em>Anesthesiology</em> 1997; Lötsch et al. <em>Anesthesiology</em> 2002)을 함께 확인.</div>
+        <h2 class="section-h">G&amp;W Table 3.9의 다른 약물들 (같은 카탈로그)</h2>
+        <div class="card">
+          <ul>
+            <li><strong>Terbutaline</strong>(β2-agonist 기관지확장제) FEV-1 7.5 min</li>
+            <li><strong>Theophylline</strong>(메틸잔틴) FEV-1 11 min</li>
+            <li><strong>d-Tubocurarine / Vecuronium</strong>(비탈분극성 근이완제) 4 min</li>
+            <li><strong>Fentanyl</strong> spectral edge 6.4 min</li>
+            <li><strong>Quinidine</strong>(Class Ia 항부정맥) QT 8 min <span class="chip">G&amp;W p.269</span></li>
+          </ul>
+        </div>
+        <div class="callout warn"><span class="callout-label">⚠️ 경계 — Succinylcholine은 별개 사례</span><strong>Succinylcholine</strong>(탈분극성 근이완제) 0.5 mg/kg IV에서 \(T_{50}\approx 6\ \text{min}\), \(k\approx 0.2\ \text{min}^{-1}\)로 80→20% 반응 감소가 약 22%/min <span class="chip">R&amp;T pp.249–256</span>. 이건 <em>용량–지속시간 예시</em>. <strong>G&amp;W Table 3.9의 \(t_{1/2,k_{e0}}=4\) min 사례로 잘못 라벨링하면 안 됨.</strong> 같은 4 min 시계로 보여도 가리키는 게 다른 양.</div>
+        <div class="callout"><span class="callout-label">G&amp;W Fig.3.53 (p.263)</span>plasma → \(C_e\) → 반응–시간으로 이어지는 흐름. \(C_e\)가 직접 측정되지 않고 반응 곡선으로부터 역추정되는 이유가 시각적으로 드러남.</div>
+      </div>
+    </section>
+
+    <!-- Slide 10 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.5</span>
+        <h1 class="slide-title">PD20 한계 + ☠ 가장 위험한 함정: EC<span style="font-size:0.7em">50</span> 용량 분기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <div class="card-title">PD20 — 단회투여 effect compartment의 한계</div>
+          <p style="font-size:12px">진통제 IV bolus, \(D=45\ \mu\text{g/kg}\), \(V=1\ \text{L/kg}\), \(K=0.50\ \text{h}^{-1}\), \(E_{max}\approx 3{-}5\), \(EC_{50}\approx 1.5\ \mu\text{g/L}\), \(k_{e0}\approx 0.1\ \text{h}^{-1}\) <span class="chip">G&amp;W pp.836–839</span>. <strong>단일 용량이라서 \(EC_{50}\) 정밀도가 낮음</strong>. → 단회투여 effect compartment 모델의 <em>고유 한계</em>를 보여주는 사례.</p>
+        </div>
+        <h2 class="section-h">☠ Signature 1 — EC<span style="font-size:0.7em">50</span> 용량 분기 패턴</h2>
+        <p style="font-size:12px"><strong>회전(turnover)으로 생성된 데이터를 effect compartment 모델에 억지로 끼워 맞추면</strong>, 용량별 피팅에서 생물학적으로 말이 안 되는 \(EC_{50}\)/\(E_{max}\)/\(n\) 변화가 나옴. G&amp;W §3.9.7 Table 3.10의 그 유명한 예시:</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\text{dose 1: } EC_{50}=0.681}^{\text{저용량}}\ \to\ \overbrace{\text{dose 10: } EC_{50}=4.85}^{\text{중용량}}\ \to\ \overbrace{\text{dose 100: } EC_{50}=0.941}^{\text{고용량}}$$<div class="formula-cite">G&amp;W §3.9.7 Table 3.10, p.271 — 약 7배 분산</div></div></div>
+        <div class="dark-card">
+          <p>모델은 수렴했고, 각 용량 fit이 따로 보면 그럴듯한데, <strong>세 용량을 같이 보면 "수용체 민감도가 용량에 따라 7배 변한다"는 생물학적으로 비현실적인 결론</strong>을 강요받음. 이 패턴이 나오면 결론은 하나 — <em>Link 모델이 회전/적응 misspecification을 강제로 흡수하고 있다</em>. §6에서 <strong>Signature 1: \(EC_{50}\) 용량 분기</strong>로 등록.</p>
+        </div>
+        <div class="callout amber"><span class="callout-label">G&amp;W Fig.3.59와 Table 3.10 (p.271)</span><em>Fig.3.59는 PD13이 아니라 §3.9.7/Table 3.10(PD12 데이터)에 해당함</em>. 자료 인용 시 자주 헷갈리는 자리니까 정확히 적을 것.</div>
+      </div>
+    </section>
+
+    <!-- Slide 11 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.6</span>
+        <h1 class="slide-title">2막 핵심 정리</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="card">
+          <ul>
+            <li>CCW + 선형 PK + dose-invariant \(t_{max}\) + 단일 \(k_{e0}\)로 loop collapse가 깨끗 → <strong>effect compartment 가설 살아남음</strong>.</li>
+            <li>위 네 조건 중 하나라도 흔들리거나 용량별 \(EC_{50}\)이 migration하면 → <strong>다른 hidden state가 link 모델 뒤에 숨어있다는 신호</strong>. 3막으로 escalation.</li>
+            <li>단일 용량 데이터로는 \(k_{e0}\) / \(k_{out}\) / \(k_{off}\)를 구분 못함 (PD21 trap).</li>
+            <li>\(C_e\)는 측정값이 아닌 <em>추정되는 hidden state</em>. 그래서 \(k_{e0}\) 추정 품질은 <em>반응의 상승·하강 정보가 얼마나 잘 잡혔는가</em>가 결정.</li>
+          </ul>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px;text-align:center"><em>"단일 용량 effect compartment 모델은 그 자체로 반증 불가능하다."</em></p>
+          <p style="color:#e8a55a;text-align:center;margin-top:4px;font-size:12px">— 단회투여로 \(k_{e0}\)가 fit이 잘 됐다는 사실 자체로는 turnover/transduction을 배제 못함.</p>
+        </div>
+        <div class="callout teal"><span class="callout-label">다음 막으로</span>loop collapse가 깨끗하지 않거나, 반복투여에서 carry-over가 보이면 — 늦는 게 <em>약</em>이 아니라 <strong>시스템 자체</strong>임. 다리 통행 속도에서 수조 배수 속도로 무게중심이 옮겨감.</div>
+      </div>
+    </section>
+
+    <!-- Slide 12 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3</span>
+        <h1 class="slide-title">3막 — 시스템 시계: Nitroglycerin 작업자의 일주일</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">3막의 핵심 직관을 가장 잘 보여주는 임상 일화 — <em>"월요일 두통, 일요일 angina"</em> — G&amp;W Fig.3.71의 hat TDS 작업자 사례 <span class="chip">G&amp;W pp.284–286</span>.</p>
+        <div class="diagram"><span class="step">월요일</span>  <span class="arr">→</span> nitroglycerin 노출 시작 → 두통 <span class="anno">(혈관 확장 효과 full)</span>
+<span class="step">화·수·목</span> <span class="arr">→</span> 두통 점점 감소 <span class="anno">(tolerance 발달)</span>
+<span class="step">금요일</span>  <span class="arr">→</span> 두통 없음
+<span class="step">토·일요일</span> <span class="arr">→</span> 약물 노출 없음
+<span class="step">일요일</span>  <span class="arr">→</span> baseline 넘어선 vasoconstriction → <span class="anno">angina (rebound)</span>
+<span class="step">월요일</span>  <span class="arr">→</span> 다시 두통 시작</div>
+        <div class="dark-card">
+          <p style="color:#faf9f5"><strong>왜 충격적인 그림이냐 — </strong>tolerance와 rebound가 <em>동일한 작업자의 일주일</em>에 다 나타남. 두 현상이 따로 떨어진 게 아니라, <strong>같은 ODE 쌍의 두 phase</strong>라는 거임. 같은 구조의 변주가 β-agonist의 점진적 desensitization, opioid의 점진적 내성, cocaine의 급성 심혈관 tolerance — 다 임상에서 익숙한 약리학적 현상으로 끊임없이 등장 <span class="chip">G&amp;W pp.284–286, 295–296</span>.</p>
+        </div>
+        <div class="callout"><span class="callout-label">3막의 단 하나 키워드</span><strong>시스템 기억</strong>. 약이 사라져도 시스템이 약물 노출의 흔적을 한동안 기억함. 그 기억이 tolerance를 만들고, 또 같은 기억이 rebound를 만듦.</div>
+      </div>
+    </section>
+
+    <!-- Slide 13 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.2</span>
+        <h1 class="slide-title">Moderator M — 시스템 기억의 ODE 구현 + 음의 부호</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dR}{dt}}_{\text{R 변화율}}=\overbrace{k_{in}S(C)}^{\text{자극 입력}}-\overbrace{k_{out}M}^{\text{M 억제}}$$<div class="formula-cite">반응 방정식</div></div></div>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dM}{dt}}_{\text{M 변화율}}=\underbrace{k_{tol}}_{\text{적응속도}}\left(\overbrace{R}^{\text{현재 R}}-\overbrace{M}^{\text{지연 M}}\right)$$<div class="formula-cite">Moderator 추종 방정식</div></div></div>
+          </div>
+          <div>
+            <div class="tbl-wrap" style="font-size:11px">
+              <table>
+                <thead><tr><th>파라미터</th><th>단위</th><th>의미</th></tr></thead>
+                <tbody>
+                  <tr><td>\(R\)</td><td>response unit</td><td>관찰/모델링 반응 수준</td></tr>
+                  <tr><td>\(M\)</td><td>response unit</td><td>지연된 반조절 상태 = <strong>시스템 기억</strong></td></tr>
+                  <tr><td>\(k_{in}\)</td><td>response/time</td><td>반응 생성률</td></tr>
+                  <tr><td>\(k_{out}\)</td><td>\(\text{time}^{-1}\)</td><td>반응 소실/회전 속도</td></tr>
+                  <tr><td>\(k_{tol}\)</td><td>\(\text{time}^{-1}\)</td><td>moderator 적응 속도</td></tr>
+                  <tr><td>\(S(C)\)</td><td>dimensionless</td><td>약물 자극 함수</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="callout"><span class="callout-label">비유</span>\(R\)은 지금 체온계가 가리키는 숫자, \(M\)은 뒤늦게 따라오는 자동온도조절기. 약물이 사라져도 조절기가 한동안 이전 방향으로 밀고 있어서 <strong>rebound</strong>가 생기는 거임.</div>
+        <div class="callout warn"><span class="callout-label">부호가 음수여야 하는 수학적 이유</span>Moderator \(M\)이 반응 방정식에 <em>마이너스</em> 부호로 들어가는 게 임의의 선택이 아님 — homeostasis를 만들어야 하는 모든 모델의 <strong>구조적 안정성 요구사항</strong>. 만약 부호가 반대였다면(\(+M\)), 약물 자극 → \(R\) 증가 → \(M\) 증가 → 다시 \(R\) 증가… <strong>시스템이 자기증폭해서 발산</strong>. 음의 되먹임 부호 하나가 Moderator 모델을 homeostatic하게 만드는 <em>유일한 구조</em>. 이 부호 하나가 PD13 Model II가 다른 후보들을 압도하는 <em>수학적 정합성의 출처</em> <span class="chip">G&amp;W pp.297–300</span>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 14 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.3</span>
+        <h1 class="slide-title">자극이 크면 *겉보기* 반감기가 짧아짐</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">기저 상태에서 \(S(C)=1\)이면 \(R_0=k_{in}/k_{out}\) <span class="chip">G&amp;W pp.299–300</span>. 정상상태에서는 \(dM/dt=0\)이라 \(R=M\)(단순형):</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{S(C)=1}_{\text{기저 자극}},\quad \underbrace{R_0=\frac{k_{in}}{k_{out}}}_{\text{기저 R}},\quad \underbrace{\frac{dM}{dt}=0}_{\text{정상상태}}\ \Rightarrow\ \underbrace{R=M}_{\text{M=R}}$$<div class="formula-cite">G&amp;W pp.299–300</div></div></div>
+        <h2 class="section-h">겉보기 반응 반감기</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{t_{1/2,k_{out}}}_{\text{겉보기 반감기}}=\frac{\overbrace{\ln 2}^{\text{반감기 상수}}\,\overbrace{R_0}^{\text{기저 R}}}{\underbrace{k_{in}}_{\text{생성률}}\,\underbrace{S(C)}_{\text{약물 자극}}}$$<div class="formula-cite">G&amp;W p.299, Eq.3:204</div></div></div>
+        <div class="dark-card">
+          <p>이게 <em>"왜 고용량에서 tolerance가 더 빨리 발달하나"</em>의 수학적 답. 분모에 \(S(C)\)가 들어있어서, <strong>자극이 클수록(고용량/강한 약) 같은 kinetic constant 하에서도 effective time scale이 짧아짐</strong>. kinetic 자체가 빨라진 게 아니라 driver가 세져서 빨라 보이는 거임.</p>
+        </div>
+        <div class="callout"><span class="callout-label">비유</span>같은 배수관이라도 물탱크 압력이 더 크면 수위 변화가 더 빨라 보임. 관이 굵어진 게 아니라 미는 힘이 세진 거.</div>
+      </div>
+    </section>
+
+    <!-- Slide 15 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.4</span>
+        <h1 class="slide-title">AUC 비대칭성 — 내장된 진단 시그니처</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">Moderator 시스템의 특징적 그림. dosing 중 baseline 상방 효과 면적(\(AUC_E\))이 일반적으로 washout 후 baseline 하방 rebound 면적(\(AUC_R\))보다 <strong>큼</strong> <span class="chip">G&amp;W Fig.3.82, p.298</span>:</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{AUC_R}_{\text{rebound AUC}}<\underbrace{AUC_E}_{\text{효과 AUC}},\qquad \underbrace{AUC_R\approx AUC_E}_{\text{대칭이면 경고}}$$<div class="formula-cite">G&amp;W Fig.3.82, p.298</div></div></div>
+        <div class="dark-card">
+          <p><strong>왜 그러냐</strong> — dosing 중에는 <em>약물 자극 + 상승 중인 \(M\)</em>이 함께 \(R\)을 미는 반면, washout 후에는 <em>잔류 \(M\)만이</em> 편차를 만들기 때문. 임상에서 이 비대칭이 명백히 보이는데 fit한 모델이 \(AUC_R \approx AUC_E\)를 예측하면 — <strong style="color:#e8a55a">moderator 구조 설정이 잘못된 것</strong>.</p>
+        </div>
+        <div class="diagram">                  <span class="anno">▲ dosing 중</span>
+   R           ▄▄▄▄▄▄▄▄▄
+   │         ▄▄         ▀▀▄▄        <span class="anno">AUC_E (큼)</span>
+   ├─── R0 ─▀────────────────▀▀▄▄▄▄
+   │                              ▀▀▄▄▄▄▄    <span class="anno">AUC_R (작음)</span>
+   │                                    ▀▀▀
+   └────────────────────────────────────── t
+        <span class="step">washout 후 rebound</span>: |AUC_R| &lt; AUC_E</div>
+      </div>
+    </section>
+
+    <!-- Slide 16 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.5</span>
+        <h1 class="slide-title">PD13 — Moderator의 정식 anchor</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">PD13이 3막의 교과서적 anchor. 일반 turnover, Moderator, pool/precursor 세 후보 비교 <span class="chip">G&amp;W pp.805–809</span>. 결론은 Model II(Moderator)가 압도적 — 하지만 <em>왜 이기는가</em>를 AIC/WRSS만 보고 끝내면 절반만 학습.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>Model I (no FB)</th><th>Model II (Moderator)</th><th>Model III (pool/prec.)</th></tr></thead>
+            <tbody>
+              <tr><td>\(k_{in}\)</td><td>21</td><td><strong>30</strong></td><td>94</td></tr>
+              <tr><td>\(k_{out}\)</td><td>7.3</td><td><strong>2.9</strong></td><td>35</td></tr>
+              <tr><td>\(k_{tol}\)</td><td>—</td><td><strong>4.2</strong></td><td>0.05</td></tr>
+              <tr><td>\(EC_{50}\) / \(IC_{50}\)</td><td>390</td><td><strong>350</strong></td><td>270</td></tr>
+              <tr><td>\(E_{max}\) / \(I_{max}\)</td><td>4.8</td><td><strong>9.8</strong></td><td>0.84</td></tr>
+              <tr><td>\(n\) (Hill)</td><td>—</td><td><strong>7.4</strong></td><td>—</td></tr>
+              <tr><td>AIC</td><td>−39.0</td><td><strong>−97.5</strong></td><td>−43.5</td></tr>
+              <tr><td>WRSS</td><td>0.33</td><td><strong>0.083</strong></td><td>0.28</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{k_{tol}=4.2}^{\text{내성속도}}>\underbrace{k_{out}=2.9}_{\text{turnover}},\qquad \underbrace{k_{tol}=0.05}_{\text{Model III: 비현실}}$$<div class="formula-cite">G&amp;W Table 13.1, p.808</div></div></div>
+        <div class="callout teal"><span class="callout-label">진짜 mechanistic 발견</span><strong>Model II의 \(k_{tol}=4.2 > k_{out}=2.9\)</strong> — tolerance 발달 속도가 response turnover 속도보다 빠름. 이 부등식이 <em>단일 infusion 안에서도</em> tolerance가 가시화되는 이유이고, Model III의 \(k_{tol}=0.05\)가 임상적으로 비현실적인 이유. Model II는 <em>반복 infusion 2번째 trough가 첫 번째 trough로 단순 reset되지 않음</em>을 자연스럽게 예측 — §6의 <strong>Signature 2: Trough drift / carry-over</strong> anchor.</div>
+      </div>
+    </section>
+
+    <!-- Slide 17 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.6</span>
+        <h1 class="slide-title">대안 구조 + 3막 핵심 정리</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">대안 구조 — 알아두고 적재적소에</h2>
+        <div class="card">
+          <ul>
+            <li><strong>시간 의존 감쇠(Colburn–Eldon):</strong> 시간에 따른 potency/capacity의 경험적 평탄화. 유용하지만 기전성 약하고 rebound 설명 못함 <span class="chip">G&amp;W pp.291–292</span></li>
+            <li><strong>길항성 대사체:</strong> 길항은 설명 가능하지만 추가 구조 없이는 rebound 못 다룸 <span class="chip">G&amp;W pp.292–293</span></li>
+            <li><strong>내성 구획 / 반작용 기전:</strong> 적응 시스템을 위한 대안적 상태변수 형식 <span class="chip">G&amp;W pp.293–295</span></li>
+            <li><strong>Pool/precursor (PD13 Model III):</strong> 완전 내성만 예측, 부분 내성 설명 불가; Model II에 열등 <span class="chip">G&amp;W pp.807–808</span></li>
+          </ul>
+        </div>
+        <h2 class="section-h">3막 핵심 정리</h2>
+        <div class="dark-card">
+          <ul>
+            <li><strong>반복 노출 중 효과 감소 + 약물 중단 후 rebound가 한 그림에 보임</strong> → 같은 ODE 쌍의 두 phase. Moderator \(M\)이 지배.</li>
+            <li>핵심 부등식 — <strong style="color:#e8a55a">\(k_{tol} > k_{out}\)</strong>이면 단일 노출 안에서도 tolerance가 가시화.</li>
+            <li>AUC 비대칭(\(AUC_R < AUC_E\))이 명백한데 모델이 대칭 예측하면 → <strong>구조 오설정</strong>.</li>
+            <li><em>"rebound = 약물이 남은 효과"로 등치하지 말 것.</em> 남는 건 약물이 아니라 <strong>시스템 기억 \(M\)</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 18 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4</span>
+        <h1 class="slide-title">4막 — 신호 시계 (n × τ): 릴레이 경주</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">3막의 Moderator \(M\) 하나로도 onset 형상이 안 맞으면 — 늦는 게 <em>약</em>도 <em>시스템 회전</em>도 아니라, <strong>측정 반응까지의 신호 전달 cascade</strong>. 수조 배수 속도에서 릴레이 경주의 총 통과시간으로 넘어감.</p>
+        <h2 class="section-h">Single vs Relay — Onset 형상이 다름</h2>
+        <div class="diagram"><span class="step">Single (n=1):</span>   t=0에서 <span class="anno">최대 slope</span> → 부드러운 지수 접근
+<span class="step">Transit (n=3):</span>  t=0에서 <span class="anno">slope ≈ 0</span>  → 지연된 sigmoidal 상승</div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">단거리 경주 (Single)</div>
+            <p style="font-size:11.5px">1차 ODE 하나는 \(t=0\)에서 <em>최대 기울기</em>로 출발해서 지수적으로 부드럽게 접근 — 즉각 출발.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">릴레이 경주 (Transit)</div>
+            <p style="font-size:11.5px">여러 1차 ODE 연쇄 — 첫 주자가 출발해도 마지막 주자가 도착할 때까지 결승선 반응은 <em>느리게, S자형으로</em> 나타남.</p>
+          </div>
+        </div>
+        <div class="callout teal"><span class="callout-label">핵심 차이</span><em>t=0에서의 출발 기울기</em>. 단일 link 모델은 즉시 움직임. Transit chain은 <strong>기다림</strong>. 데이터에 "지연된 sigmoidal onset"이 보이면 단일 link로는 흉내 못 냄.</div>
+      </div>
+    </section>
+
+    <!-- Slide 19 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.2</span>
+        <h1 class="slide-title">Transit Chain ODE — 순차적 1차 연쇄</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">수용체–구동 단계</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dR_e}{dt}}_{\text{Re 변화율}}=\underbrace{\frac{1}{\tau}}_{\text{단계 전달속도}}\left(\overbrace{E_0 S(C)}^{\text{목표 반응}}-\overbrace{R_e}^{\text{현재 Re}}\right)$$<div class="formula-cite">G&amp;W pp.323–325</div></div></div>
+        <h2 class="section-h">순차적 transit compartments</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{dR_i}{dt}}_{\text{Ri 변화율}}=\underbrace{\frac{1}{\tau}}_{\text{단계 전달}}\left(\overbrace{R_{i-1}}^{\text{상류 상태}}-\overbrace{R_i}^{\text{현재 상태}}\right),\quad i=1,2,\ldots,n$$<div class="formula-cite">관찰되는 반응 — \(R_{obs}=R_n\)</div></div></div>
+        <div class="callout amber"><span class="callout-label">중요</span>각 단계의 통과시간 \(\tau\)와 분획 회전율 \(k_{out,stage}=1/\tau\)는 <em>동일하다고 가정</em> — 이건 identifiability를 위한 단순화. <strong>4막의 지연되는 건 약물의 이동이 아니라 반응 신호의 전달.</strong> 2막은 "약이 부위에 도달했는가", 4막은 "신호가 측정 지점에 도달했는가". 서로 다른 질문, 서로 다른 hidden state.</div>
+        <div class="callout"><span class="callout-label">G&amp;W Fig.3.98–3.99 (p.323)</span>"약물이 부위에 늦게 도달함"과 "측정 반응까지의 신호 전파가 느림"을 시각적으로 분리해서 보여줌 — 15–20시간 onset 지연 패턴 포함.</div>
+      </div>
+    </section>
+
+    <!-- Slide 20 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.3</span>
+        <h1 class="slide-title">PD35 — n 선택의 운영 가이드</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">PD35가 4막의 교과서적 anchor. 건강한 남성 지원자, 3가지 용량(\(C_0=1.05\) nmol/L, 4배, 16배), \(K=0.0228\ \text{h}^{-1}\), 반감기 약 30시간 <span class="chip">G&amp;W pp.910–914</span>. <strong>단순한 1-state 간접반응으로는 15–20시간 onset 지연을 못 잡아냄</strong>. 그래서 transit chain 필요.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>n (단계 수)</th><th>\(EC_{50}\)</th><th>\(E_{max}\)</th><th>\(\tau\) (h)</th><th>\(E_0\)</th><th>WRSS</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>0.33</td><td>7.2</td><td>20</td><td>15</td><td>1319</td></tr>
+              <tr><td>2</td><td>0.34</td><td>6.0</td><td>13</td><td>18</td><td>789</td></tr>
+              <tr style="background:#fdf4e0"><td><strong>3</strong></td><td><strong>0.35</strong></td><td><strong>5.4</strong></td><td><strong>9.8</strong></td><td><strong>19</strong></td><td><strong>642</strong></td></tr>
+              <tr><td>4</td><td>0.35</td><td>5.1</td><td>7.8</td><td>20</td><td>632</td></tr>
+              <tr><td>5</td><td>0.34</td><td>4.8</td><td>6.4</td><td>20</td><td>682</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dark-card">
+          <p>이 시퀀스가 가르치는 것 셋:</p>
+          <p>① <strong>n=1은 명백히 부족함</strong> (1319→789, 거의 절반으로).</p>
+          <p>② <strong>n=3이 실용적으로 충분함</strong> (789→642, 또 한 번 의미 있는 개선).</p>
+          <p>③ <strong>n=4부터는 정보 한계</strong> (642→632→682, plateau 후 악화).</p>
+        </div>
+        <div class="callout amber"><span class="callout-label">왜 n=4가 아니라 n=3</span><strong>n은 실제 생물학 단계 수가 아니라 데이터가 해상할 수 있는 cascade 깊이</strong>. n=4의 미미한 WRSS 개선은 <em>데이터가 더 미세한 구조를 못 본다</em>는 사인이지, <em>진짜로 4단계가 있다</em>는 사인이 아님. <strong>절약 원칙(parsimony)</strong>이 n=3을 추천.</div>
+      </div>
+    </section>
+
+    <!-- Slide 21 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.4</span>
+        <h1 class="slide-title">⚠ n × τ가 *정확히* 상수가 아닌 이유</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">자주 잘못 외워지는 게 — <em>"n과 τ가 trade-off라서 n × τ는 상수"</em>. 사실은 <strong>비슷한 범위에 머무르지만 정확히 상수는 아님</strong>. Table 35.1을 직접 곱해보면:</p>
+        <div class="two-col">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>\(n\)</th><th>\(\tau\) (h)</th><th>\(MTT = n\times\tau\) (h)</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>20</td><td>20</td></tr>
+                <tr><td>2</td><td>13</td><td>26</td></tr>
+                <tr><td>3</td><td>9.8</td><td>29.4</td></tr>
+                <tr><td>4</td><td>7.8</td><td>31.2</td></tr>
+                <tr><td>5</td><td>6.4</td><td>32</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{MTT = n\times\tau}_{\text{총 transit time}}:\ \overbrace{20 \to 32\ \text{h}}^{\text{n=1→5, 약 60\% 단조 증가}}$$<div class="formula-cite">G&amp;W Table 35.1, p.914</div></div></div>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p><strong>왜 이런 패턴이 나오냐</strong> — \(n\)이 커질수록 \(t=0\)에서 onset slope가 더 0에 가까워지면서 initial lag가 커짐. 모델이 그 lag를 따라잡으려면 평균 지연 자체를 약간 더 늘려야 함. 그래서 MTT가 살짝 증가하면서 onset shape가 더 sigmoidal해짐.</p>
+        </div>
+        <div class="callout teal"><span class="callout-label">4막의 핵심 직관</span><strong>Transit chain은 지연의 크기가 아니라 형상을 만든다</strong> — 의 수치적 실체. 그리고 데이터의 <em>정보 수용 한계</em>가 어디인지를 보여주는 운영 단서이기도 함.</div>
+      </div>
+    </section>
+
+    <!-- Slide 22 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.5</span>
+        <h1 class="slide-title">임상 응용 — Friberg–Karlsson Myelosuppression</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">4막이 추상적 도구로만 안 끝남. <em>항암제 호중구 감소·회복(myelosuppression)의 표준 PD 모델</em>인 Friberg–Karlsson 모델이 정확히 이 transit chain 골격 위에 세워져 있음 <span class="chip">Friberg LE et al. JCO 2002;20(24):4713–4721</span>.</p>
+        <p style="font-size:12px"><strong>구조:</strong> 골수 전구세포(proliferating cells) → 3단계 maturation transit chain → 순환 호중구. 약물의 cell-killing은 proliferating cells에 작용, 순환 호중구 감소 시 음의 되먹임이 골수 생산을 재자극.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\frac{dProl}{dt}=k_{prol}\cdot Prol\cdot\bigl(1-E_{drug}(C)\bigr)\cdot\Bigl(\tfrac{Circ_0}{Circ}\Bigr)^{\gamma}-k_{tr}\cdot Prol$$<div class="formula-cite">골수 전구세포 — 자기증식 × (1 − 약물억제) × 음의 되먹임 보상 − 다음 단계로 이행</div></div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\frac{dTransit_i}{dt}=k_{tr}\cdot Transit_{i-1}-k_{tr}\cdot Transit_i,\quad i=1,2,3$$<div class="formula-cite">maturation transit chain</div></div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\frac{dCirc}{dt}=k_{tr}\cdot Transit_3-k_{circ}\cdot Circ$$<div class="formula-cite">순환 호중구</div></div></div>
+        <div class="dark-card">
+          <p>이 모델 하나에 이 강의의 도구가 <em>거의 다</em> 들어감:</p>
+          <ul>
+            <li><strong>Transit chain n×τ</strong> = 4막 (cascade depth = 3)</li>
+            <li><strong>음의 되먹임 보상</strong> \((Circ_0/Circ)^{\gamma}\) = 3막 Moderator 직관 (homeostatic 구조)</li>
+            <li><strong>간접반응 골격</strong> \(k_{prol}\) vs \(k_{circ}\) = 이전 세션의 \(k_{in}/k_{out}\)</li>
+            <li><strong>약물 자극 함수</strong> \(E_{drug}(C)\) = \(E_{max}\)/Hill의 cell-killing 적용형</li>
+          </ul>
+        </div>
+        <p style="font-size:11.5px">이 모델이 <em>across-drug standard</em>가 된 이유 — 약물이 바뀌어도 transit chain 구조와 \(k_{tr}\)이 유사하게 유지되고, cell-killing 항만 약물별로 다름. 4막이 가르치는 한 문장 — <strong>신호 시계는 약물이 아니라 시스템에 속한 시계</strong> — 이 임상 차원에서 확인되는 자리.</p>
+      </div>
+    </section>
+
+    <!-- Slide 23 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.6</span>
+        <h1 class="slide-title">확장 — Black–Leff Operational Model (효력 차원)</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:12px">4막의 transit chain은 <em>시간 차원</em>의 transduction. 그런데 <em>효력(efficacy) 차원</em>에서 같은 "수용체 → 측정 반응" 연쇄를 재구성하는 모델이 따로 있음 — <strong>Black &amp; Leff operational model of agonism</strong> <span class="chip">Black JW, Leff P. Proc R Soc Lond B 1983;220:141–162</span>.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{E}^{\text{관찰 반응}} = \frac{\underbrace{E_m}_{\text{시스템 최대}} \cdot \underbrace{\tau^n}_{\text{효력}^n} \cdot \underbrace{[A]^n}_{\text{약물 농도}^n}}{\overbrace{(K_A + [A])^n}^{\text{비점유 항}} + \overbrace{\tau^n \cdot [A]^n}^{\text{점유 항}}}$$<div class="formula-cite">Hill 형태의 일반화</div></div></div>
+        <div class="callout warn"><span class="callout-label">⚠ 같은 글자 다른 시계</span>여기서 \(\tau\)는 <em>transducer ratio</em> — 약물–수용체 복합체가 측정 반응으로 변환되는 효율을 나타내는 <strong>무차원 효력 지표</strong>. transit chain의 \(\tau\)(시간 차원)와 <strong>기호만 같고 의미는 완전히 다름</strong>. 같은 글자가 다른 시계를 가리키는 PD21 trap이 여기서도 반복.</div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$E\Big|_{n=1} = \frac{E_m \cdot \tau \cdot [A]}{K_A + [A]\cdot(1+\tau)}$$<div class="formula-cite">Hill n=1 단순 hyperbolic</div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$EC_{50}^{obs}\Big|_{n=1} = \frac{K_A}{1+\tau}$$<div class="formula-cite">관찰 EC50과 친화도 관계</div></div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>약물 (분류)</th><th>효력 특성</th><th>함의</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Buprenorphine</strong> (μ-opioid partial agonist)</td><td>\(\tau\)가 morphine보다 낮음</td><td>full agonist 대비 ceiling effect, \(E_{max}^{obs} < E_m\)</td></tr>
+              <tr><td><strong>Aripiprazole</strong> (D2 partial agonist)</td><td>low \(\tau\), 차단·자극 동시</td><td>functional selectivity, antipsychotic + 부작용 감소</td></tr>
+              <tr><td><strong>Biased agonist</strong> (G-protein vs β-arrestin)</td><td>경로별 \(\tau\)가 다름</td><td>차세대 GPCR 후보 (TRV130 계열 등)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout teal"><span class="callout-label">직교 차원</span><strong>Transit chain과 Operational model은 경쟁이 아니라 직교 차원</strong>. Transit chain은 <em>시간 차원의 신호 시계</em>, operational model은 <em>효력 차원의 신호 강도</em>. Partial agonist 데이터를 만났을 때 어느 차원이 부족한가를 먼저 물을 것 — onset 형상이 안 맞으면 transit chain, 점근선 높이(\(E_{max}^{obs}<E_m\))가 안 맞으면 operational \(\tau\).</div>
+      </div>
+    </section>
+
+    <!-- Slide 24 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">막간</span>
+        <h1 class="slide-title">Pair 1 — 세 시계 + Drug–Target Residence Time</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>차원</th><th>\(k_{e0}\)</th><th>\(k_{out}\)</th><th>\(k_{off}\)</th></tr></thead>
+            <tbody>
+              <tr><td>무엇의 시계?</td><td>Plasma–생체상 평형</td><td>시스템 회전</td><td>수용체–리간드 해리</td></tr>
+              <tr><td>비유</td><td><strong>다리 통행</strong></td><td><strong>수조 배수</strong></td><td><strong>빗장 풀림</strong></td></tr>
+              <tr><td>대표 모델</td><td>효과구획 (2막)</td><td>간접반응/Moderator (3막)</td><td>수용체 결합</td></tr>
+              <tr><td>PD21 값</td><td>0.025</td><td>0.031</td><td>0.018 <span class="chip">G&amp;W p.846</span></td></tr>
+              <tr><td>구분 방법</td><td>선형 PK 하 \(t_{max}\) + loop collapse</td><td>회전/회복 + 반복투여</td><td>결합/washout + 표적 정보</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">☠ 치명적 타격</span>회전 데이터를 분포/link 모델로 피팅하면 <em>생물학적으로 비현실적인 dose-dependent \(EC_{50}\)/\(E_{max}\)/\(n\)</em>이 나옴 <span class="chip">G&amp;W pp.271–272</span>. 이게 §6 Signature 1의 anchor. 규제 정당화 상황에서 이 패턴이 보이면 reviewer가 대안 모델 비교와 민감도 분석을 요구.</div>
+        <h2 class="section-h">확장 — Drug–Target Residence Time</h2>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\bar{t}_R}^{\text{residence time}} = \frac{1}{k_{off}},\qquad \underbrace{\bar{t}_R^{(PD21)}}_{\text{PD21 residence time}} = \frac{1}{\overbrace{0.018\ \text{min}^{-1}}^{\text{PD21 }k_{off}}} \approx \underbrace{56\ \text{min}}_{\text{표적 머무름}}$$<div class="formula-cite">Copeland RA. Nat Rev Drug Discov 2016;15(2):87–95</div></div></div>
+        <div class="dark-card">
+          <p><strong>Covalent inhibitor</strong>(KRAS G12C, EGFR T790M)와 allosteric modulator의 <em>plasma agnostic</em> 지속 효과가 이 residence time 개념에서 출발. → 비유에 한 줄 추가하면 — <strong>빗장이 풀린 뒤에도 약이 receptor를 떠나기까지 시간이 더 걸림</strong>. 이건 3막의 \(M\)(시스템 기억)과는 다른 종류의 기억 — <em>약물–표적 결합 기억</em>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 25 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">막간</span>
+        <h1 class="slide-title">Pair 2 — 효과구획 vs 회전 / Pair 3 — CCW vs CW</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">Pair 2 — 효과구획 (2막) vs 회전/간접반응 (3막)</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>차원</th><th>효과구획 (2막)</th><th>회전/간접반응 (3막)</th></tr></thead>
+            <tbody>
+              <tr><td>지연의 출처</td><td>약물이 effect site로 <em>느리게 이동</em></td><td>약물 즉시 작용, <em>반응 변수</em>가 느리게 변함</td></tr>
+              <tr><td>숨은 상태</td><td>\(C_e\)</td><td>반응 풀 \(R\)</td></tr>
+              <tr><td>구동 관계식</td><td>\(dC_e/dt=k_{e0}(C-C_e)\)</td><td>\(dR/dt=k_{in}S(C)-k_{out}R\)</td></tr>
+              <tr><td>용량 스케일링</td><td>선형 PK 하 모든 용량 <em>동일</em> \(t_{max}\)</td><td>\(S(C)\) 변함 → \(t_{max}\) <em>용량 따라 이동</em></td></tr>
+              <tr><td>반복 투여 거동</td><td>단일 \(k_{e0}\)로 loop collapse</td><td>풀이 reset 안 되면 <em>carry-over</em></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">⚡ 결정적 진단 질문 하나</span><em>"투여량을 올리면 response peak의 timing이 달라지는가?"</em> 달라지면 → effect compartment 깨짐. 안 달라지면 → turnover 가능성 높음.</div>
+        <h2 class="section-h">Pair 3 — CCW vs CW Hysteresis</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>차원</th><th>반시계방향 (CCW)</th><th>시계방향 (CW)</th></tr></thead>
+            <tbody>
+              <tr><td>같은 농도, 두 방문</td><td>두 번째 방문에서 <strong>더 강한</strong> 효과</td><td>두 번째 방문에서 <strong>더 약한</strong> 효과</td></tr>
+              <tr><td>흔한 기전</td><td>분포 지연, 회전, 느린 결합, 동조성 대사체</td><td>내성, 길항성 대사체, down-reg, <em>input-rate artifact</em></td></tr>
+              <tr><td>예시</td><td>Naproxen, digoxin <span class="chip">R&amp;T pp.234–246</span></td><td>Cocaine/nitroglycerin 내성; 빠른 IV bolus</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11.5px"><em>"같은 농도라는 약속 장소에 두 번 들렀을 때, 두 번째에 더 환영받는가(CCW) 아니면 덜 환영받는가(CW)"</em>. 방향 자체로는 mechanism을 <strong>결정 못함</strong>.</p>
+      </div>
+    </section>
+
+    <!-- Slide 26 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">막간</span>
+        <h1 class="slide-title">Pair 4 — 내성 vs 적응 / Pair 5 — Single vs Transit</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">Pair 4 — 내성(Tolerance) vs 적응(Adaptation)</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>차원</th><th>내성</th><th>적응</th></tr></thead>
+            <tbody>
+              <tr><td>기저 기전</td><td>시스템 <em>피로</em> — receptor down-reg, mediator 고갈</td><td>항상성 <em>재보정</em> — 생리학적 되먹임</td></tr>
+              <tr><td>가역성</td><td>washout 후에도 <em>지속</em> (느린 회복)</td><td>약물 노출 종료 시 <em>즉각 역전</em></td></tr>
+              <tr><td>필요한 모델 요소</td><td>hidden state \(M\) (Moderator)</td><td>음의 되먹임 setpoint 루프</td></tr>
+              <tr><td>진단적 분리</td><td>약물 중단 → 느린 역전 또는 rebound</td><td>약물 중단 → rebound 없이 빠른 복귀</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout teal"><span class="callout-label">⚡ 기억 고리 — 피로 vs 재보정</span>Tolerance는 <strong>시스템 피로</strong>(약 떨어진 뒤에도 지속). Adaptation은 <strong>항상성 재보정</strong>(약 떨어지면 즉각 역전). <em>Reversibility 차이가 둘을 가르는 가장 강한 신호</strong>.</div>
+        <h2 class="section-h">Pair 5 — 단일 Effect Compartment vs Transit Chain</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>차원</th><th>단일 \(k_{e0}\) link (2막)</th><th>Transit chain \(n\times\tau\) (4막)</th></tr></thead>
+            <tbody>
+              <tr><td>지연되는 상태</td><td>약물 농도 \(C_e\)</td><td>반응 상태들 \(R_1, \ldots, R_n\)</td></tr>
+              <tr><td>ODE 형태</td><td>1개의 1차 ODE</td><td>\(n\)개의 순차적 1차 ODE</td></tr>
+              <tr><td>Onset 형상</td><td>즉각적 평활 (t=0 최대 기울기)</td><td>지연된 시그모이드 (t=0 기울기 0)</td></tr>
+              <tr><td>앵커</td><td>G&amp;W §3.9, PD20</td><td>G&amp;W §3.13, PD35</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout amber"><span class="callout-label">단거리 vs 릴레이</span>Single은 <strong>단거리</strong> — 첫 발이 곧 결승선. Transit은 <strong>릴레이</strong> — 첫 주자가 출발해도 결승선 신호는 마지막 주자 도착 때까지 기다림. 이 한 차이가 onset 형상 전부를 바꿈.</div>
+      </div>
+    </section>
+
+    <!-- Slide 27 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">진단</span>
+        <h1 class="slide-title">진단 시그니처 사전 — Goodness-of-Fit 4대 패턴</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p style="font-size:11.5px"><strong>출처 경계:</strong> 아래 네 패턴은 교과서 anchor에서 도출된 <em>교육용 기억술</em>. 패턴 자체는 G&amp;W §3.9.7, PD13, PD35의 데이터와 표준 NONMEM 진단 플롯에서 관찰 가능하지만, <em>이름</em>은 교육적이고 교과서의 직접 명명은 아님.</p>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Signature 1 — EC<span style="font-size:0.7em">50</span> 용량 분기</div>
+            <p style="font-size:11px"><strong>관찰:</strong> 용량별 fit에서 \(EC_{50}\), \(E_{max}\), \(n\)이 기전 정당화 없이 큰 변동.</p>
+            <p style="font-size:11px"><strong>의미:</strong> Link 모델이 <em>회전/적응 효과를 강제 흡수</em>.</p>
+            <p style="font-size:11px"><strong>근거:</strong> G&amp;W §3.9.7 Table 3.10 — \(EC_{50}\) 0.681/4.85/0.941 (약 7배). <span class="chip">G&amp;W p.271</span></p>
+            <p style="font-size:11px"><strong>다음:</strong> 2막(Link) → 3막(turnover/Moderator).</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Signature 2 — Trough Drift / Carry-Over</div>
+            <p style="font-size:11px"><strong>관찰:</strong> 반복 투여에서 AUC 비슷한데 <em>2번째 trough가 1번째와 다름</em>.</p>
+            <p style="font-size:11px"><strong>의미:</strong> Hidden state가 cycle 간 기억 운반. \(M\)이 washout 전에 다음 dose 도착.</p>
+            <p style="font-size:11px"><strong>근거:</strong> PD13의 2번째 trough <span class="chip">G&amp;W pp.805–809</span></p>
+            <p style="font-size:11px"><strong>다음:</strong> 간접반응 → Moderator(Model II).</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Signature 3 — 지연 / S자형 Onset 잔차</div>
+            <p style="font-size:11px"><strong>관찰:</strong> n=1 fit 시 모델은 너무 일찍 상승, 데이터는 늦고 급격하게 상승. <em>under-then-over-then-under</em> 패턴.</p>
+            <p style="font-size:11px"><strong>의미:</strong> 단일 1차 지연으로 평탄 초기 + 급격 상승 못 만듦.</p>
+            <p style="font-size:11px"><strong>근거:</strong> PD35 WRSS 1319→789→642 (n=1→3) <span class="chip">G&amp;W p.914</span></p>
+            <p style="font-size:11px"><strong>다음:</strong> 3막 → 4막(transit chain).</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Signature 4 — OFV/WRSS Plateau</div>
+            <p style="font-size:11px"><strong>관찰:</strong> escalation 시 OFV/WRSS가 개선 후 <em>plateau → 소폭 악화</em>.</p>
+            <p style="font-size:11px"><strong>의미:</strong> 데이터가 해당 기전 차원에 대해 <em>정보 수용 한계</em>. 추가 파라미터는 잡음 흡수.</p>
+            <p style="font-size:11px"><strong>근거:</strong> PD35 1319→789→642→632→682 (n=4→5 악화)</p>
+            <p style="font-size:11px"><strong>다음:</strong> Escalation 중단. 절약 원칙.</p>
+          </div>
+        </div>
+        <div class="callout"><span class="callout-label">🎯 마스터의 시각</span>네 시그니처는 서로 다른 위치의 misspecification — <strong>1은 모델 family 오류, 2는 반복 노출 기억 누락, 3은 cascade 깊이 부족, 4는 데이터 해상도 한계</strong>. 이 넷을 구분 못하면, 한 패치로 다른 시그니처를 덮으려다 모델 자체가 손상.</div>
+      </div>
+    </section>
+
+    <!-- Slide 28 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">자기점검</span>
+        <h1 class="slide-title">자기점검 능동 회상 — Q1 ~ Q10</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <div class="q-block"><div class="q">Q1 — 회상</div><div class="a">효과구획 ODE: \(dC_e/dt=k_{e0}(C-C_e)\). \(k_{1e}=k_{e0}\)는 보편 법칙이 아니라 <em>identifiability를 위한 표준 단순화</em> <span class="chip">G&amp;W pp.263, 265, 268–269</span>.</div></div>
+            <div class="q-block"><div class="q">Q2 — 적용</div><div class="a">3개 용량 \(t_{max}\) 동일해도 Link 모델 즉시 채택 ✗. 먼저 <strong>선형 PK</strong> 검증 필요. Same-\(t_{max}\)는 선형 동태 가정 하에서만 진술됨 <span class="chip">G&amp;W p.264</span>.</div></div>
+            <div class="q-block"><div class="q">Q3 — 오류 탐지</div><div class="a">"PD13 Table 3.10" ✗ → "G&amp;W §3.9.7 Table 3.10 link-model pitfall; Fig.3.59는 PD12 데이터"로 정정. PD13은 반복 IV infusion 내성/반동 사례.</div></div>
+            <div class="q-block"><div class="q">Q4 — 기전 트리아지</div><div class="a">CCW의 후보 3 + 식별자 — ① 분포 지연(선형 PK + \(t_{max}\) 불변 + loop collapse); ② 회전(peak shift + 회복 시간); ③ 느린 결합(washout 거동).</div></div>
+            <div class="q-block"><div class="q">Q5 — PD13 추론</div><div class="a">AIC를 넘어서 Model II를 기전적으로 옳게 만드는 단 하나의 관계 — <strong>\(k_{tol}=4.2 > k_{out}=2.9\)</strong>. 조절자 발달이 반응 회전보다 빠름 → 단일 infusion에서도 내성 가시화 + 2번째 cycle carry-over.</div></div>
+          </div>
+          <div>
+            <div class="q-block"><div class="q">Q6 — PD21 추론</div><div class="a">\(k_{e0}\), \(k_{out}\), \(k_{off}\) 모두 \(\text{min}^{-1}\)에 유사 크기여도 <em>서로 다른 물리적/생물학적 시계</em> — 다리/수조/빗장. PD21 0.025/0.031/0.018은 서로 다른 기전 모델 비교 <span class="chip">G&amp;W p.846</span>.</div></div>
+            <div class="q-block"><div class="q">Q7 — PD35 추론</div><div class="a">WRSS 최소만 보고 n=4 선택 ✗. n=4는 미미한 개선(642→632), n=5에서 악화(632→682). n=3 부근에서 실용적 충분성 + 정보 수용 한계. 절약 원칙으로 <strong>n=3</strong>.</div></div>
+            <div class="q-block"><div class="q">Q8 — 보스 딜레마</div><div class="a"><strong>기전적 타당성이 통계적 편의성에 우선.</strong> 기전 없이 dose-dependent 수용체 민감도를 함의하는 모델은 §3.9.7 함정(§6 Signature 1)의 반복. 계산적 불안정성은 기술적 문제, 비현실적 파라미터 거동은 모델 타당성 문제.</div></div>
+            <div class="q-block"><div class="q">Q9 — 율속 단계 (R&amp;T)</div><div class="a"><strong>Acenocoumarol</strong>(\(t_{1/2}\approx 15\) h): 약물 청소 빠름 → 응고 인자 회전(1–2 d)이 율속 → <em>동역학 제한</em>. <strong>Phenprocoumon</strong>(5 d): 약물 청소 자체가 율속 → <em>동태 제한</em>. <strong>Warfarin</strong>(1.5 d): 경계 → 임상 적정이 민감 <span class="chip">R&amp;T Ch.8, Fig.8-11</span>.</div></div>
+            <div class="q-block"><div class="q">Q10 — 환자 간 이력현상 변이</div><div class="a">① <em>두 기전이 다른 우세도로 동시 작동</em> — 분포 지연과 내성 모두 기여 시, 관찰 창에서 어느 쪽이 우세한가에 따라 방향 뒤바뀜. ② <em>입력 속도 vs 분포 속도 불일치</em> — 입력 속도가 분포보다 빠르면 CW artifact <span class="chip">R&amp;T p.236</span>.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 29 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">Closer</span>
+        <h1 class="slide-title">⚡ Q11/Q12 보스 딜레마 + Capstone</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div class="q-block"><div class="q">⚡ Q11 — 규제 방어 (★★)</div><div class="a">CCW + 선형 PK + 일관된 3용량. 선택지 A(\(k_{e0}\) effect comp) vs B(indirect response). <strong>마스터 trade-off 논리:</strong> 어느 쪽이든 답변의 70%는 <em>"다른 쪽을 왜 배제했는지"</em>. 모델 선택은 증명이 아니라 <strong>경쟁 가설의 체계적 기각</strong>. A 방어 — 3용량 단일 \(k_{e0}\) ±20% loop collapse 수치 근거 + 반복투여 no trough drift/no rebound + PD13류 비교 fit + 생물학적 분포 논거. B 방어 — receptor-mediated production/loss 사전 근거 + 동일 데이터 A fit의 §6 Sig.1 + experimental design + 반복투여 AUC 비대칭. <em>"왜 다른 모델이 아닌가?"</em>에 준비된 답 없으면 어느 모델이든 불충분. 마스터는 처음부터 두 모델을 같이 fit + evidence를 만든 뒤 그 evidence를 문서화.</div></div>
+          <div class="q-block"><div class="q">Q12 — 제한된 샘플링 (★★)</div><div class="a">5 시간점 + CCW + GOF 비슷. <strong>구조적 이유</strong> — CCW는 단서지 결정증거 아님. Effect comp은 약물 시계(\(k_{e0}\)), Indirect는 시스템 시계(\(t_{1/2,k_{out}}\)) — <em>다른 hidden state</em>. 5 시간점은 두 모델을 수치적으로 분리할 자유도 없음 → <strong>GOF만으로 잠그면 prior assumption이 모델 결정</strong>. <strong>추가 정보:</strong> 농도 peak 이전 sampling(즉각 출발 vs 느린 출발), peak 전후 촘촘 샘플링, 다른 용량 \(t_{max}\) 비교, 기저선 회복/rebound(\(AUC_R < AUC_E\)), 독립적 생리학적 prior.</div></div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px"><strong>Capstone — 새 데이터를 받았을 때 5초 안에 하는 일</strong></p>
+          <p>지속적 기술의 핵심은 ODE 외우기가 아님. <strong>피팅 전에</strong> 데이터가 어떤 <em>hidden state</em>를 요구하는지 <em>보는 것</em>임. 네 hidden state — <strong>1막 hysteresis triage(진단 게이트)</strong>, <strong>2막 생체상 \(C_e\)(다리)</strong>, <strong>3막 조절자 \(M\)(수조 — 시스템 기억, drug compartment 아님)</strong>, <strong>4막 transit \(R_1,\ldots,R_n\)(릴레이)</strong> — 중 어느 것이 작동 중인지를 <em>수식 쓰기 전에</em> 결정. <em>ODE 선택은 결과이지 시작이 아님.</em></p>
+        </div>
+        <div class="closer-card">
+          <div class="closer-label">Master One-Liner</div>
+          <p class="closer-text"><em>A delay is not a mechanism. Name the delayed state.</em></p>
+          <p class="closer-text" style="margin-top:8px"><strong style="color:#cc785c">"지연은 메커니즘이 아니다. 지연되는 상태에 이름을 붙여라."</strong></p>
+          <p style="color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:10px;letter-spacing:1px">C-260518-000152-K7M</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() { goTo(parseInt(btn.dataset.idx)); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ renderMath(); goTo(0); });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>

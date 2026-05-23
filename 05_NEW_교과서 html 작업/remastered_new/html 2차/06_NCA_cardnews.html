@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>세션 06 — 비구획 분석(NCA): 면적·모멘트·노출의 감사 동선</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#faf9f5;color:#141413;font-family:'Inter','Noto Sans KR','Apple SD Gothic Neo',-apple-system,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#f5f0e8;border-right:1px solid #e6dfd8;overflow-y:auto;padding:22px 18px 80px;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #e6dfd8}
+.brand-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;letter-spacing:-0.02em;color:#141413}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8e8b82;letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.toc-section{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1.2px;color:#8e8b82;text-transform:uppercase;margin:14px 0 6px;padding-left:8px}
+.toc-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 10px 6px 14px;font-family:inherit;font-size:12px;color:#3d3d3a;cursor:pointer;border-left:2px solid transparent;line-height:1.35;border-radius:0 6px 6px 0}
+.toc-btn:hover{background:#efe9de;color:#141413}
+.toc-btn.active{border-left-color:#cc785c;color:#cc785c;background:#efe9de;font-weight:500}
+.viewer{position:fixed;left:260px;top:0;right:0;bottom:52px;display:flex;flex-direction:column;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 36px 14px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide.has-formula{padding-top:44px}
+.slide-header{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.sec-badge{display:inline-block;background:#cc785c;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;padding:3px 9px;border-radius:9999px;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.slide-title{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-size:clamp(24px,2.7vw,36px);font-weight:400;letter-spacing:-0.02em;color:#141413;line-height:1.1}
+.sub-title{font-family:'Inter','Noto Sans KR',sans-serif;font-size:clamp(14px,1.4vw,17px);font-weight:500;color:#252523;margin:8px 0 4px}
+.header-rule{height:1.5px;background:#e6dfd8;border:none;margin:5px 0 8px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:6px;padding-bottom:6px}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:#e6dfd8;border-radius:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}
+p{font-size:clamp(11.5px,1vw,13.5px);color:#3d3d3a;margin:4px 0;line-height:1.5}
+p strong{color:#141413;font-weight:600}
+em{color:#252523}
+.card{background:#efe9de;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.card-soft{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:10px 14px;margin:5px 0}
+.formula-card-wrap{margin:6px 0;overflow:visible !important}
+.formula-card{background:#f5f0e8;border:1px solid #e6dfd8;border-radius:12px;padding:30px 16px 22px;text-align:center;overflow-x:auto;overflow-y:visible !important;margin:5px 0}
+.formula-card.compact{padding:22px 12px 16px}
+.formula-cite{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6c6a64;margin-top:6px;text-align:center}
+.dark-card{background:#181715;border-radius:12px;padding:10px 14px;margin:5px 0}
+.dark-card p{color:#a09d96;font-size:12px}
+.dark-card strong{color:#faf9f5;font-weight:600}
+.dark-card em{color:#e8a55a;font-style:italic}
+.dark-card h2,.dark-card h3,.dark-card h4{color:#faf9f5;font-family:'Cormorant Garamond',serif;font-weight:400;margin:2px 0 4px}
+.dark-card li{color:#a09d96;font-size:12px}
+.dark-card li::marker{color:#cc785c}
+.dark-card ul,.dark-card ol{padding-left:22px;margin:3px 0}
+.algo{background:#181715;color:#a09d96;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.65;white-space:pre;overflow-x:auto;border-radius:12px;padding:10px 14px;margin:5px 0}
+.algo .em{color:#e8a55a}
+.algo .strong{color:#faf9f5}
+.callout{border-left:3px solid #cc785c;background:#f4e4dc;border-radius:0 8px 8px 0;padding:8px 12px;margin:5px 0;font-size:12px;color:#3d3d3a}
+.callout.warn{border-left-color:#c64545;background:#fcf0ef}
+.callout.amber{border-left-color:#d4a017;background:#fdf4e0}
+.callout.teal{border-left-color:#5db8a6;background:#e6f4f0}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#cc785c;display:block;margin-bottom:2px;font-weight:500}
+.callout.warn .callout-label{color:#c64545}
+.callout.amber .callout-label{color:#a37e10}
+.callout.teal .callout-label{color:#3d8a7a}
+.chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;background:#efe9de;color:#3d3d3a;padding:1px 5px;border-radius:4px;margin:0 2px;border:1px solid #e6dfd8;letter-spacing:0.2px}
+.dark-card .chip{background:#252320;color:#e8a55a;border-color:#3a3733}
+.tbl-wrap{border:1px solid #e6dfd8;border-radius:12px;overflow:clip;margin:5px 0;background:#faf9f5}
+table{border-collapse:collapse;width:100%;font-size:11px}
+thead{background:#efe9de}
+thead th{padding:8px 8px;text-align:left;font-weight:600;color:#141413;font-size:11px;border-bottom:1px solid #e6dfd8;padding-top:14px}
+tbody td{padding:5px 8px;border-bottom:1px solid #ebe6df;color:#3d3d3a;vertical-align:top;font-size:11px}
+tbody tr:last-child td{border-bottom:none}
+tbody td strong{color:#141413}
+ul,ol{padding-left:20px;margin:3px 0}
+li{margin:2px 0;color:#3d3d3a;font-size:12px;line-height:1.45}
+li strong{color:#141413}
+li::marker{color:#cc785c}
+.nav{position:fixed;bottom:0;left:260px;right:0;height:52px;background:#faf9f5;border-top:1px solid #e6dfd8;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:10}
+.nav-btn{background:#cc785c;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 120ms}
+.nav-btn:hover:not(:disabled){background:#a9583e}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.prog{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:340px}
+.prog-text{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#6c6a64}
+.prog-bar{width:100%;height:3px;background:#e6dfd8;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#cc785c;width:0;transition:width 220ms ease}
+.diagram{background:#181715;border-radius:12px;padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a09d96;line-height:1.75;white-space:pre;overflow-x:auto;margin:5px 0}
+.diagram .step{color:#faf9f5;font-weight:500}
+.diagram .arr{color:#cc785c}
+.diagram .anno{color:#e8a55a;font-style:italic}
+.tip{font-size:11.5px;color:#6c6a64;font-style:italic;margin-top:3px}
+.katex-display{overflow-y:visible !important;margin:0 !important;padding:4px 0 !important}
+.katex-display>.katex{overflow-y:visible !important;font-size:0.98em}
+.katex{font-size:0.95em}
+h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#141413;margin:6px 0 3px}
+.q-block{background:#f5f0e8;border-left:3px solid #cc785c;padding:7px 11px;margin:5px 0;border-radius:0 8px 8px 0}
+.q-block .q{font-weight:600;color:#141413;font-size:12.5px;margin-bottom:3px}
+.q-block .a{font-size:11.5px;color:#3d3d3a;line-height:1.45}
+.closer-card{background:#181715;border-radius:12px;padding:24px 30px;text-align:center;margin:10px auto;max-width:780px}
+.closer-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#cc785c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.closer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#faf9f5;line-height:1.5}
+.closer-text em{color:#e8a55a}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;background:#cc785c;color:#fff;padding:2px 7px;border-radius:9999px;letter-spacing:0.5px;margin-right:5px;text-transform:uppercase}
+.tag.apex{background:#a9583e}
+.gem{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#cc785c;margin:5px 0}
+.card-title{font-family:'Inter',sans-serif;font-weight:600;color:#141413;font-size:13px;margin-bottom:3px}
+.dark-card .card-title{color:#faf9f5}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1v16M1 9h16M3.22 3.22l11.56 11.56M14.78 3.22L3.22 14.78" stroke="#cc785c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="brand-text">Session 06</div>
+        <div class="brand-sub">NCA · 감사 동선</div>
+      </div>
+    </div>
+    <div class="toc-section">목차</div>
+    <button class="toc-btn" data-idx="0">§0 PK41 한 컷</button>
+    <button class="toc-btn" data-idx="1">§0 한 줄 명제</button>
+    <button class="toc-btn" data-idx="2">§1.1 compartment-free</button>
+    <button class="toc-btn" data-idx="3">§1.2 감사 동선 C1-C4</button>
+    <button class="toc-btn" data-idx="4">§2.1 AUC 두 덩어리</button>
+    <button class="toc-btn" data-idx="5">§2.2 사다리꼴 두 종류</button>
+    <button class="toc-btn" data-idx="6">§2.3 말단 외삽 · %extrap</button>
+    <button class="toc-btn" data-idx="7">§2.4 BLQ 위치별 처리</button>
+    <button class="toc-btn" data-idx="8">§2.4 NCA → PopPK 다리</button>
+    <button class="toc-btn" data-idx="9">§2.5 C1 마무리</button>
+    <button class="toc-btn" data-idx="10">§3.1 AUC vs AUMC</button>
+    <button class="toc-btn" data-idx="11">§3.2 MRT 정의</button>
+    <button class="toc-btn" data-idx="12">§3.3 MRT vs t½</button>
+    <button class="toc-btn" data-idx="13">§3.4 MIT 보정</button>
+    <button class="toc-btn" data-idx="14">§3.5 C2 마무리</button>
+    <button class="toc-btn" data-idx="15">§4.1–2 C3 Apex + 수식</button>
+    <button class="toc-btn" data-idx="16">§4.3 V_ss vs V_z</button>
+    <button class="toc-btn" data-idx="17">§4.4 V_c 부하용량 ⚡</button>
+    <button class="toc-btn" data-idx="18">§4.5 §2.8.8 대안식</button>
+    <button class="toc-btn" data-idx="19">§4.6–7 한계 + 마무리</button>
+    <button class="toc-btn" data-idx="20">§5.1–2 노출 지표</button>
+    <button class="toc-btn" data-idx="21">§5.3 §2.9 7 시나리오</button>
+    <button class="toc-btn" data-idx="22">§5.4 정상상태 + PTF</button>
+    <button class="toc-btn" data-idx="23">§5.5 Partial AUC</button>
+    <button class="toc-btn" data-idx="24">§5.6 + §6.1 PK41 회수</button>
+    <button class="toc-btn" data-idx="25">§6.2–3 Michaelis-Menten</button>
+    <button class="toc-btn" data-idx="26">§7 혼동쌍 압축</button>
+    <button class="toc-btn" data-idx="27">§8 Q1–Q7</button>
+    <button class="toc-btn" data-idx="28">§8 Q8–Q13</button>
+    <button class="toc-btn" data-idx="29">§9 메타프레임 · Closer</button>
+  </aside>
+
+  <main class="viewer">
+
+    <!-- Slide 0 -->
+    <section class="slide active">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0</span>
+        <h1 class="slide-title">한 컷이 모든 것을 말해줌 — PK41</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>Turbojoint® PK41</strong>. 한 명의 지원자에게 <strong>310 / 520 / 780 µg·kg⁻¹</strong>을 각각 5시간 IV 주입했음. 그런데 투여량을 올릴수록 NCA 표가 이렇게 출력됨:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>용량 (µg·kg⁻¹)</th><th>NCA-CL (L·h⁻¹·kg⁻¹)</th><th>V (L·kg⁻¹)</th><th>MRT (h)</th></tr></thead>
+            <tbody>
+              <tr><td>310</td><td>1.6</td><td>2.3</td><td>1.4</td></tr>
+              <tr><td>520</td><td>1.2</td><td>2.0</td><td>1.6</td></tr>
+              <tr><td>780</td><td>0.9</td><td>1.8</td><td>1.9</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>용량을 2.5배 올렸더니 CL이 반토막남. 표만 보면 "어 이 약 청소율이 떨어졌네"라고 적고 다음 줄로 넘어가기 쉬움. 그런데 이 한 컷이 NCA 전체의 정체를 드러내는 결정적 장면임 — <strong>NCA가 출력한 CL은 "그 용량에서의 진짜 청소율"이 아니라 "선형 소실을 가정했을 때 면적이 보여준 평균 청소율"이기 때문임.</strong> 가정이 무너지면 출력값의 이름도 바뀜. <span class="chip">G&amp;W pp.661–664</span></p>
+        <div class="callout"><span class="callout-label">에피그래프</span><em>"NCA 출력 표는 답이 아니라 진술서임. 그리고 진술서는 한 줄씩 읽는 게 아니라 가정 순서로 읽는 것임."</em></div>
+      </div>
+    </section>
+
+    <!-- Slide 1 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 0'</span>
+        <h1 class="slide-title">이 자료의 한 줄 명제</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14.5px;line-height:1.6"><strong>NCA 출력은 최종 답이 아니라, 다음 모델(비선형 회귀, PopPK)로 넘어가는 anchor임.</strong> NCA 표를 읽는 일은 숫자를 읽는 일이 아니라 <em>가정 점검 기록</em>을 읽는 일임.</p>
+        </div>
+        <h2 class="section-h">왜 이 명제가 중요한가</h2>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">표면적 읽기</div>
+            <p>NCA-CL = 0.9 L/h/kg → "신기능이 떨어졌나?", "효소 활성 변화?"</p>
+          </div>
+          <div class="card">
+            <div class="card-title">실무자 읽기</div>
+            <p>CL이 용량에 따라 단조 감소 → <strong>선형 소실 가정 자체가 무너졌다는 신호</strong>. NCA는 끝이 아니라 Michaelis-Menten 회귀의 출발점.</p>
+          </div>
+        </div>
+        <div class="callout teal"><span class="callout-label">출처</span>Gabrielsson &amp; Weiner 5e Ch.2 §2.8–§2.9, PK41; Rowland &amp; Tozer 5e Appendix A·H, Ch.6 §BE, Ch.11 §Fluctuation, Ch.19 §Distribution Kinetics. <span class="chip">G&amp;W pp.141–164</span><span class="chip">G&amp;W pp.661–664</span><span class="chip">R&amp;T pp.759–762</span><span class="chip">R&amp;T pp.789–793</span><span class="chip">R&amp;T pp.182–195</span><span class="chip">R&amp;T pp.276/325/340</span><span class="chip">R&amp;T pp.626/632–636</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 2 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.1</span>
+        <h1 class="slide-title">NCA는 "model-free"가 아니라 "compartment-free"</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>NCA를 "model-free"라고 부르는 관습이 있음. 그런데 정확한 표현은 <strong>"compartment-free"</strong>임. 1구획·2구획·3구획 같은 특정 구획 모델은 안 세우지만, 그 대신 <strong>세 가지 가정</strong>이 표 전체를 떠받치고 있음. <span class="chip">G&amp;W p.141</span></p>
+        <div class="algo">가정 ①  <span class="strong">선형 소실</span>      <span class="em">→ 채혈 구획에서 농도에 비례해 약물이 빠진다</span>
+가정 ②  <span class="strong">진짜 terminal</span>   <span class="em">→ 말단기 회귀에 들어간 점들이 실제 elimination phase다</span>
+가정 ③  <span class="strong">입력 시간 보정</span>  <span class="em">→ MIT를 빼면 순수 체류시간이 남는다</span></div>
+        <div class="callout warn"><span class="callout-label">위험이자 매력</span>이 세 가정 중 <strong>하나만 무너져도 표의 어떤 칸 하나만 흔들리는 게 아니라 표 전체가 연쇄적으로 흔들림</strong>. 그게 NCA의 위험이자 매력임. 단순한 만큼 가정에 정직해야 함.</div>
+        <div class="two-col">
+          <div class="card-soft">
+            <div class="card-title">초보의 읽기 방식</div>
+            <p>보고서 위에서부터 한 줄씩 읽음.</p>
+          </div>
+          <div class="card-soft">
+            <div class="card-title">실무자의 읽기 방식</div>
+            <p><strong>가정 점검 순서</strong>대로 표를 재배열해서 읽음.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 1.2</span>
+        <h1 class="slide-title">감사 동선 — 네 단계는 병렬이 아니라 직렬</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="diagram"><span class="step">[면적이 믿을 만한가?]</span> <span class="arr">→</span> <span class="step">[시간 모멘트가 안정적인가?]</span> <span class="arr">→</span> <span class="step">[임상 파라미터 가정?]</span> <span class="arr">→</span> <span class="step">[어떤 노출 지표를?]</span>
+       <span class="anno">C1</span>                            <span class="anno">C2</span>                                  <span class="anno">C3</span>                                <span class="anno">C4</span></div>
+        <p>🔑 <strong>이 네 단계는 병렬이 아니라 직렬임</strong>. C1의 오류는 C2로, C2의 오류는 C3로, C3의 해석 실패는 C4의 endpoint 정당화 실패로 전파됨. 이 직렬성을 잊으면 NCA 보고서 검토가 "체크리스트 채우기"로 전락함.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>단계</th><th>질문</th><th>카드</th><th>다음 카드로 전파되는 오류</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>면적이 믿을 만한가?</td><td>C1 (AUC / λz / 외삽 / BLQ)</td><td>AUC 오류 → CL·V·노출 모두 왜곡</td></tr>
+              <tr><td>2</td><td>시간 모멘트가 안정적인가?</td><td>C2 (AUMC / MRT / MIT)</td><td>AUMC 꼬리 오류 → MRT·V_ss 왜곡</td></tr>
+              <tr><td>3</td><td>분포·청소가 경로 보정?</td><td>C3 (CL / V_ss / V_z)</td><td>MIT 누락 → V_ss 해석 오류</td></tr>
+              <tr><td>4</td><td>어떤 노출 지표로 PD/safety?</td><td>C4 (C_max / AUC / t_d / C_u / PTF)</td><td>dose-only 해석 → 노출-반응 판단 실패</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">💼 현장 감각</span>컨퍼런스에서 NCA 보고서를 처음 받으면, 1차 파라미터 표 위쪽에 적힌 <strong>λz 선정 구간, %extrapolated, BLQ 처리 규칙, MIT 보정 여부</strong> 네 줄을 먼저 봄. 이 네 줄이 멀쩡하면 그 아래 CL·V·노출은 그제서야 진지하게 읽을 가치가 있음. 거꾸로 이 네 줄이 부실하면 아래 숫자가 아무리 예뻐도 회의실에서 깨질 자료임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 4 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.1</span>
+        <h1 class="slide-title">C1 — AUC라는 "객관적 면적"의 정체</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>AUC를 "데이터 위로 사다리꼴을 깐 객관적 면적값"으로 읽으면 절반만 본 것임. 실제 AUC는 <strong>두 덩어리</strong>로 이루어져 있음:</p>
+        <div class="formula-card-wrap">
+          <div class="formula-card">$$\underbrace{AUC_{total}}_{\text{총 노출}}=\underbrace{AUC_{0\to t_{last}}}_{\text{관측 사다리꼴 합}}+\underbrace{AUC_{t_{last}\to\infty}}_{\lambda_z\text{ 외삽 꼬리}}$$</div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">관측 부분 — 산수</div>
+            <p>사다리꼴 면적 더하기. 데이터만 있으면 끝.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">꼬리 부분 — 추정치</div>
+            <p>"<strong>말단 기울기를 어떻게 정했느냐</strong>"에 전적으로 의존하는 추정치.</p>
+          </div>
+        </div>
+        <div class="callout amber"><span class="callout-label">⚡ 핵심</span>AUC 한 값을 흔드는 진짜 변수는 거의 항상 이 <strong>꼬리에 숨어 있음</strong>.</div>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.2</span>
+        <h1 class="slide-title">사다리꼴 두 종류 — 언제 무엇을 쓰는가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">선형 사다리꼴 (linear)</h2>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC_0^{t_{last}}}_{\text{관측 AUC}}=\sum_i \underbrace{\frac{C_i+C_{i+1}}{2}}_{\text{평균농도}}\cdot\underbrace{\Delta t}_{\text{시간폭}}$$<div class="formula-cite"><span class="chip">G&amp;W p.143, Eq.2:310</span><span class="chip">R&amp;T pp.759–760</span></div></div></div>
+            <p>표준 default. 본질적인 편향 — <strong>상승 구간에서 과소추정, 하강 구간에서 과대추정</strong>. 표본 간격이 반감기 대비 클수록 더 커짐. 직선 판자로 곡선을 덮으니까 곡률 무시.</p>
+          </div>
+          <div>
+            <h2 class="section-h">로그-선형 사다리꼴 (log-linear)</h2>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC_i^{i+1}}_{\text{구간 AUC}}=\underbrace{\frac{C_i-C_{i+1}}{\ln(C_i/C_{i+1})}}_{\text{로그평균농도}}\cdot\underbrace{\Delta t}_{\text{시간폭}}$$<div class="formula-cite"><span class="chip">G&amp;W pp.144–145, Eq.2:316</span><span class="chip">R&amp;T p.761</span></div></div></div>
+            <p>하강 구간에만 유효. \(C_i=0\) 또는 \(C_{i+1}=C_i\)면 정의되지 않으니까 그 구간만 선형으로 fallback.</p>
+          </div>
+        </div>
+        <div class="callout teal"><span class="callout-label">💡 비유 한 줄로</span>하강 구간을 직선 판자로 덮으면 면적을 과대추정함. 로그-선형은 <em>곡선 기울기에 맞춘 얇은 천</em>으로 덮는 방식임. 표본 간격이 길수록 곡률을 더 존중함.</div>
+        <div class="card"><div class="card-title">혼합 방식 (mixed)</div><p>증가/평탄 구간은 선형, 감소 구간은 로그-선형. 합리적으로 설계된 sparse design에서는 두 방법 차이가 임상적으로 작다는 게 G&amp;W의 균형 — 그러니까 "항상 mixed가 표준"이라고 외우지는 말 것. <strong>보고서에 어느 방식을 썼는지 명시</strong>하면 됨. <span class="chip">G&amp;W p.146</span></p></div>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.3</span>
+        <h1 class="slide-title">말단 외삽 — AUC를 흔드는 진짜 변수</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUC_{t_{last}\to\infty}}_{\text{꼬리 AUC}}=\frac{\underbrace{C_{last}\ \text{or}\ \hat C_{last}}_{\text{말단 농도}}}{\underbrace{\lambda_z}_{\text{말단 기울기}}}$$</div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\%Extrapolated}_{\text{외삽률}}=\frac{AUC_{t_{last}\to\infty}}{AUC_{total}}\times 100$$</div></div>
+        </div>
+        <p>관측 마지막 농도 \(C_{last}\)가 말단 회귀선에서 벗어나 있으면, 관측값을 그대로 쓰지 말고 <strong>회귀선이 예측하는 \(\hat C_{last}\)</strong>를 씀. 이게 일반적인 권고임. <span class="chip">G&amp;W p.147</span></p>
+        <div class="callout amber"><span class="callout-label">G&amp;W 권고</span><strong>외삽 면적이 총 AUC의 20–25%를 넘지 않을 것.</strong> 이걸 넘기면 그 AUC는 "최종 신뢰값"이 아니라 <strong>예비 추정값(preliminary estimate)</strong>으로 보고함. <span class="chip">G&amp;W p.148</span></div>
+        <div class="callout"><span class="callout-label">💼 현장 감각</span>NCA 자동 출력의 λz 구간을 그대로 믿으면 안 됨. <strong>반로그(semi-log) 도표에서 직접 확인</strong>하는 게 표준 절차임. adjusted R²가 0.99여도, 분포기(distribution phase) 점이 말단 회귀에 섞이면 λz가 평탄해지고 AUC 꼬리가 부풀음. 무서운 이유 — <strong>CL, V_z, V_ss가 동시에 다 흔들림</strong>. λz 한 개의 오류가 표의 네 칸으로 동시에 흘러감.</div>
+        <div class="callout teal"><span class="callout-label">🔑 AUC 보고 규칙</span>AUC 한 값만 적지 말 것. <strong>λz, \(C_{last}^{obs}\) vs \(\hat C_{last}\), %extrapolated</strong>를 같이 적어야 보고서가 감사 가능해짐.</div>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.4</span>
+        <h1 class="slide-title">BLQ 처리 — 위치가 모든 것을 결정함</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="callout warn"><span class="callout-label">Gabrielsson 원칙</span><em>"회귀 관점, 특히 지수 모델에서는 LOQ 미만 농도를 0이나 다른 값으로 절대 대체하지 말 것. missing values로 처리하는 것이 LOQ나 0으로 대체하는 것보다 낫다."</em> <span class="chip">G&amp;W p.153</span></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>BLQ 위치</th><th>통상 처리</th><th>처리 근거</th><th>AUC/AUMC 영향</th></tr></thead>
+            <tbody>
+              <tr><td><strong>첫 정량 가능 시점 이전</strong></td><td>IV: 0 처리 / 경구: 결측 또는 보간</td><td>IV는 t=0이 정의됨. 경구에서 흡수 lag을 강제 0으로 두면 초기 AUC 왜곡</td><td>초기 AUC 약간 과소~정상</td></tr>
+              <tr><td><strong>중간(intervening) BLQ</strong></td><td>선형 보간 또는 결측</td><td>0으로 두면 양쪽 관측을 인공적으로 끌어내려 AUC 과소</td><td>0 대체 시 AUC 과소</td></tr>
+              <tr><td><strong>말단(terminal) BLQ</strong></td><td>결측 처리 권장</td><td>0 대체 시 \(\ln 0=-\infty\)로 지수 회귀 수렴 불능. 말단 회귀에 BLQ 포함 시 λz 평탄화</td><td>0 대체 시 λz → 외삽 꼬리 → CL·V_z 연쇄 왜곡</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_{BLQ}}_{\text{관측 BLQ}}\ \rightarrow\ \begin{cases}\overbrace{0}^{\text{pre-first, IV}}\\[2pt]\overbrace{\text{missing}}^{\text{intervening, terminal}}\\[2pt]\overbrace{\text{linear interp.}}^{\text{intervening 대안}}\end{cases}$$</div></div>
+        <div class="callout"><span class="callout-label">💼 현장 감각</span>BLQ 처리 규칙은 <strong>반드시 SOP나 SAP(Statistical Analysis Plan)에 사전 명문화</strong>해야 함. 분석 끝난 뒤에 규칙을 바꾸면 그 자체로 <em>data dredging</em>으로 간주됨. <strong>BLQ 규칙 → 말단점 선정 → λz → AUC 꼬리 → CL·V_z</strong>로 오류가 연쇄 전파됨. BLQ 처리 기록 없는 NCA 보고서는 그 자체로 감사 부적격 자료임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 8 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.4'</span>
+        <h1 class="slide-title">🌉 NCA → PopPK 다리 — "missing"의 두 의미</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>이게 NCA→PopPK 전환에서 가장 많이 놓치는 부분임. NCA의 BLQ 처리는 <strong>point exclusion 패러다임</strong> — 한 점을 결측으로 두거나 양 옆 값으로 보간함. NONMEM 같은 PopPK 도구에서는 이걸 <strong>likelihood-based</strong> 처리로 격상시킴.</p>
+        <div class="card"><div class="card-title">Beal (2001) 분류</div><p><strong>M3</strong>는 "BLQ 관측값이 LOQ보다 작을 likelihood가 모델 적합도에 기여한다"는 <em>censoring framework</em>임. <strong>M5</strong>는 LOQ/2 substitution, <strong>M6</strong>는 첫 BLQ만 LOQ/2 처리 후 나머지 결측, <strong>M7</strong>은 BLQ를 0 처리 — 모두 M3의 단순화 변종임. <strong>NCA에서 결측 처리한 BLQ도 PopPK 단계에서는 M3로 다시 들어와 추정 정밀도를 회복할 수 있음.</strong></p></div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\text{NCA}}_{\text{point exclusion}}:\ C_{BLQ}\to\text{missing}\quad\Longrightarrow\quad\underbrace{\text{PopPK (M3)}}_{\text{likelihood-based}}:\ \overbrace{P(C_{obs}<LOQ\mid\theta)}^{\text{censored likelihood}}\ \text{기여}$$</div></div>
+        <div class="callout teal"><span class="callout-label">⚡ 핵심</span>두 영역에서 "missing"이라는 같은 단어가 가리키는 처리는 다름. NCA 보고서의 BLQ 처리 규칙(SOP/SAP)과 PopPK의 BLQ likelihood 옵션이 일관되게 정렬되어 있는지 — <strong>이게 보고서 검토의 숨은 1번 항목</strong>임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 9 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 2.5</span>
+        <h1 class="slide-title">C1 마무리 — 다음 카드로 무엇이 전파되는가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px"><strong>AUC는 "사다리꼴 합"이 아니라 "사다리꼴 합 + λz 기반 꼬리"임.</strong> AUC 검토는 값 자체가 아니라 <em>(말단 기울기 선택, \(\hat C_{last}\) 사용 여부, 외삽 비율, BLQ 처리 분기)</em> 네 항목의 처리 기록 검토임.</p>
+        </div>
+        <h2 class="section-h">C1 → C2로 전파되는 것</h2>
+        <div class="card">
+          <p>λz가 흔들리면 AUC 꼬리뿐 아니라 <strong>AUMC 꼬리가 \(1/\lambda_z^2\)로 더 강하게 흔들림</strong>. C1의 λz 오류는 C2에서 두 배로 증폭되어 등장함.</p>
+        </div>
+        <div class="algo">C1 점검 4종 세트:
+   <span class="strong">①</span> <span class="em">말단 기울기 λz 선택</span>           → 반로그 도표 직접 확인
+   <span class="strong">②</span> <span class="em">C_last vs Ĉ_last 사용 여부</span>     → 회귀선 이탈 시 Ĉ_last
+   <span class="strong">③</span> <span class="em">%Extrapolated</span>                   → 20–25% 초과 시 "예비 추정"
+   <span class="strong">④</span> <span class="em">BLQ 처리 분기 (위치별)</span>           → SOP/SAP 사전 명문화</div>
+      </div>
+    </section>
+
+    <!-- Slide 10 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.1</span>
+        <h1 class="slide-title">C2 — AUC vs AUMC: 같은 자료를 두 번 묻기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>C1에서 "얼마나 노출되었는가"를 물었다면, C2는 <strong>"그 노출이 언제 일어났는가"</strong>를 시간 가중으로 다시 묻는 단계임.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th></th><th>AUC (영차 모멘트)</th><th>AUMC (일차 모멘트)</th></tr></thead>
+            <tbody>
+              <tr><td>차원</td><td>농도 × 시간</td><td>농도 × 시간²</td></tr>
+              <tr><td>가중</td><td>시간 가중 없음</td><td>시간으로 한 번 더 가중</td></tr>
+              <tr><td>꼬리 항</td><td>\(C_{last}/\lambda_z\)</td><td>\(t_{last}C_{last}/\lambda_z + C_{last}/\lambda_z^2\)</td></tr>
+              <tr><td>λz 오류 민감도</td><td>1차</td><td><strong>2차</strong> (1/λz² 항 때문)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{AUC_{tail}=\frac{C_{last}}{\lambda_z}}^{\text{1차 꼬리}}\qquad\text{vs}\qquad\overbrace{AUMC_{tail}=\frac{t_{last}C_{last}}{\lambda_z}+\frac{C_{last}}{\lambda_z^2}}^{\text{AUMC 꼬리}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 비유</span>AUC가 하루 동안 받은 햇빛 총량이라면, <strong>AUMC는 늦은 오후 햇빛에 더 무거운 추를 매단 저울</strong>임. 해 질 무렵의 작은 측정 오차가 평균 체류시간을 크게 밀어냄. 같은 말단기 오염이라도 AUMC를 통해 <strong>MRT와 V_ss로 더 강하게 증폭</strong>됨.</div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUMC_0^{t_{last}}}_{\text{관측 AUMC}}=\sum_i \underbrace{\frac{t_iC_i+t_{i+1}C_{i+1}}{2}}_{\text{시간가중 평균}}\cdot\underbrace{\Delta t}_{\text{시간폭}}$$<div class="formula-cite"><span class="chip">G&amp;W p.144, Eq.2:312</span></div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{AUMC_{t_{last}\to\infty}}_{\text{꼬리 AUMC}}=\underbrace{\frac{t_{last}C_{last}}{\lambda_z}}_{\text{시점 가중}}+\underbrace{\frac{C_{last}}{\lambda_z^2}}_{\text{기울기 민감도}}$$<div class="formula-cite"><span class="chip">G&amp;W pp.144–145, Eq.2:313/2:320</span></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.2</span>
+        <h1 class="slide-title">MRT — "평균"이라는 단어의 함정</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>MRT(Mean Residence Time)를 "안정된 평균값"으로 읽고 넘어가는 게 NCA 학습자가 가장 많이 빠지는 함정임. "평균"이라는 단어가 주는 인상 때문임. 실제로는 AUMC 꼬리의 민감도와 입력 시간 보정 두 가지를 모두 흡수하는, <strong>꽤 불안정한 요약값</strong>임.</p>
+        <div class="two-col">
+          <div>
+            <h2 class="section-h">분자 정의 <span class="chip">R&amp;T p.789, Eq.H-1</span></h2>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{MRT}_{\text{평균 체류시간}}=\frac{\sum_j t_j}{N}$$</div></div>
+            <p>R&amp;T Appendix H 출발 — 분자량 300 g/mol 1 mg 안에 약 \(2\times10^{18}\)개 분자, 각각이 몸 안에서 보낸 시간의 평균.</p>
+          </div>
+          <div>
+            <h2 class="section-h">혈장 정의 <span class="chip">R&amp;T p.791, Eq.H-8</span></h2>
+            <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{MRT}_{\text{혈장 MRT}}=\frac{\underbrace{AUMC_0^\infty}_{\text{시간가중 노출}}}{\underbrace{AUC_0^\infty}_{\text{총 노출}}}$$</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">R&amp;T Table H-1 수치 검증</div><p>\(AUC=44.2\) mg·hr/L, \(AUMC=177\) mg·hr²/L일 때 — 혈장 MRT ≈ <strong>4.0 hr</strong>, 소변 MRT ≈ <strong>4.25 hr</strong>, simulated MRT ≈ <strong>4.3 hr</strong>. <strong>세 경로가 모두 같은 곳에 수렴</strong>함. 분자 수준 정의와 혈장/소변 계산이 일관되니까 MRT가 "단순한 비율 계산"이 아니라 <strong>진짜 물리적 평균 체류시간</strong>이라는 게 확인됨. <span class="chip">R&amp;T p.792</span></p></div>
+      </div>
+    </section>
+
+    <!-- Slide 12 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.3</span>
+        <h1 class="slide-title">MRT ≠ t½ — 같은 단위, 다른 질문</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>이 두 값을 헷갈리는 게 NCA 학습의 두 번째 함정임. 둘 다 단위가 "시간"이고 둘 다 elimination 관련 지표지만, <strong>답하는 질문이 완전히 다름</strong>:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th></th><th>MRT</th><th>t½</th></tr></thead>
+            <tbody>
+              <tr><td>정의</td><td>분자가 계 안에서 보낸 시간의 평균</td><td>농도가 절반으로 감소하는 시간</td></tr>
+              <tr><td>계산</td><td>\(AUMC/AUC\) - MIT</td><td>\(\ln(2)/\lambda_z\)</td></tr>
+              <tr><td>1구획 단일지수</td><td>\(MRT = 1/\lambda_z\)</td><td>\(t_{1/2} = \ln(2)/\lambda_z\)</td></tr>
+              <tr><td>다구획 상황</td><td>분포기까지 포함한 통합 평균</td><td>말단 기울기만 기술</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{MRT}_{\text{체류시간 평균}}=\frac{AUMC}{AUC}\qquad\text{vs}\qquad\underbrace{t_{1/2}}_{\text{반감기}}=\frac{\ln(2)}{\lambda_z}$$</div></div>
+        <p>1구획 단일지수에서는 두 값이 단순 비율(\(1/\ln 2 \approx 1.443\))로 연결됨. 그런데 <strong>다구획에서는 MRT가 분포기 정보까지 흡수하는 반면 t½는 말단 기울기만 기술</strong>함. 그래서 다구획 약물에서 두 값을 같은 의미로 쓰면 안 됨.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{t_{1/2,eff}}_{\text{유효 반감기}}=\underbrace{\ln(2)}_{\text{50\% 변환}}\cdot\underbrace{MRT}_{\text{평균 체류}}$$<div class="formula-cite"><span class="chip">G&amp;W p.151</span><span class="chip">R&amp;T pp.789–793</span></div></div></div>
+        <div class="callout teal"><span class="callout-label">⚡ 임상 의미</span>이게 <em>반복투여 축적 관점에서 진짜 의미 있는 반감기</em>임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 13 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.4</span>
+        <h1 class="slide-title">MIT — 입력 시간을 빼야 진짜 체류시간</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>관측된 \(AUMC/AUC\)에는 약물이 전신순환에 들어오기까지 걸린 시간이 섞여 있음. 이걸 그대로 두면 <strong>투여 과정이 만든 지연을 진짜 체류시간으로 착각</strong>하게 됨. 그래서 평균 입력 시간(Mean Input Time, MIT)을 빼야 함:</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{MRT_{\text{corrected}}}_{\text{보정 MRT}}=\underbrace{\frac{AUMC}{AUC}}_{\text{관측 MRT}}-\underbrace{MIT}_{\text{입력 평균시간}}$$</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>투여 방식</th><th>MIT</th><th>보정 MRT</th></tr></thead>
+            <tbody>
+              <tr><td>IV bolus</td><td>0</td><td>\(AUMC/AUC\)</td></tr>
+              <tr><td>일정 IV infusion (\(T_{inf}\))</td><td>\(T_{inf}/2\)</td><td>\(AUMC/AUC - T_{inf}/2\)</td></tr>
+              <tr><td>1차 혈관외 흡수 (\(K_a\))</td><td>\(1/K_a\)</td><td>\(AUMC/AUC - 1/K_a\)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$MIT\in\Bigl\{\underbrace{0}_{\text{IV bolus}},\ \underbrace{T_{inf}/2}_{\text{주입 중간점}},\ \underbrace{1/K_a}_{\text{흡수 평균}}\Bigr\}$$</div></div>
+        <div class="callout warn"><span class="callout-label">⚠️ 주의 한 줄</span>경구에서 \(1/K_a\)를 "순수 흡수 시간"으로 과해석하면 안 됨. \(K_a\)는 흡수만이 아니라 <strong>분해(degradation) 같은 병렬 과정</strong>까지 포함할 수 있음. <span class="chip">G&amp;W p.150</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 14 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 3.5</span>
+        <h1 class="slide-title">C2 마무리 — C3로 무엇이 전파되는가</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14.5px;line-height:1.6"><strong>MRT는 반감기가 아님.</strong> MRT는 "분자가 계 안에서 보낸 시간의 평균"이고, 계산상으로는 <em>\(AUMC/AUC\)</em>이며, 투여 경로에 따라 MIT를 빼야 비로소 해석 가능한 체류시간이 됨.</p>
+        </div>
+        <h2 class="section-h">C2 → C3로 전파되는 것</h2>
+        <div class="card">
+          <p>AUMC 꼬리 오류와 MIT 누락은 둘 다 MRT를 거쳐서 V_ss로 흘러감. 그리고 C3에서는 이 오류가 <strong>"분포용적"이라는 임상 이름표</strong>를 달고 등장함 — <em>그 이름표가 오류를 가려버림</em>.</p>
+        </div>
+        <div class="algo">C2 점검 핵심:
+   <span class="strong">①</span> <span class="em">AUMC 꼬리</span>      → 1/λz² 항 (λz 오류 2배 증폭)
+   <span class="strong">②</span> <span class="em">MRT 정의</span>        → 분자 평균 ≠ 반감기
+   <span class="strong">③</span> <span class="em">MIT 보정</span>        → 투여 경로별 0 / T_inf/2 / 1/Ka
+   <span class="strong">④</span> <span class="em">유효 반감기</span>     → t_(1/2,eff) = ln(2)·MRT</div>
+      </div>
+    </section>
+
+    <!-- Slide 15 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.1–2</span>
+        <h1 class="slide-title">C3 [⚡ Apex] — 임상 이름표가 오류를 가린다</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p><strong>C3는 앞 두 카드의 가정 오류가 임상 파라미터 이름표를 달고 굳어진 최종 형태</strong>임. 이름표가 오류를 가린다는 게 함정.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>파라미터</th><th>의존 항목</th><th>어떤 가정이 깨지면 흔들리는가</th></tr></thead>
+            <tbody>
+              <tr><td><strong>CL</strong></td><td>투여량, \(AUC_0^\infty\)</td><td>C1의 AUC 꼬리 오류</td></tr>
+              <tr><td><strong>V_ss</strong></td><td>CL, MRT, AUMC</td><td>C1 + C2 + MIT 보정 (의존성 가장 큼)</td></tr>
+              <tr><td><strong>V_z</strong></td><td>CL, λz</td><td>C1의 λz 선택</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="three-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL}_{\text{IV}}=\frac{D_{iv}}{AUC_0^\infty}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:325</span></div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{CL/F}_{\text{경구}}=\frac{D_{po}}{AUC_0^\infty}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:326</span></div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{F}_{\text{도달 분율}}=\frac{AUC_{po}}{AUC_{iv}}\cdot\frac{D_{iv}}{D_{po}}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:327</span></div></div></div>
+        </div>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V_{ss}}_{\text{정상상태 V}}=\overbrace{MRT\cdot CL}^{\text{체류 × 정화}}=\frac{D_{iv}\cdot AUMC_0^\infty}{(AUC_0^\infty)^2}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:337</span></div></div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V_z}_{\text{말단 V}}=\frac{CL}{\lambda_z}=\frac{D_{iv}}{AUC_0^\infty\cdot\lambda_z}$$<div class="formula-cite"><span class="chip">G&amp;W Eq.2:338</span></div></div></div>
+        </div>
+        <div class="callout amber"><span class="callout-label">⚡ Apex</span>V_ss가 가장 많은 가정 위에 얹혀 있음. 셋 중 <strong>가장 깨지기 쉬운 파라미터</strong>지만 표에서는 그게 안 보임.</div>
+      </div>
+    </section>
+
+    <!-- Slide 16 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.3</span>
+        <h1 class="slide-title">V_ss vs V_z — 같은 단위, 완전히 다른 질문</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>이게 NCA 학습의 <strong>세 번째이자 가장 위험한 함정</strong>임. 두 값 모두 volume 단위로 같은 표에 출력되고, 둘 다 양수로 정상 범위에 들어오면 "분포 부피니까 어느 쪽이든 비슷한 의미겠지"라고 읽기 쉬움. 실제로는 답하는 질문이 다름:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th></th><th>V_ss</th><th>V_z</th></tr></thead>
+            <tbody>
+              <tr><td>정의식</td><td>\(MRT \cdot CL\)</td><td>\(CL/\lambda_z\)</td></tr>
+              <tr><td>답하는 질문</td><td>정상상태에서 약물이 차지하는 평균 분포 크기는?</td><td>말단 기울기가 보여주는 겉보기 부피는?</td></tr>
+              <tr><td>의존 가정</td><td>AUC + AUMC + MIT 보정 (최대)</td><td>AUC + λz (중간)</td></tr>
+              <tr><td>흔들리는 방향</td><td>MIT 누락·AUMC 꼬리 오류로 ↑↓</td><td>λz 선택 오류로 ↑</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout teal"><span class="callout-label">💡 진단 단서</span><strong>두 부피가 어긋나는 방향이 곧 어디서 가정이 깨졌는지의 단서</strong>임.</div>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">V_ss만 비정상</div><p><strong>→ MIT 또는 AUMC 꼬리 문제</strong></p></div>
+          <div class="card-soft"><div class="card-title">V_z만 비정상</div><p><strong>→ λz 선택 문제</strong></p></div>
+        </div>
+        <p>두 부피의 차이는 "<strong>오류 진단 게이지</strong>"로 읽음.</p>
+      </div>
+    </section>
+
+    <!-- Slide 17 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.4</span>
+        <h1 class="slide-title">⚡ 협역 치료역의 함정 — V_c 기준 부하용량</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>임상 안전성 직결 항목임. 부하용량(loading dose, LD)을 "V_ss × C_target"으로 계산하면 <strong>협역 치료역 다구획 약물에서 위험</strong>함. IV bolus 직후 약물은 일시적으로 <strong>중앙구획에만 분포</strong>. \(C_0 = LD/V_c\). 진짜 기준은 <strong>V_c (중앙구획, \(V_1\))</strong>.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{LD_{\text{임상 표준}}}_{V_c\ \text{기준}}=\overbrace{V_c\cdot C_{target}}^{\text{중앙구획 dilution}}\ \leq\ \overbrace{V_{ss}\cdot C_{target}}^{\text{전신 분포 (과대 위험)}}\ \leq\ \overbrace{V_z\cdot C_{target}}^{\text{과대추정 (위험)}}$$</div></div>
+        <div class="card"><div class="card-title">구체 예시 — \(V_c=4\) L, \(V_{ss}=12\) L, \(V_z=20\) L, \(C_{target}=2\) mg/L</div>
+          <div class="tbl-wrap" style="margin-top:6px">
+            <table>
+              <thead><tr><th>부하용량 산정 기준</th><th>LD</th><th>초기 농도 \(C_0=LD/V_c\)</th><th>결과</th></tr></thead>
+              <tbody>
+                <tr><td>\(V_c\) (4 L) — 임상 표준</td><td>8 mg</td><td><strong>2 mg/L</strong></td><td>표적 도달, OK</td></tr>
+                <tr><td>\(V_{ss}\) (12 L) — 잘못된 선택</td><td>24 mg</td><td><strong>6 mg/L</strong></td><td>표적의 <strong>3배</strong> → peak toxicity</td></tr>
+                <tr><td>\(V_z\) (20 L) — 더 잘못된 선택</td><td>40 mg</td><td><strong>10 mg/L</strong></td><td>표적의 <strong>5배</strong> → severe</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout warn"><span class="callout-label">임상 사례</span>협역 치료역 약물 예시로 <strong>digoxin</strong>(강심배당체, 부정맥)이나 <strong>aminoglycoside</strong>(gentamicin·amikacin, 신독성·이독성)를 생각하면, V_ss 기반 LD는 즉시 peak toxicity. R&amp;T Ch.19가 신부전 환자 gentamicin에서 <strong>terminal phase 무시하고 \(V_1\) 기반 LD 계산</strong> 임상 관행을 명시하는 이유. <span class="chip">R&amp;T pp.626, 632–636</span></div>
+        <div class="callout teal"><span class="callout-label">🔑 세 부피의 역할 분리</span><strong>부하용량(LD)</strong> → \(V_c\) 기준. <strong>유지용량(MD)</strong> → \(CL\) 기준. <strong>분포 평형 후 농도 해석</strong> → \(V_{ss}\) 기준. <strong>V_z</strong>는 진단용 — 단독으로 임상 의사결정에 쓰지 않음. <span class="chip">G&amp;W pp.66, 151</span></div>
+      </div>
+    </section>
+
+    <!-- Slide 18 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.5</span>
+        <h1 class="slide-title">표준식이 무너지는 영역 — §2.8.8</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>표준 V_ss 식(Eq.2:337)에는 적용 영역이 있음. <strong>입력 시간(\(T_{inf}\))이 반감기(\(t_{1/2}\))에 비해 매우 길어질 때</strong>, 즉 infusion이 elimination을 우세하게 만들 때 표준식이 무너짐. G&amp;W §2.8.8 원문 — <em>"the duration of infusion is much greater than \(t_{1/2}\)"</em> <span class="chip">G&amp;W p.157</span>.</p>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{\frac{T_{inf}}{t_{1/2}}}_{\text{판정 비율}}\uparrow\ \Rightarrow\ \underbrace{\frac{AUMC}{AUC}-\frac{T_{inf}}{2}}_{\text{표준 MRT 식}}\ \to\ 0\ \text{또는 음수}$$</div></div>
+        <p>표준식이 0이나 음수 V_ss를 출력하기 시작하면 그건 "값이 틀린" 게 아니라 <strong>적용 영역을 벗어났다는 신호</strong>. 대안식:</p>
+        <div class="two-col">
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{V_{ss}}_{\text{대안}}=\frac{K_0\cdot AUC_{t^*\to\infty}}{C_{ss}^2}$$</div></div>
+          <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{MRT}_{\text{washout MRT}}=\frac{AUC_{t^*\to\infty}}{C_{ss}}$$</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th></th><th>Eq.2:337 (표준, §2.8.7)</th><th>Eq.2:366 (대안, §2.8.8)</th></tr></thead>
+            <tbody>
+              <tr><td>\(T_{inf}/t_{1/2}\)</td><td>작거나 중간</td><td>큼 (\(T_{inf} \gg t_{1/2}\))</td></tr>
+              <tr><td>필요 데이터</td><td>\(AUMC_0^\infty\), \(AUC_0^\infty\), MIT</td><td>\(C_{ss}\), washout \(AUC_{t^*\to\infty}\), \(K_0\)</td></tr>
+              <tr><td>핵심 수식</td><td>\(V_{ss}=D_{iv}\cdot AUMC/(AUC)^2\)</td><td>\(V_{ss}=K_0\cdot AUC_{t^*\to\infty}/C_{ss}^2\)</td></tr>
+              <tr><td>Sanity check</td><td>두 식이 잘 맞으면 → 영역 OK</td><td>벌어지면 → 적용 영역 이탈</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">💼 현장 감각</span>SOP가 표준 Eq.2:337만 허용하는 회사에서 §2.8.8 대안식이 더 타당한 케이스를 만났다면, <strong>두 식을 모두 계산해서 차이를 같이 제시</strong>. SOP deviation은 "더 예쁜 결과"가 아니라 <strong>0/음수 V_ss를 피하는 출처 기반 수학적 정당화</strong>로 문서화됨.</div>
+      </div>
+    </section>
+
+    <!-- Slide 19 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 4.6–7</span>
+        <h1 class="slide-title">비선형 PK가 NCA를 죽이는 순간</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>상황</th><th>무엇이 흔들리는가</th><th>임상 결과</th><th>조치</th></tr></thead>
+            <tbody>
+              <tr><td>Flip-flop kinetics (흡수 &lt; 제거)</td><td>경구 λz가 제거가 아니라 흡수 반영</td><td>V_z·V_ss가 그럴듯한 양수로 잘못 출력</td><td>IV 기준 또는 흡수 제한 caveat 명시</td></tr>
+              <tr><td>비선형 소실</td><td>CL과 t½가 용량 의존적</td><td>1차 파라미터 해석 실패</td><td>capacity-limited model 전환 <span class="chip">G&amp;W p.664</span></td></tr>
+              <tr><td>NCA-derived IIV 과사용</td><td>잔차/오차까지 IIV에 섞임</td><td>PopPK \(\omega^2\) inflation</td><td>NCA 분산은 상한값으로만 사용</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><span class="callout-label">💼 현장 감각</span>NCA 유래 변동성은 PopPK IIV의 직접 추정값이 아니라 <strong>잔차 변동성까지 섞인 상한값</strong>임. 이 상한을 PopPK \(\omega^2\) 초기값으로 그대로 입력하면 <strong>IIV가 RUV를 흡수하면서 후속 공변량 회귀가 묻혀버림</strong>. 보고서 검토 단계에서 잘 안 잡히고 PopPK 모델링 단계에서 한참 후에 발견됨. 처음부터 보수적으로 잡는 게 답임.</div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:14px;line-height:1.55"><strong>V_ss는 "분포 부피 하나"가 아니라, AUC·AUMC·CL·투여 경로 보정이 모두 통과한 최종 요약값임.</strong> V_ss를 볼 때마다 "어떤 MRT를 썼는가? 입력 시간을 뺐는가? 표준식 영역에 있는가?"를 같이 봐야 함.</p>
+        </div>
+        <h2 class="section-h">C3 → C4로 전파되는 것</h2>
+        <div class="card"><p>CL과 V가 정해지면 이제 <strong>어떤 노출 지표로 PD/safety를 논증할 것인가</strong>의 단계임. 같은 CL이라도 endpoint가 peak-driven인지 누적인지에 따라 보고해야 할 노출 지표가 달라짐.</p></div>
+      </div>
+    </section>
+
+    <!-- Slide 20 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.1–2</span>
+        <h1 class="slide-title">C4 — dose ≠ exposure, 노출 지표는 endpoint의 언어</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>C4의 출발점은 단순함 — <strong>dose는 투입량이고 노출은 몸이나 표적이 실제로 본 농도-시간 부담</strong>. 둘이 같으리라는 보장은 없음. dose와 effective exposure 사이에 끼어드는 게 다섯 가지:</p>
+        <div class="card">
+          <ol style="font-size:12px">
+            <li><strong>투여 경로(route)</strong> — 같은 dose라도 IV/PO/IM/SC에서 노출이 다름</li>
+            <li><strong>초회통과(first-pass)</strong> — 경구의 F &lt; 1</li>
+            <li><strong>비선형 소실</strong> — 용량 증가에 비례하지 않는 노출 증가</li>
+            <li><strong>활성 대사체</strong> — 모약물만 보면 반응을 오해</li>
+            <li><strong>단백 결합 차이</strong> — 총 농도가 같아도 unbound가 다름</li>
+          </ol>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>지표</th><th>의미</th><th>사용 직관</th></tr></thead>
+            <tbody>
+              <tr><td>\(C_{max}\)</td><td>최고 노출</td><td>급성 독성, peak-driven effect</td></tr>
+              <tr><td>AUC</td><td>총 노출</td><td>누적 노출, extent 비교</td></tr>
+              <tr><td>\(t_d\)</td><td>역치 이상 지속시간</td><td>time-above-threshold 효과</td></tr>
+              <tr><td>\(C_{ss}\) / \(C_{av}\)</td><td>정상상태 강도</td><td>만성 투여 노출</td></tr>
+              <tr><td>\(C_u\) (비결합)</td><td>약리학적 사용 가능 분율</td><td>단백 결합 차이 비교 <span class="chip">G&amp;W p.163</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_u}_{\text{비결합농도}}=\underbrace{C_{total}}_{\text{총농도}}\cdot\underbrace{f_u}_{\text{비결합률}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 선택 규칙</span>dose부터 보지 말고, <strong>endpoint mechanism</strong>을 먼저 정하고 노출 지표를 고름. peak-driven → \(C_{max}\), 누적 → AUC, threshold → \(t_d\), 단백결합 변동 → \(C_u\). 이 mapping이 깨지면 노출-반응 정당화가 깨짐.</div>
+      </div>
+    </section>
+
+    <!-- Slide 21 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.3</span>
+        <h1 class="slide-title">§2.9 — "dose 같은데 response 다른" 일곱+α 시나리오</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>사례</th><th>핵심 교훈</th><th>출처</th></tr></thead>
+            <tbody>
+              <tr><td>투여 경로/생체이용률</td><td>용량-반응이 경로 차이로 흔들려도 농도-반응은 정렬될 수 있음</td><td><span class="chip">G&amp;W p.159</span></td></tr>
+              <tr><td>비선형 소실</td><td>용량 증가가 노출과 안전역을 <strong>비선형으로</strong> 바꿈</td><td><span class="chip">G&amp;W p.159</span></td></tr>
+              <tr><td>활성 대사체</td><td>모약물 농도만 보면 경로 의존 반응을 오해함</td><td><span class="chip">G&amp;W p.160</span></td></tr>
+              <tr><td>투여 방식</td><td>같은 일일 용량이라도 주입/섭식 패턴이 독성을 바꿈</td><td><span class="chip">G&amp;W p.160</span></td></tr>
+              <tr><td>점유율/바이오마커</td><td>리간드 농도·수용체 점유율·바이오마커 반응은 <strong>같은 축이 아님</strong></td><td><span class="chip">G&amp;W p.161</span></td></tr>
+              <tr><td>반복 섭식</td><td>단회 + 섭식 시뮬레이션이 반복급여 노출을 과대예측할 수 있음</td><td><span class="chip">G&amp;W p.162</span></td></tr>
+              <tr><td>U자형 반응</td><td>노출-반응이 단조가 아니면 용량만으로 효과 예측 불가</td><td><span class="chip">G&amp;W p.162</span></td></tr>
+              <tr><td>단백 결합</td><td>총 농도와 비결합 농도가 <strong>효능 순위를 뒤집을 수 있음</strong></td><td><span class="chip">G&amp;W p.163</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout amber"><span class="callout-label">⚡ 메시지</span>총 농도보다 <strong>비결합 전신 노출</strong>이 더 직접적인 비교 기준이 될 수 있음. 노출 지표를 dose 대신 보는 게 아니라, <em>endpoint가 무엇을 묻는지에 맞춰 노출 지표를 선택</em>하는 게 진짜 작업.</div>
+      </div>
+    </section>
+
+    <!-- Slide 22 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.4</span>
+        <h1 class="slide-title">정상상태 노출 — 평균만 보면 안 되는 이유</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>반복투여 정상상태에서는 단회 노출 지표들이 <strong>dosing interval 내 비교 가능한 지표</strong>로 재정의됨. 핵심부터 — <strong>\(AUC_{0-\tau,ss}\)는 단회 \(AUC_{0-\infty}\)와 동등</strong>. 이전 투여 잔류 면적과 현재 투여 외삽 꼬리가 정확히 상쇄. <span class="chip">G&amp;W p.152, Fig.2.122</span></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>정상상태 지표</th><th>정의</th><th>임상적 질문</th></tr></thead>
+            <tbody>
+              <tr><td>\(AUC_{0-\tau,ss}\)</td><td>\(\int_0^\tau C_{ss}(t)\,dt\)</td><td>dosing interval 내 누적 노출</td></tr>
+              <tr><td>\(C_{av,ss}\)</td><td>\(AUC_{0-\tau,ss}/\tau\)</td><td>정상상태 평균 농도</td></tr>
+              <tr><td>\(C_{max,ss}\), \(C_{min,ss}\)</td><td>interval 내 최고·최저</td><td>peak/trough 안전성·효능 경계</td></tr>
+              <tr><td><strong>PTF%</strong></td><td>\((C_{max,ss}-C_{min,ss})/C_{av,ss} \times 100\)</td><td>같은 평균에서 분할 횟수가 만든 변동폭</td></tr>
+              <tr><td>\(R_{ac}\) (누적지수)</td><td>\(AUC_{ss}/AUC_{single} \approx 1/(1-e^{-k\tau})\)</td><td>단회 대비 정상상태 축적도</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{PTF\%}_{\text{변동지수}}=\frac{\underbrace{C_{max,ss}-C_{min,ss}}_{\text{진폭}}}{\underbrace{C_{av,ss}}_{\text{평균}}}\times 100}^{\text{R\&T Fig.11-14}}$$</div></div>
+        <div class="card"><div class="card-title">q24h vs q8h 예시 (일일 용량 1200 mg)</div><p>\(C_{av,ss}=D_{daily}/(CL\cdot 24h)\)는 <strong>두 경우 모두 같음</strong>. 그런데 PTF%는 q24h가 q8h보다 훨씬 큼 — interval 길수록 peak↑·trough↓. <strong>Peak-driven 독성</strong>(aminoglycoside 이독·신독), <strong>Trough-driven 효능</strong>(vancomycin \(AUC_{24}/MIC\)), <strong>Time-above-MIC</strong>(β-lactams) — 모두 PTF에서 갈림.</p></div>
+        <div class="callout teal"><span class="callout-label">🔑 정상상태 보고 규칙</span>\(AUC_{0-\tau,ss}\), \(C_{av,ss}\), \(C_{max,ss}\), \(C_{min,ss}\), <strong>PTF%</strong>, \(R_{ac}\)를 한 세트로 보고. 평균만 보고하면 분할 횟수가 만든 임상 차이가 사라짐.</div>
+      </div>
+    </section>
+
+    <!-- Slide 23 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.5</span>
+        <h1 class="slide-title">Partial AUC — MR vs IR의 정량 anchor</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>특정 시간 구간의 부분 면적(\(AUC_{0-t_1}\) 등)이 전체 \(AUC_{0-\infty}\)와 별도로 보고되는 가장 흔한 자리가 <strong>MR vs IR 비교</strong>임. 두 제형이 같은 \(AUC_{0-\infty}\)를 만들어도 <strong>농도-시간 곡선의 모양</strong>이 다르면 효과가 다를 수 있음.</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{AUC_{0-t_1}}_{\text{partial AUC}}=\underbrace{\int_0^{t_1}C(t)\,dt}_{\text{구간 적분}}\overbrace{\neq}^{\text{일반적으로}}\underbrace{\frac{t_1}{\tau}\cdot AUC_{0-\infty}}_{\text{비례 가정}}$$</div></div>
+        <p>§2.9의 "투여 방식" 사례가 여기서 <strong>정량적으로 회수</strong>됨. <span class="chip">G&amp;W p.160</span> EMA의 modified-release BE 가이던스는 다음을 요구:</p>
+        <div class="two-col">
+          <div class="card-soft"><div class="card-title">Early partial AUC</div><p>\(AUC_{0-t_{max,reference}}\) — onset of action 동등성 검정, <strong>90% CI 0.80–1.25</strong></p></div>
+          <div class="card-soft"><div class="card-title">Late partial AUC</div><p>\(AUC_{t_{max,reference}-\tau}\) — duration of action 동등성 검정, <strong>90% CI 0.80–1.25</strong></p></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>상황</th><th>Partial AUC 선택</th><th>임상 함의</th></tr></thead>
+            <tbody>
+              <tr><td>MR vs IR (단회)</td><td>\(AUC_{0-t_{max,IR}}\)</td><td>초기 노출 동등성 — onset</td></tr>
+              <tr><td>MR vs IR (단회)</td><td>\(AUC_{t_{max,IR}-\tau}\)</td><td>후기 노출 동등성 — duration</td></tr>
+              <tr><td>Food effect</td><td>\(AUC_{0-2h}\) 또는 \(AUC_{0-4h}\)</td><td>흡수 지연/촉진 정량</td></tr>
+              <tr><td>DDI</td><td>onset 구간 partial AUC</td><td>빠른 흡수 약물의 DDI 초기 영향</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">💼 현장 감각</span>Partial AUC 누락된 MR vs IR 비교는 EMA 심사에서 보충 요구가 자주 옴. 같은 \(AUC_{0-\infty}\)로 BE 통과해도 농도 곡선 모양이 다르면 임상 동등성이 보장되지 않음. <strong>\(t_{max,reference}\) 기준 절대 시간 구간</strong>으로 비교하는 게 표준.</div>
+      </div>
+    </section>
+
+    <!-- Slide 24 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 5.6 + 6.1</span>
+        <h1 class="slide-title">C4 마무리 + PK41 회수 — 같은 표, 다른 읽기</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13.5px;line-height:1.5"><strong>dose가 같아도 response가 같다는 보장은 없음.</strong> route·first-pass·비선형 소실·단백결합·활성 대사체 — 이 다섯 길이 dose와 effective exposure 사이에 끼어듦. exposure-response를 정당화하려면 <em>endpoint가 peak-driven인지, 누적인지, threshold인지, unbound인지부터 정해야 함</em>.</p>
+        </div>
+        <h2 class="section-h">다시 보는 PK41 표</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>용량 (µg·kg⁻¹)</th><th>NCA-CL (L·h⁻¹·kg⁻¹)</th><th>V (L·kg⁻¹)</th><th>MRT (h)</th></tr></thead>
+            <tbody>
+              <tr><td>310</td><td>1.6</td><td>2.3</td><td>1.4</td></tr>
+              <tr><td>520</td><td>1.2</td><td>2.0</td><td>1.6</td></tr>
+              <tr><td>780</td><td>0.9</td><td>1.8</td><td>1.9</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <ol style="font-size:12px">
+            <li><strong>CL 단조 감소</strong> — C1: AUC가 용량에 비선형적으로 증가한다는 신호. 단순한 "AUC 측정 오류"가 아님. 모든 용량에서 일관되게 같은 방향.</li>
+            <li><strong>V 단조 감소 + MRT 단조 증가</strong> — C2·C3: 단순히 분포 부피가 줄어든 게 아니라, <strong>분자가 더 오래 머무르고 있음</strong>. 같은 분량이 더 천천히 빠져나가는 상황.</li>
+            <li><strong>세 변화가 일관됨</strong> — C4: "한 칸이 흔들린 보고서"가 아니라, <strong>시스템 전체가 다른 동력학으로 넘어갔다는 신호</strong>.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 25 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 6.2–3</span>
+        <h1 class="slide-title">모델 전환 — 선형 CL → Michaelis-Menten</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <p>CL이 용량 의존적으로 감소하면, "CL은 더 이상 농도와 무관한 상수가 아니다"라는 뜻임. 즉, 모델 자체를 바꿔야 함:</p>
+        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{V\cdot\frac{dC}{dt}}_{\text{체내 변화율}}=\underbrace{In}_{\text{입력}}-\underbrace{CL\cdot C}_{\text{제거}},\qquad\underbrace{CL}_{\text{농도의존 CL}}=\frac{\underbrace{V_{max}}_{\text{최대 제거}}}{\underbrace{K_m+C}_{\text{포화 경계}}}$$</div></div>
+        <div class="callout teal"><span class="callout-label">💡 비유</span>선형 CL은 <strong>배수구 지름이 일정한 욕조</strong>임. 물이 많든 적든 같은 비율로 빠짐. Michaelis-Menten CL은 <strong>배수구가 포화되는 욕조</strong> — 물이 차오를수록 단위 시간당 빠지는 비율이 떨어짐. "용량이 커질수록 같은 'CL'이라는 이름으로는 더 이상 배수 능력을 설명할 수 없다"는 게 PK41이 폭로한 사실임.</div>
+        <h2 class="section-h">NCA 결과가 비선형 회귀의 anchor가 되는 동선</h2>
+        <div class="two-col">
+          <div class="card-soft">
+            <div class="card-title">NCA 초기값 → 비선형 회귀</div>
+            <ul>
+              <li>V (NCA) ≈ 2 L/kg → 초기 V ≈ 2 L/kg</li>
+              <li>최저 용량 CL ≈ 1.6 → \(V_{max}/K_m \approx 1.6\)</li>
+              <li>농도 절반 지점 CL 감소 → 초기 \(K_m \approx 150\) µg/L</li>
+              <li>최대 CL plateau → 초기 \(V_{max} \approx 310\) µg·h⁻¹·kg⁻¹</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">NONMEM 최종 추정값</div>
+            <p>\(V_{max}=184\) µg·h⁻¹·kg⁻¹<br>\(K_m=83\) µg/L<br>\(V=1.8\) L/kg</p>
+          </div>
+        </div>
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px;line-height:1.55"><strong>용량 제한 1구획 시스템의 파라미터는 CL과 V가 아니라 \(V_{max}\), \(K_m\), V임. CL과 \(t_{1/2}\)는 혼합 0차/1차 동력학과 양립할 수 없음(incompatible).</strong> <em>NCA가 출력한 "CL"은 비선형 시스템에서는 더 이상 의미 있는 파라미터가 아님. NCA 결과는 회귀의 출발점일 뿐, 도착점이 아님.</em> <span class="chip">G&amp;W pp.661–664</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 26 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 7</span>
+        <h1 class="slide-title">혼동쌍 압축 — 세 쌍 한 페이지</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <h2 class="section-h">쌍 1. AUC vs AUMC</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th></th><th>AUC</th><th>AUMC</th></tr></thead>
+          <tbody>
+            <tr><td>차원</td><td>농도 × 시간</td><td>농도 × 시간²</td></tr>
+            <tr><td>꼬리</td><td>\(C_{last}/\lambda_z\)</td><td>\(t_{last}C_{last}/\lambda_z + C_{last}/\lambda_z^2\)</td></tr>
+            <tr><td>λz 오류 민감도</td><td>1차</td><td><strong>2차 (1/λz² 항)</strong></td></tr>
+            <tr><td>혼동의 임상 결과</td><td>총 노출과 CL 왜곡</td><td>MRT와 V_ss 증폭 왜곡</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tip">⚡ AUMC 꼬리는 \(1/\lambda_z^2\) 항이 박혀 있어서 <strong>같은 λz 오류라도 두 배로 증폭</strong>됨.</p>
+        <h2 class="section-h">쌍 2. MRT vs t½</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th></th><th>MRT</th><th>t½</th></tr></thead>
+          <tbody>
+            <tr><td>정의</td><td>분자 평균 체류시간</td><td>농도 50% 감소 시간</td></tr>
+            <tr><td>계산</td><td>\(AUMC/AUC\) - MIT</td><td>\(\ln(2)/\lambda_z\)</td></tr>
+            <tr><td>다구획 거동</td><td>분포기 정보 흡수</td><td>말단 기울기만 기술</td></tr>
+            <tr><td>혼동의 결과</td><td>입력 지연을 반감기로 오해</td><td>다상 프로파일에서 단일 반감기 과해석</td></tr>
+          </tbody>
+        </table></div>
+        <p class="tip">⚡ 1구획 단일지수에서만 두 값이 단순 비율(\(1/\ln 2\))로 연결. 다구획에서는 <strong>유효 반감기 \(\ln(2)\cdot MRT\)</strong>로 재정의.</p>
+        <h2 class="section-h">쌍 3. V_ss vs V_z</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th></th><th>V_ss</th><th>V_z</th></tr></thead>
+          <tbody>
+            <tr><td>정의</td><td>\(MRT \cdot CL\)</td><td>\(CL/\lambda_z\)</td></tr>
+            <tr><td>의존 가정</td><td>AUC + AUMC + MIT (최대)</td><td>AUC + λz (중간)</td></tr>
+            <tr><td>흔들리는 방향</td><td>MIT 누락·AUMC 꼬리로 ↑↓</td><td>λz 선택 오류로 ↑</td></tr>
+            <tr><td><strong>치명적 혼동</strong></td><td colspan="2">\(V_z\)를 \(V_{ss}\)로 혼동하면 다구획 약물 LD 과대 → <strong>초기 독성 농도</strong></td></tr>
+          </tbody>
+        </table></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{LD}_{\text{loading dose}}=\overbrace{V_c\cdot C_{target}}^{\text{협역 임상 표준}}\ \leq\ V_{ss}\cdot C_{target}\ \leq\ V_z\cdot C_{target}$$</div></div>
+      </div>
+    </section>
+
+    <!-- Slide 27 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8</span>
+        <h1 class="slide-title">자기 테스트 — Q1 ~ Q7</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q1. 선형 사다리꼴과 로그-선형 사다리꼴의 차이는?</div><div class="a">선형은 모든 구간 가능하지만 하강에서 과대추정. 로그-선형은 하강에서만 유효, \(C_i=0\)이면 정의 불가. 혼합 방식이 자주 쓰이지만 합리적 sampling에서는 두 방법 차이가 임상적으로 작음. <span class="chip">G&amp;W pp.143–146</span></div></div>
+        <div class="q-block"><div class="q">Q2. λz 추정의 최소·이상 조건은?</div><div class="a">최소 3–4 관측점, 이상적으로 말단기에서 3–4 반감기 경과. 자동 출력을 그대로 믿지 말고 반로그 도표에서 직접 확인. R²가 높아도 분포기 점이 섞이면 λz 평탄화로 AUC 꼬리·CL·V_z 동시 왜곡. <span class="chip">G&amp;W pp.146–147</span></div></div>
+        <div class="q-block"><div class="q">Q3. 외삽 AUC가 30%면?</div><div class="a">G&amp;W 권고(20–25%)를 넘으니까 <strong>예비 추정값</strong>으로 보고. 추가 표본추출 또는 말단기 재검토 필요. <span class="chip">G&amp;W p.148</span></div></div>
+        <div class="q-block"><div class="q">Q4. BLQ 값이 (a) 첫 정량 가능 시점 이전 (b) 중간 (c) 말단에 있을 때 처리는?</div><div class="a">(a) IV는 0, 경구는 결측/보간 검토. (b) 선형 보간 또는 결측 — 0 대체는 AUC 과소. (c) 결측 처리 권장 — 0 대체는 \(\ln 0\)로 회귀 불능, BLQ를 말단 회귀 포함 시 λz 평탄화. <strong>Gabrielsson 원칙: "지수 모델에서는 LOQ 미만 값을 0이나 LOQ로 절대 대체하지 말고 missing으로 처리"</strong>. <span class="chip">G&amp;W p.153</span></div></div>
+        <div class="q-block"><div class="q">Q5. R&amp;T Table H-1에서 \(AUC=44.2\), \(AUMC=177\)이면 혈장 MRT는?</div><div class="a">\(MRT = AUMC/AUC = 177/44.2 \approx 4.0\) hr. 같은 예시에서 소변 MRT ≈ 4.25, simulated MRT ≈ 4.3 — 세 경로 일관. <span class="chip">R&amp;T p.792</span></div></div>
+        <div class="q-block"><div class="q">Q6. IV bolus와 경구에서 CL 계산의 차이?</div><div class="a">IV: \(CL = D_{iv}/AUC_0^\infty\). 경구: \(CL/F = D_{po}/AUC_0^\infty\) (겉보기 CL). F가 분리되지 않음. <span class="chip">G&amp;W p.149</span></div></div>
+        <div class="q-block"><div class="q">Q7. 급성 독성·누적 노출·역치 효과에 어떤 노출 지표를 우선?</div><div class="a">급성 독성 → \(C_{max}\). 누적 노출 → AUC. 역치 효과 → \(t_d\) 또는 역치 초과 AUC. 약물 기전과 반응 시간경과에 맞춰 정당화. <span class="chip">G&amp;W p.163</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 28 -->
+    <section class="slide has-formula">
+      <div class="slide-header">
+        <span class="sec-badge">§ 8'</span>
+        <h1 class="slide-title">자기 테스트 — Q8 ~ Q13</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="q-block"><div class="q">Q8. 총 농도와 비결합 농도 기준 효능 순위가 뒤집힐 수 있는 이유?</div><div class="a">단백 결합이 다르면 같은 총 농도에서도 약리학적으로 사용 가능한 unbound 농도가 다름. §2.9 메시지는 총 농도보다 <strong>비결합 전신 노출</strong>이 더 직접적인 비교 기준이 될 수 있다는 것. <span class="chip">G&amp;W p.163</span></div></div>
+        <div class="q-block"><div class="q">Q9. <strong>보스 딜레마</strong> — SOP는 표준 Eq.2:337만 허용하는데 \(T_{inf}\)가 반감기에 비해 매우 길어 §2.8.8 대안식이 더 타당해 보임. 어떻게?</div><div class="a">표준식과 §2.8.8 대안식을 <strong>둘 다 계산해서 차이를 같이 제시</strong>. 차이 원인이 \(T_{inf}/t_{1/2}\) 비율에 있다는 걸 설명. <strong>방향 명확화: 비율이 커지는 쪽(\(T_{inf} \gg t_{1/2}\), infusion이 elimination을 우세하게 만드는 영역)에서 표준식이 0이나 음수 V_ss로 무너짐.</strong> SOP deviation은 <em>0/음수 V_ss를 피하는 수학적 정당화</em>로 문서화. <span class="chip">G&amp;W pp.151, 157</span></div></div>
+        <div class="q-block"><div class="q">Q10. q24h와 q8h가 같은 일일 용량인데 임상 결과가 다를 수 있는 이유?</div><div class="a">\(C_{av,ss} = D_{daily}/(CL \cdot 24h)\)이라 dosing interval과 무관해서 같음. 그런데 <strong>PTF%</strong>는 q24h가 훨씬 큼 — interval 길수록 peak↑·trough↓. Peak-driven 독성(aminoglycoside)이나 trough-driven 효능(vancomycin AUC₂₄/MIC)은 PTF에서 갈리고, 평균만 보고하면 사라짐. <span class="chip">R&amp;T p.340, Fig.11-14; pp.276, 325</span></div></div>
+        <div class="q-block"><div class="q">Q11. 두 제형 BE 검정에서 test/reference의 AUC 비율 90% CI가 0.88–1.18이면?</div><div class="a"><strong>0.80–1.25 acceptance criterion 안에 90% CI가 완전히 들어가므로 bioequivalent로 선언 가능</strong>. 90% CI를 쓰는 이유는 BE가 TOST(two one-sided tests) 구조 — 각 측 α=0.05 양측 합산이 90% CI에 대응. 고변동성 약물(intra-subject CV&gt;30%)에서는 reference-scaled framework로 acceptance bound 확장. <span class="chip">R&amp;T pp.182–195</span></div></div>
+        <div class="q-block"><div class="q">Q12. <strong>결정적 시나리오</strong> — 협역 치료역 다구획에서 \(V_c=4\), \(V_{ss}=12\), \(V_z=20\) L. \(C_{target}=2\) mg/L 도달용 LD?</div><div class="a"><strong>\(V_c\) 기준</strong>. \(LD=V_c\cdot C_{target}=4\times 2=\) <strong>8 mg</strong>. \(V_{ss}\)=12로 계산하면 LD=24 mg → \(C_0=6\) mg/L (표적 <strong>3배</strong>). \(V_z\)=20로 계산하면 LD=40 mg → \(C_0=10\) mg/L (표적 <strong>5배</strong>).<div class="formula-card-wrap"><div class="formula-card compact">$$\underbrace{C_0=\frac{LD}{V_c}}_{\text{초기 농도}}\quad\begin{cases}\overbrace{V_c=4\Rightarrow 2\ \text{mg/L}}^{\text{OK}}\\[4pt]\overbrace{V_{ss}=12\Rightarrow 6\ \text{mg/L}}^{\text{peak toxicity}}\\[4pt]\overbrace{V_z=20\Rightarrow 10\ \text{mg/L}}^{\text{severe}}\end{cases}$$</div></div>R&amp;T Ch.19 gentamicin 신부전 임상관행 — \(V_1\) 기반 LD. 정리: <strong>LD는 \(V_c\), MD는 \(CL\), \(V_{ss}\)는 분포 평형 후 농도 해석</strong>. <span class="chip">G&amp;W pp.66, 151</span><span class="chip">R&amp;T pp.626, 632–636</span></div></div>
+        <div class="q-block"><div class="q">Q13. PK41에서 NCA 결과가 비선형 회귀의 anchor가 되는 흐름은?</div><div class="a">용량 증가에 따라 NCA-CL이 1.6 → 0.9로 단조 감소 → 용량 제한 소실(capacity-limited elimination) 신호. NCA는 최종 CL 보고가 아니라 \(V_{max}\), \(K_m\), V를 갖는 Michaelis-Menten 회귀의 <strong>초기 추정값 anchor</strong>. 최종 추정: \(V_{max}=184\) µg·h⁻¹·kg⁻¹, \(K_m=83\) µg/L, V=1.8 L/kg. <strong>CL과 \(t_{1/2}\)는 혼합 0차/1차 동력학과 양립 불가</strong>. <span class="chip">G&amp;W pp.661–664</span></div></div>
+      </div>
+    </section>
+
+    <!-- Slide 29 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="sec-badge">§ 9</span>
+        <h1 class="slide-title">메타프레임 — 30년 연구자의 한 페이지</h1>
+      </div>
+      <hr class="header-rule">
+      <div class="content">
+        <div class="dark-card">
+          <p style="color:#faf9f5;font-size:13px;line-height:1.55"><strong>NCA는 PopPK를 대체하는 분석이 아니라 모델링 전후에 활용하는 도구임.</strong> 모델 선택 전에는 EDA와 초기값을 만들고, 모델 추정 후에는 population prediction이 관측 노출의 규모와 일관되는지 확인하는 reference가 됨. NCA는 선형 소실을 가정 — <em>이걸 잊는 순간 "단순해서 강한 방법"이 "단순해서 틀린 방법"으로 바뀜</em>. <span class="chip">G&amp;W p.141</span></p>
+        </div>
+        <h2 class="section-h">보고서 1페이지 체크리스트 (10단계)</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>확인 항목</th><th>기준 / 깨질 때 신호</th></tr></thead>
+            <tbody>
+              <tr><td>①</td><td>λz 선정 구간</td><td>반로그 도표 직접, 최소 3–4점, 3–4 t½ 경과 / 분포기 섞이면 평탄화</td></tr>
+              <tr><td>②</td><td>\(C_{last}\) 처리</td><td>회귀선 이탈 시 \(\hat C_{last}\) / 외삽 꼬리 왜곡</td></tr>
+              <tr><td>③</td><td>%extrapolated</td><td>20–25% 이하 / 초과 시 "예비 추정"</td></tr>
+              <tr><td>④</td><td>BLQ 처리 규칙 (위치별)</td><td>SOP/SAP 사전 명문화 / 사후 변경 = data dredging</td></tr>
+              <tr><td>⑤</td><td>MIT 보정</td><td>경로별 \(0/T_{inf}/2/1/K_a\) / 누락 시 MRT·V_ss 왜곡</td></tr>
+              <tr><td>⑥</td><td>V_ss vs V_z 정합성</td><td>어긋남 방향이 진단 단서</td></tr>
+              <tr><td>⑦</td><td>\(T_{inf}/t_{1/2}\) 비율</td><td>Eq.2:337 vs Eq.2:366 sanity check / 0·음수는 영역 이탈</td></tr>
+              <tr><td>⑧</td><td>용량별 CL 단조성</td><td>일정해야 선형 / 단조 감소·증가는 비선형 신호</td></tr>
+              <tr><td>⑨</td><td>노출 지표 선정 정당화</td><td>endpoint mechanism 명시 / dose-only 해석은 부적격</td></tr>
+              <tr><td>⑩</td><td>1차 파라미터 = CL 또는 CL/F</td><td>AUC는 노출, CL은 생리학 anchor / 순서 바뀌면 공변량 회귀 약화</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="section-h">후속 세션 연결 — 지식 그래프 위치</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>후속</th><th>여기서 열리는 개념</th><th>없으면 실패</th></tr></thead>
+            <tbody>
+              <tr><td>PopPK 초기 모수</td><td>NCA-derived CL, V, exposure anchor</td><td>외삽 편향값을 NONMEM 초기값 투입</td></tr>
+              <tr><td>비선형 PK 회귀</td><td>PK41 capacity-limited signal</td><td>CL과 t½를 1차 파라미터 과해석</td></tr>
+              <tr><td>BA/BE 보고서</td><td>λz, %extrap, exposure metric audit trail</td><td>가정 방어 없는 숫자표</td></tr>
+              <tr><td>BE 통계 검정</td><td>\(AUC_{0-\infty}\)·\(C_{max}\)·partial AUC</td><td>90% CI 0.80–1.25 검정</td></tr>
+              <tr><td>Exposure-response</td><td>endpoint별 \(C_{max}\)/AUC/\(t_d\)/\(C_u\) 선택</td><td>dose-only PD/safety 실패</td></tr>
+              <tr><td>PopPK 모델 검증</td><td>NCA 노출 anchor (관측 AUC/\(C_{max}\))</td><td>VPC/CWRES/NPDE/MAP reference 왜곡</td></tr>
+              <tr><td>PopPK BLQ likelihood (Beal M3)</td><td>NCA BLQ 위치별 규칙</td><td>\(\omega^2\)/\(\sigma^2\) 분리 실패</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="callout-label">📖 보충</span><strong>BE 검정:</strong> Test/Reference 90% CI(log-transformed AUC·\(C_{max}\))가 0.80–1.25 안. 95% CI 아니라 90% — TOST 통계 구조(α=0.05 양측 합산). 고변동성(intra-subject CV&gt;30%)은 RSABE로 acceptance bound 확장. <span class="chip">R&amp;T pp.182–184, Table 6-7 p.195</span></div>
+        <div class="closer-card">
+          <div class="closer-label">FINAL THESIS</div>
+          <p class="closer-text">완성된 NCA 보고서는 <em>숫자 표가 아니라 가정 점검 기록</em>이어야 함.<br>"표를 한 줄씩 읽으면 초보, 가정 순서로 읽으면 실무자, <em>모델 전환 신호로 읽으면 연구자</em>."</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav">
+    <button class="nav-btn" id="btn-prev">← 이전</button>
+    <div class="prog">
+      <div class="prog-text" id="prog-text">1 / 30</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <button class="nav-btn" id="btn-next">다음 →</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var TOTAL = 30;
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var tocBtns = document.querySelectorAll('.toc-btn');
+var progText = document.getElementById('prog-text');
+var progFill = document.getElementById('prog-fill');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  tocBtns[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  tocBtns[cur].classList.add('active');
+  tocBtns[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  progText.textContent = (cur + 1) + ' / ' + TOTAL;
+  progFill.style.width = ((cur + 1) / TOTAL * 100) + '%';
+  btnPrev.disabled = (cur === 0);
+  btnNext.disabled = (cur === TOTAL - 1);
+}
+
+btnPrev.addEventListener('click', function() { goTo(cur - 1); });
+btnNext.addEventListener('click', function() { goTo(cur + 1); });
+tocBtns.forEach(function(btn) {
+  btn.addEventListener('click', function() { goTo(parseInt(btn.dataset.idx)); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+});
+
+function renderMath() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$',  right: '$$',  display: true  },
+      { left: '\\(', right: '\\)', display: false }
+    ],
+    throwOnError: false,
+    strict: false
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ renderMath(); goTo(0); });
+} else {
+  renderMath();
+  goTo(0);
+}
+</script>
+</body>
+</html>
