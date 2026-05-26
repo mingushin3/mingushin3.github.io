@@ -701,7 +701,7 @@ $$\underbrace{AUMC_0^\infty}_{\text{시간가중노출}}=\int_0^\infty t\cdot C(
     </table></div>
 
     <p>M3가 표준인 이유 — 한 줄로:</p>
-    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\mathcal{L}_{M3}}_{\text{우도}}=\underbrace{\prod_{C_i\geq LLOQ}\phi(C_i\mid \hat C_i,\sigma)}_{\text{정량값: 확률밀도}}\cdot\underbrace{\prod_{C_j<LLOQ}\Phi\!\left(\tfrac{LLOQ-\hat C_j}{\sigma}\right)}_{\text{BLQ: 누적확률 (censoring)}}$$</div></div>
+    <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\mathcal{L}_{M3}}_{\text{우도}}=\underbrace{\prod_{C_i\geq LLOQ}\phi(C_i\mid \hat C_i,\sigma)}_{\text{정량값: 확률밀도}}\cdot\underbrace{\prod_{C_j&lt;LLOQ}\Phi\!\left(\tfrac{LLOQ-\hat C_j}{\sigma}\right)}_{\text{BLQ: 누적확률 (censoring)}}$$</div></div>
 
     <div class="callout teal"><span class="callout-label">핵심 직관</span><strong>"BLQ 점은 '측정값이 LLOQ보다 작다는 사실(censoring event)'만 알고 있음"</strong>을 likelihood에 그대로 반영. 0으로 깎거나(M7) 절반값으로 미는 것(M5)이 아니라, <strong>"이 시점엔 농도가 LLOQ 이하라는 확률 한 덩어리"</strong>를 그 자리에 넣는 것.</div>
 
