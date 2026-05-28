@@ -358,7 +358,11 @@ h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:5
       <div class="content">
         <p>이게 NCA→PopPK 전환에서 가장 많이 놓치는 부분임. NCA의 BLQ 처리는 <strong>point exclusion 패러다임</strong> — 한 점을 결측으로 두거나 양 옆 값으로 보간함. NONMEM 같은 PopPK 도구에서는 이걸 <strong>likelihood-based</strong> 처리로 격상시킴.</p>
         <div class="card"><div class="card-title">Beal (2001) 분류</div><p><strong>M3</strong>는 "BLQ 관측값이 LOQ보다 작을 likelihood가 모델 적합도에 기여한다"는 <em>censoring framework</em>임. <strong>M5</strong>는 LOQ/2 substitution, <strong>M6</strong>는 첫 BLQ만 LOQ/2 처리 후 나머지 결측, <strong>M7</strong>은 BLQ를 0 처리 — 모두 M3의 단순화 변종임. <strong>NCA에서 결측 처리한 BLQ도 PopPK 단계에서는 M3로 다시 들어와 추정 정밀도를 회복할 수 있음.</strong></p></div>
-        <div class="formula-card-wrap"><div class="formula-card">$$\underbrace{\text{NCA}}_{\text{point exclusion}}:\ C_{BLQ}\to\text{missing}\quad\Longrightarrow\quad\underbrace{\text{PopPK (M3)}}_{\text{likelihood-based}}:\ \overbrace{P(C_{obs}<LOQ\mid\theta)}^{\text{censored likelihood}}\ \text{기여}$$</div></div>
+        <div class="formula-card-wrap">
+  <div class="formula-card">
+    $$\underbrace{\text{NCA}}_{\text{point exclusion}}:\ C_{BLQ}\to\text{missing}\quad\Longrightarrow\quad\underbrace{\text{PopPK (M3)}}_{\text{likelihood-based}}:\ \overbrace{P(C_{obs}\lt LOQ\mid\theta)}^{\text{censored likelihood}}\ \text{기여}$$
+  </div>
+</div>
         <div class="callout teal"><span class="callout-label">⚡ 핵심</span>두 영역에서 "missing"이라는 같은 단어가 가리키는 처리는 다름. NCA 보고서의 BLQ 처리 규칙(SOP/SAP)과 PopPK의 BLQ likelihood 옵션이 일관되게 정렬되어 있는지 — <strong>이게 보고서 검토의 숨은 1번 항목</strong>임.</div>
       </div>
     </section>
