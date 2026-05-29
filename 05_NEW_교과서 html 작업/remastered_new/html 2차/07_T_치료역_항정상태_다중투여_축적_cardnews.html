@@ -389,7 +389,7 @@ h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:5
       <hr class="header-rule">
       <div class="content">
         <p><strong>잠그는 자: 시계(timing)의 정체</strong>. terminal slope를 자동으로 elimination으로 번역하면, <strong>제형이 만든 느린 input을 약물 자체의 느린 제거로 오판</strong>.</p>
-        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{K_a<K}_{\text{느린 흡수}}}^{\text{flip-flop 조건}}\;\Rightarrow\;\overbrace{\underbrace{\text{terminal slope}}_{\text{말단 기울기}}}^{\text{둘 중 느린 쪽 반영}}\approx\underbrace{K_a}_{\text{흡수 K}}$$</div></div>
+        <div class="formula-card-wrap"><div class="formula-card">$$\overbrace{\underbrace{K_a \lt K}_{\text{느린 흡수}}}^{\text{flip-flop 조건}}\;\Rightarrow\;\overbrace{\underbrace{\text{terminal slope}}_{\text{말단 기울기}}}^{\text{둘 중 느린 쪽 반영}}\approx\underbrace{K_a}_{\text{흡수 K}}$$</div></div>
         <div class="callout teal"><span class="callout-label">💡 비유 — 수도꼭지/배수구</span>수도꼭지(느린 입력)가 작고 배수구(빠른 제거)가 크면 → terminal slope = elimination. 반대로 배수구보다 수도꼭지가 작으면, 욕조 수위 곡선은 결국 <strong>수도꼭지 속도(입력 끊김의 속도)</strong>가 그림. <strong>두 과정 중 율속단계가 tail을 그림</strong>.</div>
         <h2 class="section-h">의도된 input 제어 — "나쁜 flip-flop"이 아님</h2>
         <div class="two-col">
@@ -711,19 +711,19 @@ h2.section-h{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:5
         <div class="tbl-wrap"><table>
           <thead><tr><th></th><th>Ordinary</th><th>Flip-flop</th></tr></thead>
           <tbody>
-            <tr><td>조건</td><td>\(K_a>K\)</td><td>\(K_a<K\)</td></tr>
+            <tr><td>조건</td><td>\(K_a>K\)</td><td>\(K_a &lt; K\)</td></tr>
             <tr><td>terminal slope</td><td>\(\approx K\) (elimination)</td><td>\(\approx K_a\) (absorption)</td></tr>
             <tr><td>terminal half-life 의미</td><td>약물 elimination 정보</td><td>제형/input 정보를 줄 수 있음</td></tr>
           </tbody>
         </table></div>
-        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{K_a>K}_{\text{일반형}}}^{\text{absorption 빠름}}\Rightarrow\text{terminal slope}\approx K,\qquad \overbrace{\underbrace{K_a<K}_{\text{flip-flop}}}^{\text{absorption 느림}}\Rightarrow\text{terminal slope}\approx K_a$$</div></div>
+        <div class="formula-card-wrap"><div class="formula-card compact">$$\overbrace{\underbrace{K_a>K}_{\text{일반형}}}^{\text{absorption 빠름}}\Rightarrow\text{terminal slope}\approx K,\qquad \overbrace{\underbrace{K_a &lt; K}_{\text{flip-flop}}}^{\text{absorption 느림}}\Rightarrow\text{terminal slope}\approx K_a$$</div></div>
         <p class="tip">terminal phase가 보여주는 건 항상 <strong>"두 과정 중 더 느린 쪽의 속도"</strong> — 율속단계인 쪽.</p>
         <h2 class="section-h">§5-쌍4. 도달 시간 vs 축적 정도 vs Fluctuation</h2>
         <div class="tbl-wrap"><table>
           <thead><tr><th>질문</th><th>결정자</th><th>대표식</th></tr></thead>
           <tbody>
             <tr><td>plateau에 언제 도달함?</td><td>\(t_{1/2}\)</td><td>\(1-e^{-Kt}\)</td></tr>
-            <tr><td>얼마나 축적됨?</td><td>\(\tau/t_{1/2}\)</td><td>\(R_{ac}=1/(1-e^{-K\tau})\)</td></tr>
+            <tr><td>얼마나 축적됨?</td><td>\(t_{1/2}/\tau\)</td><td>\(R_{ac}=1/(1-e^{-K\tau})\)</td></tr>
             <tr><td>평균 수준은 어디임?</td><td>\(CL\)과 평균 입력률</td><td>\(C_{av,ss}=F\text{Dose}/(CL\tau)\)</td></tr>
             <tr><td>peak-trough 진폭은?</td><td>\(\tau/t_{1/2}\)</td><td>투여간격이 길수록 커짐</td></tr>
           </tbody>
