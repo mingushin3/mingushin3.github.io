@@ -266,7 +266,7 @@ mjx-container[display="true"]{margin:0 !important;}
 
 <button class="burger" aria-label="목차 열기">☰</button>
 <div class="progress"><i id="bar"></i></div>
-<div class="counter" id="counter">01 / 17</div>
+<div class="counter" id="counter">01 / 25</div>
 
 <aside class="toc">
   <div class="brand">
@@ -279,42 +279,49 @@ mjx-container[display="true"]{margin:0 !important;}
       <a class="toc-link" href="#s1">표지 · 4좌표</a>
       <a class="toc-link" href="#s2">읽는 법 · 출처</a>
       <a class="toc-link" href="#s3">CL은 비례상수, t½는 결과</a>
+      <a class="toc-link" href="#s4">CL = Dose/AUC</a>
     </div>
     <div class="toc-group">
       <div class="toc-gh"><span class="dot f1"></span>좌표① 농도기준</div>
-      <a class="toc-link" href="#s4">60 L/h 미스터리</a>
-      <a class="toc-link" href="#s5">fu vs fub · 측정매질</a>
+      <a class="toc-link" href="#s5">60 L/h 미스터리</a>
+      <a class="toc-link" href="#s6">fu vs fub · 측정매질</a>
+      <a class="toc-link" href="#s7">혈장 ↔ 전혈 변환</a>
     </div>
     <div class="toc-group">
       <div class="toc-gh"><span class="dot f2"></span>좌표② 장기</div>
-      <a class="toc-link" href="#s6">신장 — 곱셈 분해</a>
-      <a class="toc-link" href="#s7">여과·분비·재흡수</a>
-      <a class="toc-link" href="#s8">간 — well-stirred</a>
-      <a class="toc-link" href="#s9">고추출 vs 저추출</a>
+      <a class="toc-link" href="#s8">신장 — 곱셈 분해</a>
+      <a class="toc-link" href="#s9">여과·분비·재흡수</a>
+      <a class="toc-link" href="#s10">재흡수 pH 함정</a>
+      <a class="toc-link" href="#s11">담즙 · 장간순환</a>
+      <a class="toc-link" href="#s12">간 — well-stirred</a>
+      <a class="toc-link" href="#s13">고/저추출 극한</a>
+      <a class="toc-link" href="#s14">고추출 vs 저추출</a>
+      <a class="toc-link" href="#s15">막 투과 병목</a>
     </div>
     <div class="toc-group">
       <div class="toc-gh"><span class="dot f3"></span>좌표③ 경로</div>
-      <a class="toc-link" href="#s10">F = 1 − EH</a>
-      <a class="toc-link" href="#s11">경로 × 추출 5사례</a>
+      <a class="toc-link" href="#s16">F = 1 − EH</a>
+      <a class="toc-link" href="#s17">경로 × 추출 5사례</a>
     </div>
     <div class="toc-group">
       <div class="toc-gh"><span class="dot f4"></span>좌표④ 대사체</div>
-      <a class="toc-link" href="#s12">형성 vs 소실 율속</a>
-      <a class="toc-link" href="#s13">★ 신부전 보스전</a>
+      <a class="toc-link" href="#s18">형성 vs 소실 율속</a>
+      <a class="toc-link" href="#s19">초회통과·정상상태 대사체</a>
+      <a class="toc-link" href="#s20">★ 신부전 보스전</a>
     </div>
     <div class="toc-group">
       <div class="toc-gh"><span class="dot f5"></span>종합</div>
-      <a class="toc-link" href="#s14">동시 적합 (PK5)</a>
-      <a class="toc-link" href="#s15">혼동쌍 10</a>
-      <a class="toc-link" href="#s16">자가점검</a>
-      <a class="toc-link" href="#s17">한 줄 요약</a>
+      <a class="toc-link" href="#s21">동시 적합 (PK5)</a>
+      <a class="toc-link" href="#s22">비선형 · MM 포화</a>
+      <a class="toc-link" href="#s23">혼동쌍 10</a>
+      <a class="toc-link" href="#s24">자가점검</a>
+      <a class="toc-link" href="#s25">한 줄 요약</a>
     </div>
   </nav>
 </aside>
 
 <main class="deck">
 
-<!-- 1 · COVER -->
 <section class="card dark center" id="s1">
   <div class="wrap">
     <div class="eyebrow" style="color:var(--amber)">세션 04 · 청소율 · 쉬운판</div>
@@ -330,7 +337,6 @@ mjx-container[display="true"]{margin:0 !important;}
   <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
 </section>
 
-<!-- 2 · 읽는 법 -->
 <section class="card" id="s2">
   <div class="wrap">
     <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
@@ -344,7 +350,6 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 3 · CL 비례상수 -->
 <section class="card dark top" id="s3">
   <div class="wrap">
     <div class="khead"><span class="sec">§2</span><span class="eyebrow">먼저 못 박기</span></div>
@@ -356,8 +361,19 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 4 · 60 L/h 미스터리 -->
+<!-- INS-A · CL=Dose/AUC -->
 <section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow f3">모델 없이 CL 뽑기</span></div>
+    <h2>마법 같은 결과 — <em>CL = Dose/AUC</em></h2>
+    <p class="lead">위 식 \(dX/dt{=}-CL\cdot C\)를 시간으로 다 더하면(적분) — 총 빠진 약물량 = 넣은 용량.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL}_{\text{정맥 CL}}=\frac{Dose_{iv}}{AUC_{0-\infty}},\qquad \underbrace{\frac{CL}{F}}_{\text{경구 CL/F}}=\frac{D_{po}}{AUC_{po}} \]</div></div>
+    <p><b>AUC</b>=농도-시간 곡선 아래 넓이(약에 몸이 총 얼마나 노출됐나). \(\int(\text{빠지는 속도})dt{=}CL\times AUC\)라서 <strong>구획모델을 안 가정해도(NCA) 청소율이 그냥 나옴</strong> <span class="cite">G&amp;W Eq.2:84–2:86</span>. 경구는 \(F\)가 섞여 \(CL/F\)(겉보기 청소율)만 나옴.</p>
+    <div class="box" style="--ac:var(--f3)"><div class="bh">한 줄</div><p style="margin:0;"><b>NCA</b>(noncompartmental analysis, 모델 안 세우고 넓이로 계산)가 의미를 갖는 이유 — \(CL{=}Dose/AUC\)는 모델 독립.</p></div>
+  </div>
+</section>
+
+<section class="card top" id="s5">
   <div class="wrap">
     <div class="khead"><span class="sec">§3 · 좌표①</span><span class="eyebrow f1">농도기준 · 매트릭스</span></div>
     <h2>"60 L/h 미스터리"</h2>
@@ -368,8 +384,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 5 · fu/fub + 매질 -->
-<section class="card" id="s5">
+<section class="card" id="s6">
   <div class="wrap">
     <div class="khead"><span class="sec">§3 · 좌표①</span><span class="eyebrow f1">또 하나의 매트릭스 함정</span></div>
     <h2>\(f_u\) vs \(f_{ub}\) — <em>분모만 다르다</em></h2>
@@ -387,8 +402,19 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 6 · 신장 분해 -->
-<section class="card top" id="s6">
+<!-- INS-B · 혈장↔전혈 변환 -->
+<section class="card top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 좌표①</span><span class="eyebrow f1">혈장 ↔ 전혈 변환</span></div>
+    <h2>변환 한 줄 — <em>\(CL_b = CL\cdot C/C_b\)</em></h2>
+    <p class="lead">혈장(plasma)=적혈구 뺀 액체, 전혈(blood)=적혈구 포함 통째. \(R{=}C/C_b\)=혈장-전혈 농도비.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_b}_{\text{전혈 기준 CL}}=\underbrace{CL}_{\text{혈장 기준 CL}}\cdot\underbrace{\frac{C}{C_b}}_{\text{변환비 }R} \]</div></div>
+    <p>\(R&lt;1\)이면 약이 적혈구에 농축 → 전혈농도가 혈장농도보다 큼 → 전혈청소율 \(CL_b\)가 혈장청소율 \(CL\)보다 <b>작아짐</b> <span class="cite">R&amp;T Eq.5-5</span>. 전혈 농도비는 보통 \(0.3{\sim}2\), 적혈구에 강하게 들어가면 0에 가까워짐 <span class="cite">R&amp;T p.127</span>.</p>
+    <div class="box" style="--ac:var(--f1)"><div class="bh">왜 중요</div><p style="margin:0;">장기 추출률 \(E_H{=}CL_b/Q_H\)는 <b>전혈 기준</b>이어야 함. 이 변환을 안 거치면 "60 L/h 미스터리"의 가짜 고추출이 나옴.</p></div>
+  </div>
+</section>
+
+<section class="card top" id="s8">
   <div class="wrap">
     <div class="khead"><span class="sec">§4 · 좌표②-A</span><span class="eyebrow f2">신장 청소율 분해</span></div>
     <h2>"곱셈 분해"지 <em>비례 단축이 아님</em></h2>
@@ -399,8 +425,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 7 · 여과/분비/재흡수 -->
-<section class="card top" id="s7">
+<section class="card top" id="s9">
   <div class="wrap">
     <div class="khead"><span class="sec">§4 · 좌표②-A</span><span class="eyebrow f2">여과 · 분비 · 재흡수</span></div>
     <h2>소변 속 약은 <em>세 과정의 순 결과</em></h2>
@@ -417,8 +442,38 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 8 · 간 well-stirred -->
-<section class="card dark top" id="s8">
+<!-- INS-C · 재흡수 pH 함정 -->
+<section class="card top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 좌표②-A</span><span class="eyebrow f2">"1차 재흡수" 함정</span></div>
+    <h2>재흡수는 <em>pH·유속·친유성</em>에 휘둘린다</h2>
+    <p class="lead">\((1-F_R)\)은 "재흡수가 농도 무관 일정 분율"이라는 단순 가정. 실제 재흡수는 다변수 함수.</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ F_R=f\big(\underbrace{\text{소변 pH}}_{\text{이온화}},\ \underbrace{\text{소변 유속}}_{\text{체류시간}},\ \underbrace{\text{친유성}}_{\text{막 투과}},\ \underbrace{\text{수송체}}_{\text{능동수송}}\big) \]</div></div>
+    <p>이온화형은 막을 못 넘어 재흡수 안 됨(소변에 남아 배설) → <strong>소변 pH 하나로 \(CL_R\)이 자릿수로 흔들림</strong>. 약산은 pH↑면 더 이온화 → 재흡수↓ → \(CL_R\)↑, 약염기는 반대 <span class="cite">R&amp;T p.145</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>약물</th><th>산성 소변 (pH 4.9–5.3)</th><th>알칼리성 소변 (pH 7.8–8.2)</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>메스암페타민 (pKa 10, 약염기)</td><td>회수율 <span class="em">70–80%</span></td><td>회수율 <span class="em">1–2%</span></td></tr>
+        <tr><td>페노바르비탈 (pKa 7.2, 약산)</td><td>낮은 \(CL_R\)</td><td>\(CL_R\)↑(알칼리화 치료)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">강제 이뇨+소변 알칼리화가 페노바르비탈 중독 치료에 쓰임 — 단 조건 ① 신배설이 주경로 ② 원래 재흡수 큼 ③ pH 민감 <span class="cite">R&amp;T Fig.5-16·5-18, p.144–147</span>.</p>
+  </div>
+</section>
+
+<!-- INS-D · 담즙 청소율 -->
+<section class="card top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 좌표②-A</span><span class="eyebrow f3">제3의 경로 · 담즙</span></div>
+    <h2>담즙 청소율과 <em>장간순환</em></h2>
+    <p class="lead">신장·간 대사 말고 제3의 배설 경로 = 담즙. \(CL_{other}\) 자리에 들어감.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_{biliary}}_{\text{담즙 CL}}=\frac{(\text{담즙 유속})\cdot C_{bile}}{C_{plasma}} \]</div></div>
+    <p>담즙 유속 ≈ <b>0.5–0.8 mL/min</b>이라 담즙농도가 혈장과 비슷하면 담즙CL은 매우 작음. 근데 약이 담즙에 농축(담즙/혈장비 최대 1000)되면 담즙CL이 <b>500 mL/min 이상</b>도 가능 <span class="cite">R&amp;T p.137–138</span>. 고담즙CL 4조건: 유출수송체(P-gp·MRP2·BCRP) 기질 · 극성 · MW&gt;350 g/mol — 글루쿠로니드 대사체가 전형.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 중요 정정</div><p style="margin:0;"><strong>장간순환은 소실이 아니라 분포의 일부.</strong> 간→담즙→소장→재흡수는 체외로 안 나감. 청소율 합산엔 <b>재흡수 안 되고 분변으로 빠진 분율만</b> 들어감 <span class="cite">R&amp;T p.138·148</span>.</p></div>
+  </div>
+</section>
+
+<section class="card dark top" id="s12">
   <div class="wrap">
     <div class="khead"><span class="sec">§5 · 좌표②-B</span><span class="eyebrow">간 청소율 · 본진</span></div>
     <h2>well-stirred — <em>둘 중 작은 쪽이 병목</em></h2>
@@ -432,8 +487,19 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 9 · 고/저추출 -->
-<section class="card top" id="s9">
+<!-- INS-E · 고/저추출 극한 유도 -->
+<section class="card top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 좌표②-B</span><span class="eyebrow f1">두 극한 유도</span></div>
+    <h2>well-stirred의 <em>두 극한</em></h2>
+    <p class="lead">분모 \(Q_H+f_{ub}CL_{int}\)에서 큰 쪽이 약분돼 사라지고, 작은 쪽만 남아 병목이 된다.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{f_{ub}CL_{int}\gg Q_H}_{\text{처리 능력 &gt; 혈류}}\ \Rightarrow\ \underbrace{CL_{b,H}\approx Q_H}_{\text{혈류가 병목, 고추출}} \]</div></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{f_{ub}CL_{int}\ll Q_H}_{\text{처리 능력 &lt; 혈류}}\ \Rightarrow\ \underbrace{CL_{b,H}\approx f_{ub}CL_{int}}_{\text{효소·결합이 병목, 저추출}} \]</div></div>
+    <p>유도는 정상상태(들어온 양 = 나간 양 + 제거된 양)에서 나옴 <span class="cite">R&amp;T Eq.5-14·5-15, p.134–135</span> <span class="cite">G&amp;W Eq.2:204·2:205, p.83</span>. 손이 하는 일은 <strong>"\(f_{ub}CL_{int}\)가 81보다 큰가 작은가?"</strong> 한 줄 비교.</p>
+  </div>
+</section>
+
+<section class="card top" id="s14">
   <div class="wrap">
     <div class="khead"><span class="sec">§5 · 좌표②-B</span><span class="eyebrow f2">임상이 갈리는 지점</span></div>
     <h2>고추출 vs 저추출 — <em>정반대 결론</em></h2>
@@ -451,8 +517,19 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 10 · F=1-EH -->
-<section class="card" id="s10">
+<!-- INS-F · 막 투과 병목 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 좌표②-B</span><span class="eyebrow f4">막이 병목일 수도</span></div>
+    <h2>막 투과 율속 — <em>효소가 아니라 막</em></h2>
+    <p class="lead">기본 well-stirred는 "약이 간세포 안팎을 빠르게 드나든다"고 가정. 큰 분자(MW&gt;600)·극성 약은 막 투과가 느려서, 효소가 충분해도 못 들어감.</p>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 공장 회전문 비유</div><p style="margin:0;">정문 회전문(막 투과)이 느리면, 안쪽 라인(효소)이 아무리 빨라도 생산량이 떨어짐.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ f_{ub}CL_{int}\ \longrightarrow\ f_{ub}\,\rho\,CL_{int}\quad(\rho:\ \text{막투과 보정}\,0\!\sim\!1) \]</div></div>
+    <p><b>스타틴 계열</b>(pravastatin, rosuvastatin)이 전형 — 간 흡수 수송체 <b>OATP1B1</b>에 의존해 막 투과가 율속. 이러면 청소율을 정하는 건 효소가 아니라 <b>기저측 막 투과성</b>. \(\rho&lt;1\)이면 낮은 \(CL_{int}\)로 오인하기 쉬움 <span class="cite">R&amp;T p.136–137</span>.</p>
+  </div>
+</section>
+
+<section class="card" id="s16">
   <div class="wrap">
     <div class="khead"><span class="sec">§6 · 좌표③</span><span class="eyebrow f3">투여 경로 · 초회통과</span></div>
     <h2>생체이용률과 추출률은 <em>동전의 양면</em></h2>
@@ -462,8 +539,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 11 · 경로 5사례 -->
-<section class="card dark top" id="s11">
+<section class="card dark top" id="s17">
   <div class="wrap">
     <div class="khead"><span class="sec">§6 · 좌표③</span><span class="eyebrow">경로가 결론을 뒤집는다</span></div>
     <h2>같은 약, 다른 답 — <em>R&amp;T 실측 5</em></h2>
@@ -481,8 +557,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 12 · 대사체 형성/소실 -->
-<section class="card top" id="s12">
+<section class="card top" id="s18">
   <div class="wrap">
     <div class="khead"><span class="sec">§7 · 좌표④</span><span class="eyebrow f4">대사체 동역학</span></div>
     <h2>말단 기울기 — <em>모약물 잔향인가, 대사체 자신인가</em></h2>
@@ -492,8 +567,19 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 13 · 신부전 보스전 -->
-<section class="card dark top" id="s13">
+<!-- INS-G · 초회통과 + 정상상태 대사체 -->
+<section class="card top" id="s19">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 좌표④</span><span class="eyebrow f5">초회통과 · 정상상태 대사체</span></div>
+    <h2>대사체는 <em>두 곳</em>에서 생긴다</h2>
+    <p class="lead">경구 모약물을 먹으면 대사체가 ① 흡수·초회통과 중(간 첫 통과) ② 흡수 후 전신, 두 군데서 생겨 한 곡선에 겹침.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{C(m)_{ss}}_{\text{대사체 정상농도}}=\frac{\overbrace{f_m}^{\text{형성분율}}\cdot\overbrace{R_{in}}^{\text{투여속도}}}{\underbrace{CL(m)}_{\text{대사체 CL}}} \]</div></div>
+    <p>정상상태 도달 시간은 모약물·대사체 소실 중 <b>더 느린 쪽</b>이 정함 <span class="cite">R&amp;T Eq.20-12, p.670</span>. 예: N-desalkylhalazepam은 모약물보다 반감기가 길어 더 천천히 쌓이고 빠짐 <span class="cite">R&amp;T Fig.20-9, p.672</span>.</p>
+    <div class="box" style="--ac:var(--f5)"><div class="bh">Morphine → M6G</div><p style="margin:0;">경구 morphine 생체이용률은 낮지만(\(F{=}0.20\)), 초회통과에서 활성 M6G가 형성돼 <b>M6G 노출이 경구·IV에서 거의 같음</b>. 모약물 \(F\)가 낮아도 활성 대사체 노출은 보존될 수 있음 <span class="cite">R&amp;T Fig.20-7</span>.</p></div>
+  </div>
+</section>
+
+<section class="card dark top" id="s20">
   <div class="wrap">
     <div class="khead"><span class="sec">§7.5 ★</span><span class="eyebrow">계량약리 보스전</span></div>
     <h2>신부전 + 활성 대사체 <em>폭발</em></h2>
@@ -504,8 +590,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 14 · 동시 적합 -->
-<section class="card top" id="s14">
+<section class="card top" id="s21">
   <div class="wrap">
     <div class="khead"><span class="sec">§8</span><span class="eyebrow f5">구현 · 동시 적합</span></div>
     <h2>혈장 + 소변을 <em>한 모델에서</em></h2>
@@ -515,8 +600,19 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 15 · 혼동쌍 -->
-<section class="card top" id="s15">
+<!-- INS-H · 비선형 MM 포화 -->
+<section class="card top" id="s22">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9</span><span class="eyebrow f2">비선형 · 포화</span></div>
+    <h2>비선형 청소율 — <em>Michaelis–Menten</em></h2>
+    <p class="lead">효소·수송체 용량은 유한. 단일점 \(CL_{int}\) 대신 농도-속도 곡선으로 봐야 할 때가 있다(농도 낮으면 1차, 높으면 0차).</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \text{대사 속도}=\frac{V_{max}\cdot C}{K_m+C} \]</div></div>
+    <p>\(V_{max}\)=최대 대사속도, \(K_m\)=반최대 농도. \(C\ll K_m\)이면 1차(\(CL{\approx}V_{max}/K_m\), 상수), \(C\gg K_m\)이면 0차(속도\(\approx V_{max}\), 포화) <span class="cite">G&amp;W Table 2.8</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 혼동쌍</div><p style="margin:0;">곡선을 단일점 \(CL_{int}\)로 압축하면 정보 손실 — 어떤 간모델로도 복구 안 됨. 시험관 효소단백량(MMP 20/50/77 mg)에 따라 저/중/고 추출 분류가 바뀜 <span class="cite">G&amp;W Table 2.8</span>.</p></div>
+  </div>
+</section>
+
+<section class="card top" id="s23">
   <div class="wrap">
     <div class="khead"><span class="sec">§9</span><span class="eyebrow" style="color:var(--coral-d)">절대 같이 두지 말 것</span></div>
     <h2>혼동쌍 <em>핵심 6</em></h2>
@@ -535,8 +631,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 16 · 자가점검 -->
-<section class="card top" id="s16">
+<section class="card top" id="s24">
   <div class="wrap">
     <div class="khead"><span class="sec">점검</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 풀고 답 보기</span></div>
     <h2>스스로 <em>점검</em> — Q1~Q5</h2>
@@ -555,8 +650,7 @@ mjx-container[display="true"]{margin:0 !important;}
   </div>
 </section>
 
-<!-- 17 · 요약 -->
-<section class="card dark center" id="s17">
+<section class="card dark center" id="s25">
   <div class="wrap">
     <div class="khead" style="justify-content:center;"><span class="sec">요약</span><span class="eyebrow">4좌표를 한 장으로</span></div>
     <h2>청소율 숫자를 보면 <em>손이 자동으로</em></h2>
@@ -570,7 +664,6 @@ mjx-container[display="true"]{margin:0 !important;}
     <div class="foot">Gabrielsson &amp; Weiner Ch.2 + PK5 · Rowland &amp; Tozer Ch.5·20 + 부록 D·E — 수치·인용 원문 대조 (원본: 04_clearance_쉬운판.md)</div>
   </div>
 </section>
-
 </main>
 
 <script>
