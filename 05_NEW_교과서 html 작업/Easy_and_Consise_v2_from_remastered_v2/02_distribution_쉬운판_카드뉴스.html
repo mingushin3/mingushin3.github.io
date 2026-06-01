@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 02 · 분포의 생물학 — Vd·막투과·단백결합 · 카드뉴스</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+KR:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)'], ['$','$']],
+    displayMath: [['\\[','\\]'], ['$$','$$']]
+  },
+  chtml: {
+    mtextInheritFont: true,
+    matchFontHeight: false,
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { enableMenu: false, renderActions: { addMenu: [] } },
+  startup: { ready: () => { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#F0EEE6; --paper:#FAF9F5; --paper-2:#F4F1E9;
+  --ink:#211F1B; --ink-2:#56514A; --ink-3:#8A857C; --line:#E4DFD3;
+  --coral:#D97757; --coral-d:#B0501F; --coral-tint:#FBEEE7; --coral-tint-bd:#F1D7C7;
+  --dark:#262019; --dark-2:#2F2820; --cream:#F4EFE6; --cream-2:#D6CFBF;
+  --amber:#EAB45C; --coral-l:#EC9A78; --teal-l:#86C0A9; --tan:#D4A27F;
+  --f1:#CF6A45; --f2:#BB852C; --f3:#3F7A66; --f4:#8A5A86; --f5:#4E6E94;
+  --font-serif:"Newsreader","Noto Serif KR",Georgia,serif;
+  --font-sans:"Pretendard",-apple-system,BlinkMacSystemFont,"Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:20px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  word-break:keep-all; overflow-wrap:break-word;
+  display:grid; grid-template-columns:312px 1fr;
+}
+
+/* ---------- progress bar ---------- */
+.progress{position:fixed; top:0; left:312px; right:0; height:4px; background:transparent; z-index:60;}
+.progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--coral),var(--amber)); transition:width .25s ease;}
+.counter{position:fixed; right:26px; bottom:22px; z-index:60;
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
+  background:rgba(250,249,245,.88); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; backdrop-filter:blur(6px);}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky; top:0; height:100vh; overflow-y:auto; z-index:50;
+  background:#EBE7DD; border-right:1px solid var(--line); padding:30px 20px 60px;}
+.toc::-webkit-scrollbar{width:8px;} .toc::-webkit-scrollbar-thumb{background:#D7D1C4; border-radius:8px;}
+.brand{padding:0 8px 18px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+.brand .k{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral-d);}
+.brand .t{font-family:var(--font-serif); font-size:26px; font-weight:600; line-height:1.14; margin-top:6px; color:var(--ink);}
+.toc-group{margin:15px 0 4px;}
+.toc-gh{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+  color:var(--ink-3); text-transform:uppercase; padding:6px 8px 4px;}
+.dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.dot.f1{background:var(--f1)} .dot.f2{background:var(--f2)} .dot.f3{background:var(--f3)} .dot.f4{background:var(--f4)} .dot.f5{background:var(--f5)}
+.toc-link{display:block; text-decoration:none; color:var(--ink-2); font-size:14px; line-height:1.32;
+  padding:6px 10px 6px 12px; border-radius:8px; border-left:2px solid transparent; transition:all .15s;}
+.toc-link:hover{background:rgba(217,119,87,.10); color:var(--ink);}
+.toc-link.active{background:var(--paper); color:var(--coral-d); font-weight:600; border-left-color:var(--coral);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+/* ---------- deck / cards ---------- */
+.deck{min-width:0;}
+.card{min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:76px 72px; border-bottom:1px solid var(--line); scroll-margin-top:0; position:relative;}
+.card.top{justify-content:flex-start; padding-top:84px;}
+.wrap{width:100%; max-width:1080px; margin:0 auto;}
+.card.dark{background:var(--dark); color:var(--cream); border-bottom-color:#3a3228;}
+.card.center{text-align:center;}
+.card.center .wrap{margin:0 auto;}
+
+.khead{display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.sec{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-3); background:rgba(0,0,0,.045); padding:3px 11px; border-radius:7px;}
+.card.dark .sec{color:var(--amber); background:rgba(255,255,255,.08);}
+.eyebrow{font-size:15.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;}
+.f1{color:var(--f1)} .f2{color:var(--f2)} .f3{color:var(--f3)} .f4{color:var(--f4)} .f5{color:var(--f5)}
+.card.dark .eyebrow{color:var(--amber);}
+
+h2{font-family:var(--font-serif); font-weight:500; font-size:clamp(36px,4.6vw,58px);
+  line-height:1.13; letter-spacing:-.012em; margin:.05em 0 .5em;}
+.card.dark h2{color:#fff;}
+h2 em{font-style:italic; color:var(--coral-d);}
+.card.dark h2 em{color:var(--amber);}
+.lead{font-size:clamp(21px,2vw,26px); line-height:1.55; color:var(--ink); margin:0 0 .7em;}
+.card.dark .lead{color:var(--cream);}
+p{font-size:clamp(18.5px,1.5vw,22px); line-height:1.72; margin:.55em 0;}
+.muted{color:var(--ink-2);} .card.dark .muted{color:var(--cream-2);}
+.gloss{color:var(--ink-3); font-size:.9em;} .card.dark .gloss{color:var(--cream-2);}
+strong{font-weight:700; color:var(--coral-d);} .card.dark strong{color:var(--amber);}
+b{font-weight:700; color:var(--ink);} .card.dark b{color:#fff;}
+.hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.45) 58%); padding:0 1px; color:inherit; font-weight:600;}
+.card.dark .hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.30) 58%);}
+
+ul{margin:.5em 0; padding-left:0; list-style:none;}
+ol{margin:.5em 0; padding-left:1.4em;}
+ol li{padding:5px 0; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6;}
+ul li{position:relative; padding:7px 0 7px 26px; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6; list-style:none;}
+ul li::before{content:""; position:absolute; left:4px; top:.95em; width:7px; height:7px; border-radius:50%;
+  background:var(--coral);}
+.card.dark ul li::before{background:var(--amber);}
+ul li.x::before{content:"✕"; background:none; color:var(--coral-d); font-size:.8em; top:.7em; left:2px; width:auto; height:auto;}
+.card.dark ul li.x::before{color:var(--coral-l);}
+ul li.o::before{content:"✓"; background:none; color:var(--f3); font-weight:700; top:.55em; left:0; width:auto; height:auto;}
+.card.dark ul li.o::before{color:var(--amber);}
+
+/* ---------- citations / flags ---------- */
+.cite{font-family:var(--font-mono); font-size:.64em; font-weight:500; color:var(--ink-3);
+  background:rgba(0,0,0,.045); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle; letter-spacing:.01em;}
+.card.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.10);}
+.box .cite{background:rgba(0,0,0,.05);}
+.box.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.12);}
+.flag{font-family:var(--font-mono); font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--coral-d);
+  background:rgba(217,119,87,.10); border:1px solid var(--coral-tint-bd); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle;}
+.card.dark .flag, .box.dark .flag{color:var(--amber); background:rgba(234,180,92,.12); border-color:rgba(234,180,92,.32);}
+
+/* ---------- boxes / callouts ---------- */
+.box{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ac,var(--coral));
+  border-radius:13px; padding:20px 25px; margin:18px 0;}
+.box .bh{display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.02em;
+  color:var(--ac,var(--coral-d)); margin-bottom:.45em;}
+.box .ico{font-size:1.05em; filter:saturate(1.1);}
+.box p, .box li{font-size:clamp(17px,1.38vw,20px);}
+.box.dark{background:var(--dark-2); border-color:rgba(255,255,255,.12); border-left-color:var(--ac,var(--amber)); color:var(--cream);}
+.box.dark .bh{color:var(--amber);}
+.box.dark strong{color:var(--amber);} .box.dark b{color:#fff;}
+.box.dark ul li::before{background:var(--amber);}
+.box.dark .muted{color:var(--cream-2);}
+
+.key{background:var(--coral-tint); border:1px solid var(--coral-tint-bd); border-left:5px solid var(--coral);
+  border-radius:13px; padding:20px 26px; margin:18px 0; font-size:clamp(18.5px,1.5vw,22px); line-height:1.55;}
+.key .lbl{display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral-d); margin-bottom:.35em;}
+.key strong{color:var(--coral-d);}
+.card.dark .key{background:rgba(234,180,92,.10); border-color:rgba(234,180,92,.3); border-left-color:var(--amber); color:var(--cream);}
+.card.dark .key .lbl{color:var(--amber);} .card.dark .key strong{color:var(--amber);} .card.dark .key b{color:#fff;}
+
+.thread{font-family:var(--font-serif); font-style:italic; font-size:clamp(17.5px,1.5vw,22px);
+  color:var(--ink-2); border-top:1px dashed var(--line); padding-top:16px; margin-top:22px; display:flex; gap:10px;}
+.thread .ico{font-style:normal;}
+.thread b{color:var(--coral-d);}
+.card.dark .thread{color:var(--cream-2); border-top-color:rgba(255,255,255,.18);}
+.card.dark .thread b{color:var(--amber);}
+
+/* ---------- stats ---------- */
+.stats{display:flex; flex-wrap:wrap; gap:14px 30px; align-items:flex-end; margin:14px 0 6px;}
+.stat{display:flex; flex-direction:column; gap:2px;}
+.stat .lab{font-size:14.5px; color:var(--ink-2); letter-spacing:.01em;}
+.card.dark .stat .lab{color:var(--cream-2);}
+.stat .val{font-family:var(--font-serif); font-weight:500; font-size:clamp(34px,4.4vw,58px); line-height:1; color:var(--ink);}
+.stat .val .u{font-size:.42em; color:var(--ink-2); font-family:var(--font-sans); font-weight:500;}
+.card.dark .stat .val{color:#fff;} .card.dark .stat .val .u{color:var(--cream-2);}
+.arrow{font-family:var(--font-serif); font-size:clamp(30px,3.4vw,46px); color:var(--coral); align-self:center; padding-bottom:.18em;}
+.card.dark .arrow{color:var(--coral-l);}
+.bignum{font-family:var(--font-serif); font-weight:500; font-size:clamp(64px,10vw,140px); line-height:.9; color:var(--coral-d);}
+.card.dark .bignum{color:var(--amber);}
+
+/* ---------- tables ---------- */
+.tbl{width:100%; overflow-x:auto; margin:16px 0;}
+table{width:100%; border-collapse:collapse; font-size:clamp(15px,1.3vw,18.5px);}
+th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+thead th{font-weight:700; color:var(--coral-d); border-bottom:2px solid var(--coral); font-size:.94em; letter-spacing:.01em;}
+tbody tr:last-child td{border-bottom:none;}
+td .em{color:var(--coral-d); font-weight:600;}
+tr.hot td{background:rgba(234,180,92,.13);}
+.card.dark th,.card.dark td{border-bottom-color:rgba(255,255,255,.13); color:var(--cream);}
+.card.dark thead th{color:var(--amber); border-bottom-color:var(--amber);}
+.card.dark td .em{color:var(--amber);}
+.card.dark tr.hot td{background:rgba(234,180,92,.16);}
+.box table{font-size:clamp(14.5px,1.2vw,17px);}
+.fcell{display:inline-flex; align-items:center; gap:7px; font-weight:600;}
+
+/* ---------- math ---------- */
+.mathblock{font-size:clamp(21px,2.15vw,30px); margin:1.2em 0; overflow-x:auto; overflow-y:hidden; padding:8px 2px;}
+.mathblock.tight{margin:.6em 0;}
+.mathblock.tall{margin:1.6em 0; padding:14px 2px;}
+.mathblock.wide{font-size:clamp(15.5px,1.7vw,22px);}
+mjx-container{color:inherit !important;}
+mjx-container[display="true"]{margin:0 !important;}
+.card.dark .mathblock, .box.dark .mathblock, .key .mathblock{color:inherit;}
+.formula-hero{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 22px; margin:18px 0;}
+.card.dark .formula-hero{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12);}
+.box.dark .formula-hero, .key .formula-hero{background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.14);}
+
+/* ---------- params chips ---------- */
+.params{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;}
+.chip{font-family:var(--font-mono); font-size:15px; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:9px; padding:8px 13px; color:var(--ink);}
+.chip b{color:var(--coral-d);}
+.card.dark .chip{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--cream);}
+.card.dark .chip b{color:var(--amber);}
+
+/* ---------- grids ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin:16px 0;}
+@media (max-width:1180px){ .grid3{grid-template-columns:1fr;} }
+
+/* ---------- code ---------- */
+.codeblock{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:18px 22px; margin:12px 0; font-size:clamp(12.5px,1.05vw,15px); line-height:1.7;
+  overflow-x:auto; border:1px solid rgba(255,255,255,.10);}
+.codeblock .ttl{display:block; color:var(--amber); font-weight:600; margin-bottom:8px; font-size:.95em;}
+.codeblock pre{margin:0; white-space:pre;}
+.codeblock .cm{color:var(--coral-l);}
+.codeblock .kw{color:var(--amber);}
+
+/* ---------- flow ---------- */
+.flow{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:22px 26px; margin:16px 0; font-size:clamp(14px,1.25vw,17px); line-height:1.85;}
+.flow .step{color:var(--amber); font-weight:600;}
+.flow .ar{color:var(--coral-l);}
+
+/* ---------- Q&A ---------- */
+.qa{margin:10px 0;}
+.qa .q{font-weight:700; color:var(--ink); font-size:clamp(16.5px,1.35vw,19px); margin-top:15px; display:flex; gap:10px;}
+.qa .q .n{font-family:var(--font-mono); color:var(--coral-d); flex:0 0 auto;}
+.qa .q .lv{font-family:var(--font-mono); font-size:.7em; color:var(--ink-3); margin-left:auto; white-space:nowrap;}
+.qa .a{color:var(--ink-2); font-size:clamp(15.5px,1.3vw,18px); padding-left:30px; margin-top:3px; line-height:1.58;}
+.qa .a b{color:var(--coral-d);}
+.card.dark .qa .q{color:#fff;} .card.dark .qa .q .n{color:var(--amber);} .card.dark .qa .a{color:var(--cream-2);} .card.dark .qa .a b{color:var(--amber);}
+
+.scroll-hint{position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2); opacity:.8;
+  display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scroll-hint .dn{font-size:18px; animation:bob 1.8s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)}}
+
+.foot{margin-top:26px; font-size:14.5px; color:var(--ink-3); letter-spacing:.01em;}
+.card.dark .foot{color:var(--cream-2);}
+.divider{height:1px; background:var(--line); margin:20px 0;}
+.card.dark .divider{background:rgba(255,255,255,.14);}
+
+/* ---------- burger / mobile ---------- */
+.burger{display:none; position:fixed; top:14px; left:14px; z-index:70; width:46px; height:46px;
+  border-radius:11px; background:var(--dark); color:var(--cream); border:none; cursor:pointer; font-size:20px;}
+@media (max-width:980px){
+  body{grid-template-columns:1fr; font-size:18px;}
+  .toc{position:fixed; left:0; top:0; width:300px; transform:translateX(-100%); transition:transform .25s; box-shadow:0 0 40px rgba(0,0,0,.25);}
+  body.toc-open .toc{transform:translateX(0);}
+  .burger{display:block;}
+  .progress{left:0;}
+  .card{padding:78px 26px 64px;}
+  .card.top{padding-top:78px;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="burger" aria-label="목차 열기">☰</button>
+<div class="progress"><i id="bar"></i></div>
+<div class="counter" id="counter">01 / 24</div>
+
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 02 · 분포의 생물학</div>
+    <div class="t">Vd · 막투과 · 단백결합</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 관통 척추</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">워파린 함정 질문</a>
+      <a class="toc-link" href="#s4">챕터 비밀번호</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>좌표 · 막 · 속도</div>
+      <a class="toc-link" href="#s5">농도 좌표계 C·Cu·Cb</a>
+      <a class="toc-link" href="#s6">총→유리·전혈 변환식</a>
+      <a class="toc-link" href="#s7">M1 막을 미는 힘</a>
+      <a class="toc-link" href="#s8">투과 3대 성질</a>
+      <a class="toc-link" href="#s9">M2 범위 vs 속도</a>
+      <a class="toc-link" href="#s10">재분포 · thiopental</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>V의 정체 (심장)</div>
+      <a class="toc-link" href="#s11">M3 V = 숨은 정도</a>
+      <a class="toc-link" href="#s12">두 칸 모델 유도</a>
+      <a class="toc-link" href="#s13">M3 같은 약, 세 V</a>
+      <a class="toc-link" href="#s14">알부민 바닥 7.5 L</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>은신처</div>
+      <a class="toc-link" href="#s15">M4 혈장 쪽 · fu</a>
+      <a class="toc-link" href="#s16">단백 분기 · 질환</a>
+      <a class="toc-link" href="#s17">M5 조직 쪽 · 큰 Vd</a>
+      <a class="toc-link" href="#s18">M5b 항체의 역설</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>지표 · 종합</div>
+      <a class="toc-link" href="#s19">M6 노출 지표</a>
+      <a class="toc-link" href="#s20">혼동쌍 4쌍</a>
+      <a class="toc-link" href="#s21">워파린 케이스 풀기</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>점검</div>
+      <a class="toc-link" href="#s22">자가테스트 ①</a>
+      <a class="toc-link" href="#s23">자가테스트 ②</a>
+      <a class="toc-link" href="#s24">조망 · 한 줄 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 02 · 분포의 생물학 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,76px); margin-top:.25em; line-height:1.08;">채혈로 보는 농도는<br><em>숨바꼭질의 그림자</em>일 뿐</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">약은 몸 안 어딘가에 숨는다 — 막투과·단백결합·조직결합으로 분포용적의 진짜 정체를 해부</p>
+    <div class="key" style="max-width:880px; margin:32px auto 0; text-align:left;">
+      <span class="lbl">관통 척추</span>
+      <strong>\(V\)는 부피가 아니라 "약이 채혈로 안 보이는 어딘가에 얼마나 숨었나"의 척도임.</strong> 그래서 <b>총 농도 하나로는 활성 노출(\(C_u\))을 읽을 수 없음.</b>
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.3vw,30px); color:#fff; margin-top:28px;">"진열대(혈장)에 적게 나와 있다고 창고(조직)에도 적은 게 아니다"</p>
+    <div class="foot">Rowland &amp; Tozer Ch.4 + 부록 B·C·D · Gabrielsson &amp; Weiner §2.9 + Application 47 — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>두 교과서와 <em>정직 규칙</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">R&amp;T</div><p class="muted">Rowland &amp; Tozer <i>Clinical PK/PD</i> 5판. 원천 = <b>Ch.4 "Membranes and Distribution"(막과 분포) pp.79–118</b> + 부록 B(이온화)·C(강결합 분포)·D(혈장-전혈비).</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">G&amp;W</div><p class="muted">Gabrielsson &amp; Weiner <i>PK/PD Data Analysis</i> 5판. 원천 = <b>§2.9 노출 지표 pp.163–169</b> + <b>Application 47 단백결합 pp.690–693</b>.</p></div>
+    </div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">🟥</span> 정직 플래그</div><p class="muted" style="margin:0;">노트엔 있었지만 R&amp;T Ch.4 발췌 PDF 밖인 <b>워파린 enantiomer·CYP2C9 대사</b>와 <b>FcRn 항체 재순환</b>은 진짜 약리학이지만 "이 챕터에서 확인됨"이라 못 하므로 <span class="flag">교과서 외 · 후속 세션</span>으로 표시하고 살려 둠. 거짓 단정 안 함.</p></div>
+    <p class="muted"><b>대상</b> 비전공·1학년 OK · <b>선행</b> 세션 01의 \(CL\)(청소율)·\(V\)(분포용적) 두 글자만 · <b>쪽수</b>는 원판 교재 기준(애매하면 그림·식 번호로).</p>
+  </div>
+</section>
+
+<!-- 3 · 워파린 함정 -->
+<section class="card dark" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow">강의실 도입 · 함정 질문</span></div>
+    <h2>"총 농도 떨어졌으니 <em>출혈 위험 줄었죠?</em>"</h2>
+    <p class="lead"><b>신증후군</b>(콩팥이 새서 혈중 단백이 소변으로 빠짐)으로 혈청 알부민이 <b>43 → 12.5 g/L</b>로 떨어진 환자. 워파린 PK가 같이 측정됨 <span class="cite">R&amp;T Table 4-12, p.118 · Ganeval et al. 1986</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>파라미터</th><th>정상 알부민</th><th>저알부민혈증</th><th>방향</th></tr></thead>
+      <tbody>
+        <tr><td>\(V\) (L)</td><td>9.4</td><td>13.7</td><td><span class="em">↑</span></td></tr>
+        <tr class="hot"><td>\(CL\) (L/hr)</td><td>0.20</td><td>0.58</td><td><span class="em">↑↑</span></td></tr>
+        <tr><td>\(t_{1/2}\) (hr)</td><td>36</td><td>18</td><td><span class="em">↓</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;">여기서 "맞다"고 하면 환자가 다침. 알부민이 떨어졌다는 건 <strong>약을 붙잡던 혈장 쪽 손이 풀렸다</strong>는 뜻 — 풀린 약이 청소될지·조직에 더 숨을지·활성으로 떠다닐지를 <b>총 농도(단일 숫자)로는 구별 불가.</b> 셋이 한 환자에서 동시에 일어남.</p></div>
+    <div class="thread"><span class="ico">🎯</span><div>이 세션은 이 질문에 정식으로 답할 <b>좌표계</b>를 세우는 자리 — §6에서 이 환자에게 돌아옴.</div></div>
+  </div>
+</section>
+
+<!-- 4 · 비밀번호 -->
+<section class="card" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3</span><span class="eyebrow" style="color:var(--coral-d)">챕터 비밀번호</span></div>
+    <h2>이 한 줄만 외워도 <em>절반은 끝</em></h2>
+    <div class="key"><span class="lbl">⚡ 비밀번호</span><strong>\(V\)는 부피가 아님. \(V\)는 "약이 채혈로 안 보이는 어딘가에 얼마나 숨어 있는가"의 척도임.</strong></div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 창고와 진열대 (마스터 비유)</div><p style="margin:0;"><b>"큰 \(V_d\)"</b>는 약이 넓은 공간에 퍼진 게 아니라 <b>"진열대(혈장)에 적게 보일 만큼 약이 어딘가 깊이 숨었다"</b>는 뜻. <b>"총 농도 낮다"</b>는 "약이 적다"가 아니라 "진열대에 적게 나와 있다"일 뿐 — 창고(조직·단백)엔 많을 수 있음.</p></div>
+    <p>그래서 알부민이 떨어지면 <b>동시에 두 가지</b> — ① 자유 약물이 늘어 \(CL\)↑, ② 조직 은신처로 더 들어가 \(V\)↑. 반감기 \(t_{1/2}{=}0.693\,V/CL\)의 <strong>분자·분모가 같이 움직여</strong>, 어느 쪽이 더 가파른가가 방향을 정함(워파린은 \(CL\) 2.9배 &gt; \(V\) 1.5배 → \(t_{1/2}\)↓).</p>
+  </div>
+</section>
+
+<!-- 5 · 농도 좌표계 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4-0</span><span class="eyebrow f1">농도 좌표계 셋업</span></div>
+    <h2>"농도"부터 <em>세 가닥</em>으로 정렬</h2>
+    <p class="lead">"농도"라고 그냥 말하면 세 가지가 동시에 굴러다녀 길을 잃음. 좌표계를 먼저 못 박아야 뒤 카드가 안 흔들림.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>종</th><th>뜻</th><th>어디서 쓰나</th></tr></thead>
+      <tbody>
+        <tr><td>\(C\) 총 농도</td><td>결합+비결합 전체, 혈장 측정</td><td>임상 TDM 표준, 부하용량</td></tr>
+        <tr class="hot"><td>\(C_u\) 유리 농도</td><td>단백질에 안 붙은 자유 약물</td><td>수용체 작용·막투과·종간 외삽</td></tr>
+        <tr><td>\(C_b\) 전혈 농도</td><td>적혈구까지 포함한 피 전체</td><td>적혈구 결합 강한 약(tacrolimus)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">💼</span> 매트릭스 트랩 — 가장 먼저 확인</div><p style="margin:0;">PK 보고서를 받으면 첫 질문: <strong>"이 농도, 어느 매질에서 잰 거임?"</strong> tacrolimus·cyclosporine=<b>전혈</b>(\(C_b/C{\approx}15\)), warfarin·phenytoin=<b>혈장</b>, digoxin=<b>혈청</b>. PopPK에서 단위가 섞이면 공변량 분석보다 단위 통일이 먼저 <span class="flag">well-stirred f_ub는 Ch.5</span>.</p></div>
+  </div>
+</section>
+
+<!-- 6 · 변환식 (NEW) -->
+<section class="card" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4-0</span><span class="eyebrow f1">세 농도를 잇는 변환식</span></div>
+    <h2>총 → <em>유리·전혈</em> 변환</h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{C_u}_{\text{유리}}=\underbrace{C}_{\text{총}}\times \underbrace{f_u}_{\text{유리분율}},\qquad \frac{C_b}{C}=1+H\big(f_u\cdot K_{PBC}-1\big) \]</div></div>
+    <p>\(f_u\)<span class="gloss">(fraction unbound, 안 붙은 비율 0~1)</span>가 0.01이면 총 농도의 1%만 자유로움 <span class="cite">R&amp;T Eq.4-17, p.105</span>. 채혈로 잡는 건 보통 총 농도 \(C\)인데, 약효를 내는 건 자유 약물 \(C_u\) — 둘을 잇는 다리가 \(f_u\)임.</p>
+    <p>\(C_b\)=전혈 농도, \(C\)=혈장 농도, \(H\)=헤마토크릿(적혈구 부피비 ≈0.4~0.45), \(K_{PBC}\)=적혈구/유리혈장 분배비. <strong>적혈구가 약을 빨아들일수록(\(f_u\cdot K_{PBC}{&gt;}1\)) 전혈 농도가 혈장보다 높아짐</strong> <span class="cite">R&amp;T App.D Eq.D-7, pp.775–776</span>.</p>
+  </div>
+</section>
+
+<!-- 7 · M1 막투과 -->
+<section class="card top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M1</span><span class="eyebrow f1">막을 미는 진짜 힘</span></div>
+    <h2>결합한 약은 <em>막을 못 지나간다</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 공항 입국심사대</div><p style="margin:0;">총 농도(\(C\))=공항에 들어온 사람 전체. 다수는 심사대(단백)에 <b>묶여</b> 있고, 입국장(세포막) 통과를 시도하는 건 <b>자유로운 사람(\(C_u\))</b>뿐. 그래서 양쪽 자유 인원 차가 통과 속도를 정함.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\text{순수송속도}}_{\text{Net rate}}=\underbrace{P}_{\text{투과도}}\cdot\underbrace{SA}_{\text{표면적}}\cdot\big(\underbrace{C_{u,1}-C_{u,2}}_{\text{유리농도 차}}\big) \]</div></div>
+    <p>막을 미는 힘은 총 농도 차가 아니라 <strong>유리 농도 차</strong> — 원문: "the unbound concentration, not the total, is the driving force" <span class="cite">R&amp;T Eq.4-1, p.80</span>. \(P{\cdot}SA\)는 유량 단위(부피/시간), 표면적 2배면 통과 속도도 2배.</p>
+  </div>
+</section>
+
+<!-- 8 · 투과 3대 성질 (NEW) -->
+<section class="card top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M1</span><span class="eyebrow f1">투과를 정하는 분자 성질</span></div>
+    <h2>투과 <em>3대 성질</em> — 크기·지용성·전하</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>투과 성질</th><th>데이터 앵커</th></tr></thead>
+      <tbody>
+        <tr><td>크기(MW)</td><td>400→800 g/mol에서 피부 투과도 <span class="em">~300배↓</span>(≈2.5 로그); atenolol 246 / oxytocin 1007 / calcitonin 3432 — calcitonin 비강 흡수 ~3% <span class="cite">R&amp;T Fig.4-3, p.81</span></td></tr>
+        <tr><td>지용성(logP)</td><td>BBB 투과도 logP와 ↑; 단 <b>P-gp 기질 vinblastine(814)·vincristine(824)</b>은 예외로 낮음 <span class="cite">R&amp;T Fig.4-4, p.82</span></td></tr>
+        <tr class="hot"><td>전하/pH</td><td>비이온화형이 주로 통과; 리소좀(pH≈5) 염기성 약 <b>이온 트래핑</b> → 큰 \(V_d\)의 씨앗 <span class="cite">R&amp;T App.B, p.83</span></td></tr>
+      </tbody>
+    </table></div>
+    <p>능동 수송이 있으면 평형에서도 양쪽 유리농도가 달라짐 — 끌어들이면(\(P_{uptake}\)↑) 조직에 쏠리고, 퍼내면(\(P_{efflux}\)↑, BBB의 P-gp) 조직 농도가 낮게 유지됨. indinavir는 CSF 유리농도가 혈장보다 낮음 <span class="cite">R&amp;T Eq.4-26 · Fig.4-10, p.91·110</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 흔한 실수</div><p style="margin:0;">"지용성 높으면 무조건 통과"는 틀림 — logP·MW 다 좋은데 BBB 침투 낮으면 <b>유출 수송체(P-gp/BCRP) 기질성 + 이온화 + 크기</b>를 동시에 의심. 능동수송이면 평형 비율 자체가 바뀜: \(C_{u,T}/C_u{=}P_{uptake}/P_{efflux}\).</p></div>
+  </div>
+</section>
+
+<!-- 9 · M2 범위 vs 속도 -->
+<section class="card top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M2</span><span class="eyebrow f1">분포의 두 차원</span></div>
+    <h2>"어디까지(범위)"와 <em>"얼마나 빨리(속도)"</em>는 다른 축</h2>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 수도꼭지와 탱크</div><p style="margin:0;">\(Q/V_T\)(조직 관류)=수도꼭지 물줄기 세기, \(K_{pb}\)(조직 저장능)=채울 탱크 크기. <b>탱크가 크면 최종 저장은 많아도 가득 차는 데 더 오래 걸림</b> — 큰 \(K_{pb}\)는 "많이" + "늦게"를 동시에 뜻함.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{t_{1/2,\text{분포}}}_{}=\frac{0.693\cdot \overbrace{K_{pb}}^{\text{저장능}}}{\underbrace{Q/V_T}_{\text{관류}}},\qquad C_T(t)=\underbrace{K_{pb}\,C_A}_{\text{평형농도}}\big(1-e^{-k_T t}\big) \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>조직</th><th>관류 (mL/min/g)</th><th>분포 반감기 (Kpb=1)</th></tr></thead>
+      <tbody>
+        <tr><td>신장</td><td>4.0</td><td>0.17분</td></tr>
+        <tr><td>뇌</td><td>0.5</td><td>1.4분 (+ BBB 별도 제한)</td></tr>
+        <tr class="hot"><td>지방</td><td>0.025</td><td>23분 (Kpb=5면 <span class="em">115분</span>)</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>\(V_d\)·\(K_p\)=범위, \(Q/V_T\)·투과도=속도 — 두 차원을 같은 축에 올리면 해석이 깨진다.</strong> 채혈 설계·약효 발현(onset)은 속도 축에서, 부하용량·평형 노출은 범위 축에서 결정 <span class="cite">R&amp;T Eq.4-5~4-7, p.97</span>.</p>
+  </div>
+</section>
+
+<!-- 10 · 재분포 thiopental (NEW) -->
+<section class="card dark" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M2</span><span class="eyebrow">관류 율속의 임상 사례</span></div>
+    <h2>재분포 — <em>정맥마취제</em></h2>
+    <p class="lead">관류 율속의 대표 사례: 티오펜탈(thiopental)의 짧은 작용 시간은 제거가 아니라 재분포로 끝납니다.</p>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--f3)"><div class="bh">빠른 도달</div><p style="margin:0;">고지용성이라 혈류 풍부한 뇌에 빠르게 도달 → 수 초 내 마취. 개 실험(IV 25 mg/kg)에서 간은 빠르게 오르내림.</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">재분포로 각성</div><p style="margin:0;">곧 혈류 적지만 부피 큰 근육·지방으로 재분포 → 뇌 농도 급감 → 마취 짧게 끝남. <b>3시간 뒤에도 약 대부분이 지방에 남음.</b></p></div>
+    </div>
+    <p class="muted">"큰 창고에 좁은 시골길로 들어가면 최종 저장은 많아도 도착은 늦다" <span class="cite">R&amp;T Fig.4-13, p.94</span>. MW &gt;5000 거대분자는 림프 회수(1–10 mL/min)가 분포 속도를 지배 <span class="cite">R&amp;T Fig.4-14, p.95</span>.</p>
+  </div>
+</section>
+
+<!-- 11 · M3 V 수학 -->
+<section class="card dark top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M3 ⭐</span><span class="eyebrow">이 세션의 심장</span></div>
+    <h2>V = A/C — <em>숨은 정도</em>의 척도</h2>
+    <p class="lead">창고 전체 재고(\(A\))를 진열대 농도(\(C\))로 나눈 <b>가상 매장 크기</b>. 진열대에 적게 보일수록 같은 재고도 큰 매장처럼 계산됨 <span class="cite">R&amp;T Eq.4-8, p.102</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{V}_{\text{겉보기}}=\frac{\overbrace{A}^{\text{체내 총량}}}{\underbrace{C}_{\text{측정농도}}} \]</div></div>
+    <div class="box dark" style="--ac:var(--amber)"><p style="margin:0;">\(V{=}500\) L라고 몸에 500 L가 있는 게 <b>절대 아님</b>. 혈장 부피 \(V_p{\approx}3\) L이니 <strong>혈장 안 약물 분율 = \(3/V\)</strong> — \(V{=}100\) L면 혈장엔 겨우 3%, 97%는 어딘가 숨음 <span class="cite">R&amp;T Eq.4-9·4-10, p.102</span>.</p></div>
+    <p>약마다 \(V\)가 3 L부터 40,000 L까지 — 사람 몸엔 그런 부피가 없음. <strong>측정 \(C\)가 낮으면 \(A/C\)가 생리적 부피를 훌쩍 넘어가고, 그게 약이 깊이 숨었다는 신호</strong> <span class="cite">R&amp;T Fig.4-19</span>.</p>
+  </div>
+</section>
+
+<!-- 12 · 두 칸 모델 유도 (NEW) -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M3</span><span class="eyebrow f2">두 칸 모델 유도</span></div>
+    <h2>V 식 <em>분해</em> — 혈장항 + 조직항</h2>
+    <p>체내를 혈장 칸(\(V_p\))과 조직 칸(\(V_T\))으로 나누면, 총량을 양변에서 \(C\)로 나눠 \(V\)를 두 항으로 분해할 수 있음:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ A=\underbrace{V_p C}_{\text{혈장 재고}}+\underbrace{V_T K_p C}_{\text{조직 재고}}\;\Rightarrow\; V=\underbrace{V_p}_{\text{혈장항}}+\underbrace{V_T K_p}_{\text{조직항}}=V_p+V_{TW}\frac{f_u}{f_{uT}} \]</div></div>
+    <p><strong>\(V\) = 혈장 부피 + (조직 부피 × 조직이 약을 빨아들이는 정도).</strong> 조직이 약을 세게 빨아들이면(\(K_p\)↑) \(V\)가 폭발함 <span class="cite">R&amp;T Eq.4-11~4-13, pp.103–104</span>.</p>
+    <div class="box" style="--ac:var(--f2)"><div class="bh"><span class="ico">🔢</span> 숫자 예시 (PDF 그대로)</div><p style="margin:0;">지방은 체부피의 약 20%. 지방의 \(K_p\)가 5면 <b>지방 한 조직만으로 겉보기 분포용적이 전신 부피만큼</b> 나옴 — 조직 하나의 강한 흡수가 \(V\)를 통째로 키움 <span class="cite">R&amp;T p.104</span>.</p></div>
+    <p><strong>\(f_u/f_{uT}\) = 혈장과 조직이 약을 붙잡는 "손 힘의 비율".</strong> 조직 쪽 손이 더 세면(\(f_{uT}\)↓) 약이 조직에 쏠려 혈장엔 적게 보이고 \(V\)는 커짐 <span class="cite">R&amp;T Eq.4-25, p.104·109</span>.</p>
+  </div>
+</section>
+
+<!-- 13 · M3 세 형태 V -->
+<section class="card top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M3</span><span class="eyebrow f2">같은 약, 세 가지 V</span></div>
+    <h2>분모만 바꿔도 <em>V 숫자가 폭발</em></h2>
+    <p>\(V{=}A/C\)에서 분모를 총/유리/전혈 중 무엇으로 잡느냐가 유일한 차이 — 같은 약물량인데 숫자가 완전히 달라짐:</p>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{V\cdot C}_{\text{총}}=\underbrace{V_u\cdot C_u}_{\text{유리}}=\underbrace{V_b\cdot C_b}_{\text{전혈}}\;(=A) \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>약물</th><th>\(V\)</th><th>\(V_b\)</th><th>\(V_u\) (유리)</th><th>\(f_u\)</th></tr></thead>
+      <tbody>
+        <tr><td>Caffeine (중성)</td><td>47</td><td>45</td><td>67</td><td>0.7</td></tr>
+        <tr><td>Metoprolol (염기)</td><td>242</td><td>212</td><td>269</td><td>0.90</td></tr>
+        <tr class="hot"><td>Mibefradil (염기)</td><td>213</td><td>333</td><td><span class="em">28,373</span></td><td>0.0075</td></tr>
+      </tbody>
+    </table></div>
+    <p>caffeine은 결합이 거의 없어 셋이 비슷(47/45/67), mibefradil은 조직에 꽉 붙어(낮은 \(f_{uT}\)) 유리 기준 \(V_u\)가 2.8만 L <span class="cite">R&amp;T Table 4-7, p.106</span>.</p>
+  </div>
+</section>
+
+<!-- 14 · 알부민 바닥 (NEW) -->
+<section class="card top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M3</span><span class="eyebrow f2">소 Vd 알부민 결합 모델</span></div>
+    <h2>왜 \(V\)는 <em>0으로 안 가나</em></h2>
+    <p class="lead">알부민 자체가 혈관 밖 공간까지 분포하므로, 약이 알부민에 99% 붙어 \(f_u\to0\)이어도 \(V\)는 0으로 안 감.</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ V = 7.5 + \left(7.5 + \frac{V_R}{f_{uR}}\right)\cdot f_u \]</div></div>
+    <p><strong>알부민에 아무리 세게 붙어도 \(V\)는 약 7.5 L 밑으로 못 내려감</strong>(= 3 × (1 + 1.5), 혈관밖/혈관내 알부민비 \(R_{E/I}{\approx}1.5\)) <span class="cite">R&amp;T Eq.4-30, p.111–112; App.C</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>생리 기준점</th><th>값</th></tr></thead>
+      <tbody>
+        <tr><td>혈장 / 세포외액 / 총 체수분</td><td><b>3 / 16 / 42 L</b></td></tr>
+        <tr><td>알부민 겉보기 분포용적(소 \(V_d\) 바닥)</td><td><b>약 7.5 L</b></td></tr>
+        <tr class="hot"><td>Caffeine·alcohol (자유 투과 소분자)</td><td><b>\(V\) ≈ 40 L</b></td></tr>
+        <tr><td>Adalimumab (항체, MW 142,000)</td><td>\(V\) 약 5–6 L</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- 15 · M4 혈장 fu -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M4</span><span class="eyebrow f3">혈장 쪽 은신처</span></div>
+    <h2>\(f_u\)는 진짜 <em>상수인가?</em></h2>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 주차장</div><p style="margin:0;">친화도 \(K_a\)=얼마나 세게 붙잡나, \(P_t\)=총 주차공간(단백질 농도), \(C_u\)=도로에 남은 차. <b>주차장이 꽉 차면(포화) 도로 위 차(\(C_u\))가 갑자기 늘어남</b> — 용량-선형성 깨질 때 첫 의심.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{f_u}_{}=\frac{C_u}{C}=\frac{1}{1+K_a\cdot f_{up}\cdot P_t} \]</div></div>
+    <p>단백질 농도(\(P_t\))나 친화도(\(K_a\))가 크면 \(f_u\)는 작아짐(약이 더 많이 붙잡힘) <span class="cite">R&amp;T Eq.4-18~4-19, p.105</span>. 결합이 0.9를 넘으면 'extensively bound(강하게 결합)'.</p>
+    <div class="key"><span class="lbl">G&amp;W 식별성(PK47)</span>저·고 단백 농도를 <b>동시에</b> 적합해야 빈자리 수(\(n[P_T]\))와 붙잡는 힘(\(K_a\))의 상관이 줄어 따로 추정 가능. <strong>"\(f_u\)=상수"는 검증 대상이지 자동 사실이 아님</strong> <span class="cite">G&amp;W p.692–693</span>.</div>
+  </div>
+</section>
+
+<!-- 16 · 단백 분기 (NEW) -->
+<section class="card top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M4</span><span class="eyebrow f3">단백질 종류로 분기</span></div>
+    <h2>Albumin vs <em>α₁-산성당단백</em></h2>
+    <p class="lead">약 종류에 따라 붙는 단백질이 다르고, 질환에서 두 단백질이 <b>반대 방향</b>으로 움직임.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>결합 단백질</th><th>붙는 약</th><th>정상 농도</th><th>질환 방향</th></tr></thead>
+      <tbody>
+        <tr><td><b>Albumin</b></td><td>약<b>산성</b>(warfarin·phenytoin·NSAID)</td><td>35–50 g/L</td><td><b>↓</b> 간질환·화상·신증후군·임신</td></tr>
+        <tr class="hot"><td><b>AAG</b> α₁-산성당단백</td><td>약<b>염기성</b>(propranolol·lidocaine)</td><td>0.4–1.0 g/L</td><td><b>↑</b> 심근경색·수술·외상·염증</td></tr>
+      </tbody>
+    </table></div>
+    <p>ibuprofen은 알부민 43→28 g/L에서 \(f_u\) 0.005→0.0077(<b>+54%</b>) <span class="cite">R&amp;T Eq.4-20, p.107</span>. <b>AAG는 급성기 반응물질</b> — ICU·외상·패혈증에서 propranolol 총 농도가 정상이어도 활성 \(C_u\)는 크게 줄 수 있음 <span class="cite">R&amp;T Fig.4-22, p.108</span>.</p>
+  </div>
+</section>
+
+<!-- 17 · M5 조직 큰 Vd -->
+<section class="card dark top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M5</span><span class="eyebrow">조직 쪽 은신처</span></div>
+    <h2>큰 \(V_d\)의 정체 — <em>산성 인지질</em></h2>
+    <p class="lead">알부민↓ 환자에서 "혈장 결합 변화만으로 \(V\) 바뀌었다"고 단정 금지 — 대 \(V_d\) 염기성 약은 조직 쪽 은신처가 훨씬 셈.</p>
+    <div class="stats">
+      <div class="stat"><span class="lab">Furosemide (산성)</span><span class="val">10<span class="u">L</span></span></div>
+      <span class="arrow">vs</span>
+      <div class="stat"><span class="lab">Amiodarone (염기성)</span><span class="val" style="color:var(--amber)">~7000<span class="u">L</span></span></div>
+    </div>
+    <p style="margin-top:14px;"><strong>둘 다 혈장 \(f_u\)가 0.02~0.04로 비슷한데</strong> \(V\)는 700배 차이 — <b>"큰 \(V_d\)를 혈장 결합만으로 설명하면 안 된다"</b>는 결정적 사례 <span class="cite">R&amp;T p.109</span>.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 왜 염기성 약이 조직에 쏠리나</div><p style="margin:0;">조직 세포막엔 <b>산성 인지질</b>(음전하)이 많아 <b>양전하 띤 염기성 약</b>이 이온결합으로 강하게 붙음 + 리소좀 이온 트래핑 → propranolol·amiodarone·chloroquine의 거대한 \(V_d\). metoprolol \(K_p\)는 조직 산성 인지질 농도와 강한 양의 상관 <span class="cite">R&amp;T Fig.4-24, p.110</span>.</p></div>
+    <p class="muted"><b>\(K_p\) 예측</b> — 중성·약산성은 Poulin–Theil, 염기성(인지질 결합)은 <b>Rodgers–Rowland</b>. PBPK 보고서에 "Rodgers–Rowland"가 보이면 그 약은 인지질 결합이 임상적으로 의미 있다는 신호 <span class="flag">완전식은 후속 PBPK 세션</span>.</p>
+  </div>
+</section>
+
+<!-- 18 · M5b 항체 역설 -->
+<section class="card top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M5b</span><span class="eyebrow f3">항체의 역설</span></div>
+    <h2>작은 \(V\) + <em>긴 반감기</em></h2>
+    <p class="lead">항체의 긴 반감기를 "조직에 쌓여 천천히 나온다"로 읽으면 거꾸로 — 항체는 조직에 거의 안 들어감.</p>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f3)"><div class="bh">작은 V (PDF 확인)</div><p style="margin:0;">MW &gt;70,000 약물은 혈관 밖 분포가 거의 없어 <b>\(V\)가 혈장 부피(~3 L)에 근접</b>. adalimumab(MW 142,000) <b>\(V\) 약 5–6 L</b> <span class="cite">R&amp;T p.111</span>.</p></div>
+      <div class="box" style="--ac:var(--coral)"><div class="bh">긴 t½ <span class="flag">교과서 외</span></div><p style="margin:0;">adalimumab 반감기 ~14일은 분포가 아니라 <b>FcRn salvage</b>(엔도솜 산성 pH에서 IgG를 붙잡아 재순환) — 단 이건 R&amp;T Ch.4 밖, 항체 PK(세션 09) 영역.</p></div>
+    </div>
+    <div class="key"><span class="lbl">M5b 한 줄</span>항체 \(V\)≈혈장 부피인데 \(t_{1/2}\)가 긴 이유는 <strong>조직 축적이 아니라 소실 회피(FcRn)</strong> — 분포와 소실은 다른 차원. 항체 비선형성 진단은 <b>FcRn 포화 vs TMDD</b> 분리부터.</div>
+  </div>
+</section>
+
+<!-- 19 · M6 노출 지표 -->
+<section class="card" id="s19">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M6</span><span class="eyebrow f3">노출 지표 고르기</span></div>
+    <h2>같은 \(AUC\)라도 <em>효과가 다르다</em></h2>
+    <div class="box" style="--ac:var(--f5)"><div class="bh"><span class="ico">💡</span> 강수량 vs 폭우 vs 침수 시간</div><p style="margin:0;">\(AUC\)=하루 강수량, \(C_{max}\)=순간 폭우, \(t_d\)(역치 초과 시간)=침수 지속. <b>같은 총 강수량이어도 홍수 위험은 전혀 다를 수 있음.</b></p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>G&amp;W 그림</th><th>가르침</th></tr></thead>
+      <tbody>
+        <tr><td>Fig.2.134</td><td>총농도-반응은 PPB 차이에 교란 → <b>유리농도 기준에서 역가 순위가 뒤집힘</b> <span class="cite">G&amp;W p.163</span></td></tr>
+        <tr class="hot"><td>Fig.2.136</td><td>같은 \(AUC\)라도 peak·역치초과시간·독성 다름 <span class="cite">G&amp;W p.164</span></td></tr>
+        <tr><td>Fig.2.141</td><td>종간 총농도 곡선은 달라도 <b>유리 \(EC_{u50}\)≈2 nM에서 정렬</b> <span class="cite">G&amp;W p.168</span></td></tr>
+      </tbody>
+    </table></div>
+    <p>인과 방향 주의 — \(C{=}C_u/f_u\)를 <b>거꾸로 정리하지 말 것</b>(총 농도가 의존변수) <span class="cite">R&amp;T Eq.4-21, p.108</span>. \(AUC_u{=}AUC\times f_u\)는 \(f_u\)가 일정할 때만. G&amp;W 456개 약물 검토 결론 — 단백결합 변화의 임상 영향은 대개 작고, <strong>예외는 IV+고추출+좁은 치료역</strong>이 동시에 만날 때뿐 <span class="cite">G&amp;W p.168</span>.</p>
+  </div>
+</section>
+
+<!-- 20 · 혼동쌍 -->
+<section class="card top" id="s20">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5</span><span class="eyebrow" style="color:var(--coral-d)">헷갈리는 짝 못 박기</span></div>
+    <h2>혼동쌍 <em>네 쌍</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">① ⚡ \(C\) vs \(C_u\)</div><p style="margin:0;">사진(관찰 대리) vs 수용체에 실제 작용하는 행위자. <b>둘 다 참</b> — 진짜 질문은 "지금 의사결정의 인과적 종이 뭔가".</p></div>
+      <div class="box" style="--ac:var(--f1)"><div class="bh">② 관류 vs 투과 율속</div><p style="margin:0;">\(Q/V_T\)(혈류) vs 막 투과도. \(V_d\) 크기=범위, 속도와 독립 — 거대분자 지연을 혈류로 오해 금지.</p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">③ \(f_u\) vs \(f_{uT}\)</div><p style="margin:0;">혈장 유리분율(\(V\) 식 분자) vs 조직 유리분율(분모). 혈장 결합만으로 큰 \(V_d\) 설명 시도가 함정.</p></div>
+      <div class="box" style="--ac:var(--f4)"><div class="bh">④ 소 \(V_d\) vs 대 \(V_d\)</div><p style="margin:0;">소 \(V_d\)(\(V&lt;0.2\) L/kg, warfarin)는 \(f_u\)↑에 \(V\) 크게↑. 대 \(V_d\)(\(V&gt;0.6\) L/kg, amiodarone)는 조직 지배라 거의 불변.</p></div>
+    </div>
+    <div class="key"><span class="lbl">⚡ AUC vs AUCu</span>\(AUC\)=총 화물(결합+유리), \(AUC_u{=}f_u\times AUC\)=수용체 도달 가능한 활성 화물. <strong>알부민 결합 강한 약에서 저알부민혈증이면 \(AUC\)는 줄어도 \(AUC_u\)는 거의 그대로</strong> — \(AUC\)로만 보면 효과 방향이 역전됨(다음 카드에서 풀음).</div>
+  </div>
+</section>
+
+<!-- 21 · 워파린 풀이 -->
+<section class="card dark top" id="s21">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6</span><span class="eyebrow">워파린 케이스 풀기 · Closure</span></div>
+    <h2>도입 질문에 <em>정식 답</em></h2>
+    <p class="lead">워파린은 <b>소 \(V_d\) 알부민 결합 + 저추출</b> 약물. 알부민 43→12.5(3.4배↓) → \(f_u\) 약 3.4배↑:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{AUC_u}_{\text{활성 노출}}=\frac{Dose\cdot f_u}{CL},\qquad \text{저추출: }CL\approx f_u\cdot CL_{int}\ \Rightarrow\ AUC_u=\frac{Dose}{CL_{int}} \]</div></div>
+    <ul>
+      <li>\(V\) 9.4→13.7(1.5배), \(CL\) 0.20→0.58(2.9배), \(t_{1/2}{=}0.693V/CL\)이라 1.5/2.9≈0.52배 → 36→18 hr (실측 일치).</li>
+      <li><b>\(f_u\)와 \(CL\)이 같은 비율로 움직여 상쇄</b> → \(AUC_u\)는 \(CL_{int}\)만의 함수 → 알부민 변화 영향이 거의 사라짐.</li>
+    </ul>
+    <div class="key"><span class="lbl">⚡ 진짜 답</span>"총 농도 떨어졌으니 출혈 위험 줄었죠?" → <strong>틀림.</strong> 총 \(V\)·\(CL\)·\(t_{1/2}\)는 변해도 <strong>활성 \(C_u\)/\(AUC_u\)는 거의 불변</strong> → INR도 큰 차이 없을 가능성 높음. <span class="flag">단 R/S-enantiomer·CYP2C9는 별도 채널 · 교과서 외</span></div>
+    <div class="thread"><span class="ico">🎯</span><div>교훈 — <b>총 농도 하나로 활성 노출을 추론 불가.</b> 약물 클래스(저/고추출·소/대 \(V_d\)·산/염기)부터 분류한 뒤 \(AUC_u\) 결정인자를 따져야 함.</div></div>
+  </div>
+</section>
+
+<!-- 22 · 자가테스트 1 -->
+<section class="card top" id="s22">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7</span><span class="eyebrow" style="color:var(--coral-d)">자가테스트 · 능동 회상</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q6</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> Eq.4-1 농도차가 \(C_{u,1}-C_{u,2}\)인 이유?</div>
+      <div class="a"><b>A.</b> 결합 약물은 단백질이 커서 막을 못 지나가고 <b>유리 약물만 확산 구동력</b> <span class="cite">R&amp;T p.80</span>.</div>
+      <div class="q"><span class="n">Q2.</span> 분자량 400→800·logP 증가의 투과도 방향?</div>
+      <div class="a"><b>A.</b> MW↑는 크게↓(~300배), logP↑는 대체로↑. 단 <b>수송체 기질이면 logP 예측 깨짐</b>(vinblastine) <span class="cite">R&amp;T Fig.4-3·4-4</span>.</div>
+      <div class="q"><span class="n">Q3.</span> 관류 율속에서 \(K_{pb}\)↑면 분포 반감기?</div>
+      <div class="a"><b>A.</b> <b>↑</b>(\(t_{1/2,dist}{=}0.693K_{pb}/(Q/V_T)\)) — 채울 양이 많아 평형 도달 지연(직관과 반대) <span class="cite">R&amp;T p.97</span>.</div>
+      <div class="q"><span class="n">Q4.</span> 소 \(V_d\) 알부민 약에서 \(f_u\to0\)일 때 \(V\) 바닥이 7.5 L인 이유?</div>
+      <div class="a"><b>A.</b> 약이 혈관 밖 알부민 공간까지 분포 — <b>알부민 자체 분포용적 ~7.5 L</b>(=3×(1+1.5))가 바닥 <span class="cite">R&amp;T p.111</span>.</div>
+      <div class="q"><span class="n">Q5.</span> 워파린 신증후군에서 알부민↓의 \(V\)·\(CL\)·\(t_{1/2}\) 방향?</div>
+      <div class="a"><b>A.</b> \(V\)↑·\(CL\)↑↑·\(t_{1/2}\)↓. <b>단 racemic 추정, S형(5배강력·CYP2C9) 분리는 Ch.4 밖</b> <span class="cite">R&amp;T Table 4-12</span>.</div>
+      <div class="q"><span class="n">Q6.</span> \(AUC_u{=}AUC\times f_u\)의 핵심 조건?</div>
+      <div class="a"><b>A.</b> <b>\(f_u\)가 시간·농도·용량에 충분히 일정</b>해야 함. 아니면 단축식이 깨짐 <span class="cite">G&amp;W p.167</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 · 자가테스트 2 -->
+<section class="card top" id="s23">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7</span><span class="eyebrow" style="color:var(--coral-d)">자가테스트 · 심화</span></div>
+    <h2>스스로 <em>점검</em> — Q7~Q11</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q7.</span> 동일 \(AUC\)인데 독성이 다를 수 있는 이유?</div>
+      <div class="a"><b>A.</b> 같은 면적이라도 <b>최고 농도·역치 초과 시간(\(t_d\))·곡선 모양</b>이 다름 <span class="cite">G&amp;W Fig.2.136, p.164</span>.</div>
+      <div class="q"><span class="n">Q8.</span> PK47에서 저/고 단백 농도를 동시에 적합하는 이유?</div>
+      <div class="a"><b>A.</b> <b>\(n\)과 \(K_a\)의 상관을 줄여 정밀도↑</b>(한 조건만 보면 식별성 실패) <span class="cite">G&amp;W p.693</span>.</div>
+      <div class="q"><span class="n">Q9.</span> 외상 환자에서 propranolol 총 농도 정상인데 효과 약함?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> <b>AAG 급성기↑ → 염기성 약 \(f_u\)↓·\(C_u\)↓</b> → 활성 노출↓. 총 농도 정상이어도 부족 <span class="cite">R&amp;T Fig.4-22</span>.</div>
+      <div class="q"><span class="n">Q10.</span> Adalimumab \(V\) 5–6 L인데 반감기 ~14일, 모순 해소?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 크기가 커서 조직에 거의 안 감 → 작은 \(V\)(PDF). 긴 t½은 <b>FcRn salvage</b> <span class="flag">교과서 외 · 항체 세션</span>.</div>
+      <div class="q"><span class="n">Q11.</span> Tacrolimus를 전혈로 재야 하는 이유?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 적혈구 결합 매우 강함(\(C_b/C{\approx}15\)) → 혈장은 정량 한계 이하 + 헤마토크릿 변동으로 비교 불가, <b>전혈로 통일</b> <span class="cite">R&amp;T App.D</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 24 · 조망 + 요약 -->
+<section class="card dark center" id="s24">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">§8 · 요약</span><span class="eyebrow">전체 조망</span></div>
+    <h2>한 환자를 만나면 <em>머리에 돌리는 4단계</em></h2>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.4em auto; max-width:880px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> <b style="color:#fff;">종 결정</b> — 보는 농도가 \(C\)·\(C_u\)·\(C_b\) 중 무엇? 매질은?</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> <b style="color:#fff;">\(V_d\) 양상</b> — 소 \(V_d\) 알부민 / 대 \(V_d\) 조직 / 항체 중 무엇?</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> <b style="color:#fff;">\(f_u\) 안정성</b> — 농도 범위에서 일정? 단백(알부민 vs AAG)이 질환에서 변하나?</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> <b style="color:#fff;">지표 정당화</b> — \(C_{max}\)·\(AUC\)·\(t_d\) 중 어느 패턴? 어느 종으로 비교?</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:22px auto 0; text-align:left;"><span class="lbl">🧷 한 줄 요약</span>분포는 "약이 어디 있나"가 아니라 <strong>혈장·조직 사이에서 결합·투과도·혈류가 만드는 평형이자 시간 문제</strong>임. 총 농도는 그림자, 유리 농도는 인과적 종, <strong>\(V\)는 둘을 총량과 잇는 겉보기 척도</strong> — "\(V\)는 숨은 정도"가 이 세션 전체를 꿴다.</div>
+    <div class="foot">Rowland &amp; Tozer Ch.4 + 부록 B·C·D · Gabrielsson &amp; Weiner §2.9 + App.47 — 수치·인용 원문 대조 (원본: 02_distribution_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var tocEl = document.querySelector('.toc');
+  var total = cards.length;
+  var cur = 0;
+
+  function linkFor(id){
+    for(var i=0;i<links.length;i++){ if(links[i].getAttribute('href') === '#'+id) return links[i]; }
+    return null;
+  }
+  function ensureVisible(l){
+    var lr = l.getBoundingClientRect(), tr = tocEl.getBoundingClientRect();
+    if(lr.top < tr.top + 8) tocEl.scrollTop -= (tr.top + 8 - lr.top);
+    else if(lr.bottom > tr.bottom - 8) tocEl.scrollTop += (lr.bottom - (tr.bottom - 8));
+  }
+  function setActive(idx){
+    cur = idx;
+    var id = cards[idx].id;
+    for(var i=0;i<links.length;i++) links[i].classList.remove('active');
+    var l = linkFor(id);
+    if(l){ l.classList.add('active'); ensureVisible(l); }
+    counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    bar.style.width = ((idx+1)/total*100) + '%';
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(cards.indexOf(e.target)); }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  cards.forEach(function(c){ io.observe(c); });
+
+  function go(d){
+    var n = Math.max(0, Math.min(total-1, cur + d));
+    if(n !== cur) cards[n].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  window.addEventListener('keydown', function(e){
+    if(e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); go(1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); go(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); cards[0].scrollIntoView({behavior:'smooth'}); }
+    else if(e.key === 'End'){ e.preventDefault(); cards[total-1].scrollIntoView({behavior:'smooth'}); }
+  });
+
+  var burger = document.querySelector('.burger');
+  if(burger){
+    burger.addEventListener('click', function(){ document.body.classList.toggle('toc-open'); });
+    links.forEach(function(l){ l.addEventListener('click', function(){ document.body.classList.remove('toc-open'); }); });
+  }
+
+  setActive(0);
+})();
+</script>
+</body>
+</html>
