@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 13 · 개체간 변이(IIV)·공변량 — 변이는 어느 그릇에 담는가 · 카드뉴스</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+KR:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)'], ['$','$']],
+    displayMath: [['\\[','\\]'], ['$$','$$']]
+  },
+  chtml: {
+    mtextInheritFont: true,
+    matchFontHeight: false,
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { enableMenu: false, renderActions: { addMenu: [] } },
+  startup: { ready: () => { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#F0EEE6; --paper:#FAF9F5; --paper-2:#F4F1E9;
+  --ink:#211F1B; --ink-2:#56514A; --ink-3:#8A857C; --line:#E4DFD3;
+  --coral:#D97757; --coral-d:#B0501F; --coral-tint:#FBEEE7; --coral-tint-bd:#F1D7C7;
+  --dark:#262019; --dark-2:#2F2820; --cream:#F4EFE6; --cream-2:#D6CFBF;
+  --amber:#EAB45C; --coral-l:#EC9A78; --teal-l:#86C0A9; --tan:#D4A27F;
+  --f1:#CF6A45; --f2:#BB852C; --f3:#3F7A66; --f4:#8A5A86; --f5:#4E6E94;
+  --font-serif:"Newsreader","Noto Serif KR",Georgia,serif;
+  --font-sans:"Pretendard",-apple-system,BlinkMacSystemFont,"Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:20px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  word-break:keep-all; overflow-wrap:break-word;
+  display:grid; grid-template-columns:312px 1fr;
+}
+
+/* ---------- progress bar ---------- */
+.progress{position:fixed; top:0; left:312px; right:0; height:4px; background:transparent; z-index:60;}
+.progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--coral),var(--amber)); transition:width .25s ease;}
+.counter{position:fixed; right:26px; bottom:22px; z-index:60;
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
+  background:rgba(250,249,245,.88); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; backdrop-filter:blur(6px);}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky; top:0; height:100vh; overflow-y:auto; z-index:50;
+  background:#EBE7DD; border-right:1px solid var(--line); padding:30px 20px 60px;}
+.toc::-webkit-scrollbar{width:8px;} .toc::-webkit-scrollbar-thumb{background:#D7D1C4; border-radius:8px;}
+.brand{padding:0 8px 18px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+.brand .k{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral-d);}
+.brand .t{font-family:var(--font-serif); font-size:26px; font-weight:600; line-height:1.14; margin-top:6px; color:var(--ink);}
+.toc-group{margin:15px 0 4px;}
+.toc-gh{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+  color:var(--ink-3); text-transform:uppercase; padding:6px 8px 4px;}
+.dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.dot.f1{background:var(--f1)} .dot.f2{background:var(--f2)} .dot.f3{background:var(--f3)} .dot.f4{background:var(--f4)} .dot.f5{background:var(--f5)}
+.toc-link{display:block; text-decoration:none; color:var(--ink-2); font-size:14px; line-height:1.32;
+  padding:6px 10px 6px 12px; border-radius:8px; border-left:2px solid transparent; transition:all .15s;}
+.toc-link:hover{background:rgba(217,119,87,.10); color:var(--ink);}
+.toc-link.active{background:var(--paper); color:var(--coral-d); font-weight:600; border-left-color:var(--coral);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+/* ---------- deck / cards ---------- */
+.deck{min-width:0;}
+.card{min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:76px 72px; border-bottom:1px solid var(--line); scroll-margin-top:0; position:relative;}
+.card.top{justify-content:flex-start; padding-top:84px;}
+.wrap{width:100%; max-width:1080px; margin:0 auto;}
+.card.dark{background:var(--dark); color:var(--cream); border-bottom-color:#3a3228;}
+.card.center{text-align:center;}
+.card.center .wrap{margin:0 auto;}
+
+.khead{display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.sec{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-3); background:rgba(0,0,0,.045); padding:3px 11px; border-radius:7px;}
+.card.dark .sec{color:var(--amber); background:rgba(255,255,255,.08);}
+.eyebrow{font-size:15.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;}
+.f1{color:var(--f1)} .f2{color:var(--f2)} .f3{color:var(--f3)} .f4{color:var(--f4)} .f5{color:var(--f5)}
+.card.dark .eyebrow{color:var(--amber);}
+
+h2{font-family:var(--font-serif); font-weight:500; font-size:clamp(36px,4.6vw,58px);
+  line-height:1.13; letter-spacing:-.012em; margin:.05em 0 .5em;}
+.card.dark h2{color:#fff;}
+h2 em{font-style:italic; color:var(--coral-d);}
+.card.dark h2 em{color:var(--amber);}
+.lead{font-size:clamp(21px,2vw,26px); line-height:1.55; color:var(--ink); margin:0 0 .7em;}
+.card.dark .lead{color:var(--cream);}
+p{font-size:clamp(18.5px,1.5vw,22px); line-height:1.72; margin:.55em 0;}
+.muted{color:var(--ink-2);} .card.dark .muted{color:var(--cream-2);}
+.gloss{color:var(--ink-3); font-size:.9em;} .card.dark .gloss{color:var(--cream-2);}
+strong{font-weight:700; color:var(--coral-d);} .card.dark strong{color:var(--amber);}
+b{font-weight:700; color:var(--ink);} .card.dark b{color:#fff;}
+.hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.45) 58%); padding:0 1px; color:inherit; font-weight:600;}
+.card.dark .hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.30) 58%);}
+
+ul{margin:.5em 0; padding-left:0; list-style:none;}
+ol{margin:.5em 0; padding-left:1.4em;}
+ol li{padding:5px 0; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6;}
+ul li{position:relative; padding:7px 0 7px 26px; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6; list-style:none;}
+ul li::before{content:""; position:absolute; left:4px; top:.95em; width:7px; height:7px; border-radius:50%;
+  background:var(--coral);}
+.card.dark ul li::before{background:var(--amber);}
+ul li.x::before{content:"✕"; background:none; color:var(--coral-d); font-size:.8em; top:.7em; left:2px; width:auto; height:auto;}
+.card.dark ul li.x::before{color:var(--coral-l);}
+ul li.o::before{content:"✓"; background:none; color:var(--f3); font-weight:700; top:.55em; left:0; width:auto; height:auto;}
+.card.dark ul li.o::before{color:var(--amber);}
+
+/* ---------- citations / flags ---------- */
+.cite{font-family:var(--font-mono); font-size:.64em; font-weight:500; color:var(--ink-3);
+  background:rgba(0,0,0,.045); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle; letter-spacing:.01em;}
+.card.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.10);}
+.box .cite{background:rgba(0,0,0,.05);}
+.box.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.12);}
+.flag{font-family:var(--font-mono); font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--coral-d);
+  background:rgba(217,119,87,.10); border:1px solid var(--coral-tint-bd); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle;}
+.card.dark .flag, .box.dark .flag{color:var(--amber); background:rgba(234,180,92,.12); border-color:rgba(234,180,92,.32);}
+
+/* ---------- boxes / callouts ---------- */
+.box{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ac,var(--coral));
+  border-radius:13px; padding:20px 25px; margin:18px 0;}
+.box .bh{display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.02em;
+  color:var(--ac,var(--coral-d)); margin-bottom:.45em;}
+.box .ico{font-size:1.05em; filter:saturate(1.1);}
+.box p, .box li{font-size:clamp(17px,1.38vw,20px);}
+.box.dark{background:var(--dark-2); border-color:rgba(255,255,255,.12); border-left-color:var(--ac,var(--amber)); color:var(--cream);}
+.box.dark .bh{color:var(--amber);}
+.box.dark strong{color:var(--amber);} .box.dark b{color:#fff;}
+.box.dark ul li::before{background:var(--amber);}
+.box.dark .muted{color:var(--cream-2);}
+
+.key{background:var(--coral-tint); border:1px solid var(--coral-tint-bd); border-left:5px solid var(--coral);
+  border-radius:13px; padding:20px 26px; margin:18px 0; font-size:clamp(18.5px,1.5vw,22px); line-height:1.55;}
+.key .lbl{display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral-d); margin-bottom:.35em;}
+.key strong{color:var(--coral-d);}
+.card.dark .key{background:rgba(234,180,92,.10); border-color:rgba(234,180,92,.3); border-left-color:var(--amber); color:var(--cream);}
+.card.dark .key .lbl{color:var(--amber);} .card.dark .key strong{color:var(--amber);} .card.dark .key b{color:#fff;}
+
+.thread{font-family:var(--font-serif); font-style:italic; font-size:clamp(17.5px,1.5vw,22px);
+  color:var(--ink-2); border-top:1px dashed var(--line); padding-top:16px; margin-top:22px; display:flex; gap:10px;}
+.thread .ico{font-style:normal;}
+.thread b{color:var(--coral-d);}
+.card.dark .thread{color:var(--cream-2); border-top-color:rgba(255,255,255,.18);}
+.card.dark .thread b{color:var(--amber);}
+
+/* ---------- stats ---------- */
+.stats{display:flex; flex-wrap:wrap; gap:14px 30px; align-items:flex-end; margin:14px 0 6px;}
+.stat{display:flex; flex-direction:column; gap:2px;}
+.stat .lab{font-size:14.5px; color:var(--ink-2); letter-spacing:.01em;}
+.card.dark .stat .lab{color:var(--cream-2);}
+.stat .val{font-family:var(--font-serif); font-weight:500; font-size:clamp(34px,4.4vw,58px); line-height:1; color:var(--ink);}
+.stat .val .u{font-size:.42em; color:var(--ink-2); font-family:var(--font-sans); font-weight:500;}
+.card.dark .stat .val{color:#fff;} .card.dark .stat .val .u{color:var(--cream-2);}
+.arrow{font-family:var(--font-serif); font-size:clamp(30px,3.4vw,46px); color:var(--coral); align-self:center; padding-bottom:.18em;}
+.card.dark .arrow{color:var(--coral-l);}
+.bignum{font-family:var(--font-serif); font-weight:500; font-size:clamp(64px,10vw,140px); line-height:.9; color:var(--coral-d);}
+.card.dark .bignum{color:var(--amber);}
+
+/* ---------- tables ---------- */
+.tbl{width:100%; overflow-x:auto; margin:16px 0;}
+table{width:100%; border-collapse:collapse; font-size:clamp(15px,1.3vw,18.5px);}
+th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+thead th{font-weight:700; color:var(--coral-d); border-bottom:2px solid var(--coral); font-size:.94em; letter-spacing:.01em;}
+tbody tr:last-child td{border-bottom:none;}
+td .em{color:var(--coral-d); font-weight:600;}
+tr.hot td{background:rgba(234,180,92,.13);}
+.card.dark th,.card.dark td{border-bottom-color:rgba(255,255,255,.13); color:var(--cream);}
+.card.dark thead th{color:var(--amber); border-bottom-color:var(--amber);}
+.card.dark td .em{color:var(--amber);}
+.card.dark tr.hot td{background:rgba(234,180,92,.16);}
+.box table{font-size:clamp(14.5px,1.2vw,17px);}
+.fcell{display:inline-flex; align-items:center; gap:7px; font-weight:600;}
+
+/* ---------- math ---------- */
+.mathblock{font-size:clamp(21px,2.15vw,30px); margin:1.2em 0; overflow-x:auto; overflow-y:hidden; padding:8px 2px;}
+.mathblock.tight{margin:.6em 0;}
+.mathblock.tall{margin:1.6em 0; padding:14px 2px;}
+.mathblock.wide{font-size:clamp(15.5px,1.7vw,22px);}
+mjx-container{color:inherit !important;}
+mjx-container[display="true"]{margin:0 !important;}
+.card.dark .mathblock, .box.dark .mathblock, .key .mathblock{color:inherit;}
+.formula-hero{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 22px; margin:18px 0;}
+.card.dark .formula-hero{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12);}
+.box.dark .formula-hero, .key .formula-hero{background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.14);}
+
+/* ---------- params chips ---------- */
+.params{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;}
+.chip{font-family:var(--font-mono); font-size:15px; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:9px; padding:8px 13px; color:var(--ink);}
+.chip b{color:var(--coral-d);}
+.card.dark .chip{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--cream);}
+.card.dark .chip b{color:var(--amber);}
+
+/* ---------- grids ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin:16px 0;}
+@media (max-width:1180px){ .grid3{grid-template-columns:1fr;} }
+
+/* ---------- code ---------- */
+.codeblock{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:18px 22px; margin:12px 0; font-size:clamp(12.5px,1.05vw,15px); line-height:1.7;
+  overflow-x:auto; border:1px solid rgba(255,255,255,.10);}
+.codeblock .ttl{display:block; color:var(--amber); font-weight:600; margin-bottom:8px; font-size:.95em;}
+.codeblock pre{margin:0; white-space:pre;}
+.codeblock .cm{color:var(--coral-l);}
+.codeblock .kw{color:var(--amber);}
+
+/* ---------- flow ---------- */
+.flow{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:22px 26px; margin:16px 0; font-size:clamp(14px,1.25vw,17px); line-height:1.85;}
+.flow .step{color:var(--amber); font-weight:600;}
+.flow .ar{color:var(--coral-l);}
+
+/* ---------- Q&A ---------- */
+.qa{margin:10px 0;}
+.qa .q{font-weight:700; color:var(--ink); font-size:clamp(16.5px,1.35vw,19px); margin-top:15px; display:flex; gap:10px;}
+.qa .q .n{font-family:var(--font-mono); color:var(--coral-d); flex:0 0 auto;}
+.qa .q .lv{font-family:var(--font-mono); font-size:.7em; color:var(--ink-3); margin-left:auto; white-space:nowrap;}
+.qa .a{color:var(--ink-2); font-size:clamp(15.5px,1.3vw,18px); padding-left:30px; margin-top:3px; line-height:1.58;}
+.qa .a b{color:var(--coral-d);}
+.card.dark .qa .q{color:#fff;} .card.dark .qa .q .n{color:var(--amber);} .card.dark .qa .a{color:var(--cream-2);} .card.dark .qa .a b{color:var(--amber);}
+
+.scroll-hint{position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2); opacity:.8;
+  display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scroll-hint .dn{font-size:18px; animation:bob 1.8s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)}}
+
+.foot{margin-top:26px; font-size:14.5px; color:var(--ink-3); letter-spacing:.01em;}
+.card.dark .foot{color:var(--cream-2);}
+.divider{height:1px; background:var(--line); margin:20px 0;}
+.card.dark .divider{background:rgba(255,255,255,.14);}
+
+/* ---------- burger / mobile ---------- */
+.burger{display:none; position:fixed; top:14px; left:14px; z-index:70; width:46px; height:46px;
+  border-radius:11px; background:var(--dark); color:var(--cream); border:none; cursor:pointer; font-size:20px;}
+@media (max-width:980px){
+  body{grid-template-columns:1fr; font-size:18px;}
+  .toc{position:fixed; left:0; top:0; width:300px; transform:translateX(-100%); transition:transform .25s; box-shadow:0 0 40px rgba(0,0,0,.25);}
+  body.toc-open .toc{transform:translateX(0);}
+  .burger{display:block;}
+  .progress{left:0;}
+  .card{padding:78px 26px 64px;}
+  .card.top{padding-top:78px;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="burger" aria-label="목차 열기">☰</button>
+<div class="progress"><i id="bar"></i></div>
+<div class="counter" id="counter">01 / 21</div>
+
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 13 · IIV &amp; Covariate</div>
+    <div class="t">변이는 zero-sum — 어느 그릇에</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 관통 척추</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">한 장 지도 · 그릇 4종</a>
+      <a class="toc-link" href="#s4">Hook · PK50 28%→9%</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>그릇 4종</div>
+      <a class="toc-link" href="#s5">θ·IIV·IOV·RUV 계층</a>
+      <a class="toc-link" href="#s6">IIV vs IOV vs TVC</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>1단계 · 잔차 ε</div>
+      <a class="toc-link" href="#s7">왜 잔차부터 · 3종</a>
+      <a class="toc-link" href="#s8">Leakage Funnel</a>
+      <a class="toc-link" href="#s9">BQL · M3 · silent fail</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>2단계 · 공변량 → θ</div>
+      <a class="toc-link" href="#s10">공변량 = 옮기기</a>
+      <a class="toc-link" href="#s11">PK50 정체 · 좌표 회전</a>
+      <a class="toc-link" href="#s12">안전 좌표 · PD 변이</a>
+      <a class="toc-link" href="#s13">SCM 비대칭 · df</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>3단계 · η 분포 모양</div>
+      <a class="toc-link" href="#s14">이봉형 · 유전 다형성</a>
+      <a class="toc-link" href="#s15">빈 셀 · 분산설명≠예측</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s16">세 시그니처 한 줄로</a>
+      <a class="toc-link" href="#s17">EBE · shrinkage · BLOCK</a>
+      <a class="toc-link" href="#s18">혼동쌍 5쌍</a>
+      <a class="toc-link" href="#s19">거장의 다섯 질문</a>
+      <a class="toc-link" href="#s20">자가테스트</a>
+      <a class="toc-link" href="#s21">한 줄 요약 · 연결</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 13 · 개체간 변이(IIV)·공변량 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,78px); margin-top:.25em; line-height:1.08;">이 흔들림은 도대체<br><em>어느 그릇</em>에 담는가</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">변이를 <b style="color:var(--amber)">줄이는</b> 게 아니라 <b style="color:var(--amber)">제자리에 담는</b> 법 — 공변량은 진공청소기가 아니라 빗자루임</p>
+    <div class="key" style="max-width:900px; margin:32px auto 0; text-align:left;">
+      <span class="lbl">관통 척추</span>
+      핵심은 "\(\omega^2\)이 줄었다"가 <b>아님</b>. 진짜 질문은 <strong>어느 그릇 — 구조모수 \(\theta\) · 개체간 \(\eta_{IIV}\) · 경우간 \(\eta_{IOV}\) · 잔차 \(\varepsilon\) — 에서 무엇이 설명됐는가</strong>임. 변이는 사라지지 않고 <b>그릇 사이로 옮겨갈 뿐(zero-sum, 총합 보존)</b>.
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(19px,2.2vw,28px); color:#fff; margin-top:28px;">🧹 "방 안 먼지 총량은 일정하다. 공변량은 먼지를 없애는 빗자루가 아니라,<br>설명되는 칸(\(\theta\))으로 쓸어 담는 도구일 뿐."</p>
+    <div class="foot">Gabrielsson &amp; Weiner 5판 (사례 PK50) · Rowland &amp; Tozer 5판 Ch.12 변이·Ch.13 유전 — 모든 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card top" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">메타</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처 약속 (6요소)</span></div>
+    <h2>주 출처는 <em>PK50</em>, 보조는 R&amp;T</h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)">
+        <div class="bh">G&amp;W = Gabrielsson &amp; Weiner (주 출처)</div>
+        <p class="muted"><i>PK and PD Data Analysis</i> 5판. 사례 <b>PK50</b>이 이 세션의 척추 — "여러 환자 데이터를 어떻게 모델링하나". (파일 <span class="cite">013_G</span>)</p>
+      </div>
+      <div class="box" style="--ac:var(--f2)">
+        <div class="bh">R&amp;T = Rowland &amp; Tozer (보조 출처)</div>
+        <p class="muted"><i>Clinical PK and PD</i> 5판. 변이의 임상·유전 배경(Ch.12 변이, Ch.13 유전)을 댐 — 13 고유가 아니라 <b>보조로 끌어온 것</b>임을 매번 표시. (파일 <span class="cite">013_T</span>)</p>
+      </div>
+    </div>
+    <div class="key"><span class="lbl">한 줄 정체</span>"내가 지금 보는 이 <b>흔들림(변이)</b>은 <strong>어느 그릇</strong>에 들어가야 하는가"를 끝까지 묻는 세션. 변이를 <b>줄이는</b> 게 아니라 <b>제자리에 담는</b> 법을 배움. 쪽수(p.···)는 전부 <b>원판 교재 기준</b>, 범위 밖은 <span class="flag">교과서 외</span>, 미확인은 <span class="flag">확인 필요</span>로 깃발.</div>
+    <p class="muted"><b>선행지식</b> 청소율(CL = 1시간에 몇 L의 피를 약에서 청소), 분포용적(V), 반감기(\(t_{1/2}\)) 정도. 나머지 약어(IIV·IOV·RUV·BQL·M3·SCM·df…)는 <b>각 절 첫 등장 시 괄호로 풀어줌</b>.</p>
+  </div>
+</section>
+
+<!-- 3 · 한 장 지도 -->
+<section class="card dark" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">지도</span><span class="eyebrow">그릇 4종 + 강제 3단계</span></div>
+    <h2>변이는 <em>마트료시카</em>처럼 층층이</h2>
+    <div class="flow">
+      [모집단 평균 \(\theta\)] <span class="ar">←</span> 전 환자의 "대표 청소율"<br>
+      &nbsp;&nbsp;└─ [개인차 \(\eta_{IIV}\)] <span class="ar">←</span> A는 늘 빠르고 B는 늘 느림 (사람마다, 지속)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ [경우차 \(\eta_{IOV}\)] <span class="ar">←</span> A도 1차 방문과 2차 방문이 다름<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ [측정 잔차 \(\varepsilon\)] <span class="ar">←</span> 같은 한 방울도 분석기마다 미세하게
+    </div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🦴 척추 — 강제 순서</div><p style="margin:0;"><b>1단계 §3</b> 잔차 \(\varepsilon\) 그릇 먼저 잠그기 → <b>2단계 §4</b> \(\omega^2\)(개인차) 안의 설명 가능분을 \(\theta\)로 옮기기 → <b>3단계 §5</b> 남은 \(\eta\)의 분포 모양 검사. 순서를 어기면(잔차 안 잠그고 공변량부터) <b>100% 망함</b>. 이어서 세 시그니처(§6)→EBE/shrinkage(§7)→혼동쌍(§8)→거장 5질문(§10)→요약(§11).</p></div>
+    <p style="font-family:var(--font-serif); font-style:italic; color:var(--cream); margin-top:4px;">"빗자루질해도 방 전체 먼지 총량은 그대로 — 다른 칸에서 줄어든 만큼 \(\theta\) 칸으로 옮겨갈 뿐."</p>
+  </div>
+</section>
+
+<!-- 4 · Hook PK50 -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§1 · Hook</span><span class="eyebrow f1">같은 12명, CV가 28% → 9%</span></div>
+    <h2>같은 환자인데 흔들림이 <em>1/3 토막</em>?</h2>
+    <p class="lead">항부정맥 후보약 <b>CpD</b>를 566 µg · 5시간 정맥주입으로 <b>12명</b>에게 줌. 청소율을 두 안경으로 봄 <span class="cite">G&amp;W p.704–705</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{CL = 11.4\ \mathrm{L\cdot h^{-1}}}_{\text{총 농도(total) 기준}}\ (\overbrace{CV = 28\%}^{\text{사람 사이 흔들림}}) \quad\Longrightarrow\quad \underbrace{CL_u = 720\ \mathrm{L\cdot h^{-1}}}_{\text{비결합 기준}}\ (\overbrace{CV = 9\%}^{\text{1/3 토막}}) \]</div></div>
+    <p>같은 12명·같은 자료를 <b>비결합(unbound, 단백질에 안 붙은 자유 약물)</b> 기준 \(CL_u\)로 다시 봤더니 CV가 28%→9%로 줄어듦. 비결합 분율 \(f_u=0.016\pm0.0049\), 안전 경계는 "총 농도 \(C&gt;50\ \mu\mathrm{g\cdot L^{-1}}\) 회피" <span class="cite">G&amp;W p.705, p.708</span>. (참고: R&amp;T 기준 CV는 10% 이하=낮음, 25%=중간, 40%↑=높음 <span class="cite">R&amp;T p.365</span> — 28%는 중간↑.)</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">🚨</span> 가장 흔한 오해 — 결정적 분기점</div><p style="margin:0;">"단백결합을 공변량으로 넣었더니 IIV가 28%→9%로 줄었구나!" → <strong>반은 맞고 반은 위험한 해석</strong>임. 흔들림을 <i>없앤</i> 게 아니라 같은 12명을 <b>다른 안경(좌표)으로 다시 본 것</b>에 가까움 — <b>줄인 게 아니라 다르게 본 것</b>. 이게 §4의 <i>재모수화 vs 공변량 추가</i> 분기임.</p></div>
+    <div class="thread"><span class="ico">🦴</span><div>PK50에서 "\(\omega^2\)이 줄었다"에 환호하면 안 됨. 먼지 총량은 그대로고 안경만 바꿔 작아 보일 뿐일 수 있음. <b>다리문장:</b> 그러려면 "흔들림 담는 그릇이 몇 종류인가"부터 — §2로.</div></div>
+  </div>
+</section>
+
+<!-- 5 · 그릇 4종 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2 · 그릇</span><span class="eyebrow f1">계층 변이 구조 — 딱 4종</span></div>
+    <h2>흔들림을 담는 그릇은 <em>네 개</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>그릇</th><th>무엇을 담나</th><th>1학년 풀이</th><th>기호 · NONMEM</th></tr></thead>
+      <tbody>
+        <tr><td>① <b>\(\theta\) 구조</b></td><td>측정 변수로 <b>이름 붙일 수 있는</b> 변이</td><td>"이건 신장 기능 때문"</td><td>\(\theta\) · <code>$THETA</code></td></tr>
+        <tr><td>② <b>\(\eta_{IIV}\)</b></td><td>사람 사이 <b>지속적</b>·이름 못 붙인 차이</td><td>"A는 원래 빠른 사람"</td><td>\(\omega^2\) · <code>$OMEGA</code> 대각</td></tr>
+        <tr><td>③ <b>\(\eta_{IOV}\)</b></td><td>같은 사람 안 <b>경우(occasion)</b> 간 변동</td><td>"A도 이번 방문엔 느림"</td><td><code>$OMEGA</code>(occasion 별도)</td></tr>
+        <tr class="hot"><td>④ <b>\(\varepsilon\) (RUV)</b></td><td>한 <b>관측 시점</b>의 측정·모델 잔차</td><td>"이 채혈값은 좀 튀네"</td><td>\(\sigma^2\) · <code>$SIGMA</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="params">
+      <span class="chip"><b>IIV</b> = inter-individual variability (사람 사이)</span>
+      <span class="chip"><b>IOV</b> = inter-occasion (방문/주기 사이) = BOV</span>
+      <span class="chip"><b>RUV</b> = residual unexplained (측정 한 점)</span>
+      <span class="chip"><b>\(\omega^2\)</b> IIV 분산 · <b>\(\sigma^2\)</b> RUV 분산</span>
+    </div>
+    <div class="box" style="--ac:var(--f5)"><div class="bh">NONMEM = NONlinear Mixed Effects Modeling</div><p style="margin:0;">모집단 PK 분석 표준 SW. <b>혼합효과</b>란 "고정효과(평균 \(\theta\))"와 "무작위효과(\(\eta\)·\(\varepsilon\))"를 <b>동시에</b> 추정한다는 뜻. 1970년대 Beal·Sheiner가 만듦 <span class="cite">R&amp;T p.373</span>. R&amp;T는 <b>\(\omega^2\)이 작으면 좋고 크면 나쁘다</b>고 직설 — 치료창 좁은 약은 큰 \(\omega^2\)이 치명적 <span class="cite">R&amp;T p.369–370</span>.</p></div>
+  </div>
+</section>
+
+<!-- 6 · IIV vs IOV vs TVC -->
+<section class="card dark top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2 · 혼동쌍 C7</span><span class="eyebrow">IIV vs IOV vs 시간가변 공변량</span></div>
+    <h2>같은 사람 안의 변동을 <em>어디에 담나</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">⚠️ IIV vs IOV — 그 자리에서 즉시</div><p style="margin:0;"><b>IIV(개체간):</b> 사람마다 다름(지속). A는 늘 빠르고 B는 늘 느림. · <b>IOV(경우간):</b> 같은 사람도 방문/주기마다 다름. A도 1주차와 4주차가 다름. <br><i>한 줄 암기 — IIV = 사람이 달라서, IOV = 같은 사람의 때(occasion)가 달라서.</i></p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_{ij}}_{\text{i환자 · j occasion}} = \underbrace{\theta_1}_{\text{평균 CL}} \cdot \overbrace{\exp(\eta_i)}^{\text{IIV: 지속적 개체차}} \cdot \overbrace{\exp(\eta_{ik})}^{\text{IOV: occasion 변동}} \]</div></div>
+    <p>섞으면 둘 다 오염됨 — 경우 간 변동을 IIV에 <b>그냥 묻으면</b> \(\omega^2\)이 부풀고, 부푼 \(\omega^2\)를 설명하려 <b>가짜 공변량</b>이 잡힘(<i>변이 보존의 첫 장면</i>). <code>$OMEGA</code>의 \(\exp\)는 청소율이 음수가 안 되게 하는 양수 보장용 <span class="cite">R&amp;T p.371</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">⚠️ IOV vs TVC — 결정적 분기점</div><p style="margin:0;">"시간 따라 변하니까 IOV"는 <b>틀림</b>. <b>변동 원인이 측정 가능한 변수(혈청 크레아티닌·체중·동반약물)면 TVC</b>(time-varying covariate, \(\theta\)에 담음), 측정 불가능하면 IOV(\(\eta_{ik}\)). ICU 환자 신기능이 매일 바뀌는데 baseline 한 점만 고정 공변량으로 처리하면 신기능 신호가 IOV·RUV로 흡수돼 사라짐 — §4 Vanishing Cascade의 시간축 버전 <span class="cite">R&amp;T p.371</span>.</p></div>
+  </div>
+</section>
+
+<!-- 7 · 잔차 3종 -->
+<section class="card top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 1단계</span><span class="eyebrow f2">왜 잔차(ε)부터 잠그나</span></div>
+    <h2>공변량보다 <em>잔차가 먼저</em>다</h2>
+    <div class="key"><span class="lbl">🔑 변이 보존(zero-sum)의 첫 발현</span>\(\varepsilon\)(잔차 그릇)이 못 흡수한 흔들림은 <b>반드시</b> \(\eta\)(개인차)로 새어 나감. 새어 나간 흔들림으로 \(\omega^2\)이 부풀고, 그걸 줄이려 공변량을 넣으면 그 공변량은 <strong>생리학이 아니라 잔차 모델의 실패를 설명</strong>함. <b>규제 심사관이 가장 먼저 잡는 결함</b>임.</div>
+    <p>R&amp;T가 명시한 세 형태 — 외우는 게 아니라 데이터 모양과 매칭 <span class="cite">R&amp;T p.371–372</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>모델</th><th>식</th><th>언제 (데이터 시그니처)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Additive</b> 가산</td><td>\(Y = F + \varepsilon\)</td><td>농도 범위 좁고 <b>절대오차 일정</b> ("어디서나 ±2")</td></tr>
+        <tr><td><b>Proportional</b> 비례</td><td>\(Y = F\,(1+\varepsilon)\)</td><td>전반에서 <b>CV 거의 일정</b> ("클수록 흔들림도 비례")</td></tr>
+        <tr><td><b>Exponential</b> 지수</td><td>\(Y = F\cdot\exp(\varepsilon)\)</td><td><b>양수 보장</b>+로그스케일 가법 ("음수 안 됨")</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">\(Y\)=실제 측정, \(F\)=모델 예측, \(\varepsilon\)=잔차. 지수형은 로그 찍으면 가산형이 됨 — 농도가 여러 자릿수면 로그 변환 + <b>오차 모델도 같이 변환</b> <span class="cite">R&amp;T p.372–373</span>:</p>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{\ln Y}_{\text{로그 관측}} = \underbrace{\ln F}_{\text{로그 예측}} + \underbrace{\varepsilon}_{\text{로그 잔차}} \]</div></div>
+  </div>
+</section>
+
+<!-- 8 · Leakage Funnel -->
+<section class="card dark top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 시그니처 1</span><span class="eyebrow">Leakage Funnel — 샘 깔때기</span></div>
+    <h2>저농도에서 <em>깔때기처럼</em> 벌어짐</h2>
+    <p class="lead">실무에서 자주 쓰는 <b>combined(혼합형)</b> — 가산+비례를 합쳐 정량한계(LLOQ) 근처와 고농도를 한 렌즈로 잡음 <span class="flag">교과서 외 구현 · R&amp;T는 가산·비례·지수만</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{Y}_{\text{관측}} = \underbrace{IPRED}_{\text{개인 예측}} + \overbrace{\sqrt{\underbrace{(\theta_{prop}\cdot IPRED)^2}_{\text{비례}}+\underbrace{\theta_{add}^2}_{\text{가산}}}}^{W:\ \text{결합 잔차 스케일}} \cdot \underbrace{\varepsilon}_{\text{표준 잔차}} \]</div></div>
+    <p class="muted"><b>\(W\)의 직관</b> — 카메라 손떨림 보정. 어두운 곳(LLOQ 근처)의 <i>절대</i> 흔들림과 밝은 곳(고농도)의 <i>상대</i> 흔들림을 한 렌즈로 동시에 잡음.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🔬 시그니처 1 — 어떻게 생겼나</div><p style="margin:0;">비례만 쓰는 잔차 모델로 LLOQ 근처 데이터를 맞추면, <b>CWRES</b>(조건부 가중 잔차) 대 <b>PRED</b>(모집단 예측) 그림에서 <b style="color:var(--coral-l)">저농도가 깔때기처럼 쫙 벌어짐</b>. 저농도의 절대오차를 \(\sigma^2\)가 못 잡아 남은 흔들림이 \(\eta\)로 새어 \(\omega^2\) 부풀림 → 변이 보존.</p></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;"><b>잘못된 처치:</b> "\(\omega^2\) 크네, 공변량 찾자!" → <b style="color:var(--amber)">올바른 처치:</b> "잔차 모델 좌표가 틀렸다, 가산 성분 추가." \(\omega^2\)이 너무 크게 느껴질 때 가장 먼저 의심할 건 <b>새 공변량이 아니라 잔차 모델 좌표</b>임.</p></div>
+  </div>
+</section>
+
+<!-- 9 · BQL M3 -->
+<section class="card top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3-4 · BQL</span><span class="eyebrow f2">M1 vs M3 · 임계값의 진짜 출처</span></div>
+    <h2>버리지 말고 <em>확률로</em> 살린다</h2>
+    <p class="lead"><b>BQL/BLQ</b>(below quantification limit, 정량한계 미만 = "너무 낮아 숫자를 못 댐") 처리법으로 결과가 갈림. 값은 몰라도 "LLOQ보다 작다"는 사실은 앎 <span class="cite">Beal 2001</span>:</p>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">M1 — 단순 제외</div><p style="margin:0;">BQL을 버림 → 분포 꼬리 잘려 <b>편향 큼</b>. 권고 안 함.</p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">M3 — 검열 데이터로 통합</div><p style="margin:0;">BQL을 <b>우도(likelihood)</b>에 끼워 넣음. 편향 가장 작음 — <b>현대 표준</b>. (M5=LLOQ/2 대입, M6=첫 BQL만.)</p></div>
+    </div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{L_i^{BQL}}_{\text{BQL 관측 우도}} = \overbrace{\Phi\!\left(\frac{\underbrace{LLOQ}_{\text{정량한계}} - \underbrace{F_{ij}}_{\text{개인 예측}}}{\underbrace{W_{ij}}_{\text{잔차 스케일}}}\right)}^{\text{관측이 LLOQ 미만일 확률}} \]</div></div>
+    <p class="muted">\(\Phi\)(표준정규 누적분포함수) = 어떤 값보다 작을 확률. 개인 예측이 LLOQ보다 한참 낮으면 "BQL일 확률"이 높음 → 모델이 BQL을 자연스럽게 설명.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">📚</span> 임계값(5%·15%)의 진짜 출처 — 정직 표기</div><p style="margin:0;">"BQL &gt;15%면 M3 필수" 임계는 <b>Beal 2001 원전엔 없음</b>(Beal은 방법 정의의 1차 문헌일 뿐). 임계는 <b>Bergstrand &amp; Karlsson 2009</b>가 정량화 <span class="flag">교과서 외</span>. 규제 보고서에 "Per Beal (2001), BQL &gt;15% requires M3"라 쓰면 <b>부정확</b> — method 출처와 임계 출처를 분리 기재해야 함.</p></div>
+    <div class="thread"><span class="ico">⚠️</span><div><b>조용한 실패:</b> M3는 추정법이 FOCE-LAPLACE 이상이어야 함. M3 켜고 FOCE 그대로 돌리면 NONMEM이 <b>에러도 없이</b> BQL 처리 안 된 결과를 뱉음 — 추정은 끝나는데 결과만 틀림.</div></div>
+  </div>
+</section>
+
+<!-- 10 · 공변량 정의 -->
+<section class="card" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 2단계</span><span class="eyebrow f3">공변량 = 줄이기가 아니라 옮기기</span></div>
+    <h2>소음을 줄이는 게 아니라 <em>이름 붙이기</em></h2>
+    <div class="key"><span class="lbl">🎯 공변량 모델링의 정의 (외워둘 것)</span>공변량은 \(\omega^2\)을 <b>줄이는</b> 게 아니라, \(\omega^2\) 안에 섞인 <strong>설명 가능한 생리학을 \(\theta\) 구조로 옮기고 이름을 붙이는 작업</strong>임. 결과적으로 \(\omega^2\)이 작아지는 거지, 작게 만드는 게 <b>목표</b>인 게 아님.</div>
+    <p>R&amp;T 대표 예시 — 신장 기능(크레아티닌 청소율 CRCL)을 청소율에 옮기기 <span class="cite">R&amp;T p.369–371</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_i}_{\text{개인 CL}} = \underbrace{\theta_1}_{\text{기준 CL}} \cdot \overbrace{\left(\frac{CRCL_i}{90}\right)^{\theta_2}}^{\text{기준 신기능 대비 배율}} \cdot \underbrace{\exp(\eta_i)}_{\text{이름 못 붙인 나머지}} \]</div></div>
+    <p>신장 기능을 넣은 만큼 \(\eta\)(이름 못 붙인 나머지)가 줄고, 줄어든 양이 \(\theta\) 구조로 이사함. 단, 개인차가 <i>전부</i> CRCL로 설명되진 않음 — 그렇다면 \(R^2=1\)이어야 하는데 나이·체중·성별·대사 청소율도 섞임 <span class="cite">R&amp;T p.369</span>.</p>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 자주 놓치는 디테일 — 중심값 90의 정체</div><p style="margin:0;"><span class="flag">교과서 외 구현</span> 분모 90은 표준이 아니라 <b>데이터마다 정하는 선택</b>임 — 무엇으로 나누냐가 \(\theta_1\)의 임상 의미를 통째로 바꿈(모집단 중앙값=표본 중심 환자 CL, 120=정상 신기능, 60=CKD 3기 경계). 중심값을 명시 안 하면 심사관이 \(\theta_1\)을 "정상 환자 CL"로 오독함.</p></div>
+  </div>
+</section>
+
+<!-- 11 · PK50 정체 -->
+<section class="card dark top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4-3 · ★PK50 정체</span><span class="eyebrow">공변량 추가 vs 좌표 재모수화</span></div>
+    <h2>같은 도시를 보는 <em>두 장의 지도</em></h2>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{CL}_{\text{total(총)}} = \underbrace{f_u}_{\text{비결합분율}} \cdot \underbrace{CL_u}_{\text{unbound(비결합)}} \]</div></div>
+    <p class="lead">total과 unbound는 <b>\(f_u\)로 묶인 같은 양의 두 표현</b>임. G&amp;W Table 50.1 <span class="cite">G&amp;W p.708</span>: CL 11.4(28%)↔720(9%) · Vc 19.9(29%)↔1270(18%) · Vt 30.9(35%)↔2030(51%).</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🚨 PK50의 진짜 메시지 — 두 층위 (정직하게)</div><p style="margin:0;"><b>회계(좌표) 층위:</b> \(CL=f_u\cdot CL_u\)는 항등식이라, \(f_u\) 변동을 빼면 unbound 쪽이 작아 보이는 건 <b>수학적 당연</b> — 새 정보 발견이 아님. · <b>공변량 층위:</b> 그럼에도 \(f_u\)는 <b>측정 가능한 변수</b>라 total CL 변이의 일부를 "단백결합 차이"로 <b>설명</b>해줌. G&amp;W 원문도 \(f_u\)를 "co-variate"라 부르고 "partly explain"이라 적음 <span class="cite">G&amp;W p.704, 708–709</span>.</p></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;"><b>결론:</b> "공변량으로 \(\omega^2\)을 28→9로 깎았다"는 단순 보고는 <b>오독</b>. 정확히는 "<b>\(f_u\) 좌표/공변량으로 다시 보니</b> total CL 변이의 상당 부분이 단백결합 차이로 설명되더라". ⚠️ \(CV(CL)^2\approx CV(f_u)^2+CV(CL_u)^2\) 분해도 <b>로그 스케일 독립일 때만</b> 성립하는 근사 — 알부민이 둘 다 건드려 상관항 \(2\rho\,CV(f_u)CV(CL_u)\neq0\).</p></div>
+  </div>
+</section>
+
+<!-- 12 · 안전 좌표 + PD -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4-4·5·6</span><span class="eyebrow f3">안전 좌표 · PD 변이 · Vanishing Cascade</span></div>
+    <h2>좌표를 잘못 잡으면 <em>환자가 다친다</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">⚠️ 안전 좌표 — total vs unbound</div><p style="margin:.2em 0;">안전 임계는 <b>total 좌표</b>(\(C&gt;50\ \mu\mathrm{g/L}\) 회피). 그런데 저알부민혈증에서 \(f_u\)가 오르면 total은 안 변해도 <b>unbound(실제 작용 약물)</b>는 올라감 → total 기준 안전해 보이는데 실제 독성. G&amp;W: 안전 여유는 <b>unbound 기준</b>으로 <span class="cite">G&amp;W p.709</span>.</p></div>
+      <div class="box" style="--ac:var(--f4)"><div class="bh">PD 변이는 PK 좌표로 도달 못함</div><p style="margin:.2em 0;">비슷한 노출에서도 반응이 <b>8배(0.5–4.0)</b>까지 갈림. \(E_{max}&lt;1\)인 무반응자는 수용체 밀도/유전 구성 문제 <span class="cite">G&amp;W p.707–709</span>. <b>공변량이 PK 변이를 다 설명해도 PD 변이는 별도 원천</b>.</p></div>
+    </div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">🔬 시그니처 2 — Vanishing Covariate Cascade</div><p style="margin:0;"><span class="flag">교과서 외 · 근거 R&amp;T p.371</span> 진짜 기전 공변량(예: CrCl)이 base에서 <b>빠지면</b> \(\eta_{CL}\)이 그 효과를 흡수 → 상관된 공변량(체중·체표면적)이 <b>가짜로</b> 잡힘. \(\eta\)-EBE 대 CrCl 산점도는 평탄한데 <b>원자료 \(CL_{obs}\) 대 CrCl은 명확한 기울기</b>. <b>처방:</b> 도메인 지식 후보(CrCl·체격·간 기능)를 <b>a priori</b> base에 넣고 시작 — 단계적 선택에 모든 판단을 위임하지 말 것.</p></div>
+    <div class="thread"><span class="ico">💡</span><div>\(\eta\) 기반 스캔과 <b>원자료 기반 스캔을 둘 다</b> 돌려, 어긋나면 "효과 없음"이 아니라 <b>"효과 흡수됨"</b>을 의심.</div></div>
+  </div>
+</section>
+
+<!-- 13 · SCM 비대칭 + df -->
+<section class="card dark top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4-7·8 · 혼동쌍 C7</span><span class="eyebrow">SCM 비대칭 임계 · df 보정</span></div>
+    <h2>입장은 후하게, <em>퇴장은 빡세게</em></h2>
+    <p class="lead"><b>SCM</b>(stepwise covariate modeling) = 공변량을 하나씩 넣었다 뺐다 하는 자동 절차. <b>OFV</b>(목적함수값, 작을수록 잘 맞음) 차이로 <b>LRT</b>(우도비 검정) 판정. forward와 backward가 <b>비대칭</b> <span class="flag">교과서 외 · Jonsson-Karlsson 1998</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{\text{Forward}}^{\text{관대 · 추가}}:\ \underbrace{\Delta OFV}_{\text{감소}} \geq \underbrace{3.84}_{\chi^2_{df=1,\,\alpha=0.05}} \qquad \overbrace{\text{Backward}}^{\text{엄격 · 제거}}:\ \underbrace{\Delta OFV}_{\text{증가}} \geq \underbrace{6.63}_{\chi^2_{df=1,\,\alpha=0.01}} \]</div></div>
+    <p class="muted"><b>왜 비대칭?</b> forward 다중검정이 거짓양성을 누적 — 후보 10개를 각 \(\alpha=0.05\)로 검정하면 가족별 오류가 약 40%까지 쌓임. backward에서 \(\alpha=0.01\)을 통과해야 살아남게 설계 (SCM은 양방향이 <b>한 묶음</b>):</p>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{P_{\text{FWE}}}_{\text{누적 위양성}} \approx \overbrace{1-(1-\alpha)^k}^{k\text{개 후보}} \xrightarrow[\alpha=0.05,\,k=10]{} \underbrace{1-0.95^{10}\approx 0.40}_{\approx 40\%} \]</div></div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">⚠️ 다층 범주형 df = K − 1</div><p style="margin:0;">인종(3수준)·CYP2D6(4수준)에 df=1 임계 3.84를 그대로 쓰면 안 됨 <span class="flag">교과서 외</span>: 3수준 → df=2 → <b>5.99</b>(forward)/<b>9.21</b>(backward), 4수준 → df=3 → <b>7.81</b>/<b>11.34</b>. <b>두 관문</b> — ① 통계(SCM 비대칭+df) ② 기전(VPC 일관성+셀 크기+a priori). \(\Delta OFV\)만 보면 OFV는 떨어지는데 VPC는 악화되는 <i>OFV-VPC 불일치</i>에 속음.</p></div>
+  </div>
+</section>
+
+<!-- 14 · 이봉형 + 유전 -->
+<section class="card dark top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 3단계</span><span class="eyebrow">남은 η의 분포 모양 — 유전 다형성</span></div>
+    <h2>평균이 <em>가장 드문 값</em>일 때</h2>
+    <p class="lead">\(\eta\)가 매끈한 로그정규 단봉이라는 건 <b>우리 가정</b>일 뿐. 실제론 PM/IM/EM/UM 하위군의 혼합일 수 있음 — 평균을 그어버리면 <b>실제 환자 누구도 대표 못 하는 계곡 한가운데 값</b>이 됨 <span class="cite">R&amp;T p.366</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">이소니아지드(항결핵제) — 이봉형의 고전</div><p style="margin:0;"><b>483명</b>에게 9.8 mg/kg 경구 후 <b>6시간째</b> 농도가 <b style="color:var(--amber)">두 봉우리로 갈라짐</b> — <b>NAT2</b>(N-아세틸전이효소 2) 아세틸화 속도(빠름/느림)가 분포 모양 자체를 바꿈 <span class="cite">R&amp;T p.401–402, Fig.13-6</span>. ⚠️ <b>측정 시점에 달림</b> — 6시간(소실)엔 이봉형이 보이지만 2시간(흡수)에 쟀으면 단봉으로 보여 유전 조절을 놓쳤을 수도 <span class="cite">R&amp;T p.401</span>.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>약물</th><th>유전 인자</th><th>임상 의미</th></tr></thead>
+      <tbody>
+        <tr><td><b>Warfarin</b></td><td>CYP2C9(PK)+VKORC1(PD)</td><td>같은 INR 용량이 유전형별로 갈림 <span class="cite">R&amp;T p.405–406</span></td></tr>
+        <tr class="hot"><td><b>Codeine</b></td><td>CYP2D6(모르핀 생성)</td><td><span class="em">UM에서 모르핀 과량 → 호흡억제</span>; 수유부 UM 금기 <span class="cite">R&amp;T p.399</span></td></tr>
+        <tr><td><b>Thiopurines</b></td><td>TPMT</td><td>결핍자 표준용량 시 골수독성 치명(1회로도) <span class="cite">R&amp;T p.399–400</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">PM(저대사자) 빈도 — <b>평균 용량 결정용이 아니라</b> 어느 셀이 작아 식별성이 흔들리는지 알려주는 표: CYP2D6 PM 백인 5–10%·아시아 0.9% · CYP2C19 PM 아시아 16% · NAT2 느림 백인 ~58.6%/일본 12% <span class="cite">R&amp;T p.395, p.402</span>.</p>
+  </div>
+</section>
+
+<!-- 15 · 빈 셀 + 분산설명 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5-2·3·4</span><span class="eyebrow f4">인종 proxy · 빈 셀 · CYP3A4</span></div>
+    <h2>"60% 설명" ≠ <em>"60% 맞힘"</em></h2>
+    <div class="box" style="--ac:var(--coral)"><div class="bh">⚠️ 분산 설명 비율 ≠ 예측 정확도 (정직 표기)</div><p style="margin:0;">R&amp;T 와파린 Fig.13-8: 유전형(CYP2C9·VKORC1)으로 유지용량 분산의 <b>43%</b>, 나이·체중으로 추가 <b>19%</b>(합 ~60%, 38% 미설명) <span class="cite">R&amp;T p.406</span>. 이 %는 <b>"분산을 얼마나 설명하나"이지 "개인 용량을 얼마나 정확히 예측하나"가 아님</b>. "유전자로 60% 설명"을 "60% 정확히 맞힘"으로 읽으면 오독 — 그래서 실제 용량은 여전히 INR로 조정함.</p></div>
+    <div class="box" style="--ac:var(--f4)"><div class="bh">🔬 시그니처 3 — Empty Phenotype Cell</div><p style="margin:0;"><span class="flag">교과서 외 · 근거 R&amp;T p.395</span> 표현형을 4수준으로 펼쳤는데 희귀 셀(PM n=3)의 RSE가 80%↑, <code>$COV step</code>이 "non-positive definite"로 실패. <b>물어야 할 건 "효과가 있는가?"가 아니라 "효과를 식별할 정보가 데이터에 있는가?"</b> — 둘은 다른 질문. 작은 셀은 인접 표현형과 통합("reduced function" 단일 범주)해 시작.</p></div>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{RSE}_{\text{상대 표준오차}} &gt; \underbrace{80\%}_{\text{불안정 경고선}} \]</div></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">⚠️ CYP3A4 — 단봉인데 변이 큼</div><p style="margin:0;">CYP3A4(가장 흔한 대사 효소)는 큰 IIV(CV 30–40%)지만 <b>명확한 유전 인자가 없음</b> — 환경으로 <b>유도(induction)</b>되기 때문 <span class="cite">R&amp;T p.398–399</span>. <b>큰 \(\omega^2\)가 항상 유전형 봉우리를 뜻하는 게 아님</b> — 인구학·동반약물·순응·식이가 섞임.</p></div>
+  </div>
+</section>
+
+<!-- 16 · 세 시그니처 -->
+<section class="card dark" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 종합</span><span class="eyebrow">세 시그니처 = 같은 법칙의 세 얼굴</span></div>
+    <h2>전부 <em>zero-sum의 변주</em>다</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>시그니처</th><th>어디서 → 어디로 새나</th><th>올바른 처치</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Leakage Funnel</td><td>\(\varepsilon\)(RUV) → \(\eta\)(IIV) 부풀림</td><td>잔차 모델 좌표 재선택</td></tr>
+        <tr class="hot"><td>2</td><td>Vanishing Cascade</td><td>기전 공변량 누락 → \(\eta\)가 흡수</td><td>a priori 공변량을 base에</td></tr>
+        <tr><td>3</td><td>Empty Phenotype Cell</td><td>작은 셀 정보 부족 → \(\theta\) 식별 안 됨 → \(\eta\) 흡수</td><td>셀 크기별 결정 트리, 인접 통합</td></tr>
+      </tbody>
+    </table></div>
+    <p class="lead" style="margin-top:8px;">세 시그니처 모두 같은 메커니즘 — <b style="color:var(--amber)">분산이 잘못된 그릇으로 흘러감 → 잘못된 결론 → 잘못된 용량</b>.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🦴 척추 — 이 세션 전체를 한 표로</div><p style="margin:0;">변이 보존이 작동하는 방식은 항상 똑같음. "<b>어느 그릇에 들어갔어야 할 분산이 어디로 새고 있나?</b>"를 진단할 수 있으면, 세 시그니처는 같은 질문의 세 표현일 뿐임.</p></div>
+  </div>
+</section>
+
+<!-- 17 · EBE shrinkage -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7</span><span class="eyebrow f5">η를 봤다는 착각 — EBE · shrinkage · OMEGA BLOCK</span></div>
+    <h2>EBE 그림은 현미경이 아니라 <em>그림자</em></h2>
+    <p class="lead"><b>EBE</b>(empirical Bayes estimate, 개인 \(\eta\)의 사후추정치)를 "그 사람의 <b>참</b> \(\eta\)"로 읽으면 안 됨 — 모집단 파라미터와 그 사람 자료를 같이 쓴 <b>조건부 추정치</b>라 자료가 적으면 부정확. 자료 부족하면 평균(0) 쪽으로 끌려감 = <b>shrinkage</b> <span class="flag">교과서 외 · Savic-Karlsson 2009</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\eta\text{-shrinkage}}_{\text{EBE 압축률}} = 1 - \frac{\overbrace{SD(\eta_{EBE,i})}^{\text{EBE 표본 표준편차}}}{\underbrace{\omega}_{\text{모집단 표준편차}}} \]</div></div>
+    <p class="muted">비가 1에 가까우면 정보 충분, 0에 가까우면 다 평균으로 수축. <b>&lt;20%</b> 신뢰 가능 · <b>20–30%</b> 주의 · <b style="color:var(--coral-d)">&gt;30%</b> 자료 정보 부족, EBE 기반 그림(산점도·히스토그램) <b>모두 분해능 상실</b> — 진짜 신호와 artifact 구별 불가.</p>
+    <p>한편 CL과 V의 \(\eta\)는 거의 항상 <b>상관</b>됨(체격 큰 환자는 둘 다 큼). 대각으로만 가면 둘 다 과대추정 → <code>$OMEGA BLOCK</code>으로 공분산까지 추정 <span class="flag">교과서 외</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{\Omega}_{\text{IIV 분산-공분산}} = \begin{pmatrix} \overbrace{\omega^2_{CL}}^{\text{CL 분산}} &amp; \overbrace{\omega_{CL,V}}^{\text{공분산}} \\ \underbrace{\omega_{CL,V}}_{\text{공분산}} &amp; \underbrace{\omega^2_{V}}_{\text{V 분산}} \end{pmatrix} \qquad \underbrace{\rho_{CL,V}}_{\text{상관계수}} = \frac{\omega_{CL,V}}{\omega_{CL}\cdot\omega_{V}} \]</div></div>
+    <p class="muted"><b>실무 순서:</b> 대각 시작 → OFV·shrinkage·VPC 안정 확인 → BLOCK 확장(\(|\rho|\) 0.4–0.7이면 정당화). 처음부터 BLOCK 잡으면 <code>$COV step</code>이 "non-positive definite"로 실패하기 쉬움 — 그 자체가 정보량 부족 신호.</p>
+  </div>
+</section>
+
+<!-- 18 · 혼동쌍 5쌍 -->
+<section class="card top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8 · 혼동쌍</span><span class="eyebrow f1">"어느 좌표/그릇 문제인가"로 환원</span></div>
+    <h2>막히는 자리 <em>다섯 쌍</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>쌍</th><th>가르는 한 줄</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b> \(\omega^2\)(IIV) vs \(\sigma^2\)(RUV)</td><td>개인 파라미터 수준(<code>$OMEGA</code>, 공변량으로) vs 관측값 수준(<code>$SIGMA</code>, 잔차 모델로). 혼동하면 공변량 늘려도 \(\sigma^2\) 그대로</td></tr>
+        <tr class="hot"><td><b>2</b> Total vs Unbound \(CL_u\)</td><td>안전 경계는 <b>total</b>(\(C&gt;50\)), 용량 개인화는 <b>unbound</b>. 저알부민혈증: total 정상인데 unbound 독성</td></tr>
+        <tr><td><b>3</b> PK 변이 vs PD 변이</td><td>같은 용량에 농도가 왜 다른가(CL·V·F) vs 같은 농도에 반응이 왜 다른가(EC50·Emax). <b>PK 좌표로 PD 도달 못함</b></td></tr>
+        <tr><td><b>4</b> 평균 vs 분포 모양</td><td>\(\theta\)+단일 \(\omega^2\) vs \(\eta\) 히스토그램·혼합. 이봉형 계곡 평균을 용량 기준으로 쓰면 하위군 위험 누락</td></tr>
+        <tr><td><b>5 ★</b> 공변량 추가 vs 재모수화</td><td>\(\eta\) 설명분을 \(\theta\)로 <b>옮김</b> vs 같은 데이터를 <b>다른 좌표</b>로 표현. PK50을 "\(\omega^2\) 감소"로 단순 오독</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh">(보너스) IIV vs IOV — §2 재호출</div><p style="margin:0;"><b>사람이</b> 달라서(IIV, A는 늘 빠름) vs 같은 사람의 <b>때</b>가 달라서(IOV, A도 이번 방문엔 느림). occasion 변동을 IIV에 묻으면 \(\omega^2\) 부풀고 가짜 공변량.</p></div>
+  </div>
+</section>
+
+<!-- 19 · 거장의 다섯 질문 -->
+<section class="card dark top" id="s19">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10</span><span class="eyebrow">거장의 다섯 질문 — NONMEM 출력 1:1 매핑</span></div>
+    <h2>초급 "IIV가 크네요", 거장은 <em>다섯 질문</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>거장의 질문</th><th>NONMEM/진단 출력</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>PK인가 PD인가?</td><td>\(\omega^2\)(PK)와 \(\omega^2\)(PD) 비교, \(\eta_{CL}\)·\(\eta_{EC50}\) 상관 <span class="cite">G&amp;W p.707–709</span></td></tr>
+        <tr><td>2</td><td>\(\eta\)인가 \(\varepsilon\)인가?</td><td>잔차 모델 변경 전후 OMEGA·SIGMA 비교 → Leakage Funnel <span class="cite">R&amp;T p.371–373</span></td></tr>
+        <tr class="hot"><td>3</td><td>Total인가 unbound인가?</td><td>두 좌표 \(\omega^2\) 나란히 → PK50 패턴(28% vs 9%) 재현 여부 <span class="cite">G&amp;W p.706–709</span></td></tr>
+        <tr><td>4</td><td>Smooth인가 하위군인가?</td><td>\(\eta\)-EBE 이봉형, <code>$MIX</code> \(\Delta OFV\) — 단 shrinkage·RSE 선행 점검 <span class="cite">R&amp;T p.393–402</span></td></tr>
+        <tr><td>5</td><td>기전인가 proxy인가?</td><td>부트스트랩 CI, <code>$COV</code> 조건수, 공변량 상관 <span class="cite">R&amp;T p.395</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{\eta\text{-shrinkage}}_{\text{분해능}}&lt;\underbrace{30\%}_{\text{경고}},\quad \underbrace{RSE}_{\text{불확실성}}&gt;\underbrace{80\%}_{\text{불안정}},\quad \underbrace{\kappa}_{\text{조건수}}&gt;\underbrace{1000}_{\text{악조건}},\quad \underbrace{|r|}_{\text{상관}}&gt;\underbrace{0.7}_{\text{공선성}} \]</div></div>
+    <div class="box dark" style="--ac:var(--amber)"><p style="margin:0;"><span class="ico">💼</span> 심사관이 보는 건 항목 각각이 아니라 <b>그들 사이의 일관성</b>임 — \(\sigma^2\)↔분석법 CV / 안전 임계(total)↔용량 권고(unbound) / \(\eta\) 분포↔집단 약리유전 reference를 모델 lock 전 cross-check. 모집단 PK가 "연구 편의에서 <b>규제 요건</b>으로 진화" <span class="cite">R&amp;T p.373</span>한 실무 번역.</p></div>
+  </div>
+</section>
+
+<!-- 20 · 자가테스트 -->
+<section class="card top" id="s20">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9</span><span class="eyebrow" style="color:var(--coral-d)">자가테스트 · 풀고 답 확인</span></div>
+    <h2>막히는 지점 <em>확인</em></h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1</span><span class="lv">그릇</span> \(CL_i = CL\cdot\exp(\eta_i)\)에서 굳이 \(\exp\)로 감싸는 이유는?</div>
+      <div class="a">청소율이 <b>음수가 안 되게</b> 보장하면서 \(\eta\)를 정규분포로 둘 수 있음. 지수형은 근사적으로 일정한 CV를 줌 <span class="cite">R&amp;T p.371</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q2</span><span class="lv">1단계</span> 잔차가 "평균 0의 무작위"가 아니면 무슨 뜻?</div>
+      <div class="a">구조 또는 오차 모델이 <b>중요한 변이 원인을 아직 못 잡은 것</b>. 이 상태에서 찾은 공변량은 생물학이 아니라 <b>잔차 모델 실패</b>를 설명함 <span class="cite">R&amp;T p.372</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q3</span><span class="lv">★PK50</span> "total CV 28% → unbound CV 9%"를 어떻게 해석해야 정직한가?</div>
+      <div class="a">"\(f_u\)를 공변량으로 넣어 \(\omega^2\)을 깎았다"는 <b>오독</b>. \(CL=f_u\cdot CL_u\)는 항등식이라 unbound가 작아 보이는 건 수학적 당연(좌표 회전). <b>동시에</b> \(f_u\)는 측정 가능 변수라 total CL 변이를 단백결합으로 <b>설명</b>해줌(원문도 "co-variate"·"partly explain") <span class="cite">G&amp;W p.706–709</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q4</span><span class="lv">2단계</span> SCM forward/backward 임계가 비대칭(\(\alpha\)=0.05 vs 0.01)인 이유는?</div>
+      <div class="a">forward는 여러 후보를 동시 검정해 가족별 오류가 누적(10개×0.05 ≈ 40%). backward에서 더 엄격한 \(\alpha\)=0.01을 통과해야 살아남게 설계해 누적 위험 보정. \(P_{\text{FWE}}\approx1-(1-\alpha)^k\) <span class="flag">Jonsson-Karlsson 1998</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q5</span><span class="lv">3단계</span> \(\eta\)-EBE 히스토그램이 두 봉우리면 무엇을 의심? 단서 하나는?</div>
+      <div class="a">매끈한 로그정규가 아니라 <b>유전형/표현형 하위군의 혼합(mixture)</b>을 의심. 단, 표본이 적으면 히스토그램 정보량부터 점검(<b>shrinkage &gt;30%</b> 여부) <span class="cite">R&amp;T p.366, p.401–402</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 21 · 요약 + 연결 -->
+<section class="card dark" id="s21">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10–11</span><span class="eyebrow">한 줄 요약 · 세션 연결</span></div>
+    <h2>변이는 사라지지 않고 <em>옮겨갈 뿐</em></h2>
+    <div class="key"><span class="lbl">한 줄 요약</span>\(\omega^2\)은 "남은 변이"가 아니라, <b>아직 이름 붙이지 못한 생리학·유전학·행동·측정 구조의 혼합물</b>임. §3이 잔차 noise를 정리하고, §4가 설명 가능한 생리학을 꺼내며, §5가 매끈한 IIV 안에 숨은 유전적 불연속을 드러냄. <strong>이 순서를 어기면 NONMEM은 돌아가도 용량 개인화는 무너짐.</strong> 통과한 공변량도 <b>두 관문</b>(통계적·기전적 거짓양성)을 같이 넘어야 함.</div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.4vw,30px); color:#fff; text-align:center; margin:22px 0 6px;">"지금 내가 보는 이 흔들림은,<br>도대체 어느 그릇에 들어가야 하는가?" — 변이는 zero-sum</p>
+    <div class="grid3">
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">→ 14 Allometry</div><p style="margin:0;">체격으로 CL·V 스케일 = §4 "공변량을 \(\theta\)로"의 <b>가장 강력한 사전 공변량</b>.</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">→ 15 모델 진단</div><p style="margin:0;">잔차 안정화·VPC·shrinkage 점검이 <b>진단의 핵심 도구</b>로 확장.</p></div>
+      <div class="box dark" style="--ac:var(--teal-l)"><div class="bh">→ 16 캡스톤</div><p style="margin:0;">분해한 변이를 <b>용량 개인화·베이지안 TDM</b>으로 써먹는 종착점.</p></div>
+    </div>
+    <p class="muted" style="margin-top:6px;">이 세션은 모집단 PK의 <b>분산 축(variance axis)</b> — 이전 세션이 평균값 \(\theta\)를 세웠다면, 여기선 그 평균 <b>주변의 개인차·잔차를 분해</b>함.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var tocEl = document.querySelector('.toc');
+  var total = cards.length;
+  var cur = 0;
+
+  function linkFor(id){
+    for(var i=0;i<links.length;i++){ if(links[i].getAttribute('href') === '#'+id) return links[i]; }
+    return null;
+  }
+  function ensureVisible(l){
+    var lr = l.getBoundingClientRect(), tr = tocEl.getBoundingClientRect();
+    if(lr.top < tr.top + 8) tocEl.scrollTop -= (tr.top + 8 - lr.top);
+    else if(lr.bottom > tr.bottom - 8) tocEl.scrollTop += (lr.bottom - (tr.bottom - 8));
+  }
+  function setActive(idx){
+    cur = idx;
+    var id = cards[idx].id;
+    for(var i=0;i<links.length;i++) links[i].classList.remove('active');
+    var l = linkFor(id);
+    if(l){ l.classList.add('active'); ensureVisible(l); }
+    counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    bar.style.width = ((idx+1)/total*100) + '%';
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(cards.indexOf(e.target)); }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  cards.forEach(function(c){ io.observe(c); });
+
+  function go(d){
+    var n = Math.max(0, Math.min(total-1, cur + d));
+    if(n !== cur) cards[n].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  window.addEventListener('keydown', function(e){
+    if(e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); go(1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); go(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); cards[0].scrollIntoView({behavior:'smooth'}); }
+    else if(e.key === 'End'){ e.preventDefault(); cards[total-1].scrollIntoView({behavior:'smooth'}); }
+  });
+
+  var burger = document.querySelector('.burger');
+  if(burger){
+    burger.addEventListener('click', function(){ document.body.classList.toggle('toc-open'); });
+    links.forEach(function(l){ l.addEventListener('click', function(){ document.body.classList.remove('toc-open'); }); });
+  }
+
+  setActive(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 11 · 간접 반응 — Turnover·DRT·Baseline · 카드뉴스</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+KR:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)'], ['$','$']],
+    displayMath: [['\\[','\\]'], ['$$','$$']]
+  },
+  chtml: {
+    mtextInheritFont: true,
+    matchFontHeight: false,
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { enableMenu: false, renderActions: { addMenu: [] } },
+  startup: { ready: () => { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#F0EEE6; --paper:#FAF9F5; --paper-2:#F4F1E9;
+  --ink:#211F1B; --ink-2:#56514A; --ink-3:#8A857C; --line:#E4DFD3;
+  --coral:#D97757; --coral-d:#B0501F; --coral-tint:#FBEEE7; --coral-tint-bd:#F1D7C7;
+  --dark:#262019; --dark-2:#2F2820; --cream:#F4EFE6; --cream-2:#D6CFBF;
+  --amber:#EAB45C; --coral-l:#EC9A78; --teal-l:#86C0A9; --tan:#D4A27F;
+  --f1:#CF6A45; --f2:#BB852C; --f3:#3F7A66; --f4:#8A5A86; --f5:#4E6E94;
+  --font-serif:"Newsreader","Noto Serif KR",Georgia,serif;
+  --font-sans:"Pretendard",-apple-system,BlinkMacSystemFont,"Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:20px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  word-break:keep-all; overflow-wrap:break-word;
+  display:grid; grid-template-columns:312px 1fr;
+}
+
+/* ---------- progress bar ---------- */
+.progress{position:fixed; top:0; left:312px; right:0; height:4px; background:transparent; z-index:60;}
+.progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--coral),var(--amber)); transition:width .25s ease;}
+.counter{position:fixed; right:26px; bottom:22px; z-index:60;
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
+  background:rgba(250,249,245,.88); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; backdrop-filter:blur(6px);}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky; top:0; height:100vh; overflow-y:auto; z-index:50;
+  background:#EBE7DD; border-right:1px solid var(--line); padding:30px 20px 60px;}
+.toc::-webkit-scrollbar{width:8px;} .toc::-webkit-scrollbar-thumb{background:#D7D1C4; border-radius:8px;}
+.brand{padding:0 8px 18px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+.brand .k{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral-d);}
+.brand .t{font-family:var(--font-serif); font-size:26px; font-weight:600; line-height:1.14; margin-top:6px; color:var(--ink);}
+.toc-group{margin:15px 0 4px;}
+.toc-gh{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+  color:var(--ink-3); text-transform:uppercase; padding:6px 8px 4px;}
+.dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.dot.f1{background:var(--f1)} .dot.f2{background:var(--f2)} .dot.f3{background:var(--f3)} .dot.f4{background:var(--f4)} .dot.f5{background:var(--f5)}
+.toc-link{display:block; text-decoration:none; color:var(--ink-2); font-size:14px; line-height:1.32;
+  padding:6px 10px 6px 12px; border-radius:8px; border-left:2px solid transparent; transition:all .15s;}
+.toc-link:hover{background:rgba(217,119,87,.10); color:var(--ink);}
+.toc-link.active{background:var(--paper); color:var(--coral-d); font-weight:600; border-left-color:var(--coral);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+/* ---------- deck / cards ---------- */
+.deck{min-width:0;}
+.card{min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:76px 72px; border-bottom:1px solid var(--line); scroll-margin-top:0; position:relative;}
+.card.top{justify-content:flex-start; padding-top:84px;}
+.wrap{width:100%; max-width:1080px; margin:0 auto;}
+.card.dark{background:var(--dark); color:var(--cream); border-bottom-color:#3a3228;}
+.card.center{text-align:center;}
+.card.center .wrap{margin:0 auto;}
+
+.khead{display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.sec{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-3); background:rgba(0,0,0,.045); padding:3px 11px; border-radius:7px;}
+.card.dark .sec{color:var(--amber); background:rgba(255,255,255,.08);}
+.eyebrow{font-size:15.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;}
+.f1{color:var(--f1)} .f2{color:var(--f2)} .f3{color:var(--f3)} .f4{color:var(--f4)} .f5{color:var(--f5)}
+.card.dark .eyebrow{color:var(--amber);}
+
+h2{font-family:var(--font-serif); font-weight:500; font-size:clamp(36px,4.6vw,58px);
+  line-height:1.13; letter-spacing:-.012em; margin:.05em 0 .5em;}
+.card.dark h2{color:#fff;}
+h2 em{font-style:italic; color:var(--coral-d);}
+.card.dark h2 em{color:var(--amber);}
+.lead{font-size:clamp(21px,2vw,26px); line-height:1.55; color:var(--ink); margin:0 0 .7em;}
+.card.dark .lead{color:var(--cream);}
+p{font-size:clamp(18.5px,1.5vw,22px); line-height:1.72; margin:.55em 0;}
+.muted{color:var(--ink-2);} .card.dark .muted{color:var(--cream-2);}
+.gloss{color:var(--ink-3); font-size:.9em;} .card.dark .gloss{color:var(--cream-2);}
+strong{font-weight:700; color:var(--coral-d);} .card.dark strong{color:var(--amber);}
+b{font-weight:700; color:var(--ink);} .card.dark b{color:#fff;}
+.hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.45) 58%); padding:0 1px; color:inherit; font-weight:600;}
+.card.dark .hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.30) 58%);}
+
+ul{margin:.5em 0; padding-left:0; list-style:none;}
+ol{margin:.5em 0; padding-left:1.4em;}
+ol li{padding:5px 0; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6;}
+ul li{position:relative; padding:7px 0 7px 26px; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6; list-style:none;}
+ul li::before{content:""; position:absolute; left:4px; top:.95em; width:7px; height:7px; border-radius:50%;
+  background:var(--coral);}
+.card.dark ul li::before{background:var(--amber);}
+ul li.x::before{content:"✕"; background:none; color:var(--coral-d); font-size:.8em; top:.7em; left:2px; width:auto; height:auto;}
+.card.dark ul li.x::before{color:var(--coral-l);}
+ul li.o::before{content:"✓"; background:none; color:var(--f3); font-weight:700; top:.55em; left:0; width:auto; height:auto;}
+.card.dark ul li.o::before{color:var(--amber);}
+
+/* ---------- citations / flags ---------- */
+.cite{font-family:var(--font-mono); font-size:.64em; font-weight:500; color:var(--ink-3);
+  background:rgba(0,0,0,.045); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle; letter-spacing:.01em;}
+.card.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.10);}
+.box .cite{background:rgba(0,0,0,.05);}
+.box.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.12);}
+.flag{font-family:var(--font-mono); font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--coral-d);
+  background:rgba(217,119,87,.10); border:1px solid var(--coral-tint-bd); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle;}
+.card.dark .flag, .box.dark .flag{color:var(--amber); background:rgba(234,180,92,.12); border-color:rgba(234,180,92,.32);}
+
+/* ---------- boxes / callouts ---------- */
+.box{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ac,var(--coral));
+  border-radius:13px; padding:20px 25px; margin:18px 0;}
+.box .bh{display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.02em;
+  color:var(--ac,var(--coral-d)); margin-bottom:.45em;}
+.box .ico{font-size:1.05em; filter:saturate(1.1);}
+.box p, .box li{font-size:clamp(17px,1.38vw,20px);}
+.box.dark{background:var(--dark-2); border-color:rgba(255,255,255,.12); border-left-color:var(--ac,var(--amber)); color:var(--cream);}
+.box.dark .bh{color:var(--amber);}
+.box.dark strong{color:var(--amber);} .box.dark b{color:#fff;}
+.box.dark ul li::before{background:var(--amber);}
+.box.dark .muted{color:var(--cream-2);}
+
+.key{background:var(--coral-tint); border:1px solid var(--coral-tint-bd); border-left:5px solid var(--coral);
+  border-radius:13px; padding:20px 26px; margin:18px 0; font-size:clamp(18.5px,1.5vw,22px); line-height:1.55;}
+.key .lbl{display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral-d); margin-bottom:.35em;}
+.key strong{color:var(--coral-d);}
+.card.dark .key{background:rgba(234,180,92,.10); border-color:rgba(234,180,92,.3); border-left-color:var(--amber); color:var(--cream);}
+.card.dark .key .lbl{color:var(--amber);} .card.dark .key strong{color:var(--amber);} .card.dark .key b{color:#fff;}
+
+.thread{font-family:var(--font-serif); font-style:italic; font-size:clamp(17.5px,1.5vw,22px);
+  color:var(--ink-2); border-top:1px dashed var(--line); padding-top:16px; margin-top:22px; display:flex; gap:10px;}
+.thread .ico{font-style:normal;}
+.thread b{color:var(--coral-d);}
+.card.dark .thread{color:var(--cream-2); border-top-color:rgba(255,255,255,.18);}
+.card.dark .thread b{color:var(--amber);}
+
+/* ---------- stats ---------- */
+.stats{display:flex; flex-wrap:wrap; gap:14px 30px; align-items:flex-end; margin:14px 0 6px;}
+.stat{display:flex; flex-direction:column; gap:2px;}
+.stat .lab{font-size:14.5px; color:var(--ink-2); letter-spacing:.01em;}
+.card.dark .stat .lab{color:var(--cream-2);}
+.stat .val{font-family:var(--font-serif); font-weight:500; font-size:clamp(34px,4.4vw,58px); line-height:1; color:var(--ink);}
+.stat .val .u{font-size:.42em; color:var(--ink-2); font-family:var(--font-sans); font-weight:500;}
+.card.dark .stat .val{color:#fff;} .card.dark .stat .val .u{color:var(--cream-2);}
+.arrow{font-family:var(--font-serif); font-size:clamp(30px,3.4vw,46px); color:var(--coral); align-self:center; padding-bottom:.18em;}
+.card.dark .arrow{color:var(--coral-l);}
+.bignum{font-family:var(--font-serif); font-weight:500; font-size:clamp(64px,10vw,140px); line-height:.9; color:var(--coral-d);}
+.card.dark .bignum{color:var(--amber);}
+
+/* ---------- tables ---------- */
+.tbl{width:100%; overflow-x:auto; margin:16px 0;}
+table{width:100%; border-collapse:collapse; font-size:clamp(15px,1.3vw,18.5px);}
+th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+thead th{font-weight:700; color:var(--coral-d); border-bottom:2px solid var(--coral); font-size:.94em; letter-spacing:.01em;}
+tbody tr:last-child td{border-bottom:none;}
+td .em{color:var(--coral-d); font-weight:600;}
+tr.hot td{background:rgba(234,180,92,.13);}
+.card.dark th,.card.dark td{border-bottom-color:rgba(255,255,255,.13); color:var(--cream);}
+.card.dark thead th{color:var(--amber); border-bottom-color:var(--amber);}
+.card.dark td .em{color:var(--amber);}
+.card.dark tr.hot td{background:rgba(234,180,92,.16);}
+.box table{font-size:clamp(14.5px,1.2vw,17px);}
+.fcell{display:inline-flex; align-items:center; gap:7px; font-weight:600;}
+
+/* ---------- math ---------- */
+.mathblock{font-size:clamp(21px,2.15vw,30px); margin:1.2em 0; overflow-x:auto; overflow-y:hidden; padding:8px 2px;}
+.mathblock.tight{margin:.6em 0;}
+.mathblock.tall{margin:1.6em 0; padding:14px 2px;}
+.mathblock.wide{font-size:clamp(15.5px,1.7vw,22px);}
+mjx-container{color:inherit !important;}
+mjx-container[display="true"]{margin:0 !important;}
+.card.dark .mathblock, .box.dark .mathblock, .key .mathblock{color:inherit;}
+.formula-hero{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 22px; margin:18px 0;}
+.card.dark .formula-hero{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12);}
+.box.dark .formula-hero, .key .formula-hero{background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.14);}
+
+/* ---------- params chips ---------- */
+.params{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;}
+.chip{font-family:var(--font-mono); font-size:15px; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:9px; padding:8px 13px; color:var(--ink);}
+.chip b{color:var(--coral-d);}
+.card.dark .chip{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--cream);}
+.card.dark .chip b{color:var(--amber);}
+
+/* ---------- grids ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin:16px 0;}
+@media (max-width:1180px){ .grid3{grid-template-columns:1fr;} }
+
+/* ---------- code ---------- */
+.codeblock{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:18px 22px; margin:12px 0; font-size:clamp(12.5px,1.05vw,15px); line-height:1.7;
+  overflow-x:auto; border:1px solid rgba(255,255,255,.10);}
+.codeblock .ttl{display:block; color:var(--amber); font-weight:600; margin-bottom:8px; font-size:.95em;}
+.codeblock pre{margin:0; white-space:pre;}
+.codeblock .cm{color:var(--coral-l);}
+.codeblock .kw{color:var(--amber);}
+
+/* ---------- flow ---------- */
+.flow{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:22px 26px; margin:16px 0; font-size:clamp(14px,1.25vw,17px); line-height:1.85;}
+.flow .step{color:var(--amber); font-weight:600;}
+.flow .ar{color:var(--coral-l);}
+
+/* ---------- Q&A ---------- */
+.qa{margin:10px 0;}
+.qa .q{font-weight:700; color:var(--ink); font-size:clamp(16.5px,1.35vw,19px); margin-top:15px; display:flex; gap:10px;}
+.qa .q .n{font-family:var(--font-mono); color:var(--coral-d); flex:0 0 auto;}
+.qa .q .lv{font-family:var(--font-mono); font-size:.7em; color:var(--ink-3); margin-left:auto; white-space:nowrap;}
+.qa .a{color:var(--ink-2); font-size:clamp(15.5px,1.3vw,18px); padding-left:30px; margin-top:3px; line-height:1.58;}
+.qa .a b{color:var(--coral-d);}
+.card.dark .qa .q{color:#fff;} .card.dark .qa .q .n{color:var(--amber);} .card.dark .qa .a{color:var(--cream-2);} .card.dark .qa .a b{color:var(--amber);}
+
+.scroll-hint{position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2); opacity:.8;
+  display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scroll-hint .dn{font-size:18px; animation:bob 1.8s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)}}
+
+.foot{margin-top:26px; font-size:14.5px; color:var(--ink-3); letter-spacing:.01em;}
+.card.dark .foot{color:var(--cream-2);}
+.divider{height:1px; background:var(--line); margin:20px 0;}
+.card.dark .divider{background:rgba(255,255,255,.14);}
+
+/* ---------- burger / mobile ---------- */
+.burger{display:none; position:fixed; top:14px; left:14px; z-index:70; width:46px; height:46px;
+  border-radius:11px; background:var(--dark); color:var(--cream); border:none; cursor:pointer; font-size:20px;}
+@media (max-width:980px){
+  body{grid-template-columns:1fr; font-size:18px;}
+  .toc{position:fixed; left:0; top:0; width:300px; transform:translateX(-100%); transition:transform .25s; box-shadow:0 0 40px rgba(0,0,0,.25);}
+  body.toc-open .toc{transform:translateX(0);}
+  .burger{display:block;}
+  .progress{left:0;}
+  .card{padding:78px 26px 64px;}
+  .card.top{padding-top:78px;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="burger" aria-label="목차 열기">☰</button>
+<div class="progress"><i id="bar"></i></div>
+<div class="counter" id="counter">01 / 19</div>
+
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 11 · 간접 반응</div>
+    <div class="t">Turnover · DRT · Baseline</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 척추</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">mismatch 4후보</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>진단 · 골격</div>
+      <a class="toc-link" href="#s4">히스테리시스 진단</a>
+      <a class="toc-link" href="#s5">욕조 R₀=kin/kout</a>
+      <a class="toc-link" href="#s6">4-Model 분류</a>
+      <a class="toc-link" href="#s7">시간 신호 tss</a>
+      <a class="toc-link" href="#s8">Pool/Precursor</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>의미 · 추정</div>
+      <a class="toc-link" href="#s9">Emax 의미 · 선형PK≠PD</a>
+      <a class="toc-link" href="#s10">손으로 잠그기</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>비가역 · Apex</div>
+      <a class="toc-link" href="#s11">비가역 kill</a>
+      <a class="toc-link" href="#s12">박테리아·Friberg</a>
+      <a class="toc-link" href="#s13">★ turnover vs effect comp</a>
+      <a class="toc-link" href="#s14">어떻게 가르나</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>시계 · baseline</div>
+      <a class="toc-link" href="#s15">PK시계 vs PD시계</a>
+      <a class="toc-link" href="#s16">baseline 이동</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s17">혼동쌍</a>
+      <a class="toc-link" href="#s18">자가점검</a>
+      <a class="toc-link" href="#s19">한 줄 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 11 · 간접 반응 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,76px); margin-top:.25em; line-height:1.08;">지연을 추가하는 게 아니라<br><em>올바른 시계에 배정</em>하기</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">농도(C)와 효과가 시간상 안 맞을 때, 그 어긋남(mismatch)은 어디서 오고 어떻게 분해해 임상 결정으로 번역하는가</p>
+    <div class="key" style="max-width:900px; margin:30px auto 0; text-align:left;">
+      <span class="lbl">🦴 척추</span>
+      간접 반응 모델링은 "지연을 추가하는 일"이 아니라 <strong>"올바른 인과 시계(causal clock)에 지연을 배정하는 일"</strong>. 베테랑은 <b>fit이 매끄럽다고</b> 좋아하지 않고, <b>어느 시계가 가장 느린지 증명할 수 있을 때</b> 좋아함.
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(19px,2.1vw,28px); color:#fff; margin-top:22px;">"이 mismatch, 4후보 중 어느 시계인가?"</p>
+    <div class="foot">Gabrielsson &amp; Weiner §3.7–3.12 + PD4·5·6·7 · Rowland &amp; Tozer Ch.8 — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>두 교과서와 <em>척추 질문</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">G&amp;W</div><p class="muted">§3.7–3.12 turnover·precursor·비가역 kill + 사례 PD4·5·6·7·9.</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">R&amp;T</div><p class="muted">Ch.8 Response — 시간 지연·turnover·PK/PD 시계. PKPD 공통 출처라 주제 고유는 G&amp;W·백본 노트.</p></div>
+    </div>
+    <div class="key"><span class="lbl">🦴 척추 질문</span>"plasma 농도와 효과가 시간상 안 맞을 때, 그 어긋남은 <strong>어디서 오고, 어떻게 분해해서 임상 결정으로 번역</strong>하는가?" — 데이터 받으면 NONMEM부터 켜지 말고 농도-효과 그림 한 장부터.</div>
+    <p class="muted"><b>대상</b> 비전공·1학년 OK · <b>PK</b>="몸이 약에"(농도), <b>PD</b>="약이 몸에"(효과) · <b>교과서 외</b>는 Sharma–Jusko·Friberg–Karlsson으로 표기.</p>
+  </div>
+</section>
+
+<!-- 3 · 4후보 -->
+<section class="card dark top" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow">mismatch의 출처</span></div>
+    <h2>딱 <em>4가지뿐</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 전기장판</div><p style="margin:0;">스위치를 켜도 바로 안 따뜻하고 끄고도 한참 따뜻함 — "스위치(농도)"와 "이불 온도(효과)"가 시간상 안 맞음. naproxen(같은 농도라도 올라갈 때/내려갈 때 통증 완화 다름 <span class="cite">R&amp;T Fig.8-2, p.235</span>), aspirin(혈장 ~15분인데 효과 수일 <span class="cite">R&amp;T Fig.8-20, p.251</span>), digoxin(농도는 떨어지는데 효과는 4시간 올라감 <span class="cite">R&amp;T Fig.8-1, p.234</span>).</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>mismatch 출처</th><th>쉬운 말</th><th>도구</th><th>대표 약물</th></tr></thead>
+      <tbody>
+        <tr><td>① 분포 지연</td><td>작용부위에 늦게 도착</td><td>Effect compartment \(k_{e0}\)</td><td>digoxin·naproxen</td></tr>
+        <tr class="hot"><td>② Turnover</td><td>system이 만들고 없애는 데 시간</td><td>4-Model + Pool</td><td>warfarin·EPO</td></tr>
+        <tr><td>③ 표적 소비</td><td>표적을 영구 파괴</td><td>비가역 kill</td><td>aspirin·omeprazole·paclitaxel</td></tr>
+        <tr><td>④ 느린 시계</td><td>PK·PD 중 느린 쪽이 지속시간 결정</td><td>PK시계 vs PD시계</td><td>succinylcholine vs warfarin</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:10px;"><strong>혈장 반감기만 보고 투약 간격을 정하면 어떤 약은 맞고 어떤 약은 완전히 빗나감.</strong> 베테랑은 데이터 받자마자 첫 30초에 이 4개 후보 중 어디인지를 좁힘.</p>
+  </div>
+</section>
+
+<!-- 4 · 히스테리시스 -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 진단</span><span class="eyebrow f1">히스테리시스</span></div>
+    <h2>NONMEM 켜기 전 <em>그림 한 장</em></h2>
+    <p class="lead">PK/PD 데이터를 받으면 곧장 fit하지 말고 — 농도(x)-반응(y) 평면에 <b>시간 순서대로</b> 점을 이음. 같은 농도에서 올라가는 길/내려오는 길의 반응이 다르면 <b>고리(loop)</b>가 생김(같은 산 오르내리는 두 갈래 길).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>loop 방향</th><th>해석</th><th>떠올릴 후보</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>반시계 (↺)</td><td>반응이 농도 뒤에서 따라옴</td><td>분포 지연·turnover·활성 대사체</td></tr>
+        <tr><td>고리 없음</td><td>평형/생성이 채혈보다 빠름</td><td>direct link</td></tr>
+        <tr><td>시계 (↻)</td><td>내성·피드백·대사체</td><td>내성·feedback</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><span class="lbl">🔑 30초 규칙</span>① 반시계 → 분포지연/turnover/대사체 ② 시계 → 내성/피드백 ③ <strong>Loop 안 보임 ≠ direct 확정</strong> — "sampling 해상도 안에서만" 그렇다는 뜻. G&amp;W: "모든 반응은 본질적으로 지연 — 시간 척도·데이터 해상도의 문제" <span class="cite">G&amp;W p.236·252</span>. 방향은 <b>첫 가설 분기</b>일 뿐 확정 도구가 아님(PD9는 turnover인데 시계 방향) <span class="cite">R&amp;T Fig.8-2, p.235</span>.</div>
+  </div>
+</section>
+
+<!-- 5 · 욕조 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 골격</span><span class="eyebrow f1">욕조 R₀=kin/kout</span></div>
+    <h2>baseline은 <em>두 속도의 균형점</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 욕조</div><p style="margin:0;">수도꼭지가 일정하게 넣고(\(k_{in}\)), 배수구가 수위에 비례해 뺌(\(k_{out}\cdot R\)). 들어오는 양=빠지는 양이 되는 수위가 <b>baseline \(R_0\)</b>. <b>\(k_{in}\)·\(k_{out}\)이 원인(1차), \(R_0\)·반응 반감기가 결과(2차)</b> — PK의 CL·V↔k·t½와 같은 구조.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dR}{dt}}_{}=\underbrace{k_{in}}_{\text{생산(0차)}}-\underbrace{k_{out}R}_{\text{소실(1차)}}\ \xrightarrow{dR/dt=0}\ \underbrace{R_0}_{}=\frac{k_{in}}{k_{out}} \]</div></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 거의 100% 빠지는 함정 — 재모수화</div><p style="margin:0;">NONMEM에서 \(k_{in}\)·\(k_{out}\)을 따로 추정하면 <b>상관 0.98 초과·CV% 4000%</b>(PD4 warfarin: 상관 0.9999) — <b>곱은 \(R_0\)로 잡히는데 둘을 분리할 정보가 데이터에 없음</b>(어두운 방에서 수도꼭지·배수구 동시에 만지며 수위 맞추기 = 비식별성). 해결 — <strong>\((R_0, k_{out})\)를 추정하고 \(k_{in}{=}R_0 k_{out}\)로 계산</strong>: \(dR/dt{=}k_{out}(R_0-R)\) <span class="cite">G&amp;W Eq.3:103, p.247</span>. CV% 4000%인데 "수렴했으니 OK"는 사실상 추정 안 된 것.</p></div>
+  </div>
+</section>
+
+<!-- 6 · 4-Model -->
+<section class="card top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 골격</span><span class="eyebrow f1">4-Model 분류</span></div>
+    <h2>약이 들어갈 자리는 <em>딱 4개</em></h2>
+    <p class="lead">수도꼭지(생산)를 잠그기/더 열기, 배수구(소실)를 막기/더 열기. \(I(C){=}1-\frac{I_{max}C^n}{IC_{50}^n+C^n}\)(억제), \(S(C){=}1+\frac{E_{max}C^n}{EC_{50}^n+C^n}\)(촉진) <span class="cite">G&amp;W Eq.3:77–78, p.237</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Model</th><th>작용</th><th>\(t_{ss}\)</th><th>prototype</th></tr></thead>
+      <tbody>
+        <tr><td>I 생산 억제</td><td>\(k_{in}I(C)-k_{out}R\)</td><td>용량 <b>독립</b></td><td>Warfarin</td></tr>
+        <tr><td>II 소실 억제</td><td>\(k_{in}-k_{out}RI(C)\)</td><td>용량 <b>의존</b></td><td>Furosemide형</td></tr>
+        <tr><td>III 생산 촉진</td><td>\(k_{in}S(C)-k_{out}R\)</td><td>용량 <b>독립</b></td><td>Erythropoietin</td></tr>
+        <tr><td>IV 소실 촉진</td><td>\(k_{in}-k_{out}RS(C)\)</td><td>용량 <b>의존</b></td><td>CB1 inverse agonist</td></tr>
+      </tbody>
+    </table></div>
+    <p>패턴 — input 건드리면 \(R_{ss}{=}R_0\times\)(함수, 곱), output 건드리면 \(R_0\div\)(함수, 나눗셈) <span class="cite">G&amp;W p.238–245</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 반응 방향만으로 모델 결정 금지</div><p style="margin:0;">"반응 떨어지니 Model I(생산 억제)지"는 틀림 — <b>Model IV(소실 촉진)도 baseline 아래로</b> 감. 반응 상승도 II vs III 둘. <strong>시간 패턴+\(t_{ss}\) 용량 의존성을 같이 봐야</strong>. Model II는 \(\Delta R_{max}{=}R_0 I_{max}/(1-I_{max})\)라 \(I_{max}\to1\)이면 <b>무한 발산</b>(배수구 완전 차단→흘러넘침, PPI 위 H⁺ 축적), Model IV는 \(E_{max}\to\infty\)여도 0에서 멈춤 — <b>경계 거동 비대칭</b> <span class="cite">G&amp;W Eq.3:89, p.242</span>.</p></div>
+  </div>
+</section>
+
+<!-- 7 · 시간 신호 -->
+<section class="card" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 골격</span><span class="eyebrow f1">시간 신호 tss</span></div>
+    <h2>4칸을 <em>시간으로 가려내기</em></h2>
+    <p class="lead">정상상태 값만 보면 input형·output형이 안 갈림. <b>\(t_{ss}\)(도달 시간)가 용량에 따라 변하는지</b>로 두 묶음으로 갈라짐(공항 금속탐지기 — 어디를 더 볼지 알려주지만 확정은 아님):</p>
+    <div class="tbl"><table>
+      <thead><tr><th>관찰</th><th>1차 가설</th></tr></thead>
+      <tbody>
+        <tr><td>용량 간 \(t_{ss}\) 비슷</td><td>생산 측(I/III) — \(k_{out}\)이 시간상수, 용량 무관</td></tr>
+        <tr class="hot"><td>용량 따라 \(t_{ss}\) 변함</td><td>소실 측(II/IV) — 약이 \(k_{out}\)을 건드려 유효 시간상수가 농도 의존</td></tr>
+      </tbody>
+    </table></div>
+    <p>PD7(소실 촉진): 6,400→160,000 unit에서 \(t_{ss}\)가 2시간→1시간으로 <b>짧아짐</b>(소실 촉진 시그너처) <span class="cite">G&amp;W p.766</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> Mirror-slope artifact</div><p style="margin:0;">초기 기울기로 \(k_{out}\)을 외삽하면 PD7에서 겉보기 \(k_{out}\)이 용량 따라 0.6~1.6/h로 단조 변함 — <strong>system 파라미터(약물과 무관해야 함)가 용량 따라 변하면 biology가 아니라 misspecification</strong>. "약을 안 바꿨는데 system 시계가 용량 따라 변한다? → 내가 모델을 잘못 골랐다" <span class="cite">G&amp;W p.765</span>.</p></div>
+  </div>
+</section>
+
+<!-- 8 · Pool/Precursor -->
+<section class="card top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 골격</span><span class="eyebrow f1">Pool/Precursor (Sharma–Jusko)</span></div>
+    <h2>상류 pool이 끼면 — <em>sigmoid onset</em></h2>
+    <p class="lead">약이 직접 건드리는 곳(상류 precursor)과 우리가 재는 반응(하류) 사이에 중간 단계가 있으면(공장→창고→매장):</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \frac{dP}{dt}=k_{in}-k_p P,\qquad \frac{dR}{dt}=k_p P-k_{out}R\qquad(P_0{=}k_{in}/k_p,\ R_0{=}k_{in}/k_{out}) \]</div></div>
+    <p>\(R_0\)는 single-stage와 같지만 도달 동역학은 <b>두 시계(\(k_p\), \(k_{out}\))의 cascade</b>라 더 느리고 <strong>sigmoid 모양(초기 평탄 lag 후 상승)</strong> <span class="cite">Sharma &amp; Jusko 1998</span>. 약물 자리 확장 = 관행적 Model V~VIII(precursor 생산/전환 억제·촉진) <span class="flag">V~VIII 번호는 후속 문헌 관행 · 원논문엔 없음</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">🔑</span> Sigmoid onset 시그너처</div><p style="margin:0;">투약 직후 효과가 안 나오고 lag-then-rise면 — single-stage Model I로 적합 시 \(k_{out}\)이 <b>cascade depth(\(1/k_p\))를 흡수</b>해 작게 나옴. <strong>"측정된 \(k_{out}\)이 알려진 효소 반감기보다 작게 나온다"</strong>가 cascade misspecification 시그너처. corticosteroid PD 표준 골격이 Pool/Precursor <span class="cite">G&amp;W p.247–251</span>.</p></div>
+  </div>
+</section>
+
+<!-- 9 · Emax 의미 -->
+<section class="card top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8 · 의미</span><span class="eyebrow f2">같은 이름, 다른 뜻</span></div>
+    <h2>선형 PK가 <em>선형 PD가 아니다</em></h2>
+    <p class="lead">"\(E_{max}{=}0.65\)" 숫자를 모델 구조 없이 비교하면 무의미 — direct additive(절대 거리, 혈압 −20 mmHg) / direct multiplier(배율, 1.65배) / turnover Model III(turnover 통한 배율) 셋이 다른 단위. 같은 "10"이라도 cm인지 층수인지. <strong>비교는 \(\Delta R/R_0\)로 변환 후</strong> <span class="cite">G&amp;W Fig.3.40, p.246</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> R&amp;T가 단호하게 못 박음</div><p style="margin:0;"><i>"약동학의 용량 선형성이 약력학의 용량 선형성으로 이어지지 않는다 — 거의 절대 그렇지 않다"</i> <span class="cite">R&amp;T p.256</span>. Methylprednisolone 16~1000 mg에서 혈장 AUC는 용량에 정비례하는데 <b>림프구 반응은 고용량서 plateau</b>. Rosuvastatin OATP1B1 다형성은 AUC를 +63~111% 바꾸는데 <b>콜레스테롤 반응은 거의 안 변함</b>(작용부위=간 농도가 결정) — <strong>전신 노출 ≠ 작용부위 노출, bioequivalence가 효과 동등성을 보장 안 함</strong> <span class="cite">R&amp;T p.258</span>.</p></div>
+    <p class="muted">"용량 비례 노출 → 비례 반응" 결론 전에 <b>Hill 곡선의 어느 영역(plateau?)인지</b> 먼저 확인.</p>
+  </div>
+</section>
+
+<!-- 10 · 손으로 잠그기 -->
+<section class="card top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9 · 추정 규율</span><span class="eyebrow f2">NONMEM 전에 손으로</span></div>
+    <h2>Graphical 초기값 = <em>기전 감사</em></h2>
+    <p class="lead">graphical estimation은 "NONMEM 이전 향수"가 아니라 <b>첫 mechanism audit</b> — 초기값을 짐작으로 두면 optimizer가 비식별성 골짜기에서 가짜 수렴해도 못 알아챔. G&amp;W "강력 권고" <span class="cite">G&amp;W p.251</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>단계</th><th>읽는 곳 → 산출</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>투약 전 baseline → \(R_0\)</td></tr>
+        <tr><td>2</td><td>종말 회복 반로그 기울기(또는 합성 차단) → \(k_{out}\)</td></tr>
+        <tr><td>3</td><td>\(k_{in}{=}R_0\cdot k_{out}\)</td></tr>
+        <tr><td>4</td><td>2~3 용량의 정상상태 → \(IC_{50}\)·\(I_{max}\) 자릿수</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh">Blocking dose — Warfarin</div><p style="margin:0;">공장 입구를 거의 완전히 막고 창고 비는 속도만 재기 — 합성 차단 시 응고인자 활성이 1차로 빠져 <b>반로그 직선 기울기 = \(k_t\)(=\(k_{out}\))</b>. 합성속도는 \(R_{syn}{=}(A_2{-}A_1)/\Delta t + k_t(A_1{+}A_2)/2\)로 역산 → hysteresis 없는 깔끔한 농도-효과 <span class="cite">R&amp;T Eq.8-7, p.247</span>. 효과 변화가 PK(청소율↑)냐 system 반응성이냐 가름(warfarin+heptabarbital은 순전히 청소율).</p></div>
+    <p class="muted"><b>DRT</b>(Dose-Response-Time) — 안약·흡입제처럼 농도를 못 잴 때 반응-시간만으로 추론(거친 역문제). <strong>노출 데이터가 있으면 DRT로 대체 금지</strong> <span class="cite">G&amp;W p.272</span>. 적합값이 graphical 자릿수에서 한 자릿수 이상 벗어나면 비식별성/misspecification 신호.</p>
+  </div>
+</section>
+
+<!-- 11 · 비가역 kill -->
+<section class="card dark top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10 · 비가역</span><span class="eyebrow">turnover로 안 되는 경우</span></div>
+    <h2>drug=0인데 <em>effect≠0</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 스위치 vs 전구 빼기</div><p style="margin:0;">가역=스위치 끄기(다시 켜면 불), 비가역=<b>전구 빼내기</b>(전기 들어와도 새 전구 끼우기 전엔 빛 없음). 표적/세포가 영구 제거되면 약이 사라져도 효과가 남음.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \frac{dR}{dt}=-\underbrace{K\,C\,R}_{\text{비가역 kill(2차)}}\ \Rightarrow\ \underbrace{SF}_{\text{생존 분율}}=\exp(-\underbrace{K\cdot AUC}_{\text{누적 노출}}) \]</div></div>
+    <p>약이 0이면(\(C{=}0\)) 통째로 0 = 더 안 죽음(가역 \(-k_{out}R\)과 결정적 차이). <strong>얼마나 죽느냐는 순간 농도가 아니라 누적 노출(AUC)</strong> <span class="cite">G&amp;W Eq.3:112, p.257</span>. <span class="flag">여기 K는 2차 약리작용 상수 — 1차 PK 소실 \(K_{elim}\)과 절대 혼동 금지</span></p>
+    <div class="tbl"><table>
+      <thead><tr><th>약물</th><th>PK vs PD</th><th>duration 결정자</th></tr></thead>
+      <tbody>
+        <tr><td>Aspirin (COX-1 비가역 acetylation)</td><td>혈장 ~15분 vs TXB₂ 억제 수일</td><td>혈소판 교체 시계</td></tr>
+        <tr><td>Omeprazole (양성자펌프 비가역)</td><td>&lt;1h vs 위산 억제 수일</td><td>펌프 재생 + 느린 해리</td></tr>
+        <tr><td>Paclitaxel (taxane 항암)</td><td>2일 vs 백혈구 회복 ~3주</td><td>백혈구 regrowth</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">🔑 <strong>"drug=0이면 effect=0인가?" 답이 NO면 plasma PK 외에 표적 교체 시계를 별도 모델링</strong> — plasma 반감기로 duration 계산 금지.</p>
+  </div>
+</section>
+
+<!-- 12 · 박테리아/Friberg -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10 · 비가역</span><span class="eyebrow f3">kill/growth · Friberg</span></div>
+    <h2>죽이면서 <em>다시 자랄 때</em></h2>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \frac{dN}{dt}=\underbrace{k_g N\big(1-\tfrac{N}{B_{max}}\big)}_{\text{logistic 성장}}-\underbrace{k_k N f(C)}_{\text{2차 약물 kill}} \]</div></div>
+    <p>관찰 곡선은 "자라는 힘 − 죽이는 힘"의 줄다리기(초기 하강→종말 상승, \(B_{max}\)로 수렴). <b>MIC</b>(최소억제농도)는 kill·growth가 비기는 농도 근처 <span class="cite">G&amp;W §3.8.3, p.260</span>.</p>
+    <div class="box" style="--ac:var(--f4)"><div class="bh">Friberg–Karlsson 호중구감소 모델 <span class="flag">교과서 외 · Friberg 2002</span></div><p style="margin:0;">항암제 골수억제 현대 표준 — 5구획 cascade(증식 \(Prol\)→transit×3→순환 \(Circ\)), 약물이 \(Prol\)을 죽이고 \(Circ\)↓가 \(Prol\) 증식을 자극(feedback). <strong>식별성 위해 \(k_{prol}{=}k_{tr}{=}k_{circ}\equiv k_{tr}\) 5중 제약이 모델 정의의 일부</strong>(\(MTT{=}4/k_{tr}\)) — 이걸 독립 추정하려 하면 심각한 비식별성. \(\gamma\)·\(MTT\)가 약물 간 일관(system은 약물 무관, drug param만 다름). 이 한 모델이 §4·5·7·10·Ch.12 도구를 다 결합.</p></div>
+  </div>
+</section>
+
+<!-- 13 · Apex -->
+<section class="card dark top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§11 ★ APEX</span><span class="eyebrow">같은 곡선, 두 인과</span></div>
+    <h2>데이터만으론 <em>결판이 안 난다</em></h2>
+    <p class="lead">turnover 모델을 열심히 세웠는데 — <b>완전히 다른 구조(effect compartment)가 똑같은 곡선</b>을 그릴 수 있음(같은 그림자를 만드는 두 물체). turnover는 "system이 느려서", effect compartment는 "약 도착이 느려서" 늦음 — 원인이 다른데 곡선은 같음.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \text{turnover: }\frac{dR}{dt}=k_{in}S(C)-k_{out}R\quad\text{vs}\quad \text{eff.comp: }\frac{dC_e}{dt}=k_{e0}(C-C_e),\ R=f(C_e) \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>PD6 지표</th><th>Turnover</th><th>Effect comp</th><th>Δ</th></tr></thead>
+      <tbody>
+        <tr><td>WRSS</td><td>15,516</td><td>15,518</td><td><span class="em">2</span></td></tr>
+        <tr><td>AIC</td><td>1,041</td><td>1,040</td><td><span class="em">−1</span></td></tr>
+        <tr class="hot"><td>시간상수</td><td>\(k_{out}{=}5.6\)/h</td><td>\(k_{e0}{=}5.6\)/h</td><td><span class="em">0</span></td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>ΔWRSS=2, ΔAIC=−1은 노이즈 수준 = "데이터가 둘을 못 가른다(비식별성)"</strong> — \(k_{out}\)과 \(k_{e0}\)이 정확히 같은 값. <b>ΔAIC=−1만 보고 "AIC 낮은 effect compartment가 맞다"는 함정</b> <span class="cite">G&amp;W Table 6.1, p.763</span>.</p>
+  </div>
+</section>
+
+<!-- 14 · 어떻게 가르나 -->
+<section class="card top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§11 · APEX</span><span class="eyebrow f3">곡선 밖 증거</span></div>
+    <h2>그림자 밖에서 <em>물체를 돌려본다</em></h2>
+    <p class="lead">곡선 한 장으로 못 가르니, 곡선 밖에서 둘을 갈라놓는 자리를 찾음:</p>
+    <ul>
+      <li><b>반응 변수의 정체</b> — 내인성 매개물질·세포 수·응고인자(turnover) vs 조직 침투 지연(effect comp)</li>
+      <li><b>용량 의존성</b> — 비선형 turnover면 peak 시점·\(t_{ss}\) 이동(\(k_{e0}\)는 용량 무관)</li>
+      <li><b>반복 투여 carry-over</b> — turnover는 잔여 반응이 쌓여 trough가 깊어짐</li>
+      <li><b>기전 사전지식</b> — 알려진 합성/소실 vs 알려진 조직 분포 지연 <span class="cite">G&amp;W p.253</span></li>
+    </ul>
+    <div class="key"><span class="lbl">📌 베테랑의 우회 전략</span>비식별성 앞에서 모델을 고르려 애쓰지 말고 — <strong>두 모델 다 적합 + sensitivity analysis로 "용량 결정이 모델 선택에 얼마나 민감한가"</strong> 제시. 두 모델 모두에서 제안 용량이 안전 한계 안이면 <b>모델 선택이 의사결정의 critical path에서 빠짐</b>. 모델 방어 가능성은 곡선 매끄러움이 아니라 <b>mechanism + design support</b>에서 <span class="cite">G&amp;W Fig.6.1, p.759</span>.</div>
+  </div>
+</section>
+
+<!-- 15 · PK시계 vs PD시계 -->
+<section class="card dark top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§12 · 시계</span><span class="eyebrow">임상 번역</span></div>
+    <h2>결국 <em>어느 시계가 더 느린가</em></h2>
+    <p class="lead">두 사람이 손잡고 걸으면 느린 사람이 전체 속도를 정함. R&amp;T: "반응이 기저치로 돌아오는 것은 <b>약동학이나 시스템 동역학 중 더 느린 쪽</b>에 율속" <span class="cite">R&amp;T p.243</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \frac{\tau_{drug}}{\tau_{system}}:\ \tau_{drug}\gg\tau_{system}\Rightarrow\text{PK 율속(duration 공식 살아있음)},\ \ll\Rightarrow\text{PD 율속(공식 폐기)} \]</div></div>
+    <p>PK 율속이면 \(t_D{=}\frac{1}{k}\ln(Dose/A_{min})\)이 유효 — <b>용량 두 배마다 반감기 하나씩</b> duration 추가(succinylcholine). <strong>warfarin·aspirin·omeprazole·paclitaxel(PD 율속)에 이 공식 쓰면 수학은 매끈해도 임상적으로 무의미</strong> <span class="cite">R&amp;T Eq.8-12, p.255</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">Boss 함정 — 같은 기전 ≠ 같은 시계</div><p style="margin:0;">스폰서 "phenprocoumon·acenocoumarol은 같은 쿠마린 기전이니 같은 회복 속도" → <strong>거부.</strong> Acenocoumarol(PK ~15h, PD 율속) vs Phenprocoumon(PK ~5일, PK 율속) — 같은 응고인자 동역학이지만 <b>다른 rate-limiting clock</b>. 단순화 채택하면 누적 위험/미달 용량 <span class="cite">R&amp;T Fig.8-11, p.243</span>.</p></div>
+  </div>
+</section>
+
+<!-- 16 · baseline 이동 -->
+<section class="card top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§13 · baseline</span><span class="eyebrow f4">R₀가 움직일 때</span></div>
+    <h2>질병·리듬이 <em>baseline을 비틀면</em></h2>
+    <p class="lead">§4에서 "\(R_0\)는 시간 불변" 가정 — 그런데 질병이 수도꼭지/배수구를 천천히 비틀면 약 없이도 baseline이 표류(drift). <b>그 움직임을 약효로 오독하면 안 됨</b> <span class="cite">G&amp;W §3.12, p.317</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>질병의 작용(§5 4모델과 같은 구조)</th><th>baseline</th></tr></thead>
+      <tbody>
+        <tr><td>생산 \(k_{in}\)↓ (수도꼭지 잠김)</td><td>내려감</td></tr>
+        <tr><td>생산 \(k_{in}\)↑</td><td>올라감</td></tr>
+        <tr><td>소실 \(k_{out}\)↓ (배수구 막힘)</td><td>올라감</td></tr>
+        <tr><td>소실 \(k_{out}\)↑</td><td>내려감</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;"><span class="ico">⚠️</span> <strong>"baseline 움직였다 = 약이 들었다"는 틀림</strong> — 약 없이 질병만으로도 baseline이 위아래로. 약효는 baseline 표류분을 빼고 봐야 함. 자기조절형은 \((R_{ss}-R)\)(한계까지 남은 거리) 항으로 천장 부여. 생체리듬(체온·호르몬)은 12/12 명암주기 같은 외부 시계에 끌림 + chronobiologic.</p></div>
+  </div>
+</section>
+
+<!-- 17 · 혼동쌍 -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§15</span><span class="eyebrow" style="color:var(--coral-d)">베테랑이 30초에 가르는 쌍</span></div>
+    <h2>혼동쌍 <em>핵심</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f1)"><div class="bh">Direct vs Indirect</div><p style="margin:0;">바로 켜지는 전등 vs 서서히 따뜻해지는 전기장판. 반응이 \(C_{max}\)보다 늦게 peak면 indirect 의심.</p></div>
+      <div class="box" style="--ac:var(--coral)"><div class="bh">★ \(k_{in}\) vs \(k_{out}\) (09 TMDD와 같은 자리)</div><p style="margin:0;"><b>\(k_{in}\)만 바꾸면</b> 새 수위로 가되 회복 속도(\(1/k_{out}\))는 그대로, <b>\(k_{out}\) 바꾸면 수위·회복 둘 다</b>. 그래서 I/III은 \(t_{ss}\) 용량 독립, II/IV는 의존. TMDD의 \(k_{syn}\) vs \(k_{deg}\)와 똑같은 함정.</p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">turnover vs effect comp</div><p style="margin:0;">system이 느려서 vs 약 도착이 느려서. AIC 미세차로 못 가름 — 비식별성. 곡선 밖 증거로.</p></div>
+      <div class="box" style="--ac:var(--f5)"><div class="bh">PK 율속 vs PD 율속</div><p style="margin:0;">약물 \(t_{1/2}\) vs system 회복. duration 공식은 PK 율속일 때만. 같은 기전≠같은 시계.</p></div>
+    </div>
+    <div class="key"><span class="lbl">+ 가역 vs 비가역</span>스위치 끄기 vs 전구 빼기. "drug=0이면 effect=0?" 답이 NO면 표적 교체 시계 별도. baseline 표류 ≠ 약효.</div>
+  </div>
+</section>
+
+<!-- 18 · 자가점검 -->
+<section class="card top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">점검</span><span class="eyebrow" style="color:var(--coral-d)">자가점검</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q4</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> NONMEM에서 \(k_{in}\)·\(k_{out}\)을 따로 추정하니 상관 0.99·CV% 4000%. 왜? 처방은?</div>
+      <div class="a"><b>A.</b> 곱(\(R_0\))은 잡히는데 둘을 분리할 정보가 없음(비식별성). <b>\((R_0,k_{out})\)로 재모수화</b>하고 \(k_{in}{=}R_0 k_{out}\) <span class="cite">G&amp;W p.247</span>.</div>
+      <div class="q"><span class="n">Q2.</span> 반응이 떨어진다. Model I(생산 억제) 확정인가?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 아님 — <b>Model IV(소실 촉진)도 baseline 아래로</b> 감. 시간 패턴+\(t_{ss}\) 용량 의존성을 같이 봐야 <span class="cite">G&amp;W p.757</span>.</div>
+      <div class="q"><span class="n">Q3.</span> PD6에서 turnover와 effect compartment의 ΔAIC=−1. effect comp가 맞나?<span class="lv">★★★</span></div>
+      <div class="a"><b>A.</b> 아님 — ΔAIC=−1은 노이즈 수준 = <b>데이터가 둘을 못 가름(비식별성)</b>. \(k_{out}{=}k_{e0}{=}5.6\)으로 동일. 곡선 밖 증거+sensitivity로 <span class="cite">G&amp;W Table 6.1</span>.</div>
+      <div class="q"><span class="n">Q4.</span> warfarin에 duration 공식 \(t_D{=}\frac{1}{k}\ln(Dose/A_{min})\)을 쓰면?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 무의미 — warfarin은 <b>PD 율속</b>(응고인자 turnover가 더 느림). 이 공식은 PK 율속(succinylcholine)일 때만 <span class="cite">R&amp;T p.255</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 · 요약 -->
+<section class="card dark center" id="s19">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">요약</span><span class="eyebrow">한 바느질로 꿰기</span></div>
+    <h2>지연을 <em>올바른 시계에 배정</em></h2>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.4em auto; max-width:880px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> <b style="color:#fff;">진단</b> — hysteresis loop 방향으로 4후보 좁힘(분포지연/turnover/표적소비/느린시계).</li>
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> <b style="color:#fff;">골격</b> — 욕조 \(R_0{=}k_{in}/k_{out}\), 약 자리 4칸, \((R_0,k_{out})\) 재모수화, \(t_{ss}\)로 가름.</li>
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> <b style="color:#fff;">Apex</b> — turnover vs effect compartment는 데이터만으론 못 가름(PD6). 곡선 밖 증거.</li>
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> <b style="color:#fff;">번역</b> — 어느 시계가 느린가(PK vs PD)로 duration 공식이 살거나 폐기. baseline 표류 ≠ 약효.</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:18px auto 0; text-align:left;"><span class="lbl">🦴 한 줄 요약</span>간접 반응 모델링은 "지연을 추가하는 일"이 아니라 <strong>"올바른 인과 시계에 지연을 배정하는 일"</strong>. 베테랑은 fit이 매끄럽다고 좋아하지 않고 <strong>어느 시계가 가장 느린지 증명할 수 있을 때</strong> 좋아함.</div>
+    <div class="foot">Gabrielsson &amp; Weiner §3.7–3.12 + PD4·5·6·7 · Rowland &amp; Tozer Ch.8 — 수치·인용 원문 대조 (원본: 11_indirect_response_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var tocEl = document.querySelector('.toc');
+  var total = cards.length;
+  var cur = 0;
+
+  function linkFor(id){
+    for(var i=0;i<links.length;i++){ if(links[i].getAttribute('href') === '#'+id) return links[i]; }
+    return null;
+  }
+  function ensureVisible(l){
+    var lr = l.getBoundingClientRect(), tr = tocEl.getBoundingClientRect();
+    if(lr.top < tr.top + 8) tocEl.scrollTop -= (tr.top + 8 - lr.top);
+    else if(lr.bottom > tr.bottom - 8) tocEl.scrollTop += (lr.bottom - (tr.bottom - 8));
+  }
+  function setActive(idx){
+    cur = idx;
+    var id = cards[idx].id;
+    for(var i=0;i<links.length;i++) links[i].classList.remove('active');
+    var l = linkFor(id);
+    if(l){ l.classList.add('active'); ensureVisible(l); }
+    counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    bar.style.width = ((idx+1)/total*100) + '%';
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(cards.indexOf(e.target)); }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  cards.forEach(function(c){ io.observe(c); });
+
+  function go(d){
+    var n = Math.max(0, Math.min(total-1, cur + d));
+    if(n !== cur) cards[n].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  window.addEventListener('keydown', function(e){
+    if(e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); go(1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); go(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); cards[0].scrollIntoView({behavior:'smooth'}); }
+    else if(e.key === 'End'){ e.preventDefault(); cards[total-1].scrollIntoView({behavior:'smooth'}); }
+  });
+
+  var burger = document.querySelector('.burger');
+  if(burger){
+    burger.addEventListener('click', function(){ document.body.classList.toggle('toc-open'); });
+    links.forEach(function(l){ l.addEventListener('click', function(){ document.body.classList.remove('toc-open'); }); });
+  }
+
+  setActive(0);
+})();
+</script>
+</body>
+</html>

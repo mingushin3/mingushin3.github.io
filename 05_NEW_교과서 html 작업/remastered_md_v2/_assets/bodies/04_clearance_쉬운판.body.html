@@ -1,0 +1,307 @@
+<!--META
+title: 세션 04 · 청소율 — 간·신장·대사체 4좌표 · 카드뉴스
+-->
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 04 · 청소율</div>
+    <div class="t">간 · 신장 · 대사체</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 4좌표</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">CL은 비례상수, t½는 결과</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>좌표① 농도기준</div>
+      <a class="toc-link" href="#s4">60 L/h 미스터리</a>
+      <a class="toc-link" href="#s5">fu vs fub · 측정매질</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>좌표② 장기</div>
+      <a class="toc-link" href="#s6">신장 — 곱셈 분해</a>
+      <a class="toc-link" href="#s7">여과·분비·재흡수</a>
+      <a class="toc-link" href="#s8">간 — well-stirred</a>
+      <a class="toc-link" href="#s9">고추출 vs 저추출</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>좌표③ 경로</div>
+      <a class="toc-link" href="#s10">F = 1 − EH</a>
+      <a class="toc-link" href="#s11">경로 × 추출 5사례</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>좌표④ 대사체</div>
+      <a class="toc-link" href="#s12">형성 vs 소실 율속</a>
+      <a class="toc-link" href="#s13">★ 신부전 보스전</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s14">동시 적합 (PK5)</a>
+      <a class="toc-link" href="#s15">혼동쌍 10</a>
+      <a class="toc-link" href="#s16">자가점검</a>
+      <a class="toc-link" href="#s17">한 줄 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 04 · 청소율 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,76px); margin-top:.25em; line-height:1.08;">"이 청소율 숫자는<br><em>정확히 어떤 청소율</em>인가?"</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">청소율 하나를 보면 손이 자동으로 네 좌표를 점검한다 — 농도기준 · 장기 · 경로 · 대사체</p>
+    <div class="key" style="max-width:900px; margin:30px auto 0; text-align:left;">
+      <span class="lbl">🧵 4좌표</span>
+      ① <strong>농도기준</strong>(혈장/전혈/비결합) → ② <strong>장기</strong>(신장/간) → ③ <strong>경로</strong>(IV/경구) → ④ <strong>대사체</strong>(모약물/대사체). <b>①을 안 풀고 ②로 가면 추출률 분류가 통째로 틀어짐.</b>
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.2vw,30px); color:#fff; margin-top:26px;">"CL·V는 원인, 반감기는 결과다"</p>
+    <div class="foot">Gabrielsson &amp; Weiner Ch.2 + PK5 · Rowland &amp; Tozer Ch.5·20 + 부록 D·E — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>두 교과서와 <em>정직 깃발</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">G&amp;W</div><p class="muted">Ch.2 §2.3(소변데이터)·§2.5(청소율) + 사례 <b>PK5</b>(혈장+소변 동시적합).</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">R&amp;T</div><p class="muted">Ch.5(Elimination) + Ch.20(대사체와 약물반응) + 부록 D(혈장-전혈비)·E(well-stirred 유도).</p></div>
+    </div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 범위 밖 · 정직 깃발</div><p class="muted" style="margin:0;"><b>OAT/OCT/MATE 수송체 지도</b>와 <b>eGFR 추정식(CG·MDRD·CKD-EPI)</b>은 본 발췌 밖(Ch.4·15·17 소관) → <span class="flag">교과서 외</span>. 간 혈류는 R&amp;T 81 L/h vs G&amp;W 87 L/h — <strong>R&amp;T(81)로 통일</strong>.</p></div>
+    <p class="muted"><b>대상</b> 비전공·1학년 OK · <b>이전</b> 세션 03의 \(F\)가 여기서 간추출 \(E_H\)로(\(F{=}1{-}E_H\)) 다시 등장 · <b>쪽수</b>는 원판 교재 기준.</p>
+  </div>
+</section>
+
+<!-- 3 · CL 비례상수 -->
+<section class="card dark top" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow">먼저 못 박기</span></div>
+    <h2>CL은 속도가 아니라 <em>비례상수</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 수영장 + 청소부</div><p style="margin:0;"><b>CL</b>=청소부가 1시간에 <b>몇 L의 물을 완전히 잉크 없이 청소하나</b>(부피/시간!). "몇 mg 뺐냐"가 아님. <b>반감기</b>=색이 절반 옅어지는 시간 — 청소부 능력(CL)만이 아니라 <b>수영장 크기(\(V\))</b>에도 달림.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dX}{dt}}_{\text{빠지는 속도}}=-\underbrace{CL}_{\text{비례상수}}\cdot\underbrace{C}_{\text{농도}}\ \Rightarrow\ \underbrace{CL}_{}=\frac{Dose}{AUC},\qquad \underbrace{t_{1/2}}_{\text{결과}}=\frac{0.693\,V}{CL} \]</div></div>
+    <p>빠지는 속도 = CL × 농도 — CL은 속도 자체가 아니라 농도에 곱하는 <b>상수</b>(1차 동역학에선 시점 무관) <span class="cite">G&amp;W Eq.2:83</span>. 적분하면 \(CL{=}Dose/AUC\) — <strong>구획모델 없이도(NCA) 청소율이 나옴</strong> <span class="cite">G&amp;W Eq.2:84–2:86</span>.</p>
+    <div class="key"><span class="lbl">⚡ 반감기로 시작하지 마라</span>\(t_{1/2}{=}0.693V/CL\) — "반감기 늘었다"는 \(V\)↑거나 \(CL\)↓거나 둘 다. <strong>"반감기 늘었으니 신부전"은 오진</strong> — 항상 \(CL\)·\(V\)를 먼저 분리. R&amp;T 못 박음: "반감기·소실속도상수는 \(CL\)·\(V\)에 의존하지 그 반대가 아님"(1차=원인, 2차=결과) <span class="cite">R&amp;T Ch.5, Table 5-6</span>.</div>
+  </div>
+</section>
+
+<!-- 4 · 60 L/h 미스터리 -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 좌표①</span><span class="eyebrow f1">농도기준 · 매트릭스</span></div>
+    <h2>"60 L/h 미스터리"</h2>
+    <p class="lead">차트: 혈장 \(CL{=}60\) L/h, 간 혈류 \(Q_H{=}81\) L/h. 펠로우 — "\(60/81{\approx}0.74\)니 중등도 이상 추출이네요?" <b>그럴듯한데 함정.</b> 같은 환자에 한 줄 더 — \(C/C_b{=}0.5\)(약이 적혈구에 절반):</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ CL_b=60\times0.5=30\ \text{L/h},\qquad \underbrace{E_H}_{\text{간 추출률}}=\frac{CL_b}{Q_H}=\frac{30}{81}\approx 0.37 \]</div></div>
+    <p><strong>중등도 이상이 아니라 낮음~중간(0.37).</strong> 분류가 통째로 바뀜 — 이 한 줄이 DDI 라벨과 간장애 용량조정을 바꿈. R&amp;T 경고: <b>"장기 추출률은 반드시 <i>혈액</i>청소율을 <i>혈액</i>류로 나눠라. 혈장청소율을 혈장류로 나누지 마라"</b> <span class="cite">R&amp;T Eq.5-2·5-3, p.125</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">기준 자 (anchor)</div><p style="margin:0;">간 혈류 \(Q_H{\approx}\)<b>81 L/h</b>(1.35 L/min), 신장 혈류 \(Q_R{\approx}\)<b>66 L/h</b>(1.1 L/min) <span class="cite">R&amp;T p.125·127</span>. 추출률 판단 전 손이 자동으로 가는 자리 — <strong>"이 CL이 혈장 기준이냐 전혈 기준이냐?"</strong> R&amp;T도 같은 논리 실제 사례(\(C/C_b{=}0.1\)→가짜 고추출) 제시 <span class="cite">R&amp;T p.127</span>.</p></div>
+  </div>
+</section>
+
+<!-- 5 · fu/fub + 매질 -->
+<section class="card" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 좌표①</span><span class="eyebrow f1">또 하나의 매트릭스 함정</span></div>
+    <h2>\(f_u\) vs \(f_{ub}\) — <em>분모만 다르다</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{f_u}_{\text{혈장 기준}}=\frac{C_u}{C},\qquad \underbrace{f_{ub}}_{\text{전혈 기준}}=\frac{C_u}{C_b}=f_u\cdot\frac{C}{C_b}=f_u\cdot R \]</div></div>
+    <p>비결합 농도 \(C_u\)는 같고 <b>분모만 바뀜</b>. well-stirred 식에 넣는 비결합 분율은 <b>혈액 기준 \(f_{ub}\)</b>인데 실험실은 보통 혈장 \(f_u\) → 그대로 넣으면 분자가 틀어짐 <span class="cite">R&amp;T p.135–136</span>. 숫자: \(f_u{=}0.1\), \(R{=}0.5\)면 \(f_{ub}{=}0.05\)(<b>2배 차이</b>) → high/low 추출 분류·IVIVE·PBPK가 흔들림.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>매트릭스</th><th>정의</th><th>대표 약물</th></tr></thead>
+      <tbody>
+        <tr><td>혈장(Plasma)</td><td>적혈구 제거 액체</td><td>warfarin·phenytoin·대부분 항생제</td></tr>
+        <tr><td>혈청(Serum)</td><td>응고 후 원심분리</td><td>digoxin</td></tr>
+        <tr class="hot"><td>전혈(Whole blood)</td><td>적혈구 포함 통째</td><td><b>tacrolimus·cyclosporine</b> (\(C/C_b{=}0.03\))</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">tacrolimus는 적혈구 결합이 강해(\(C/C_b{=}0.03\), \(f_u{=}0.01\)) 전혈로만 잼 — 혈장은 헤마토크릿에 따라 자릿수로 흔들림 <span class="cite">R&amp;T Study Problem 5, p.165</span>. 전혈을 혈장으로 착각하면 \(V\)가 자릿수로 과소평가됨.</p>
+  </div>
+</section>
+
+<!-- 6 · 신장 분해 -->
+<section class="card top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 좌표②-A</span><span class="eyebrow f2">신장 청소율 분해</span></div>
+    <h2>"곱셈 분해"지 <em>비례 단축이 아님</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 영업팀 비유</div><p style="margin:0;">회사 매출(CL) = 영업1팀(신장)+2팀(간)+기타. 1팀이 파업(신부전)하면 1팀 매출만 빠짐 — <b>신부전을 전체 매출에 곱하면 멀쩡한 팀까지 깎는 셈.</b></p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_R}_{\text{신장}}=\underbrace{f_e}_{\text{신장 지분}}\cdot CL,\qquad \underbrace{CL}_{\text{전체}}=CL_R+CL_H+CL_{other} \]</div></div>
+    <p>\(f_e{=}CL_R/CL\) = 소변으로 변하지 않고 빠진 분율. 청소율은 <b>더하기로 합쳐짐</b>(각 장기 농도가 같아서) <span class="cite">R&amp;T Eq.5-7~5-9</span>. 진짜 의미 — <strong>"신부전 공변량이 들어갈 자리는 전체 CL이 아니라 \(CL_R\) 위치 하나"</strong>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 자주 하는 실수</div><p style="margin:0;">신기능 공변량을 전체 CL에 곱하면(<code>TVCL=THETA*(CRCL/100)**θ</code>) nonrenal까지 같이 줄어듦 — \(f_e{=}0.4\)면 60% nonrenal이 가짜로 깎여 <b>청소율 체계적 과소평가</b>. 올바른 식: \(CL_R\)에만 공변량, \(CL_{NR}\)은 신기능 무관, 합쳐서 모델에.</p></div>
+  </div>
+</section>
+
+<!-- 7 · 여과/분비/재흡수 -->
+<section class="card top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 좌표②-A</span><span class="eyebrow f2">여과 · 분비 · 재흡수</span></div>
+    <h2>소변 속 약은 <em>세 과정의 순 결과</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_R}_{\text{순 신장}}=(1-F_R)\big(\underbrace{CL_f}_{\text{여과}}+\underbrace{CL_S}_{\text{분비}}\big),\qquad CL_f=\underbrace{f_u}_{}\cdot\underbrace{GFR}_{\approx120\,\text{mL/min}} \]</div></div>
+    <p>여과는 자유 약만(\(CL_f{=}f_u\cdot GFR\)), 분비는 능동(포화·억제 가능), 재흡수는 도로 흡수 <span class="cite">R&amp;T Eq.5-17~5-21</span>. 진단 패턴 — <b>\(CL_R &gt; f_u\,GFR\)면 분비, \(CL_R &lt; f_u\,GFR\)면 재흡수</b> <span class="cite">R&amp;T p.141–142</span>. 여과만이면 \(E{=}120/1100{\approx}0.11\)로 낮음.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>약물 (재흡수 = pH 의존)</th><th>산성 소변</th><th>알칼리성 소변</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>Methamphetamine (약염기)</td><td>회수 <span class="em">70–80%</span></td><td>회수 <span class="em">1–2%</span></td></tr>
+        <tr><td>Phenobarbital (약산)</td><td>낮은 \(CL_R\)</td><td>\(CL_R\)↑(알칼리화 치료)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">이온화형은 막을 못 넘어 재흡수 안 됨 → <strong>소변 pH 하나로 \(CL_R\)이 자릿수로 흔들림</strong> <span class="cite">R&amp;T Fig.5-16·5-18, p.144–147</span>. 담즙 배설(고담즙CL 4조건: 유출수송체 기질·극성·MW&gt;350)도 \(CL_{other}\)에 — 단 <strong>장간순환은 소실이 아니라 분포의 일부</strong>(재흡수 안 되고 분변으로 빠진 분율만 진짜 소실) <span class="cite">R&amp;T p.138·148</span>. digoxin+ritonavir(P-gp 억제)로 \(CL_R\) 194→126 <span class="cite">R&amp;T p.157</span>.</p>
+  </div>
+</section>
+
+<!-- 8 · 간 well-stirred -->
+<section class="card dark top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 좌표②-B</span><span class="eyebrow">간 청소율 · 본진</span></div>
+    <h2>well-stirred — <em>둘 중 작은 쪽이 병목</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 강물이 한 번 지나는 정수장</div><p style="margin:0;">\(Q_H\)=강물 유량(들어오는 물), \(f_{ub}\cdot CL_{int}\)=정수장 최대 처리능력(자유 약을 효소가 비움). <b>둘 중 작은 쪽이 병목.</b></p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL_{b,H}}_{\text{전혈 간 CL}}=Q_H\cdot E_H=Q_H\cdot\frac{\overbrace{f_{ub}\,CL_{int}}^{\text{처리 능력}}}{\underbrace{Q_H+f_{ub}\,CL_{int}}_{\text{강물+처리능력}}} \]</div></div>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">고추출 (\(f_{ub}CL_{int}\gg Q_H\))</div><p style="margin:0;">처리능력 &gt; 혈류 → \(CL_{b,H}\approx Q_H\). <b>혈류가 병목.</b></p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">저추출 (\(f_{ub}CL_{int}\ll Q_H\))</div><p style="margin:0;">처리능력 &lt; 혈류 → \(CL_{b,H}\approx f_{ub}CL_{int}\). <b>효소·결합이 병목.</b></p></div>
+    </div>
+    <p>손이 자동으로 하는 일 — <strong>"\(f_{ub}\,CL_{int}\)가 81보다 큰가 작은가?"</strong> 한 줄. 예: \(f_{ub}CL_{int}{=}20\)→\(E_H{=}20/101{\approx}0.20\)(저추출), 효소유도로 80되면 \(E_H{\approx}0.50\)(중간으로 점프) <span class="cite">R&amp;T Eq.5-14·5-15</span> <span class="cite">G&amp;W Eq.2:204·2:205</span>.</p>
+  </div>
+</section>
+
+<!-- 9 · 고/저추출 -->
+<section class="card top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 좌표②-B</span><span class="eyebrow f2">임상이 갈리는 지점</span></div>
+    <h2>고추출 vs 저추출 — <em>정반대 결론</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>자극</th><th>고추출 (\(E_H&gt;0.7\))</th><th>저추출 (\(E_H&lt;0.3\))</th></tr></thead>
+      <tbody>
+        <tr><td>간 혈류 변화</td><td><b>민감</b>(혈류가 병목)</td><td>둔감</td></tr>
+        <tr class="hot"><td>효소 억제/유도</td><td>둔감(IV 기준)</td><td><b>민감</b>(효소가 병목)</td></tr>
+        <tr><td>단백결합 \(f_u\)</td><td>둔감*</td><td><b>민감</b>(\(CL{=}f_u CL_{int}\))</td></tr>
+        <tr><td>초회통과(경구)</td><td><b>큼</b>(F 작음)</td><td>작음(F 큼)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">*IV·총농도 한정 — propranolol(고추출)은 \(f_u\) 변해도 혈중 CL 불변이지만 <b>비결합 농도·약효는 오름</b> <span class="cite">R&amp;T Fig.5-28, p.160</span>. tolbutamide(저추출)는 추출률이 \(f_u\)에 정비례 <span class="cite">R&amp;T Fig.5-9</span>.</p>
+    <div class="key"><span class="lbl">⚡ 영구 딱지가 아니라 상태</span>diazepam·phenytoin은 결합을 세게 걸면 고추출→저추출로 <strong>분류가 바뀜</strong>. 중간추출(0.3~0.7)이 나오는 \(CL_{int}\) 구간이 \(0.43Q_H{\sim}2.3Q_H\)로 매우 좁아 자연히 양 끝으로 몰림 <span class="cite">R&amp;T p.135–136</span>. 막 투과 율속(스타틴·OATP1B1)이면 효소가 아니라 <b>막이 병목</b> <span class="cite">R&amp;T p.137</span>.</div>
+  </div>
+</section>
+
+<!-- 10 · F=1-EH -->
+<section class="card" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 좌표③</span><span class="eyebrow f3">투여 경로 · 초회통과</span></div>
+    <h2>생체이용률과 추출률은 <em>동전의 양면</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{F}_{\text{경구 생체이용률}}=\underbrace{F_{abs}}_{\text{흡수 분율}}\cdot\underbrace{(1-E_H)}_{\text{간 살아 통과}} \]</div></div>
+    <p>먹은 약은 전신 도달 <b>전</b>에 간을 한 번 통과(장→간문맥→간)하며 \(E_H\)만큼 잡아먹힘 — 살아남은 분율이 \(F\) <span class="cite">R&amp;T App.E Eq.E-16</span> <span class="cite">G&amp;W Eq.2:196</span>. <strong>고추출 약은 \(E_H\)가 커서 \(F\)가 작음</strong> — propranolol은 경구로 21%만 통과 <span class="cite">R&amp;T p.666</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 현장 함정 — 즉시 정정</div><p style="margin:0;">"고추출 약의 <b>IV DDI 시험이 음성</b> → 경구도 안전"은 틀림. 경로가 바뀌면 초회통과와 \(f_u CL_{int}\) 민감도가 같이 바뀜 — <strong>IV 음성은 경구 안전성의 보증이 아님</strong>(fentanyl류에서 라벨이 통째로 실패). 단백결합·DDI는 <b>경로 × 추출 × (총/비결합)</b> 3축을 동시에 봐야 함.</p></div>
+  </div>
+</section>
+
+<!-- 11 · 경로 5사례 -->
+<section class="card dark top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 좌표③</span><span class="eyebrow">경로가 결론을 뒤집는다</span></div>
+    <h2>같은 약, 다른 답 — <em>R&amp;T 실측 5</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>사례</th><th>교훈</th></tr></thead>
+      <tbody>
+        <tr><td><b>Alfentanil</b>(저추출 0.27) + rifampin(유도)</td><td>저추출은 효소 변화에 <b>직접</b> 반응 → CL↑·AUC↓ <span class="cite">R&amp;T Fig.5-20</span></td></tr>
+        <tr class="hot"><td><b>Alprenolol</b>(고추출) + 유도</td><td>IV는 거의 불변(추출 0.78→0.94), <b>경구 F는 22%→6%</b> — IV와 경구가 따로 놂 <span class="cite">R&amp;T Fig.5-21</span></td></tr>
+        <tr><td><b>Fentanyl</b>(고추출) + ritonavir</td><td>CL 0.94→0.32 — <b>고추출을 저추출로 분류 전환</b>(분류는 상태) <span class="cite">R&amp;T Fig.5-23</span></td></tr>
+        <tr><td><b>Phenytoin</b>(저추출) + 요독</td><td>\(f_u\)↑로 \(CL\)·\(V\) 둘 다 2배 → \(t_{1/2}\) 거의 그대로, 총농도만 낮게 → 과소투여 위험 <span class="cite">R&amp;T Fig.5-27</span></td></tr>
+        <tr><td><b>Clofibric acid</b> + 신증후군</td><td>\(f_u\) 0.03→0.055로 \(t_{1/2}\) 16.5→8.7h — 대사유도 아니라 <b>단백결합 하나</b>가 범인 <span class="cite">R&amp;T Table 5-8</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="thread"><span class="ico">🎯</span><div>경구 총농도에선 고/저추출 구분이 흐려지고 \(f_u CL_{int}\)가 전면에. 비결합 농도는 경로·추출 무관하게 \(CL_{int}\)가 좌우 — <b>3축을 동시에 좌표화</b>.</div></div>
+  </div>
+</section>
+
+<!-- 12 · 대사체 형성/소실 -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 좌표④</span><span class="eyebrow f4">대사체 동역학</span></div>
+    <h2>말단 기울기 — <em>모약물 잔향인가, 대사체 자신인가</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 공장·창고 비유</div><p style="margin:0;">공장(모약물)이 부품(대사체)을 만들어 창고(몸)에 쌓고 동시에 빠짐. <b>만드는 게 느리면(형성 율속, \(k\ll k(m)\)) 곡선이 모약물과 나란히 감소</b>(=모약물 잔향), 빼는 게 느리면(\(k(m)\ll k\)) 대사체 자신 반감기. 맨 뒤 물질의 말단은 <b>가장 느린 단계</b>가 지배 <span class="cite">R&amp;T Fig.20-1, p.661</span>.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{AUC(m)}{AUC}}_{\text{노출비}}=\underbrace{f_m}_{\text{형성분율}}\cdot\frac{CL}{CL(m)}\quad(\ne f_m\ \text{단독}) \]</div></div>
+    <p>자주 보는 "\(AUC(m)/AUC{=}f_m\)"는 <b>절반만 맞음</b> — 욕조 수위(노출비) = 수도꼭지(\(f_m\)) × 배수구 역수(\(1/CL(m)\)). 한 식에 미지수 둘이라 <strong>노출비 하나로 형성 문제인지 제거 문제인지 원리적으로 구분 불가</strong> <span class="cite">R&amp;T Eq.20-4~20-6, p.663</span>. 경구면 대사체가 <b>초회통과 + 전신</b> 두 군데서 생김 — morphine→M6G는 경구 \(F{=}0.20\)이어도 초회통과 M6G 형성으로 <b>M6G 노출이 경구·IV에서 거의 같음</b> <span class="cite">R&amp;T Fig.20-7</span>.</p>
+  </div>
+</section>
+
+<!-- 13 · 신부전 보스전 -->
+<section class="card dark top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7.5 ★</span><span class="eyebrow">계량약리 보스전</span></div>
+    <h2>신부전 + 활성 대사체 <em>폭발</em></h2>
+    <p class="lead">모약물(\(CL{=}30\), \(CL_R{=}15\), \(F{=}0.8\)) + 활성 대사체(\(CL(m){=}10\), \(CL_R{=}8.5\), \(f_m{=}0.3\)). 환자가 <b>무뇨</b>(신장 CL 모두 0). "모약물 CL 반 줄었으니 용량도 반" → <b>라벨 실패</b>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{f_m\!:\,0.3}_{\text{정상}}\xrightarrow{\text{무뇨}}\frac{\overbrace{9}^{\text{대사형성 CL 유지}}}{\underbrace{15}_{\text{무뇨 모약물 CL}}}=0.6,\qquad \frac{AUC(m)_{\text{무뇨}}}{AUC(m)_{\text{정상}}}=\frac{0.6/1.5}{0.3/10}\approx \mathbf{13.3\text{배}} \]</div></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;"><strong>모약물 약 2배, 대사체 약 13배.</strong> 왜? ① 신장 경로가 닫히면 대사 형성 CL(9, 효소 정상)이 <b>전체 중 차지하는 비율</b>이 올라 <b>\(f_m\) 0.3→0.6 자동 상승</b>, ② 대사체가 신장 의존이라 \(CL(m)\) 10→1.5(6.7배↓). <b>두 효과가 곱해져</b> 폭증. 통합 활성 유지 용량비 ≈ <b>0.14</b> — 50% 감량으론 대사체가 6~7배 과노출로 남음 <span class="cite">R&amp;T Fig.20-10, p.673–675</span>.</p></div>
+    <div class="key"><span class="lbl">⚡ 핵심 교훈</span>"소수 대사 경로(\(f_m\) 작음) = 소수 안전성 우려"는 <strong>틀림</strong> — 신장이 닫히면 \(f_m\)이 자동 상승하고 대사체가 신장 의존이면 \(CL(m)\)이 무너져 노출이 자릿수로 폭증. interconversion(clofibric acid)이면 대사체 신장애가 모약물 겉보기 소실까지 늦춤.</div>
+  </div>
+</section>
+
+<!-- 14 · 동시 적합 -->
+<section class="card top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8</span><span class="eyebrow f5">구현 · 동시 적합</span></div>
+    <h2>혈장 + 소변을 <em>한 모델에서</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ C(t)=\frac{D_{iv}}{V}e^{-\frac{CL}{V}t},\qquad \underbrace{X_u(t)}_{\text{누적 소변}}=f_e D_{iv}\Big[1-e^{-\frac{CL}{V}t}\Big] \]</div></div>
+    <p>G&amp;W PK5 — 250 mg IV, 혈장곡선+누적 소변 동시적합 → \(CL{\approx}1.2\) L/h, \(f_e{\approx}35\%\), \(CL_R{\approx}0.42\) L/h. <b>잔차 CV 혈장 2.84% · 소변 8.96%</b> <span class="cite">G&amp;W PK5, p.498</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">왜 동시에?</div><p style="margin:0;">소변을 따로 처리하면 그 순간 \(f_e\)·\(CL_R\)을 혈장 모델 <b>안에서</b> 못 추정. DVID로 endpoint 구분 + 잔차오차 블록 분리 + 같은 ETA로 연결 — 이 패턴이 혈장+소변·IV+경구·모약물+대사체 <b>모든 다중 endpoint의 출발점</b>. 경구 단독이면 \(F\)·\(f_m\)이 곱으로 엉켜 IV 데이터 필요(식별가능성).</p></div>
+  </div>
+</section>
+
+<!-- 15 · 혼동쌍 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9</span><span class="eyebrow" style="color:var(--coral-d)">절대 같이 두지 말 것</span></div>
+    <h2>혼동쌍 <em>핵심 6</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>쌍</th><th>정정 한 줄</th></tr></thead>
+      <tbody>
+        <tr><td>\(CL\) vs \(CL_R\)/\(f_e\)</td><td>\(f_e\)는 신장 <b>지분</b> — 공변량은 \(CL_R\) 자리에만</td></tr>
+        <tr class="hot"><td>혈장 \(CL\) vs 전혈 \(CL_b\)</td><td>\(E_H{=}CL_b/Q_H\)임 — <b>60 L/h 미스터리</b></td></tr>
+        <tr><td>\(f_u\) vs \(f_{ub}\)</td><td>분모가 다른 두 측정량(\(f_{ub}{=}f_u R\)). tacrolimus=전혈</td></tr>
+        <tr><td>고추출 IV vs 경구</td><td>IV는 \(Q_H\)가 효소변화 가림, 경구는 안 가림 — IV 음성 ≠ 경구 안전</td></tr>
+        <tr><td>형성 율속 vs 소실 율속</td><td>평행감소 = 모약물 잔향. 대사체 반감기는 별도 IV로만</td></tr>
+        <tr class="hot"><td>\(AUC(m)/AUC\) vs \(f_m\)</td><td>한 식에 미지수 둘(\(f_m\cdot CL/CL(m)\)). \(CL(m)&gt;f_m CL\)만 단언 가능</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">+ 순차대사 vs interconversion(양방향이면 대사체 신부전이 모약물 겉보기 소실 늦춤, clofibric acid) <span class="cite">R&amp;T Fig.20-13</span>.</p>
+  </div>
+</section>
+
+<!-- 16 · 자가점검 -->
+<section class="card top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">점검</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 풀고 답 보기</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q5</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> 혈장 \(CL{=}60\), \(C/C_b{=}0.5\), \(Q_H{=}81\). \(E_H\)는? 고추출?</div>
+      <div class="a"><b>A.</b> \(CL_b{=}30\), \(E_H{=}30/81{\approx}0.37\) → <b>고추출 아님</b>(낮음~중간). \(60/81{=}0.74\)는 단위 안 맞춘 함정 <span class="cite">R&amp;T p.125</span>.</div>
+      <div class="q"><span class="n">Q2.</span> \(Q_H{=}81\), \(f_{ub}CL_{int}{=}20\). 고/저/중간? 4배 늘면?</div>
+      <div class="a"><b>A.</b> \(E_H{=}20/101{\approx}0.20\) <b>저추출</b>. 4배→80, \(E_H{\approx}0.50\) <b>중간</b>.</div>
+      <div class="q"><span class="n">Q3.</span> 모약물·대사체가 평행 감소, 대사체 따로 IV면 반감기 더 짧음. 무슨 상황?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> <b>형성 율속</b> — 관찰 말단은 모약물이 지배(대사체 잔향). 대사체 반감기는 별도 IV로만 확인 <span class="cite">R&amp;T p.661</span>.</div>
+      <div class="q"><span class="n">Q4.</span> \(AUC(m)/AUC{=}0.5\). \(f_m{=}0.5\)라 할 수 있나?</div>
+      <div class="a"><b>A.</b> <b>불가</b> — \(f_m\cdot CL/CL(m)\)이라 \(CL(m)/CL\)을 모르면 못 정함. 한 식에 미지수 둘.</div>
+      <div class="q"><span class="n">Q5.</span> (보스전) 무뇨에서 모약물만 50% 감량이 왜 위험한가?<span class="lv">★★★</span></div>
+      <div class="a"><b>A.</b> 모약물 CL 2배↓지만 <b>\(f_m\) 0.3→0.6 자동상승</b>, \(CL(m)\) 6.7배↓ → 대사체 노출 ≈<b>13배</b> 폭증. 통합 활성 유지 용량비 ≈ 0.14 <span class="cite">R&amp;T p.675</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · 요약 -->
+<section class="card dark center" id="s17">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">요약</span><span class="eyebrow">4좌표를 한 장으로</span></div>
+    <h2>청소율 숫자를 보면 <em>손이 자동으로</em></h2>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.4em auto; max-width:880px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> <b style="color:#fff;">농도기준</b> — 혈장? 전혈? 비결합?(60 L/h 미스터리, \(f_{ub}{=}f_u R\)).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> <b style="color:#fff;">장기</b> — 신장(곱셈 분해, 공변량은 \(CL_R\)에만) / 간(well-stirred, \(f_{ub}CL_{int}\) vs 81).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> <b style="color:#fff;">경로</b> — \(F{=}1{-}E_H\), IV 음성 ≠ 경구 안전.</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> <b style="color:#fff;">대사체</b> — 형성/소실 율속, 신부전 시 \(f_m\) 자동상승(보스전 13배).</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:22px auto 0; text-align:left;"><span class="lbl">🧵 한 줄 요약</span><strong>CL·V는 원인, 반감기는 결과.</strong> 청소율 숫자 하나를 보면 ①농도기준 → ②장기 → ③경로 → ④대사체를 손이 자동 점검하고, 구현은 한 모델 동시적합, 마지막에 혼동쌍을 거른다. 다음 — 05 2구획의 α·β도 CL·V에서 파생되는 결과값.</div>
+    <div class="foot">Gabrielsson &amp; Weiner Ch.2 + PK5 · Rowland &amp; Tozer Ch.5·20 + 부록 D·E — 수치·인용 원문 대조 (원본: 04_clearance_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 07 · 치료역·항정상태 — 세 개의 자 · 카드뉴스</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+KR:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)'], ['$','$']],
+    displayMath: [['\\[','\\]'], ['$$','$$']]
+  },
+  chtml: {
+    mtextInheritFont: true,
+    matchFontHeight: false,
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { enableMenu: false, renderActions: { addMenu: [] } },
+  startup: { ready: () => { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#F0EEE6; --paper:#FAF9F5; --paper-2:#F4F1E9;
+  --ink:#211F1B; --ink-2:#56514A; --ink-3:#8A857C; --line:#E4DFD3;
+  --coral:#D97757; --coral-d:#B0501F; --coral-tint:#FBEEE7; --coral-tint-bd:#F1D7C7;
+  --dark:#262019; --dark-2:#2F2820; --cream:#F4EFE6; --cream-2:#D6CFBF;
+  --amber:#EAB45C; --coral-l:#EC9A78; --teal-l:#86C0A9; --tan:#D4A27F;
+  --f1:#CF6A45; --f2:#BB852C; --f3:#3F7A66; --f4:#8A5A86; --f5:#4E6E94;
+  --font-serif:"Newsreader","Noto Serif KR",Georgia,serif;
+  --font-sans:"Pretendard",-apple-system,BlinkMacSystemFont,"Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:20px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  word-break:keep-all; overflow-wrap:break-word;
+  display:grid; grid-template-columns:312px 1fr;
+}
+
+/* ---------- progress bar ---------- */
+.progress{position:fixed; top:0; left:312px; right:0; height:4px; background:transparent; z-index:60;}
+.progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--coral),var(--amber)); transition:width .25s ease;}
+.counter{position:fixed; right:26px; bottom:22px; z-index:60;
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
+  background:rgba(250,249,245,.88); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; backdrop-filter:blur(6px);}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky; top:0; height:100vh; overflow-y:auto; z-index:50;
+  background:#EBE7DD; border-right:1px solid var(--line); padding:30px 20px 60px;}
+.toc::-webkit-scrollbar{width:8px;} .toc::-webkit-scrollbar-thumb{background:#D7D1C4; border-radius:8px;}
+.brand{padding:0 8px 18px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+.brand .k{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral-d);}
+.brand .t{font-family:var(--font-serif); font-size:26px; font-weight:600; line-height:1.14; margin-top:6px; color:var(--ink);}
+.toc-group{margin:15px 0 4px;}
+.toc-gh{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+  color:var(--ink-3); text-transform:uppercase; padding:6px 8px 4px;}
+.dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.dot.f1{background:var(--f1)} .dot.f2{background:var(--f2)} .dot.f3{background:var(--f3)} .dot.f4{background:var(--f4)} .dot.f5{background:var(--f5)}
+.toc-link{display:block; text-decoration:none; color:var(--ink-2); font-size:14px; line-height:1.32;
+  padding:6px 10px 6px 12px; border-radius:8px; border-left:2px solid transparent; transition:all .15s;}
+.toc-link:hover{background:rgba(217,119,87,.10); color:var(--ink);}
+.toc-link.active{background:var(--paper); color:var(--coral-d); font-weight:600; border-left-color:var(--coral);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+/* ---------- deck / cards ---------- */
+.deck{min-width:0;}
+.card{min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:76px 72px; border-bottom:1px solid var(--line); scroll-margin-top:0; position:relative;}
+.card.top{justify-content:flex-start; padding-top:84px;}
+.wrap{width:100%; max-width:1080px; margin:0 auto;}
+.card.dark{background:var(--dark); color:var(--cream); border-bottom-color:#3a3228;}
+.card.center{text-align:center;}
+.card.center .wrap{margin:0 auto;}
+
+.khead{display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.sec{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-3); background:rgba(0,0,0,.045); padding:3px 11px; border-radius:7px;}
+.card.dark .sec{color:var(--amber); background:rgba(255,255,255,.08);}
+.eyebrow{font-size:15.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;}
+.f1{color:var(--f1)} .f2{color:var(--f2)} .f3{color:var(--f3)} .f4{color:var(--f4)} .f5{color:var(--f5)}
+.card.dark .eyebrow{color:var(--amber);}
+
+h2{font-family:var(--font-serif); font-weight:500; font-size:clamp(36px,4.6vw,58px);
+  line-height:1.13; letter-spacing:-.012em; margin:.05em 0 .5em;}
+.card.dark h2{color:#fff;}
+h2 em{font-style:italic; color:var(--coral-d);}
+.card.dark h2 em{color:var(--amber);}
+.lead{font-size:clamp(21px,2vw,26px); line-height:1.55; color:var(--ink); margin:0 0 .7em;}
+.card.dark .lead{color:var(--cream);}
+p{font-size:clamp(18.5px,1.5vw,22px); line-height:1.72; margin:.55em 0;}
+.muted{color:var(--ink-2);} .card.dark .muted{color:var(--cream-2);}
+.gloss{color:var(--ink-3); font-size:.9em;} .card.dark .gloss{color:var(--cream-2);}
+strong{font-weight:700; color:var(--coral-d);} .card.dark strong{color:var(--amber);}
+b{font-weight:700; color:var(--ink);} .card.dark b{color:#fff;}
+.hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.45) 58%); padding:0 1px; color:inherit; font-weight:600;}
+.card.dark .hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.30) 58%);}
+
+ul{margin:.5em 0; padding-left:0; list-style:none;}
+ol{margin:.5em 0; padding-left:1.4em;}
+ol li{padding:5px 0; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6;}
+ul li{position:relative; padding:7px 0 7px 26px; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6; list-style:none;}
+ul li::before{content:""; position:absolute; left:4px; top:.95em; width:7px; height:7px; border-radius:50%;
+  background:var(--coral);}
+.card.dark ul li::before{background:var(--amber);}
+ul li.x::before{content:"✕"; background:none; color:var(--coral-d); font-size:.8em; top:.7em; left:2px; width:auto; height:auto;}
+.card.dark ul li.x::before{color:var(--coral-l);}
+ul li.o::before{content:"✓"; background:none; color:var(--f3); font-weight:700; top:.55em; left:0; width:auto; height:auto;}
+.card.dark ul li.o::before{color:var(--amber);}
+
+/* ---------- citations / flags ---------- */
+.cite{font-family:var(--font-mono); font-size:.64em; font-weight:500; color:var(--ink-3);
+  background:rgba(0,0,0,.045); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle; letter-spacing:.01em;}
+.card.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.10);}
+.box .cite{background:rgba(0,0,0,.05);}
+.box.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.12);}
+.flag{font-family:var(--font-mono); font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--coral-d);
+  background:rgba(217,119,87,.10); border:1px solid var(--coral-tint-bd); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle;}
+.card.dark .flag, .box.dark .flag{color:var(--amber); background:rgba(234,180,92,.12); border-color:rgba(234,180,92,.32);}
+
+/* ---------- boxes / callouts ---------- */
+.box{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ac,var(--coral));
+  border-radius:13px; padding:20px 25px; margin:18px 0;}
+.box .bh{display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.02em;
+  color:var(--ac,var(--coral-d)); margin-bottom:.45em;}
+.box .ico{font-size:1.05em; filter:saturate(1.1);}
+.box p, .box li{font-size:clamp(17px,1.38vw,20px);}
+.box.dark{background:var(--dark-2); border-color:rgba(255,255,255,.12); border-left-color:var(--ac,var(--amber)); color:var(--cream);}
+.box.dark .bh{color:var(--amber);}
+.box.dark strong{color:var(--amber);} .box.dark b{color:#fff;}
+.box.dark ul li::before{background:var(--amber);}
+.box.dark .muted{color:var(--cream-2);}
+
+.key{background:var(--coral-tint); border:1px solid var(--coral-tint-bd); border-left:5px solid var(--coral);
+  border-radius:13px; padding:20px 26px; margin:18px 0; font-size:clamp(18.5px,1.5vw,22px); line-height:1.55;}
+.key .lbl{display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral-d); margin-bottom:.35em;}
+.key strong{color:var(--coral-d);}
+.card.dark .key{background:rgba(234,180,92,.10); border-color:rgba(234,180,92,.3); border-left-color:var(--amber); color:var(--cream);}
+.card.dark .key .lbl{color:var(--amber);} .card.dark .key strong{color:var(--amber);} .card.dark .key b{color:#fff;}
+
+.thread{font-family:var(--font-serif); font-style:italic; font-size:clamp(17.5px,1.5vw,22px);
+  color:var(--ink-2); border-top:1px dashed var(--line); padding-top:16px; margin-top:22px; display:flex; gap:10px;}
+.thread .ico{font-style:normal;}
+.thread b{color:var(--coral-d);}
+.card.dark .thread{color:var(--cream-2); border-top-color:rgba(255,255,255,.18);}
+.card.dark .thread b{color:var(--amber);}
+
+/* ---------- stats ---------- */
+.stats{display:flex; flex-wrap:wrap; gap:14px 30px; align-items:flex-end; margin:14px 0 6px;}
+.stat{display:flex; flex-direction:column; gap:2px;}
+.stat .lab{font-size:14.5px; color:var(--ink-2); letter-spacing:.01em;}
+.card.dark .stat .lab{color:var(--cream-2);}
+.stat .val{font-family:var(--font-serif); font-weight:500; font-size:clamp(34px,4.4vw,58px); line-height:1; color:var(--ink);}
+.stat .val .u{font-size:.42em; color:var(--ink-2); font-family:var(--font-sans); font-weight:500;}
+.card.dark .stat .val{color:#fff;} .card.dark .stat .val .u{color:var(--cream-2);}
+.arrow{font-family:var(--font-serif); font-size:clamp(30px,3.4vw,46px); color:var(--coral); align-self:center; padding-bottom:.18em;}
+.card.dark .arrow{color:var(--coral-l);}
+.bignum{font-family:var(--font-serif); font-weight:500; font-size:clamp(64px,10vw,140px); line-height:.9; color:var(--coral-d);}
+.card.dark .bignum{color:var(--amber);}
+
+/* ---------- tables ---------- */
+.tbl{width:100%; overflow-x:auto; margin:16px 0;}
+table{width:100%; border-collapse:collapse; font-size:clamp(15px,1.3vw,18.5px);}
+th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+thead th{font-weight:700; color:var(--coral-d); border-bottom:2px solid var(--coral); font-size:.94em; letter-spacing:.01em;}
+tbody tr:last-child td{border-bottom:none;}
+td .em{color:var(--coral-d); font-weight:600;}
+tr.hot td{background:rgba(234,180,92,.13);}
+.card.dark th,.card.dark td{border-bottom-color:rgba(255,255,255,.13); color:var(--cream);}
+.card.dark thead th{color:var(--amber); border-bottom-color:var(--amber);}
+.card.dark td .em{color:var(--amber);}
+.card.dark tr.hot td{background:rgba(234,180,92,.16);}
+.box table{font-size:clamp(14.5px,1.2vw,17px);}
+.fcell{display:inline-flex; align-items:center; gap:7px; font-weight:600;}
+
+/* ---------- math ---------- */
+.mathblock{font-size:clamp(21px,2.15vw,30px); margin:1.2em 0; overflow-x:auto; overflow-y:hidden; padding:8px 2px;}
+.mathblock.tight{margin:.6em 0;}
+.mathblock.tall{margin:1.6em 0; padding:14px 2px;}
+.mathblock.wide{font-size:clamp(15.5px,1.7vw,22px);}
+mjx-container{color:inherit !important;}
+mjx-container[display="true"]{margin:0 !important;}
+.card.dark .mathblock, .box.dark .mathblock, .key .mathblock{color:inherit;}
+.formula-hero{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 22px; margin:18px 0;}
+.card.dark .formula-hero{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12);}
+.box.dark .formula-hero, .key .formula-hero{background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.14);}
+
+/* ---------- params chips ---------- */
+.params{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;}
+.chip{font-family:var(--font-mono); font-size:15px; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:9px; padding:8px 13px; color:var(--ink);}
+.chip b{color:var(--coral-d);}
+.card.dark .chip{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--cream);}
+.card.dark .chip b{color:var(--amber);}
+
+/* ---------- grids ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin:16px 0;}
+@media (max-width:1180px){ .grid3{grid-template-columns:1fr;} }
+
+/* ---------- code ---------- */
+.codeblock{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:18px 22px; margin:12px 0; font-size:clamp(12.5px,1.05vw,15px); line-height:1.7;
+  overflow-x:auto; border:1px solid rgba(255,255,255,.10);}
+.codeblock .ttl{display:block; color:var(--amber); font-weight:600; margin-bottom:8px; font-size:.95em;}
+.codeblock pre{margin:0; white-space:pre;}
+.codeblock .cm{color:var(--coral-l);}
+.codeblock .kw{color:var(--amber);}
+
+/* ---------- flow ---------- */
+.flow{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:22px 26px; margin:16px 0; font-size:clamp(14px,1.25vw,17px); line-height:1.85;}
+.flow .step{color:var(--amber); font-weight:600;}
+.flow .ar{color:var(--coral-l);}
+
+/* ---------- Q&A ---------- */
+.qa{margin:10px 0;}
+.qa .q{font-weight:700; color:var(--ink); font-size:clamp(16.5px,1.35vw,19px); margin-top:15px; display:flex; gap:10px;}
+.qa .q .n{font-family:var(--font-mono); color:var(--coral-d); flex:0 0 auto;}
+.qa .q .lv{font-family:var(--font-mono); font-size:.7em; color:var(--ink-3); margin-left:auto; white-space:nowrap;}
+.qa .a{color:var(--ink-2); font-size:clamp(15.5px,1.3vw,18px); padding-left:30px; margin-top:3px; line-height:1.58;}
+.qa .a b{color:var(--coral-d);}
+.card.dark .qa .q{color:#fff;} .card.dark .qa .q .n{color:var(--amber);} .card.dark .qa .a{color:var(--cream-2);} .card.dark .qa .a b{color:var(--amber);}
+
+.scroll-hint{position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2); opacity:.8;
+  display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scroll-hint .dn{font-size:18px; animation:bob 1.8s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)}}
+
+.foot{margin-top:26px; font-size:14.5px; color:var(--ink-3); letter-spacing:.01em;}
+.card.dark .foot{color:var(--cream-2);}
+.divider{height:1px; background:var(--line); margin:20px 0;}
+.card.dark .divider{background:rgba(255,255,255,.14);}
+
+/* ---------- burger / mobile ---------- */
+.burger{display:none; position:fixed; top:14px; left:14px; z-index:70; width:46px; height:46px;
+  border-radius:11px; background:var(--dark); color:var(--cream); border:none; cursor:pointer; font-size:20px;}
+@media (max-width:980px){
+  body{grid-template-columns:1fr; font-size:18px;}
+  .toc{position:fixed; left:0; top:0; width:300px; transform:translateX(-100%); transition:transform .25s; box-shadow:0 0 40px rgba(0,0,0,.25);}
+  body.toc-open .toc{transform:translateX(0);}
+  .burger{display:block;}
+  .progress{left:0;}
+  .card{padding:78px 26px 64px;}
+  .card.top{padding-top:78px;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="burger" aria-label="목차 열기">☰</button>
+<div class="progress"><i id="bar"></i></div>
+<div class="counter" id="counter">01 / 21</div>
+
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 07 · 항정상태</div>
+    <div class="t">치료역·다중투여·축적</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 세 개의 자</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">두 임상 미스터리</a>
+      <a class="toc-link" href="#s4">큐레이션 맵 · 세 식</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>PK 시계 (M1–M5)</div>
+      <a class="toc-link" href="#s5">M1 plateau 높이 = CL</a>
+      <a class="toc-link" href="#s6">M2 도달 시간 = t½</a>
+      <a class="toc-link" href="#s7">M3 축적계수 ⚡</a>
+      <a class="toc-link" href="#s8">M4 농도 vs 약물량</a>
+      <a class="toc-link" href="#s9">M5 flip-flop</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>설계 다리 (M6–M8)</div>
+      <a class="toc-link" href="#s10">M6 치료역</a>
+      <a class="toc-link" href="#s11">M7 부하 + 유지</a>
+      <a class="toc-link" href="#s12">M8 투여 설계 알고리즘</a>
+      <a class="toc-link" href="#s13">M8 숫자 예시 · SS깃발</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>PD 시계 (M9–M10)</div>
+      <a class="toc-link" href="#s14">M9 누구의 반감기?</a>
+      <a class="toc-link" href="#s15">M10 분할 독성</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s16">혼동쌍 ①</a>
+      <a class="toc-link" href="#s17">혼동쌍 ②</a>
+      <a class="toc-link" href="#s18">내성 vs 저항성</a>
+      <a class="toc-link" href="#s19">자가점검 ①</a>
+      <a class="toc-link" href="#s20">자가점검 ②</a>
+      <a class="toc-link" href="#s21">한 줄 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 07 · 치료역·항정상태·다중투여·축적 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,76px); margin-top:.25em; line-height:1.08;">항정상태는 한 숫자가 아니라<br><em>세 개의 자</em>다</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">"steady-state"라는 한 단어 안에 세 개의 다른 질문이 들어있다 — 어떤 자로 묻는지 분리 안 하면 임상 판단이 어긋난다</p>
+    <div class="grid3" style="max-width:900px; margin:28px auto 0;">
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">시계 · 언제?</div><p style="margin:0; font-size:15.5px;">→ \(t_{1/2}\)(반감기)</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">무게중심 · 수준?</div><p style="margin:0; font-size:15.5px;">→ \(CL\)·입력률</p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">출렁임 · 배율?</div><p style="margin:0; font-size:15.5px;">→ \(\tau/t_{1/2}\)</p></div>
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(19px,2.1vw,28px); color:#fff; margin-top:22px;">"이건 시간·수준·진폭 중 어느 질문인가?"</p>
+    <div class="foot">Gabrielsson &amp; Weiner §2 + R&amp;T Ch.9–11 + 부록 I — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>두 교과서와 <em>척추</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">G&amp;W</div><p class="muted">정속주입 plateau·축적·flip-flop·부하용량(PK11·PK13 사례).</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">R&amp;T</div><p class="muted">Ch.9(치료역)·Ch.10(정속주입)·Ch.11(다중투여·축적) + 부록 I(축적 유도).</p></div>
+    </div>
+    <div class="key"><span class="lbl">🧵 관통 척추</span>항정상태는 <strong>시간 · 수준 · 진폭 세 축으로 분해해서 다시 조립하는 작업</strong>. 이 분리 하나가 챕터 전체의 척추 — 못 잡으면 phenobarbital trough도, daptomycin 4배도, NONMEM \(SS{=}1\)도, TDM 보정도 전부 같은 진흙탕.</div>
+    <p class="muted"><b>대상</b> 비전공·1학년 OK · <b>이전</b> 단회 PK(\(CL\)·\(V\)·\(t_{1/2}\))를 반복·유지·제약으로 확장 · <b>다음</b> TDM·PopPK·노출-반응·Phase 1 MAD 설계가 이 위에 올라감.</p>
+  </div>
+</section>
+
+<!-- 3 · 두 미스터리 -->
+<section class="card dark top" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow">두 임상 미스터리</span></div>
+    <h2>한 단어 속 <em>세 질문</em>을 안 나누면</h2>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">장면 1 · Phenobarbital trough</div><p style="margin:0;">100 mg q24h, \(t_{1/2}{=}4\)일. trough가 높자 후배가 "아직 plateau 도달 안 해서요" — <strong>위험.</strong> trough 높음=<b>축적</b>(\(\tau/t_{1/2}\) 작아 \(R_{ac}\) 큼), 도달 여부=<b>시간</b>(\(t_{1/2}\)) — <b>다른 자를 한 자로 뭉친 것</b>. 그대로 받으면 \(\tau\) 조정이 거꾸로 가고 NONMEM \(SS{=}1\)이 무너짐 <span class="cite">R&amp;T p.325–326</span>.</p></div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">장면 2 · Daptomycin 4배 독성</div><p style="margin:0;">개 모델, <b>같은 일일 총용량 75 mg/kg/day</b>인데 q24h vs q8h의 근육 손상 CPK가 <strong>991 vs 3996 U/L (≈4배)</strong> <span class="cite">R&amp;T Table 11-7, p.351</span>. "총량으로 독성 예측"이 깨짐 — 분할이 따로 변수. <span class="flag">75 mg/kg는 분할 효과만 분리한 실험 용량 · 임상은 4–6 mg/kg/day</span></p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>질문</th><th>자</th><th>결정자</th></tr></thead>
+      <tbody>
+        <tr><td><b>언제</b> 도달?</td><td>시계</td><td>\(t_{1/2}\)</td></tr>
+        <tr><td>평균 <b>수준</b>?</td><td>무게중심</td><td>\(CL\)·입력률</td></tr>
+        <tr><td>얼마나 <b>출렁/쌓임</b>?</td><td>출렁임</td><td>\(\tau/t_{1/2}\)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- 4 · 큐레이션 맵 (NEW) -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 큐레이션 맵</span><span class="eyebrow f1">세 식으로 압축</span></div>
+    <h2>10개 카드, <em>세 단어</em>로 묶기</h2>
+    <p class="lead">M1~M10이 결국 <b>높이·배율·무게중심</b> 세 식에서 갈라져 나옴 — 이 세 식만 손에 쥐면 나머지는 다 따라옴:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{C_{ss}=\frac{R_{in}}{CL}}_{\text{높이(level)}}\qquad \underbrace{R_{ac}=\frac{1}{1-e^{-K\tau}}}_{\text{배율(ratio)}}\qquad \underbrace{C_{av,ss}=\frac{F\cdot Dose}{CL\cdot\tau}}_{\text{무게중심(centroid)}} \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>묶음</th><th>카드</th><th>잠그는 자</th></tr></thead>
+      <tbody>
+        <tr><td><b>① PK 시계</b></td><td>M1 높이 · M2 도달 · M3 축적 · M4 농도/약물량 · M5 flip-flop</td><td>약물 분자 쪽 시간</td></tr>
+        <tr class="hot"><td><b>② 설계 다리</b></td><td>M6 치료역 · M7 부하/유지 · M8 알고리즘</td><td>PK 식 → 임상 결정</td></tr>
+        <tr><td><b>③ PD/안전 시계</b></td><td>M9 PD plateau · M10 분할 독성</td><td>환자 쪽 시간(turnover·회복)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">각 카드는 <b>(1)어느 자를 잠그나 → (2)왜 필요 → (3)비유 → (4)식·기호 → (5)숫자 → (6)흔한 실수 → (7)한 줄</b> 순서로 감. <span class="flag">맥락만 짚는 C1~C12(평형·입력함수·다중흡수·정속장치·DDI 등)는 곁가지로 분리</span></p>
+  </div>
+</section>
+
+<!-- 5 · M1 plateau 높이 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M1 · 무게중심</span><span class="eyebrow f1">누가 높이를 정하나</span></div>
+    <h2>plateau 높이의 지배자는 <em>CL</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 욕조</div><p style="margin:0;">수도꼭지(\(R_{in}\)) 열어둔 욕조에 배수구(\(CL\))도 열림. <b>마지막 수위(높이)는 입력과 배수구의 균형</b>으로 정해짐. 욕조 크기(\(V\))는 <b>도달 속도</b>만 바꾸고 높이 자체는 안 정함.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \frac{dC}{dt}=\frac{R_{in}}{V}-\frac{CL}{V}C\ \Rightarrow\ C(t)=\frac{R_{in}}{CL}\big(1-e^{-(CL/V)t}\big)\ \Rightarrow\ \underbrace{C_{ss}}_{}=\frac{R_{in}}{CL} \]</div></div>
+    <p>G&amp;W: "Clearance is the sole parameter that determines the maintenance dose", R&amp;T: "only infusion rate and clearance control the steady-state concentration" <span class="cite">G&amp;W Eq.2:22, p.23</span> <span class="cite">R&amp;T Eq.10-4, p.288</span>. eptifibatide \(CL{=}4\) L/h, 목표 1 mg/L → \(R_{in}{=}4\) mg/h.</p>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;"><span class="ico">⚠️</span> 농도가 낮게 나왔다고 곧바로 "\(CL\)이 늘었네"로 점프 금지 — <b>실제 주입속도·라인 막힘·채혈 시각</b>부터 확인. 교과서가 보증하는 건 \(C_{ss}{=}R_{in}/CL\) 구조이지 오류 빈도가 아님.</p></div>
+  </div>
+</section>
+
+<!-- 6 · M2 도달 시간 -->
+<section class="card top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M2 · 시계</span><span class="eyebrow f1">누가 시계를 정하나</span></div>
+    <h2>도달 시간은 <em>목표 높이와 무관</em></h2>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 엘리베이터</div><p style="margin:0;">5층을 가든 50층을 가든 "남은 거리의 절반을 줄이는 데 걸리는 시간"은 같음 — <b>도달은 비율 문제이지 목표 높이 문제가 아님</b>.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ C(t)=\underbrace{C_{ss}}_{\text{높이}}\times\underbrace{(1-e^{-Kt})}_{\text{도달률(시간만의 함수)}},\qquad t_{90}=\frac{\ln 10}{K}\approx 3.32\,t_{1/2} \]</div></div>
+    <p><b>높이와 도달률이 곱셈으로 분리</b> — plateau를 두 배 올려도 도달률 곡선은 똑같음. 1·2·3·3.3 반감기 = 50/75/88/<b>90%</b> <span class="cite">R&amp;T Table 10-4, p.291</span> <span class="cite">G&amp;W p.22</span>. t-PA 5분→17분, eptifibatide 2.5h→8.25h, phenobarbital 4일→13~16일.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">💼</span> NONMEM \(SS{=}1\)</div><p style="margin:0;">"이미 항정상태"라고 알리는 <b>시간 조건</b> 플래그. 쓰기 전 실제 투여 이력이 <b>최소 3~4 반감기 이상</b>인지 확인 — 안 채워졌는데 꽂으면 올라가는 중을 plateau로 강제 설명해 \(CL/F\)·\(V/F\)·ETA가 왜곡. ❌ "dose 올리면 SS 도달도 빨라진다"(높이만 오름).</p></div>
+  </div>
+</section>
+
+<!-- 7 · M3 축적계수 -->
+<section class="card dark top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M3 ⚡ · 출렁임</span><span class="eyebrow">정점 개념</span></div>
+    <h2>축적은 dose가 아니라 <em>τ/t½</em>가 정한다</h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 저금통 배율</div><p style="margin:0;">매번 남은 잔돈이 다음 입금에 더해지는 배율. <b>입금액(dose)이 커져도 같은 주기로 같은 비율(\(\tau/t_{1/2}\))이 남으면 배율은 안 바뀜</b> — 절대 금액만 커짐.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{R_{ac}}_{\text{dose-free 배율}}=\frac{1}{1-\underbrace{e^{-K\tau}}_{\text{간격 끝 잔여}}}=\frac{1}{1-2^{-\tau/t_{1/2}}} \]</div></div>
+    <p><strong>식 어디에도 dose가 안 보임</strong> — G&amp;W: "accumulation index R depends on half-life and τ, <b>independent of dose</b>" <span class="cite">G&amp;W Eq.2:78, p.45</span> <span class="cite">R&amp;T Eq.11-10, p.324</span> <span class="cite">R&amp;T 부록 I, pp.795–797</span>. \(\tau{=}t_{1/2}\)면 \(R_{ac}{=}2\)(2배), \(\tau/t_{1/2}{=}3\)이면 ≈1.14(거의 안 쌓임). <b>Phenobarbital</b> q24h·\(t_{1/2}{=}4\)일 → \(\tau/t_{1/2}{=}0.25\) → \(R_{ac}{\approx}5.8\)배 <span class="cite">R&amp;T p.326</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">짝꿍 지표 PTF + 5.8 vs 6.3</div><p style="margin:0;">\(PTF{=}(C_{max,ss}-C_{min,ss})/C_{av,ss}\) — "얼마나 출렁이나" <span class="cite">R&amp;T Eq.11-23</span>. 좁은 치료역서 변동 줄이려면 <b>\(\tau\)를 줄이고 dose를 비례 축소</b>(dose만 키우면 평균만↑·변동비율 그대로). <strong>phenobarbital 정직 표기</strong> — R&amp;T 인쇄값은 <b>5.8</b>(Eq.11-10), 노트의 <b>6.3</b>은 \(A_{max}/Dose{=}630/100\) 유도값 → 충돌 아니라 다른 기준. 1차 기준은 인쇄된 5.8 <span class="flag">PTF 닫힌식 숫자는 교과서 외 유도</span>.</p></div>
+  </div>
+</section>
+
+<!-- 8 · M4 농도 vs 약물량 -->
+<section class="card top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M4 · 무게중심</span><span class="eyebrow f1">단위 방화벽</span></div>
+    <h2>평균 plateau는 <em>두 단위</em>다</h2>
+    <p class="lead">\(C_{av,ss}\)(농도 mg/L)와 \(A_{av,ss}\)(약물량 mg)를 같은 줄에 쓰면 단위가 무너짐 — 농도는 \(CL\) 기반 노출 언어, 약물량은 \(MRT\) 기반 체류 언어. \(V\)라는 다리가 있어야 통역됨(1구획에서만 \(MRT{=}V/CL{=}1.44\,t_{1/2}\)).</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{C_{av,ss}}_{\text{mg/L}}=\frac{F\cdot Dose}{CL\cdot\tau},\qquad \underbrace{A_{av,ss}}_{\text{mg}}=1.44\,t_{1/2}\cdot\frac{F\cdot Dose}{\tau} \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>약물 (\(\tau/t_{1/2}\) 영역)</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td>Amoxicillin (\(\tau\gg t_{1/2}\), 짧은 반감기)</td><td>변동 크고 축적 거의 없음</td></tr>
+        <tr><td>Naproxen (중간)</td><td>변동·축적 균형, \(R_{ac}{=}3.06\)</td></tr>
+        <tr class="hot"><td>Piroxicam (\(\tau\ll t_{1/2}\), \(t_{1/2}{\approx}50\)h)</td><td>변동 작고 축적 큼</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">amoxicillin·piroxicam은 유지용량 12배 차(250 vs 20 mg)인데 평균 약물량 비슷(45 vs 60 mg) — 반감기가 보정 <span class="cite">R&amp;T Eq.11-7·11-8, p.324</span>. ❌ \(1.44\,t_{1/2}\)가 들어간다고 농도 식으로 착각(그건 약물량 식).</p>
+  </div>
+</section>
+
+<!-- 9 · M5 flip-flop -->
+<section class="card" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M5 · 시계의 정체</span><span class="eyebrow f1">flip-flop</span></div>
+    <h2>말단 기울기가 <em>제거를 말하지 않을 때</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 수도꼭지/배수구</div><p style="margin:0;">수도꼭지(흡수)가 배수구(제거)보다 더 작으면, 수위 곡선 꼬리는 결국 <b>수도꼭지 속도</b>가 그림 — <b>두 과정 중 율속단계(더 느린 쪽)가 꼬리를 그림</b>.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{K_a&lt;K}_{\text{흡수가 제거보다 느림}}\ \Rightarrow\ \underbrace{\text{terminal slope}}_{\text{꼬리 기울기}}\approx K_a \]</div></div>
+    <p>G&amp;W: "When absorption is rate-limiting we talk about flip-flop — terminal slope mirrors the absorption phase" <span class="cite">G&amp;W p.45</span>. <b>의도된 flip-flop</b> — 서방형/depot은 일부러 흡수를 느리게: morphine MR(제거 t½ ~2h인데 하루 1회), leuprolide depot(t½ ~3h인데 월 1회) <span class="cite">R&amp;T p.337–338</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;"><span class="ico">⚠️</span> 긴 꼬리 반감기를 곧바로 "느린 제거"로 번역 금지 — <b>IV 데이터·제형 정보 먼저 확인</b>(투여경로→제형→흡수 지속시간). "terminal half-life = elimination half-life"로 고정하면 제형 효과가 통째로 누락.</p></div>
+  </div>
+</section>
+
+<!-- 10 · M6 치료역 -->
+<section class="card top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M6 · 임상 제약</span><span class="eyebrow f2">치료역</span></div>
+    <h2>"좋은 농도 범위"가 아니라 <em>의사결정 구간</em></h2>
+    <div class="box" style="--ac:var(--f5)"><div class="bh"><span class="ico">💡</span> 차선</div><p style="margin:0;">농도 축 위에 그은 두 선 — 아래(\(C_{lower}\), 효과 하한)·위(\(C_{upper}\), 위해 상한). 이 두 선이 regimen 설계의 <b>제약조건</b>.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>세 용어 분리</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td>치료농도범위</td><td>경험상 효과·위해 수용 범위(예 3–11 mg/L)</td></tr>
+        <tr><td>치료역(TW)</td><td>효용 곡선이 정한 의사결정 구간(예 4–10, 효용 0.10 기준)</td></tr>
+        <tr><td>치료지수(TI)</td><td>\(TD_{50}/ED_{50}\); 임상선 노출 변화에 대한 민감도</td></tr>
+      </tbody>
+    </table></div>
+    <p>효용 곡선 = 효과 빈도 − 가중 유해 빈도(효과 +0.4, 경미 −0.2, 심각 −1) <span class="cite">R&amp;T Fig.9-3·9-4, p.273</span> <span class="flag">가중치는 예시값 · 합산식은 교육용 표현</span>. Table 9-1: digoxin 0.6–2 ng/mL, lithium 0.6–1.2 mmol/L, phenytoin 10–20 mg/L — 대부분 상·하한이 2~3배 좁은 창 <span class="cite">R&amp;T p.276</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">상·하한의 의미가 약마다 다름 + 내성 회피</div><p style="margin:0;">대부분(phenytoin)은 하한↑효과·상한↓안전. 일부(gentamicin)는 거꾸로 — <b>peak 높아야 효과·trough 낮아야 안전</b>. 항생제는 <b>MSW(변이체 선택 창)</b>: MIC~MPC 사이가 내성균 증폭 최위험 <span class="cite">R&amp;T Fig.9-7, p.277</span>.</p></div>
+  </div>
+</section>
+
+<!-- 11 · M7 부하/유지 -->
+<section class="card top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M7 · 시작점+유지</span><span class="eyebrow f2">부하 + 유지 용량</span></div>
+    <h2>가속페달과 <em>크루즈 컨트롤</em></h2>
+    <p class="lead">부하용량(\(D_L\))=제한속도까지 올리는 가속페달(한 번), 유지용량(\(D_M\))=속도 유지 크루즈(끊임없이) — <b>같은 페달이 아님</b>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ D_M=D_L(1-e^{-K\tau})\ \Leftrightarrow\ \underbrace{D_L}_{}=\frac{D_M}{1-e^{-K\tau}}=\underbrace{R_{ac}}_{}\,D_M,\qquad D_L=\frac{V\cdot target}{F},\ D_M=CL\cdot target\cdot\tau \]</div></div>
+    <p><strong>부하용량 = 유지용량의 \(R_{ac}\)배</strong> — M3의 축적계수가 여기서 부하/유지 비율로 재등장 <span class="cite">R&amp;T Eq.11-11·11-12, p.326–327</span>. <b>Doxycycline</b> \(t_{1/2}{=}24\)h·q24h → \(R_{ac}{=}2\) → 첫날 200 mg(부하), 이후 100 mg/day(유지). bolus+infusion으로 즉시 plateau(PK13: bolus 400 µg/kg + 800 µg/kg 주입) → 자동화가 <b>TCI</b>(propofol·remifentanil) <span class="flag">TCI 모델 세부는 외부 지식</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;"><span class="ico">⚠️</span> "부하용량이 SS 도달 시간을 단축한다" — 틀림. 부하는 <b>시작점을 target 근처로 옮기는 것</b>이지 반감기 시간상수를 못 바꿈. 반감기 긴 약이라도 급성 고농도 부작용이면 일부러 부하 없이 천천히(piroxicam·protriptyline) <span class="cite">R&amp;T p.327–328</span>.</p></div>
+  </div>
+</section>
+
+<!-- 12 · M8 알고리즘 -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M8 · 시계+무게중심</span><span class="eyebrow f2">투여 설계 알고리즘</span></div>
+    <h2>상·하한만 있으면 <em>간격·용량 상한이 계산된다</em></h2>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{\tau_{max}}_{\text{비율이 간격을}}=1.44\,t_{1/2}\ln\!\Big(\frac{C_{upper}}{C_{lower}}\Big),\qquad \underbrace{D_{M,max}}_{\text{차이가 용량을}}=\frac{V}{F}(C_{upper}-C_{lower}) \]</div></div>
+    <p><b>비율(\(C_{upper}/C_{lower}\))은 간격을, 차이(\(C_{upper}-C_{lower}\))는 용량을</b> 제약 <span class="cite">R&amp;T Eq.11-16·11-17, p.334</span>. 허용 평균농도는 로그평균 \(C_{ss,av}{=}(C_{upper}-C_{lower})/\ln(C_{upper}/C_{lower})\) <span class="cite">R&amp;T Eq.11-19</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 자동 처방기 아님 — 타당성 점검</div><p style="margin:0;">전제 — <b>선형 PK·고정 간격·즉각적 농도-반응</b>. 프로토콜 첫 페이지에 "<strong>선형 PK 비성립·즉각 농도-반응 깨짐·flip-flop·단회 투여·turnover 지배 PD plateau 중 하나라도 의심되면 모델 확장으로</strong>" 명시. 그 적용 중단 조건의 핵심이 M9·M10 <span class="cite">R&amp;T p.279·341–345</span>.</p></div>
+  </div>
+</section>
+
+<!-- 13 · M8 숫자 예시 + SS깃발 (NEW) -->
+<section class="card dark top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M8 · 적용</span><span class="eyebrow">숫자 예시 · SS 깃발</span></div>
+    <h2>손으로 <em>한 번 돌려보기</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">알고리즘 — TW 5–10 mg/L, \(V{=}20\)L, \(t_{1/2}{=}46\)h</div><p style="margin:0; font-size:16px;">① \(\tau_{max}{=}\ln(10/5)/0.015{\approx}\mathbf{46}\)h · ② \(D_{M,max}{=}20{\times}(10{-}5){=}\mathbf{100}\)mg · ③ q24h 선택 → 유지 \(2.17{\times}24{\approx}\mathbf{50}\)mg · ④ 부하 \(50/(1{-}e^{-0.36}){\approx}\mathbf{165}\)mg <span class="cite">R&amp;T p.335, Fig.11-10</span></p></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">SS=1 vs SS=2 — 시제가 다름</div><p style="margin:0;"><b>\(SS{=}1\)</b>="과거부터 같은 dose가 3~4 반감기 이상 반복됨"(과거형) — trough가 평평해진 신호일 때만. <b>\(SS{=}2\)</b>="지금 정속 입력 진행 중"(현재진행형). <strong>편의 옵션이 아니라 초기조건을 수학적으로 바꾸는 명령</strong> — 시제 틀리면 NONMEM이 없는 history를 지어냄. 한 줄: <b>"올라가는 중이면 SS 끄고, 충분히 오래 평평하면 켠다."</b> <span class="flag">SS 구문 세부는 도구 지식 · 3~4 반감기 조건은 R&amp;T p.291</span></p></div>
+  </div>
+</section>
+
+<!-- 14 · M9 PD plateau -->
+<section class="card dark top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M9 · 새 시계</span><span class="eyebrow">PD 기반 plateau</span></div>
+    <h2>"이 반감기는 <em>누구의 반감기</em>인가?"</h2>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 난로와 방 온도</div><p style="margin:0;">난로(약물) 표면은 금방 뜨거워짐(PK plateau 빠름)지만 <b>방 전체 온도(효과)는 한참 걸림</b> — 방의 열용량·단열(turnover 시스템)이 정함.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{t_{1/2,PK}}_{\text{약물 분자}}\ \not\equiv\ \underbrace{t_{\text{PD plateau}}}_{\text{반응변수 turnover}},\qquad t_{\text{PD}(90\%)}\approx\frac{\ln 10}{k_{out}} \]</div></div>
+    <p><b>Atorvastatin</b> PK \(t_{1/2}{\approx}14\)h인데 콜레스테롤 효과 plateau <b>2~4주</b>(LDL turnover 지배). <b>EPO</b> PK \(t_{1/2}{\approx}9\)h인데 hematocrit plateau <b>~70일</b>(적혈구 수명 지배) <span class="cite">R&amp;T Fig.11-16·11-17, p.343–344</span>. <strong>M2의 "3~4 반감기" 식과 같은 구조 — \(K\)가 \(k_{out}\)으로 바뀌었을 뿐.</strong></p>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;">M2의 PK plateau 규칙을 PD에 그대로 옮기면 atorvastatin을 "2~3일"로 예측 → 실제 2~4주, <b>약 10배 앞당기는 오류</b>. 효과 평가 시점 전 반드시 <strong>"이 시간상수는 약물 반감기인가, turnover/세포 수명인가"</strong> 확인 <span class="flag">indirect response 식·LDL수용체 수치는 교과서 외</span>.</p></div>
+  </div>
+</section>
+
+<!-- 15 · M10 분할 독성 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">M10 · 두 번째 새 시계</span><span class="eyebrow f3">용량분할 독성</span></div>
+    <h2>농도 누적과 <em>조직 손상 누적</em>은 다른 차원</h2>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 운동과 회복</div><p style="margin:0;">같은 양의 운동도 휴식 없이 세 번 나눠 하면 근육 손상이 훨씬 큼 — <b>분할은 총량의 문제가 아니라 "회복 틈을 얼마나 남기는지"의 문제</b>.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Daptomycin Study A (개, 75 mg/kg/day)</th><th>\(C_{max}\)</th><th>AUC₀₋₂₄</th><th>Day28 CPK</th></tr></thead>
+      <tbody>
+        <tr><td>75 mg/kg q24h</td><td>540</td><td>1840</td><td><span class="em">991</span></td></tr>
+        <tr class="hot"><td>25 mg/kg q8h</td><td>238</td><td>2526</td><td><span class="em">3996</span></td></tr>
+      </tbody>
+    </table></div>
+    <p>같은 일일 총량인데 분할만 달라 CPK <strong>≈4배</strong> — \(C_{max}\)도 AUC도 단독으로 설명 못 함. q24h는 다음 dose 전 ~12시간 농도가 낮게(27 µg/mL 미만) 머물러 <b>회복 시간</b>을 줌, q8h는 회복 틈 없음 <span class="cite">R&amp;T Table 11-7, p.351</span>. Study B(같은 \(C_{max}{=}58\))에서도 분할군 CPK↑.</p>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{C_{max}\ \text{같음}}_{}\ \not\Rightarrow\ \underbrace{\text{같은 독성}}_{\text{분할 패턴이 가름}} \]</div></div>
+    <p class="muted" style="margin:2px 0;">골격근 효과는 "손상 회복에 쓸 수 있는 낮은 농도 구간의 지속 시간"과 관련 <span class="cite">R&amp;T Fig.11-24, p.351</span>. <strong>축적(농도 누적)과 조직손상 누적은 반대 처방을 부를 수 있음</strong> — 항생제 내성 회피는 노출↑, 조직독성 회피는 회복 틈↑. <span class="flag">75 mg/kg는 실험 design dose · 임상은 4–6 mg/kg/day</span></p>
+  </div>
+</section>
+
+<!-- 16 · 혼동쌍 ① -->
+<section class="card top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4</span><span class="eyebrow" style="color:var(--coral-d)">헷갈리는 짝 ①</span></div>
+    <h2>세 자를 <em>섞지 말 것</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">축적(배율) vs 도달(시계)</div><p style="margin:0;">trough 높음=축적(\(\tau/t_{1/2}\)), 도달 여부=시간(\(t_{1/2}\)). <b>섞으면 처방 조정이 거꾸로</b>(phenobarbital).</p></div>
+      <div class="box" style="--ac:var(--f1)"><div class="bh">수준(높이) vs 시계(도달)</div><p style="margin:0;">dose는 높이만 바꾸고 시계는 못 바꿈. "dose 올리면 SS 빨리"는 틀림.</p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">\(C_{ss}\) vs \(C_{av,ss}\) vs \(A_{av,ss}\)</div><p style="margin:0;">infusion plateau(\(R_{in}/CL\), mg/L) vs 간격 평균농도(\(F\!\cdot\!Dose/CL\tau\), mg/L) vs 평균약물량(mg, \(MRT\) 기반). \(V\)로만 통역.</p></div>
+      <div class="box" style="--ac:var(--f5)"><div class="bh">SS=1 vs SS=2</div><p style="margin:0;">과거형 깃발(이력 3~4 반감기) vs 현재진행 깃발(정속 입력 중). 시제 틀리면 없는 history 생성.</p></div>
+    </div>
+    <div class="key"><span class="lbl">+ 분할 / DDI</span>같은 일일 총량 ≠ 같은 독성(분할이 회복 틈을 가름). DDI는 단백결합 단독이 아니라 <b>간 추출률</b> 기준(저추출=대사억제 민감, 고추출=경구 유도 시 \(F\)↓) <span class="cite">R&amp;T p.309–310·350–351</span>.</div>
+  </div>
+</section>
+
+<!-- 17 · 혼동쌍 ② (NEW) -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4</span><span class="eyebrow" style="color:var(--coral-d)">헷갈리는 짝 ②</span></div>
+    <h2>닮았지만 <em>결정자가 다른</em> 쌍</h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">Flip-flop vs 보통 흡수형</div><p style="margin:0;">\(K_a{>}K\)면 꼬리=제거(\(K\)), \(K_a{<}K\)면 꼬리=흡수(\(K_a\)). 꼬리 기울기만으로 제거 반감기 확정 금지 <span class="cite">G&amp;W p.45–46</span>.</p></div>
+      <div class="box" style="--ac:var(--f1)"><div class="bh">치료역(TW) vs 치료지수(TI)</div><p style="margin:0;">TW=농도 <b>공간</b>(\(C_{lower}\)~\(C_{upper}\)), TI=노출 변화 <b>민감도</b>(\(TD_{50}/ED_{50}\)). <strong>넓은 TW ≠ 높은 TI</strong> — wide TW+low TI 환자가 통째로 안 보임 <span class="cite">R&amp;T p.272–278</span>.</p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">MRT vs half-life</div><p style="margin:0;">\(t_{1/2}{=}\ln2/K\)(기울기 기반) vs \(MRT{=}AUMC/AUC\)(면적 무게중심). 1구획만 \(MRT{=}1.44t_{1/2}{=}V/CL\), 다구획은 단순 치환 위험 <span class="cite">R&amp;T p.289·299–304</span>.</p></div>
+      <div class="box" style="--ac:var(--f5)"><div class="bh">도달 vs 축적 vs 평균 vs 진폭</div><p style="margin:0;">네 자가 약 한 방울에서 갈라짐 — 도달(\(t_{1/2}\))·축적(\(\tau/t_{1/2}\))·평균(\(CL\))·진폭(\(\tau/t_{1/2}\)). dose 2배는 수준만↑, \(R_{ac}\)는 불변 <span class="cite">R&amp;T p.325</span>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · 내성 vs 저항성 (NEW) -->
+<section class="card dark top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 쌍7</span><span class="eyebrow">정반대 처방을 부르는 쌍</span></div>
+    <h2>"효과가 떨어진다" — <em>적이 변했나 내가 변했나</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>항목</th><th>Acquired resistance(획득 저항성)</th><th>Tolerance(내성·내약)</th></tr></thead>
+      <tbody>
+        <tr><td>한 줄</td><td><b>"적이 변한 것"</b> — 미생물/세포 population 변화</td><td><b>"내가 변한 것"</b> — 환자 PD 적응</td></tr>
+        <tr><td>시간 구조</td><td>선택 압력·clonal shift</td><td>수용체 둔감화·항상성 feedback</td></tr>
+        <tr class="hot"><td>관리(정반대!)</td><td>노출 target↑·resistance window 회피(AUC/MIC)</td><td>drug holiday·서방형·변화율 제어</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;">같은 표면 증상("효과 감소")인데 두 메커니즘이 <strong>정반대 방향의 처방</strong>을 만듦. 항균제는 resistance selection이, nitrate(혈관확장제)·nicotine·nifedipine은 PD 적응이 핵심일 수 있음. R&amp;T는 nicotine tolerance(Fig.10-17)·nifedipine 변화율 의존(Fig.10-18)을 직접 보여줌 <span class="cite">R&amp;T p.305–308·346–348</span>.</p></div>
+    <div class="key"><span class="lbl">🔑 한 줄</span>효과 감소를 다 tolerance로 뭉치면 항균 내성 환자에게 거꾸로 처방함 — <strong>"적이 변했나, 내가 변했나"</strong>부터 물을 것.</div>
+  </div>
+</section>
+
+<!-- 19 · 자가점검 ① -->
+<section class="card top" id="s19">
+  <div class="wrap">
+    <div class="khead"><span class="sec">점검</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 ①</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q4</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> phenobarbital trough가 높다. "아직 plateau 도달 안 해서"가 맞나?</div>
+      <div class="a"><b>A.</b> 위험한 혼동. trough 높음=<b>축적</b>(\(R_{ac}{\approx}5.8\), \(\tau/t_{1/2}\) 작음), 도달=<b>시간</b>(\(t_{1/2}{=}4\)일). 다른 자 <span class="cite">R&amp;T p.326</span>.</div>
+      <div class="q"><span class="n">Q2.</span> dose를 2배로 올리면 \(R_{ac}\)와 SS 도달 시간은?</div>
+      <div class="a"><b>A.</b> 둘 다 그대로. \(R_{ac}\)는 dose 독립(\(\tau/t_{1/2}\)만), 도달 시간은 \(t_{1/2}\)만 — <b>높이만 2배</b> <span class="cite">G&amp;W Eq.2:78</span>.</div>
+      <div class="q"><span class="n">Q3.</span> atorvastatin PK \(t_{1/2}{=}14\)h. 효과 평가를 2~3일에 해도 되나?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 안 됨 — 콜레스테롤 효과 plateau는 <b>2~4주</b>(LDL turnover 지배). "누구의 반감기인가?" \(t_{\text{PD}}\approx\ln10/k_{out}\) <span class="cite">R&amp;T p.343</span>.</div>
+      <div class="q"><span class="n">Q4.</span> 같은 일일 75 mg/kg daptomycin, q24h vs q8h. 독성 같나?<span class="lv">★★★</span></div>
+      <div class="a"><b>A.</b> 아님 — CPK 991 vs 3996(≈4배). q24h는 낮은 농도 구간이 <b>회복 시간</b>을 줌, q8h는 회복 틈 없음. \(C_{max}\)·AUC 단독으론 설명 불가 <span class="cite">R&amp;T p.351</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 · 자가점검 ② (NEW) -->
+<section class="card top" id="s20">
+  <div class="wrap">
+    <div class="khead"><span class="sec">점검</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 ②</span></div>
+    <h2>스스로 <em>점검</em> — Q5~Q8</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q5.</span> plateau 90% 도달까지 대략 몇 반감기? 목표 높이에 의존하나?</div>
+      <div class="a"><b>A.</b> 약 3.3(실무 3~4 반감기). 목표 높이와 <b>무관</b> — 비율 문제 <span class="cite">R&amp;T Table 10-4, p.291</span>.</div>
+      <div class="q"><span class="n">Q6.</span> \(1.44\,F\,Dose\,t_{1/2}/\tau\)는 농도 식인가 약물량 식인가?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> <b>약물량(mg) 식</b>(=\(A_{av,ss}\)). 농도 아님. 1구획에서만 \(C_{av,ss}{=}A_{av,ss}/V\) <span class="cite">R&amp;T p.324</span>.</div>
+      <div class="q"><span class="n">Q7.</span> 넓은 치료역이면 치료지수도 높은가?<span class="lv">★★★</span></div>
+      <div class="a"><b>A.</b> 아님 — TW는 농도 공간, TI는 노출 민감도. <b>wide TW + low TI</b> 환자가 흔함 <span class="cite">R&amp;T p.272–278</span>.</div>
+      <div class="q"><span class="n">Q8.</span> 효과가 점점 떨어진다 = 무조건 내성(tolerance)인가?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 아님 — 획득 저항성(적이 변함)일 수도. 처방이 <b>정반대</b>(노출↑ vs drug holiday) <span class="cite">R&amp;T p.305–308</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 21 · 요약 -->
+<section class="card dark center" id="s21">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">요약</span><span class="eyebrow">세 개의 자를 한 장으로</span></div>
+    <h2>항정상태를 <em>분해해서 다시 조립</em></h2>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{C_{ss}=\frac{R_{in}}{CL}}_{\text{높이}}\qquad \underbrace{R_{ac}=\frac{1}{1-e^{-K\tau}}}_{\text{배율}}\qquad \underbrace{C_{av,ss}=\frac{F\cdot Dose}{CL\cdot\tau}}_{\text{무게중심}} \]</div></div>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.3em auto; max-width:880px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> <b style="color:#fff;">시계</b>(\(t_{1/2}\)) — 도달 시간은 목표 높이와 무관(3~4 반감기≈90%).</li>
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> <b style="color:#fff;">무게중심</b>(\(CL\)) — plateau 높이는 \(CL\). 농도·약물량 단위 분리.</li>
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> <b style="color:#fff;">출렁임</b>(\(\tau/t_{1/2}\)) — 축적·변동은 dose 독립. 부하=\(R_{ac}\)×유지.</li>
+      <li style="counter-increment:s; position:relative; padding:6px 0 6px 30px; font-size:clamp(16.5px,1.4vw,19.5px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> <b style="color:#fff;">PD 시계는 다를 수 있음</b> — turnover/회복 시계(atorvastatin·EPO·daptomycin).</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:18px auto 0; text-align:left;"><span class="lbl">🧵 한 줄 요약</span><strong>항정상태는 시간·수준·진폭 세 축으로 분해해서 다시 조립하는 작업.</strong> "이건 어느 자의 질문인가?"를 먼저 물으면 phenobarbital도 daptomycin도 풀린다. 다음 — TDM·PopPK·노출-반응이 이 문법 위에.</div>
+    <div class="foot">Gabrielsson &amp; Weiner §2 + R&amp;T Ch.9–11 + 부록 I — 수치·인용 원문 대조 (원본: 07_치료역_항정상태_다중투여_축적_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var tocEl = document.querySelector('.toc');
+  var total = cards.length;
+  var cur = 0;
+
+  function linkFor(id){
+    for(var i=0;i<links.length;i++){ if(links[i].getAttribute('href') === '#'+id) return links[i]; }
+    return null;
+  }
+  function ensureVisible(l){
+    var lr = l.getBoundingClientRect(), tr = tocEl.getBoundingClientRect();
+    if(lr.top < tr.top + 8) tocEl.scrollTop -= (tr.top + 8 - lr.top);
+    else if(lr.bottom > tr.bottom - 8) tocEl.scrollTop += (lr.bottom - (tr.bottom - 8));
+  }
+  function setActive(idx){
+    cur = idx;
+    var id = cards[idx].id;
+    for(var i=0;i<links.length;i++) links[i].classList.remove('active');
+    var l = linkFor(id);
+    if(l){ l.classList.add('active'); ensureVisible(l); }
+    counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    bar.style.width = ((idx+1)/total*100) + '%';
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(cards.indexOf(e.target)); }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  cards.forEach(function(c){ io.observe(c); });
+
+  function go(d){
+    var n = Math.max(0, Math.min(total-1, cur + d));
+    if(n !== cur) cards[n].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  window.addEventListener('keydown', function(e){
+    if(e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); go(1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); go(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); cards[0].scrollIntoView({behavior:'smooth'}); }
+    else if(e.key === 'End'){ e.preventDefault(); cards[total-1].scrollIntoView({behavior:'smooth'}); }
+  });
+
+  var burger = document.querySelector('.burger');
+  if(burger){
+    burger.addEventListener('click', function(){ document.body.classList.toggle('toc-open'); });
+    links.forEach(function(l){ l.addEventListener('click', function(){ document.body.classList.remove('toc-open'); }); });
+  }
+
+  setActive(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!--META
+title: 세션 03 · 경구 PK — F·Ka·Tmax·흡수 · 카드뉴스
+-->
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 03 · 경구 PK</div>
+    <div class="t">F · Ka · Tmax · 흡수</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 마스터 질문</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">임상 오프닝</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>곡선의 정체</div>
+      <a class="toc-link" href="#s4">§3 골격식 (두 지수)</a>
+      <a class="toc-link" href="#s5">§4 Tmax = 속도 균형</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>양 vs 속도</div>
+      <a class="toc-link" href="#s6">§5 F = 도달한 양</a>
+      <a class="toc-link" href="#s7">§5 기전적 F · BE</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>챕터의 심장</div>
+      <a class="toc-link" href="#s8">§6 V·F 못 가림</a>
+      <a class="toc-link" href="#s9">§6 Flip-flop</a>
+      <a class="toc-link" href="#s10">§6 PK2·PK3 사례</a>
+      <a class="toc-link" href="#s11">§6 정직한 보고</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>Ka · 좌표계</div>
+      <a class="toc-link" href="#s12">§7 Ka 자체를 의심</a>
+      <a class="toc-link" href="#s13">§8 BCS·BDDCS</a>
+      <a class="toc-link" href="#s14">§9 Transit·Weibull</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s15">§10 혼동쌍 5종</a>
+      <a class="toc-link" href="#s16">§11 보스 딜레마</a>
+      <a class="toc-link" href="#s17">자가점검 ①</a>
+      <a class="toc-link" href="#s18">자가점검 ② · 치트시트</a>
+      <a class="toc-link" href="#s19">메타프레임 · 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 03 · 경구 PK · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,76px); margin-top:.25em; line-height:1.08;">경구 흡수 =<br>바닥에 <em>구멍 뚫린 양동이</em></h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">입력(흡수)과 몸의 처분이 겹쳐 곡선이 나온다 — F·Ka·Tmax를 읽되, "분리 가능한 것"과 "못 가리는 것"을 가른다</p>
+    <div class="key" style="max-width:880px; margin:32px auto 0; text-align:left;">
+      <span class="lbl">🎯 마스터 질문</span>
+      <strong>"경구 곡선에서 내가 진짜로 분리해 낼 수 있는 건 뭐고, 절대 못 가리는 건 뭐임?"</strong> — 입력 ⊛ 처분의 합성곱이라, 같은 곡선이 여러 조합으로 나옴.
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.3vw,30px); color:#fff; margin-top:28px;">"이 숫자, 분리 가능한 거 맞아?"</p>
+    <div class="foot">Gabrielsson &amp; Weiner Ch.2 + PK2·PK3 · Rowland &amp; Tozer Ch.6·7 + 부록 F — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>두 교과서와 <em>범위 깃발</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">G&amp;W</div><p class="muted">Ch.2 §§2.2.4–2.2.12 + 사례연구 <b>PK2·PK3</b>. 경구 1구획 식·식별성 훈련의 보석.</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">R&amp;T</div><p class="muted">Ch.6(혈관외 동태) + Ch.7(흡수) + 부록 F(흡수속도론).</p></div>
+    </div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 범위 밖 · 정직 깃발</div><p class="muted" style="margin:0;"><b>Transit/Erlang/Weibull 정량식</b>은 이 발췌본에 없음 → <span class="flag">교과서 외</span>(개념만). <b>BDDCS class별 transporter 표</b>는 본문이 아니라 Benet 2011 인용 → <span class="flag">확인 필요 · 본문은 BCS만</span>.</p></div>
+    <p class="muted"><b>대상</b> 비전공·1학년 OK · <b>선행</b> 세션 01의 \(CL\)·\(V\) 두 글자 · <b>쪽수</b>는 원판 교재 기준(애매하면 그림·식 번호).</p>
+  </div>
+</section>
+
+<!-- 3 · 임상 오프닝 -->
+<section class="card dark" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow">임상 오프닝 · 실화 둘</span></div>
+    <h2>같은 약, 경로만 바꿨더니 <em>F 97% vs 46%</em></h2>
+    <p class="lead">아스피린 650 mg을 IV vs 경구로 — 경구는 봉우리가 늦고 낮음(흡수 단계 때문, 직관과 맞음) <span class="cite">R&amp;T Fig.6-3, p.172</span>.</p>
+    <div class="stats">
+      <div class="stat"><span class="lab">근육주사 (i.m.)</span><span class="val">97<span class="u">% F</span></span></div>
+      <span class="arrow">vs</span>
+      <div class="stat"><span class="lab">경구 용액 (같은 500 mg)</span><span class="val" style="color:var(--amber)">46<span class="u">% F</span></span></div>
+    </div>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;">여기서 "경구는 흡수가 느린 거구나"라고 하면 사고가 남 — <strong>속도(\(k_a\), 얼마나 빨리)와 양(\(F\), 얼마나 많이)이 섞이기 시작.</strong> 두 곡선이 말기에 평행하니 둘 다 소실이 율속 — 느린 건 흡수 <b>속도</b>가 아니라 <b>들어온 양</b>이 적은 것 <span class="cite">R&amp;T Table 6-1, pp.183–184</span>.</p></div>
+    <div class="thread"><span class="ico">🎯</span><div>더 위험한 건 — 경구 데이터로 \(V/F\)·\(CL/F\)·말기 기울기를 \(V\)·\(CL\)·\(k_{el}\)처럼 보고하는 한 줄. 오늘은 "그 한 줄을 정직하게 쓰는 법".</div></div>
+  </div>
+</section>
+
+<!-- 4 · §3 골격식 -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3</span><span class="eyebrow f1">골격식 · 곡선의 정체</span></div>
+    <h2>경구 곡선 = <em>두 지수의 뺄셈</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">🪣</span> 구멍 뚫린 양동이</div><p style="margin:0;">양동이(장관)에서 새는 속도=흡수, 옆 큰 통(몸)에서 빠지는 속도=소실(\(k_{el}\)). 우리가 재는 농도는 <b>두 흐름의 차이</b>. "양 대비 빠지는 비율"이 일정한 게 흡수속도상수 \(k_a\) <span class="cite">R&amp;T Fig.6-1, p.171</span>.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{C(t)}_{}=\frac{\overbrace{k_a F D_{po}}^{\text{입력 크기}}}{\underbrace{V(k_a-k_{el})}_{\text{희석·분리}}}\big(\underbrace{e^{-k_{el}t}}_{\text{소실 지수}}-\underbrace{e^{-k_a t}}_{\text{흡수 지수}}\big) \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>기호</th><th>뜻</th><th>무엇이 변하면</th></tr></thead>
+      <tbody>
+        <tr><td>\(F\)</td><td>전신 도달 분율(0~1)</td><td>제형·음식·초회통과</td></tr>
+        <tr><td>\(k_a\)</td><td>흡수부위에서 사라지는 속도</td><td>용출·위배출·장관 손실</td></tr>
+        <tr><td>\(k_{el}{=}CL/V\)</td><td>중심구획 소실 속도</td><td>신·간 기능</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh">위계 + 함정</div><p style="margin:0;"><b>\(CL\)·\(V\)=원인(1차), \(k_{el}\)·\(t_{1/2}\)=결과(2차).</b> 잔차법으로 \(k_a\)·\(k_{el}\) 초기값을 뽑되 "<b>말기 기울기=진짜 소실</b>" 전제 위에 있음 — 이 전제는 flip-flop(§6)에서 깨짐. IV와 달리 경구는 역연장 절편이 \(D/V\)가 <strong>아님</strong> <span class="cite">G&amp;W p.30–31</span> <span class="cite">R&amp;T 부록 F, p.782</span>.</p></div>
+  </div>
+</section>
+
+<!-- 5 · §4 Tmax -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4</span><span class="eyebrow f1">Tmax = 속도 균형</span></div>
+    <h2>"흡수 완료"가 아니라 <em>"속도가 같아지는 순간"</em></h2>
+    <p class="lead">제일 많이 틀리는 게 "\(t_{max}\)=흡수 완료". <b>완전히 틀림</b> — \(t_{max}\) 뒤에도 흡수는 계속됨, 소실이 더 빨라져 농도가 내려갈 뿐. \(t_{max}\)는 \(dC/dt{=}0\)(들어오는 속도=나가는 속도)인 시점 <span class="cite">R&amp;T pp.172–173</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{t_{max}}_{\text{봉우리 시각}}=\frac{\overbrace{\ln(k_a/k_{el})}^{\text{속도비의 로그}}}{\underbrace{k_a-k_{el}}_{\text{속도 차}}} \]</div></div>
+    <p class="muted" style="margin:2px 0;">도출 — 골격식을 미분해 0으로 두면 \(F\)·\(D\)·\(V\) 계수가 약분돼 사라짐 <span class="cite">G&amp;W Eq.2:49–2:52, p.35</span> <span class="cite">R&amp;T Eq.F-6, p.783</span>. \(k_a\gg k_{el}\)이면 \(C_{max}\approx(FD/V)e^{-k_{el}t_{max}}\) <span class="cite">G&amp;W Eq.2:53</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">🔑</span> 왜 \(F\)·\(V\)·용량이 식에 없나</div><p style="margin:0;">\(F\)·용량·\(V\)는 곡선 <b>높이만 scale</b>하고 기울기가 0이 되는 시간 위치는 안 건드림. 그래서 패턴이 갈림 — 용량/\(F\) 변화 → \(C_{max}\)·\(AUC\)만(\(t_{max}\) 그대로), \(CL\) 변화 → 셋 다, \(V\) 변화 → \(C_{max}\)↓·\(t_{max}\)↑(서로 다른 방향) <span class="cite">R&amp;T Fig.6-5·6-10·6-11</span>.</p></div>
+    <p class="muted">숫자: \(k_a{=}1.0\), \(k_{el}{=}0.1\)/h → \(t_{max}{=}\ln 10/0.9\approx 2.56\) h. 용량 100→200 mg여도 2.56 h 그대로, \(C_{max}\)만 2배. <strong>빠른 \(t_{max}\)가 빠른 흡수를 증명하지 않음</strong>(§6 fluticasone이 산증거).</p>
+  </div>
+</section>
+
+<!-- 6 · §5 F extent -->
+<section class="card top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5</span><span class="eyebrow f2">F = 도달한 양(extent)</span></div>
+    <h2>\(k_a\)는 속도계, <em>\(F\)는 적산계</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">🚗</span> 자동차 계기판</div><p style="margin:0;">\(k_a\)=속도계(순간 속도), \(F\)=주행거리 적산계(누적 도달량). 속도를 두 배 밟아도 거리가 같으면 적산계는 그대로 — <strong>\(k_a\)를 키워도 \(F\)가 그대로면 \(AUC\)는 그대로.</strong></p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{F\cdot Dose}_{\text{흡수된 총량}}=\underbrace{CL\cdot AUC}_{\text{제거된 총량}}\ \Rightarrow\ AUC=\frac{F\cdot Dose}{CL},\qquad \underbrace{F}_{\text{절대}}=\frac{AUC_{po}}{AUC_{iv}}\cdot\frac{D_{iv}}{D_{po}} \]</div></div>
+    <p>\(AUC\)는 <b>총 노출량(extent)</b>이지 속도가 아님. \(AUC\)가 \(F\)와 \(CL\)에 동시에 묶여 있어 — <strong>경구만 보면 \(F\) 변화인지 \(CL\) 변화인지 못 가림</strong>(§6에서 폭발) <span class="cite">R&amp;T Eq.6-6, p.174</span>. 절대 \(F\)는 IV 기준선이 있을 때만(전제: clearance 일정) <span class="cite">G&amp;W Eq.2:74, p.42</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 가장 위험한 한 줄</div><p style="margin:0;">"\(AUC\) 변화 = 흡수속도 변화"는 틀림. \(AUC\)는 <b>양</b>, 빨라진 건 \(C_{max}\)·\(t_{max}\)로 봐야 함. 경구 단독에선 \(CL\)이 아니라 <strong>\(CL/F\)</strong>만 잡힘.</p></div>
+  </div>
+</section>
+
+<!-- 7 · §5 기전적 F + BE -->
+<section class="card" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5</span><span class="eyebrow f2">기전적 F · 생물학적 동등성</span></div>
+    <h2>F는 <em>세 관문</em>을 차례로 통과한 결과</h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{F}_{\text{최종}}=\underbrace{F_F}_{\text{장관 흡수·용출}}\cdot\underbrace{F_G}_{\text{장벽 생존}}\cdot\underbrace{F_H}_{\text{간 생존}} \]</div></div>
+    <p>각 단계 50%씩 잃으면 \(F{=}0.5^3{=}0.125\)(12.5%) <span class="cite">R&amp;T Eq.7-1, p.206</span>. 장벽 vs 간 손실 분리 예 — 관찰 \(F{=}0.06\), \(F_H{=}0.20\)이면 \(F_G{=}0.06/0.20{=}0.30\)(장벽서 70% 더 깎임) <span class="cite">R&amp;T pp.206–207</span>.</p>
+    <div class="box" style="--ac:var(--f4)"><div class="bh">BE — 생물학적 동등성</div><p style="margin:0;">시험/대조의 <b>\(AUC\)와 \(C_{max}\) 비의 90% 신뢰구간이 0.80–1.25</b> 안에 들면 BE(보통 24~36명 교차설계) <span class="cite">R&amp;T pp.182–183</span>. <strong>핵심 — \(F_{rel}{=}1.0\)으로 양이 같아도 \(k_a\)가 다르면 \(C_{max}\)·\(t_{max}\)가 달라짐.</strong> extent와 rate는 항상 같이 봐야 함.</p></div>
+    <div class="thread"><span class="ico">🎯</span><div>방금 "경구 단독엔 \(CL/F\)"라 했음 — 왜 나눗셈으로만 잡히나? 그게 이 세션의 심장 §6.</div></div>
+  </div>
+</section>
+
+<!-- 8 · §6 V·F 못 가림 -->
+<section class="card dark top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 ⚡</span><span class="eyebrow">챕터의 심장 · Apex</span></div>
+    <h2>경구 단독으론 V·F를 <em>원리적으로 못 가린다</em></h2>
+    <p class="lead">경구 곡선 = (입력) ⊛ (\(F\)) ⊛ (처분)의 <b>합성곱</b> — 세 개가 포개져 나오니 같은 곡선이 서로 다른 조합으로도 만들어짐. 골격식에서 \(F\)·\(V\)는 <b>언제나 \(F/V\) 한 묶음</b>으로만 등장.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{AUC}_{}=\underbrace{\frac{F\cdot Dose}{CL}}_{\text{도달량/CL}}=\underbrace{\frac{Dose}{CL/F}}_{\text{경구 관찰형}}\quad\Rightarrow\quad \text{잡히는 건 }V/F,\ CL/F \]</div></div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">🌫️</span> 안개 낀 유리창</div><p style="margin:0;">흐릿한 곡선 하나로 "방 크기(\(V\))"와 "창문 개방도(\(F\))"를 동시에 못 맞힘. <strong>\(V/F{=}50\) L는 절대 "\(V{=}50\) L"가 아님</strong> — IV/absolute \(F\) 없이는 \(V/F\)·\(CL/F\)로 보고하는 게 정직 <span class="cite">G&amp;W p.32</span>.</p></div>
+    <div class="key"><span class="lbl">R&amp;T 4-part 결론</span>단일 경구 dose만 있으면 — ① \(AUC\) 계산 가능 ✅ ② \(CL\) <b>불가</b>(\(CL/F\)만) ❌ ③ 말기 반감기 율속 불명 ⚠️ ④ \(V\) <b>불가</b> ❌. 원문: <strong>"단일 경구 관찰만으로 확신을 갖고 정할 수 있는 PK 파라미터는 없다"</strong> <span class="cite">R&amp;T p.186</span>.</div>
+  </div>
+</section>
+
+<!-- 9 · §6 flip-flop -->
+<section class="card top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6</span><span class="eyebrow f3">Flip-flop · 라벨이 뒤집힘</span></div>
+    <h2>말기 기울기가 <em>흡수</em>를 볼 때</h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f3)"><div class="bh">보통 (\(k_a &gt; k_{el}\))</div><p style="margin:0;">흡수가 빠름 → 말기 기울기는 <b>소실</b> 반영. R&amp;T가 "가장 흔한 상황"이라 함.</p></div>
+      <div class="box" style="--ac:var(--coral)"><div class="bh">Flip-flop (\(k_a &lt; k_{el}\))</div><p style="margin:0;">흡수가 더 느림 → 봉우리 뒤에도 흡수부위에 약이 남아 천천히 들어옴 → 말기 기울기가 <b>흡수</b> 반영. \(t_{1/2,obs}{=}\ln 2/k_a\) <span class="cite">R&amp;T Fig.6-6</span>.</p></div>
+    </div>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">⚖️</span> 어떻게 판별 — IV 평행성</div><p style="margin:0;">IV를 같이 줘 경구 말기 기울기와 <b>평행하면 소실</b>, <b>안 평행하면 flip-flop</b>(IV가 진짜 소실). IV 없으면 KA 초기값을 큰 값·작은 값 둘 다 넣어 두 해가 다 그럴듯하면 의심 — <strong>단정 말고 두 해를 다 보고</strong> <span class="cite">G&amp;W Fig.2.17</span>.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>사례</th><th>가르침</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>Fluticasone</td><td>\(t_{max}\) 90분인데 흡수 반감기 <b>3.8 h</b>(정상 15분~1h의 4~15배) — 빠른 \(t_{max}\)≠빠른 흡수 <span class="cite">R&amp;T Fig.6-7</span></td></tr>
+        <tr><td>Theophylline</td><td>흡수 조건 바꿔도 말기 반감기 <b>6.3 h</b> 유지 → 이게 진짜 소실 <span class="cite">R&amp;T Fig.6-8</span></td></tr>
+        <tr><td>Penicillin G / Depot</td><td>잘 안 녹는 염·LAI(Mirena 5년)는 흡수가 율속 → 말기=\(k_a\), flip-flop 끝판왕 <span class="cite">R&amp;T p.170,178</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- 10 · §6 PK2/PK3 -->
+<section class="card top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6-C</span><span class="eyebrow f3">G&amp;W 사례 · 식별불가의 산증거</span></div>
+    <h2>같은 데이터, <em>다른 해</em></h2>
+    <div class="box" style="--ac:var(--coral)"><div class="bh">PK2 — V 환산이 출렁임</div><p style="margin:0;">초기값을 거꾸로 넣었더니 \(V/F\)가 <b>32 L → 6.54 L</b>로 바뀌는 또 다른 해로 수렴 → IV 없이는 \(k_a\)·\(k_{el}\)이 유일하지 않음. 원문은 \(V/F{=}32\), \(F{=}0.82\)로 \(V{=}20\) L라 적었지만 산수론 26 L — <b>원문 자체 산술 충돌</b>(\(F{=}0.625\)=NCA값이면 20 L) <span class="flag">확인 필요</span> <span class="cite">G&amp;W pp.480–482</span>.</p></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">PK3 — "더 좋은 AIC ≠ 기전 증명"</div><p style="margin:0;">0차 모델 AIC 76.2 &lt; 1차 85.2. 그런데 1차 모델은 \(k_a{\approx}k_e\)라 <b>CV 3400%</b>로 폭발(분리 불가). <strong>AIC는 "이 데이터를 더 잘 설명"만 말함</strong> — 기전 확정엔 용량범위·반복투여·IV가 필요 <span class="cite">G&amp;W pp.483–486</span>.</p></div>
+    <div class="key"><span class="lbl">막힘 뚫기</span>0차/1차를 가르려면 AIC 말고 — ① <b>용량을 바꿔</b> superposition(2배→모든 시점 2배) 검사 ② 반복투여 항정 모양 ③ IV로 입력함수 분리 ④ CV(불확실성). <strong>한 데이터셋 적합도 점수 하나로는 절대 못 가름.</strong></div>
+  </div>
+</section>
+
+<!-- 11 · §6 정직 보고 -->
+<section class="card" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6-D</span><span class="eyebrow f3">정직한 NONMEM 보고</span></div>
+    <h2>겉보기를 <em>겉보기로</em> 적기</h2>
+    <p class="lead">경구 단독 인구집단PK에서는 <b>\(F\)를 1로 고정</b>(추정 안 함), 결과는 <b>\(V/F\)·\(CL/F\)</b>로 보고. \(F\)를 추정/고정하고 \(V\)·\(CL\)을 절대값처럼 적으면 사전 가정이 추정값처럼 보이는 위험 <span class="cite">R&amp;T p.186</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>세 함정</th><th>증상</th></tr></thead>
+      <tbody>
+        <tr><td>쌍둥이 억제(Twin Suppression)</td><td>\(k_a\)·\(k_{el}\) 두 해가 ETA로 서로 보상 → OFV 안정돼 <b>보임</b>(안정 ≠ 식별)</td></tr>
+        <tr><td>\(V/F\) 드리프트</td><td>같은 공변량이 \(V/F\)·\(CL/F\)에 비례 → <b>\(F\)가 끌고 가는 변화</b> 의심</td></tr>
+        <tr class="hot"><td>가상 분포용적(Phantom Volume)</td><td>\(V/F\) 변화를 그냥 \(V\) 변화로 보고 — 흡수율 변화가 분포 변화처럼 보임</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 절대 금지</div><p style="margin:0;">"\(V/F{=}50\) L → \(V{=}50\) L" · "말기 기울기 = 소실속도". <strong>좋은 fit(낮은 OFV·작은 RSE)은 진짜 파라미터의 증거가 아님</strong> — 수치적 식별가능성 ≠ 구조적 식별가능성.</p></div>
+  </div>
+</section>
+
+<!-- 12 · §7 Ka 의심 -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7</span><span class="eyebrow f4">Ka 자체를 의심하라</span></div>
+    <h2>맞춰낸 Ka는 <em>"장관에서 사라지는 전체 속도"</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">🚰</span> 출구 두 개짜리 싱크대</div><p style="margin:0;">바닥 구멍이 둘 — 정수기로 가는 관(흡수 \(k_{a,true}\))과 그냥 하수구(손실 \(k_d\)). <b>위에서 본 전체 빠짐 속도 = 두 관 속도의 합</b> → "빨리 빠짐 = 많이 흡수"가 아님.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{k_{a,app}}_{\text{맞춰낸 값}}=\underbrace{k_{a,true}}_{\text{진짜 흡수}}+\underbrace{k_d}_{\text{장관 손실}},\qquad \underbrace{F}_{}=\frac{k_{a,true}}{k_{a,true}+k_d} \]</div></div>
+    <p class="muted" style="margin:2px 0;">G&amp;W 명시 — "맞춰낸 \(K_a\)는 <b>장관에서 약이 사라지는</b> 1차 속도이지 혈장에 나타나는 속도가 아님" <span class="cite">G&amp;W Eq.2:70, pp.40–41</span>. 다중 흡수 부위면 곡선이 다중 peak를 보임(장간순환만은 아님) <span class="cite">G&amp;W p.46</span>.</p>
+    <p><b>진단의 키 — "\(AUC\)가 같이 변했나?"</b> \(AUC\) 안 변함 → rate(발현·속도)만 변함. \(AUC\)도 변함 → extent(양) 변화 동반 <span class="cite">G&amp;W Fig.2.24, pp.40–41</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">포화성 흡수 — Gabapentin</div><p style="margin:0;">능동 흡수 수송체(<b>OATP3·PepT1</b>, PDF 본문 기준)에 의존 → 증량 시 포화로 \(F\)↓. 진단 신호: <strong>고용량서 dose-norm \(AUC\)↓</strong>(단 \(F\)↓·0차 입력과 헷갈려 IV 없이 분리 불가) <span class="cite">R&amp;T p.203</span> <span class="flag">"LAT" 표기는 확인 필요</span>.</p></div>
+  </div>
+</section>
+
+<!-- 13 · §8 BCS -->
+<section class="card top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8</span><span class="eyebrow f4">수식 이전의 좌표계</span></div>
+    <h2>약 만나면 <em>BCS class</em>부터</h2>
+    <p class="lead">두 축 — 용해도(잘 녹나) · 투과도(잘 뚫나). 표 하나로 흡수 율속·식사효과·biowaiver가 미리 정해짐 <span class="cite">R&amp;T Table 7-8, pp.219–220</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Class</th><th>특성</th><th>흡수 율속</th><th>Biowaiver</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td><b>I</b> 고용해·고투과</td><td>빠른 용출·완전 흡수</td><td>위배출</td><td><span class="em">가능</span></td></tr>
+        <tr><td><b>II</b> 저용해·고투과</td><td>용출 제한</td><td>용출(고지방식→\(F\)↑)</td><td>불가</td></tr>
+        <tr><td><b>III</b> 고용해·저투과</td><td>투과 제한</td><td>투과(수송체)</td><td>불가(조건부)</td></tr>
+        <tr><td><b>IV</b> 저용해·저투과</td><td>둘 다 제한</td><td>둘 다</td><td>불가</td></tr>
+      </tbody>
+    </table></div>
+    <p>Class I 예: acetaminophen·caffeine·diazepam·metoprolol·verapamil·midazolam·levodopa <span class="cite">R&amp;T Table 7-9, p.220</span>. R&amp;T 통찰 — "작은 Class I 약은 수송체 영향 거의 없음, 수동확산이 능동수송보다 빨라서" <span class="cite">R&amp;T p.220</span>. <b>BDDCS</b>는 여기에 소실 경로를 더해 수송체 영향까지 점침(단 본문이 아니라 Benet 2011 <span class="flag">확인 필요</span>). gabapentin은 BDDCS Class 3 전형(고용해·저수동투과 → 수송체 의존).</p>
+  </div>
+</section>
+
+<!-- 14 · §9 Transit/Weibull -->
+<section class="card" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9</span><span class="eyebrow f4">1차가 안 맞을 때</span></div>
+    <h2>새 좌표계 — <em>Transit · Weibull</em></h2>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;"><span class="flag">교과서 외</span> 두 주 출처는 transit/Weibull 정량식을 안 다룸. 단 G&amp;W는 "1차로 근사 안 되는 입력이 있다"고 인정(확장의 <b>필요성</b>은 PDF 근거) <span class="cite">G&amp;W p.38</span>.</p></div>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \text{Transit: Input}=FD\frac{(k_{tr}t)^n e^{-k_{tr}t}}{n!}k_{tr},\qquad \text{Weibull: }F(t)=1-\exp\!\big[-(t/T_d)^\beta\big] \]</div></div>
+    <p>Transit — NTR(칸 수)=1이면 1차와 동일, NTR≫1이면 S자 입력+자연스러운 lag(별도 \(t_{lag}\) 불필요). Weibull — \(\beta &lt; 1\) 폭발 방출, \(\beta{=}1\) 1차 등가, \(\beta &gt; 1\) S자(서방형).</p>
+    <div class="key"><span class="lbl">언제 갈아타나</span>1차로 fit 안 되고 <b>lag가 비현실적으로 커지거나 S자 상승</b>이 보이면 transit/Weibull로. §6 논리 그대로 — <strong>새 좌표계로 옮기면 새 겉보기 파라미터(\(k_{tr}\)·NTR·\(T_d\)·\(\beta\))가 또 등장.</strong> lag와 transit을 동시 추정하면 식별성↓(보통 lag=0 고정).</div>
+  </div>
+</section>
+
+<!-- 15 · §10 혼동쌍 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10</span><span class="eyebrow" style="color:var(--coral-d)">라벨이 뒤집히는 순간</span></div>
+    <h2>혼동쌍 <em>5종 세트</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">① ⚡ \(k_a\) vs \(k_{el}\)</div><p style="margin:0;">flip-flop(\(k_a&lt;k_{el}\))이면 말기=\(k_a\). <b>IV 교차 없이 두 메커니즘 못 가름.</b></p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">② \(F\) vs \(k_a\)</div><p style="margin:0;">적산계 vs 속도계. \(k_a\) 키워도 \(F\) 그대로면 \(AUC\) 그대로.</p></div>
+      <div class="box" style="--ac:var(--f4)"><div class="bh">③ ⚡ \(V/F\) vs \(V\)</div><p style="margin:0;">겉보기 vs 진짜. 바꿔 쓰면 흡수율 변화가 <b>분포 변화처럼 보이는 phantom</b>.</p></div>
+      <div class="box" style="--ac:var(--f5)"><div class="bh">④ 1차 vs 0차 입력</div><p style="margin:0;">0차 better fit을 진짜 0차로 과장(PK3). AIC 우월 ≠ 기전 증명.</p></div>
+    </div>
+    <div class="box" style="--ac:var(--f1)"><div class="bh">⑤ 선형 vs 포화성 흡수 — Superposition 검사</div><p style="margin:0;">선형이면 "용량 2배 → 모든 시점 정확히 2배". <strong>고용량서 dose-norm \(AUC\)↓ → 포화성 흡수/\(F\)↓/0차(IV 없이 분리 불가)</strong>, dose-norm \(AUC\)↑ → 포화성 초회통과(alprenolol·verapamil) <span class="cite">G&amp;W p.40</span> <span class="cite">R&amp;T Table 7-5</span>.</p></div>
+  </div>
+</section>
+
+<!-- 16 · §11 보스 딜레마 -->
+<section class="card dark top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§11</span><span class="eyebrow">보스 딜레마 캡스톤</span></div>
+    <h2>제형 변경 후 <em>Cmax↓ · Tmax↑</em></h2>
+    <p class="lead">제형 팀은 "흡수가 느려졌다(\(k_a\)↓)"고 결론. 모델러 입장에선 방어 가능한 해석이 <b>둘</b>:</p>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">(A) \(k_a\) 감소</div><p style="margin:0;">1차→transit으로 \(T_{max}\) 지연 재현. 약점 — IV 없이는 \(F\)·\(k_a\) confounding 못 풂.</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">(B) \(F\) 감소</div><p style="margin:0;">초회통과↑/apparent \(CL\)↑로 \(AUC\)↓. 약점 — 진짜 원인이 \(k_a\)면 곡선 형태 어긋남.</p></div>
+    </div>
+    <div class="key"><span class="lbl">규제 방어 — 어떻게 가르나</span><strong>① "\(AUC\)가 같나 다른가"로 가설 분리</strong> — \(AUC\) 그대로+\(C_{max}\)↓ → (A) 우세, \(AUC\)↓ → (B) 또는 복합. ② IV 교차 요청, 안 되면 <b>두 모델 모두 적합 + 민감도 분석</b>. ③ <b>단일 가설 채택 금지.</b></div>
+    <div class="thread"><span class="ico">💼</span><div>30년차의 한 줄 — "모델이 맞았나?"가 아니라 <b>"무엇이 식별되었나?"</b> · "FIH 단계에서 IV arm이나 absolute \(F\) 확인 가능성을 평가했는가?"</div></div>
+  </div>
+</section>
+
+<!-- 17 · 자가점검 1 -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§13</span><span class="eyebrow" style="color:var(--coral-d)">자가점검</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q4</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> 경구 골격식과 각 항의 뜻?</div>
+      <div class="a"><b>A.</b> \(C(t){=}\frac{k_aFD}{V(k_a-k_{el})}(e^{-k_{el}t}-e^{-k_a t})\). 괄호=(소실 지수 − 흡수 지수) <span class="cite">G&amp;W p.30</span>.</div>
+      <div class="q"><span class="n">Q2.</span> 왜 \(t_{max}\) 식에 \(F\)·\(V\)·dose가 없나?</div>
+      <div class="a"><b>A.</b> \(dC/dt{=}0\) 시점. \(F\)·\(V\)·dose는 높이만 scale, 기울기 0 위치는 안 바꿈 <span class="cite">R&amp;T p.783</span>.</div>
+      <div class="q"><span class="n">Q3.</span> \(F_{rel}{=}1.0\)인 두 경구 제형은 임상적으로 완전히 같나?</div>
+      <div class="a"><b>A.</b> 아님. 양만 같음 — \(k_a\) 다르면 \(C_{max}\)·\(t_{max}\) 다르고 onset·peak 안전성 차이 <span class="cite">R&amp;T pp.182–183</span>.</div>
+      <div class="q"><span class="n">Q4.</span> 경구 단독 fit에서 \(k_a{=}0.05\), \(k_{el}{=}0.5\)/h. 말기 반감기를 1.4 h로 써도 되나?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 안 됨. \(k_a&lt;k_{el}\) → flip-flop이라 관찰 말기가 \(k_a\)를 따를 수 있음(\(t_{1/2,obs}{\approx}13.9\) h). 경구 단독으론 확정 불가 <span class="cite">R&amp;T p.186</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · 자가점검 2 + 치트시트 -->
+<section class="card top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§13</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 치트시트</span></div>
+    <h2>Q5~Q8 + <em>한 페이지 치트시트</em></h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q5.</span> PK3에서 0차 AIC(76.2)가 1차(85.2)보다 낮음. "진짜 0차 흡수"라 결론?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 불가. AIC는 "이 데이터를 더 잘 설명"만 말함 — 기전엔 용량범위·반복투여·IV 필요 <span class="cite">G&amp;W pp.483–486</span>.</div>
+      <div class="q"><span class="n">Q6.</span> \(k_{a,app}{=}1.0\), \(k_d{=}0.4\)/h면 \(k_{a,true}\)와 \(F\)?</div>
+      <div class="a"><b>A.</b> \(k_{a,true}{=}0.6\)/h, \(F{=}0.6/1.0{=}0.6\)(60%). 실데이터선 \(k_d\) 분리 어려움 <span class="cite">G&amp;W p.41</span>.</div>
+      <div class="q"><span class="n">Q7.</span> 100 mg→AUC 50, 300→100, 900→150. 진단은?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> dose-norm AUC=0.50/0.33/0.17로 <b>감소</b> → 생체이용률↓/포화성 입력/0차 중 하나(IV 없이 분리 불가). gabapentin류면 포화성 흡수 <span class="cite">G&amp;W p.40</span>.</div>
+    </div>
+    <div class="grid2" style="margin-top:8px;">
+      <div class="box" style="--ac:var(--coral)"><div class="bh">❌ 절대 쓰면 안 되는 문장</div><ul style="margin:.1em 0;"><li class="x">"\(V/F{=}50\) → \(V{=}50\)"</li><li class="x">"말기 기울기 = 소실속도"</li><li class="x">"\(k_a\)↓ → 흡수 저하"</li><li class="x">"AIC 좋으니 0차 흡수"</li></ul></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">✅ 항상 같이 볼 쌍</div><ul style="margin:.1em 0;"><li class="o">\(AUC\) ↔ \(C_{max}\)/\(t_{max}\)(extent vs rate)</li><li class="o">Dose ↔ dose-norm \(AUC\)(선형성)</li><li class="o">말기 기울기 ↔ flip-flop(IV 있나)</li><li class="o">맞춘 \(k_a\) ↔ \(AUC\) 동반변화</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 · 메타프레임 + 요약 -->
+<section class="card dark center" id="s19">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">§12 · 요약</span><span class="eyebrow">한 바느질로 꿰기</span></div>
+    <h2>경구 단독이 남기는 <em>네 가지</em></h2>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.4em auto; max-width:860px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> <b style="color:#fff;">\(V/F\)</b> — 겉보기 분포용적(진짜 \(V\) 아님).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> <b style="color:#fff;">\(CL/F\)</b> — 겉보기 청소율(oral clearance).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> <b style="color:#fff;">겉보기 \(k_a\)</b> — \(k_{a,app}{=}k_{a,true}{+}k_d\), 진짜 흡수가 아닐 수 있음.</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> <b style="color:#fff;">말기 기울기 모호성</b> — flip-flop이면 \(k_{el}\)로 확정 불가.</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:22px auto 0; text-align:left;"><span class="lbl">🪣 한 줄 요약</span>경구 곡선 = (입력) ⊛ (처분)의 합성곱이라 같은 곡선이 여러 조합으로 나옴 — 그래서 \(V\)·\(F\)는 \(V/F\)로만, \(CL\)은 \(CL/F\)로만 잡히고, 말기 기울기 라벨은 뒤집힐 수 있음. <strong>결론: "이 숫자, 분리 가능한 거 맞아?"를 늘 먼저 물을 것.</strong> 두 좌표계 — BCS/BDDCS(수식 전), Transit/Weibull(1차 깨질 때).</div>
+    <div class="foot">Gabrielsson &amp; Weiner Ch.2 + PK2·PK3 · Rowland &amp; Tozer Ch.6·7 + 부록 F — 수치·인용 원문 대조 (원본: 03_oral_PK_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>

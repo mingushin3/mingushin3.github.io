@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 01 · 1구획 IV PK — CL·V·t½ 위계 · 카드뉴스</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+KR:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)'], ['$','$']],
+    displayMath: [['\\[','\\]'], ['$$','$$']]
+  },
+  chtml: {
+    mtextInheritFont: true,
+    matchFontHeight: false,
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { enableMenu: false, renderActions: { addMenu: [] } },
+  startup: { ready: () => { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#F0EEE6; --paper:#FAF9F5; --paper-2:#F4F1E9;
+  --ink:#211F1B; --ink-2:#56514A; --ink-3:#8A857C; --line:#E4DFD3;
+  --coral:#D97757; --coral-d:#B0501F; --coral-tint:#FBEEE7; --coral-tint-bd:#F1D7C7;
+  --dark:#262019; --dark-2:#2F2820; --cream:#F4EFE6; --cream-2:#D6CFBF;
+  --amber:#EAB45C; --coral-l:#EC9A78; --teal-l:#86C0A9; --tan:#D4A27F;
+  --f1:#CF6A45; --f2:#BB852C; --f3:#3F7A66; --f4:#8A5A86; --f5:#4E6E94;
+  --font-serif:"Newsreader","Noto Serif KR",Georgia,serif;
+  --font-sans:"Pretendard",-apple-system,BlinkMacSystemFont,"Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:20px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  word-break:keep-all; overflow-wrap:break-word;
+  display:grid; grid-template-columns:312px 1fr;
+}
+
+/* ---------- progress bar ---------- */
+.progress{position:fixed; top:0; left:312px; right:0; height:4px; background:transparent; z-index:60;}
+.progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--coral),var(--amber)); transition:width .25s ease;}
+.counter{position:fixed; right:26px; bottom:22px; z-index:60;
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
+  background:rgba(250,249,245,.88); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; backdrop-filter:blur(6px);}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky; top:0; height:100vh; overflow-y:auto; z-index:50;
+  background:#EBE7DD; border-right:1px solid var(--line); padding:30px 20px 60px;}
+.toc::-webkit-scrollbar{width:8px;} .toc::-webkit-scrollbar-thumb{background:#D7D1C4; border-radius:8px;}
+.brand{padding:0 8px 18px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+.brand .k{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral-d);}
+.brand .t{font-family:var(--font-serif); font-size:26px; font-weight:600; line-height:1.14; margin-top:6px; color:var(--ink);}
+.toc-group{margin:15px 0 4px;}
+.toc-gh{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+  color:var(--ink-3); text-transform:uppercase; padding:6px 8px 4px;}
+.dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.dot.f1{background:var(--f1)} .dot.f2{background:var(--f2)} .dot.f3{background:var(--f3)} .dot.f4{background:var(--f4)} .dot.f5{background:var(--f5)}
+.toc-link{display:block; text-decoration:none; color:var(--ink-2); font-size:14px; line-height:1.32;
+  padding:6px 10px 6px 12px; border-radius:8px; border-left:2px solid transparent; transition:all .15s;}
+.toc-link:hover{background:rgba(217,119,87,.10); color:var(--ink);}
+.toc-link.active{background:var(--paper); color:var(--coral-d); font-weight:600; border-left-color:var(--coral);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+/* ---------- deck / cards ---------- */
+.deck{min-width:0;}
+.card{min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:76px 72px; border-bottom:1px solid var(--line); scroll-margin-top:0; position:relative;}
+.card.top{justify-content:flex-start; padding-top:84px;}
+.wrap{width:100%; max-width:1080px; margin:0 auto;}
+.card.dark{background:var(--dark); color:var(--cream); border-bottom-color:#3a3228;}
+.card.center{text-align:center;}
+.card.center .wrap{margin:0 auto;}
+
+.khead{display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.sec{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-3); background:rgba(0,0,0,.045); padding:3px 11px; border-radius:7px;}
+.card.dark .sec{color:var(--amber); background:rgba(255,255,255,.08);}
+.eyebrow{font-size:15.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;}
+.f1{color:var(--f1)} .f2{color:var(--f2)} .f3{color:var(--f3)} .f4{color:var(--f4)} .f5{color:var(--f5)}
+.card.dark .eyebrow{color:var(--amber);}
+
+h2{font-family:var(--font-serif); font-weight:500; font-size:clamp(36px,4.6vw,58px);
+  line-height:1.13; letter-spacing:-.012em; margin:.05em 0 .5em;}
+.card.dark h2{color:#fff;}
+h2 em{font-style:italic; color:var(--coral-d);}
+.card.dark h2 em{color:var(--amber);}
+.lead{font-size:clamp(21px,2vw,26px); line-height:1.55; color:var(--ink); margin:0 0 .7em;}
+.card.dark .lead{color:var(--cream);}
+p{font-size:clamp(18.5px,1.5vw,22px); line-height:1.72; margin:.55em 0;}
+.muted{color:var(--ink-2);} .card.dark .muted{color:var(--cream-2);}
+.gloss{color:var(--ink-3); font-size:.9em;} .card.dark .gloss{color:var(--cream-2);}
+strong{font-weight:700; color:var(--coral-d);} .card.dark strong{color:var(--amber);}
+b{font-weight:700; color:var(--ink);} .card.dark b{color:#fff;}
+.hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.45) 58%); padding:0 1px; color:inherit; font-weight:600;}
+.card.dark .hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.30) 58%);}
+
+ul{margin:.5em 0; padding-left:0; list-style:none;}
+ol{margin:.5em 0; padding-left:1.4em;}
+ol li{padding:5px 0; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6;}
+ul li{position:relative; padding:7px 0 7px 26px; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6; list-style:none;}
+ul li::before{content:""; position:absolute; left:4px; top:.95em; width:7px; height:7px; border-radius:50%;
+  background:var(--coral);}
+.card.dark ul li::before{background:var(--amber);}
+ul li.x::before{content:"✕"; background:none; color:var(--coral-d); font-size:.8em; top:.7em; left:2px; width:auto; height:auto;}
+.card.dark ul li.x::before{color:var(--coral-l);}
+ul li.o::before{content:"✓"; background:none; color:var(--f3); font-weight:700; top:.55em; left:0; width:auto; height:auto;}
+.card.dark ul li.o::before{color:var(--amber);}
+
+/* ---------- citations / flags ---------- */
+.cite{font-family:var(--font-mono); font-size:.64em; font-weight:500; color:var(--ink-3);
+  background:rgba(0,0,0,.045); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle; letter-spacing:.01em;}
+.card.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.10);}
+.box .cite{background:rgba(0,0,0,.05);}
+.box.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.12);}
+.flag{font-family:var(--font-mono); font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--coral-d);
+  background:rgba(217,119,87,.10); border:1px solid var(--coral-tint-bd); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle;}
+.card.dark .flag, .box.dark .flag{color:var(--amber); background:rgba(234,180,92,.12); border-color:rgba(234,180,92,.32);}
+
+/* ---------- boxes / callouts ---------- */
+.box{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ac,var(--coral));
+  border-radius:13px; padding:20px 25px; margin:18px 0;}
+.box .bh{display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.02em;
+  color:var(--ac,var(--coral-d)); margin-bottom:.45em;}
+.box .ico{font-size:1.05em; filter:saturate(1.1);}
+.box p, .box li{font-size:clamp(17px,1.38vw,20px);}
+.box.dark{background:var(--dark-2); border-color:rgba(255,255,255,.12); border-left-color:var(--ac,var(--amber)); color:var(--cream);}
+.box.dark .bh{color:var(--amber);}
+.box.dark strong{color:var(--amber);} .box.dark b{color:#fff;}
+.box.dark ul li::before{background:var(--amber);}
+.box.dark .muted{color:var(--cream-2);}
+
+.key{background:var(--coral-tint); border:1px solid var(--coral-tint-bd); border-left:5px solid var(--coral);
+  border-radius:13px; padding:20px 26px; margin:18px 0; font-size:clamp(18.5px,1.5vw,22px); line-height:1.55;}
+.key .lbl{display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral-d); margin-bottom:.35em;}
+.key strong{color:var(--coral-d);}
+.card.dark .key{background:rgba(234,180,92,.10); border-color:rgba(234,180,92,.3); border-left-color:var(--amber); color:var(--cream);}
+.card.dark .key .lbl{color:var(--amber);} .card.dark .key strong{color:var(--amber);} .card.dark .key b{color:#fff;}
+
+.thread{font-family:var(--font-serif); font-style:italic; font-size:clamp(17.5px,1.5vw,22px);
+  color:var(--ink-2); border-top:1px dashed var(--line); padding-top:16px; margin-top:22px; display:flex; gap:10px;}
+.thread .ico{font-style:normal;}
+.thread b{color:var(--coral-d);}
+.card.dark .thread{color:var(--cream-2); border-top-color:rgba(255,255,255,.18);}
+.card.dark .thread b{color:var(--amber);}
+
+/* ---------- stats ---------- */
+.stats{display:flex; flex-wrap:wrap; gap:14px 30px; align-items:flex-end; margin:14px 0 6px;}
+.stat{display:flex; flex-direction:column; gap:2px;}
+.stat .lab{font-size:14.5px; color:var(--ink-2); letter-spacing:.01em;}
+.card.dark .stat .lab{color:var(--cream-2);}
+.stat .val{font-family:var(--font-serif); font-weight:500; font-size:clamp(34px,4.4vw,58px); line-height:1; color:var(--ink);}
+.stat .val .u{font-size:.42em; color:var(--ink-2); font-family:var(--font-sans); font-weight:500;}
+.card.dark .stat .val{color:#fff;} .card.dark .stat .val .u{color:var(--cream-2);}
+.arrow{font-family:var(--font-serif); font-size:clamp(30px,3.4vw,46px); color:var(--coral); align-self:center; padding-bottom:.18em;}
+.card.dark .arrow{color:var(--coral-l);}
+.bignum{font-family:var(--font-serif); font-weight:500; font-size:clamp(64px,10vw,140px); line-height:.9; color:var(--coral-d);}
+.card.dark .bignum{color:var(--amber);}
+
+/* ---------- tables ---------- */
+.tbl{width:100%; overflow-x:auto; margin:16px 0;}
+table{width:100%; border-collapse:collapse; font-size:clamp(15px,1.3vw,18.5px);}
+th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+thead th{font-weight:700; color:var(--coral-d); border-bottom:2px solid var(--coral); font-size:.94em; letter-spacing:.01em;}
+tbody tr:last-child td{border-bottom:none;}
+td .em{color:var(--coral-d); font-weight:600;}
+tr.hot td{background:rgba(234,180,92,.13);}
+.card.dark th,.card.dark td{border-bottom-color:rgba(255,255,255,.13); color:var(--cream);}
+.card.dark thead th{color:var(--amber); border-bottom-color:var(--amber);}
+.card.dark td .em{color:var(--amber);}
+.card.dark tr.hot td{background:rgba(234,180,92,.16);}
+.box table{font-size:clamp(14.5px,1.2vw,17px);}
+.fcell{display:inline-flex; align-items:center; gap:7px; font-weight:600;}
+
+/* ---------- math ---------- */
+.mathblock{font-size:clamp(21px,2.15vw,30px); margin:1.2em 0; overflow-x:auto; overflow-y:hidden; padding:8px 2px;}
+.mathblock.tight{margin:.6em 0;}
+.mathblock.tall{margin:1.6em 0; padding:14px 2px;}
+.mathblock.wide{font-size:clamp(15.5px,1.7vw,22px);}
+mjx-container{color:inherit !important;}
+mjx-container[display="true"]{margin:0 !important;}
+.card.dark .mathblock, .box.dark .mathblock, .key .mathblock{color:inherit;}
+.formula-hero{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 22px; margin:18px 0;}
+.card.dark .formula-hero{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12);}
+.box.dark .formula-hero, .key .formula-hero{background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.14);}
+
+/* ---------- params chips ---------- */
+.params{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;}
+.chip{font-family:var(--font-mono); font-size:15px; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:9px; padding:8px 13px; color:var(--ink);}
+.chip b{color:var(--coral-d);}
+.card.dark .chip{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--cream);}
+.card.dark .chip b{color:var(--amber);}
+
+/* ---------- grids ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin:16px 0;}
+@media (max-width:1180px){ .grid3{grid-template-columns:1fr;} }
+
+/* ---------- code ---------- */
+.codeblock{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:18px 22px; margin:12px 0; font-size:clamp(12.5px,1.05vw,15px); line-height:1.7;
+  overflow-x:auto; border:1px solid rgba(255,255,255,.10);}
+.codeblock .ttl{display:block; color:var(--amber); font-weight:600; margin-bottom:8px; font-size:.95em;}
+.codeblock pre{margin:0; white-space:pre;}
+.codeblock .cm{color:var(--coral-l);}
+.codeblock .kw{color:var(--amber);}
+
+/* ---------- flow ---------- */
+.flow{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:22px 26px; margin:16px 0; font-size:clamp(14px,1.25vw,17px); line-height:1.85;}
+.flow .step{color:var(--amber); font-weight:600;}
+.flow .ar{color:var(--coral-l);}
+
+/* ---------- Q&A ---------- */
+.qa{margin:10px 0;}
+.qa .q{font-weight:700; color:var(--ink); font-size:clamp(16.5px,1.35vw,19px); margin-top:15px; display:flex; gap:10px;}
+.qa .q .n{font-family:var(--font-mono); color:var(--coral-d); flex:0 0 auto;}
+.qa .q .lv{font-family:var(--font-mono); font-size:.7em; color:var(--ink-3); margin-left:auto; white-space:nowrap;}
+.qa .a{color:var(--ink-2); font-size:clamp(15.5px,1.3vw,18px); padding-left:30px; margin-top:3px; line-height:1.58;}
+.qa .a b{color:var(--coral-d);}
+.card.dark .qa .q{color:#fff;} .card.dark .qa .q .n{color:var(--amber);} .card.dark .qa .a{color:var(--cream-2);} .card.dark .qa .a b{color:var(--amber);}
+
+.scroll-hint{position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2); opacity:.8;
+  display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scroll-hint .dn{font-size:18px; animation:bob 1.8s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)}}
+
+.foot{margin-top:26px; font-size:14.5px; color:var(--ink-3); letter-spacing:.01em;}
+.card.dark .foot{color:var(--cream-2);}
+.divider{height:1px; background:var(--line); margin:20px 0;}
+.card.dark .divider{background:rgba(255,255,255,.14);}
+
+/* ---------- burger / mobile ---------- */
+.burger{display:none; position:fixed; top:14px; left:14px; z-index:70; width:46px; height:46px;
+  border-radius:11px; background:var(--dark); color:var(--cream); border:none; cursor:pointer; font-size:20px;}
+@media (max-width:980px){
+  body{grid-template-columns:1fr; font-size:18px;}
+  .toc{position:fixed; left:0; top:0; width:300px; transform:translateX(-100%); transition:transform .25s; box-shadow:0 0 40px rgba(0,0,0,.25);}
+  body.toc-open .toc{transform:translateX(0);}
+  .burger{display:block;}
+  .progress{left:0;}
+  .card{padding:78px 26px 64px;}
+  .card.top{padding-top:78px;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="burger" aria-label="목차 열기">☰</button>
+<div class="progress"><i id="bar"></i></div>
+<div class="counter" id="counter">01 / 19</div>
+
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 01 · 1구획 IV PK</div>
+    <div class="t">CL·V·t½ 의 위계</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 관통 척추</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>함정과 뼈대</div>
+      <a class="toc-link" href="#s3">§1 같은 기울기, 두 배 CL</a>
+      <a class="toc-link" href="#s4">§2 욕조 모델</a>
+      <a class="toc-link" href="#s5">§3 위계 규칙</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>다섯 장 카드</div>
+      <a class="toc-link" href="#s6">C1 청소율 CL</a>
+      <a class="toc-link" href="#s7">C1 V가 사라지는 두 식</a>
+      <a class="toc-link" href="#s8">C2 분포용적 V</a>
+      <a class="toc-link" href="#s9">C2 겉보기 · Quinacrine</a>
+      <a class="toc-link" href="#s10">C3 소실속도 K</a>
+      <a class="toc-link" href="#s11">C3 분율 제거</a>
+      <a class="toc-link" href="#s12">C4 반감기 t½ (절정)</a>
+      <a class="toc-link" href="#s13">C4 말단=소실?</a>
+      <a class="toc-link" href="#s14">C5 평균체류 MRT</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>혼동·실무</div>
+      <a class="toc-link" href="#s15">§5 혼동쌍 3</a>
+      <a class="toc-link" href="#s16">§6 BLQ</a>
+      <a class="toc-link" href="#s17">§6 알로메트리</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s18">자가점검</a>
+      <a class="toc-link" href="#s19">연결 · 한 줄 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 01 · 1구획 IV PK · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,78px); margin-top:.25em; line-height:1.08;">같은 기울기 뒤에 숨은<br><em>두 배 다른 청소율</em></h2>
+    <p class="lead" style="max-width:820px; margin:.6em auto 0;">정맥 볼루스 1구획 — 청소율·분포용적·반감기·평균체류시간을 욕조 하나로</p>
+    <div class="key" style="max-width:880px; margin:32px auto 0; text-align:left;">
+      <span class="lbl">관통 척추</span>
+      약물 처리는 <strong>\(CL\)(청소율)과 \(V\)(분포용적) 두 개가 "원인"</strong>으로 정함. \(K\)(기울기)와 \(t_{1/2}\)(반감기)는 그 둘이 만든 <b>"결과"</b>일 뿐. 그래서 <strong>"기울기 같음" = "\(CL/V\) 비율 같음" ≠ "\(CL\) 같음".</strong>
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.3vw,30px); color:#fff; margin-top:28px;">"수위 떨어지는 속도만 보고 배수구 크기를 알 수 없다"</p>
+    <div class="foot">Gabrielsson &amp; Weiner Ch.2 §2.2 + Case Study PK1 · Rowland &amp; Tozer Ch.3 — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>한 줄 약속과 <em>두 교과서</em></h2>
+    <p class="lead">이거 끝나면 <strong>"반로그 기울기만 보고 약 처리 능력을 단정하는 실수"</strong>를 절대 안 하게 됨.</p>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">G&amp;W</div><p class="muted">Gabrielsson &amp; Weiner, <i>PK/PD Data Analysis</i> 5판. 원천 = <b>Ch.2 §2.2 One-Compartment</b> + 책 뒤 <b>Case Study PK1</b>.</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">R&amp;T</div><p class="muted">Rowland &amp; Tozer, <i>Clinical PK/PD</i> 5판. 원천 = <b>Ch.3 "Kinetics Following an IV Bolus Dose"</b>.</p></div>
+    </div>
+    <div class="params">
+      <span class="chip"><b>IV bolus</b> 정맥에 한 방 — 흡수 단계 없어 분포·제거만 순수하게 봄</span>
+      <span class="chip"><b>반로그 도표</b> 농도축을 log로 → 지수감소가 직선이 됨</span>
+    </div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 페이지 주의</div><p class="muted" style="margin:0;">쪽수는 원판 교재 기준. PDF는 발췌본이라 그림(Fig.)·식(Eq.)·내용으로도 같이 짚음. NONMEM 실무(공변량·BLQ·알로메트릭)는 본문 범위 밖이라 <span class="flag">교과서 외</span>/<span class="flag">확인 필요</span>로 표시.</p></div>
+  </div>
+</section>
+
+<!-- 3 · §1 함정 -->
+<section class="card dark top" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§1</span><span class="eyebrow">함정 · 세션의 출발</span></div>
+    <h2>같은 기울기, <em>두 배 다른 청소율</em></h2>
+    <p class="lead">Compound A 10 mg을 IV bolus로 4명에게. S1과 S4는 반로그 말단 기울기 \(K\approx0.01\)/min, 반감기도 거의 같음 — "둘 다 처리 능력 비슷"? <b>이게 함정.</b></p>
+    <div class="tbl"><table>
+      <thead><tr><th>Subject</th><th>\(K\) (min⁻¹)</th><th>\(V\) (L)</th><th>\(CL\) (L/min)</th><th>\(AUC\) (µg·min/L)</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>1</td><td>0.01</td><td>10</td><td><span class="em">0.1</span></td><td><span class="em">98,000</span></td></tr>
+        <tr><td>2</td><td>0.02</td><td>9.8</td><td>0.2</td><td>49,000</td></tr>
+        <tr><td>3</td><td>0.02</td><td>10</td><td>0.2</td><td>51,000</td></tr>
+        <tr class="hot"><td>4</td><td>0.01</td><td><span class="em">20</span></td><td><span class="em">0.2</span></td><td>51,000</td></tr>
+      </tbody>
+    </table></div>
+    <p>\(K\)·\(t_{1/2}\)는 S1≈S4인데 <strong>\(CL\)은 두 배</strong>(0.1 vs 0.2). 그 결과가 \(AUC\)에 박힘 — 같은 10 mg인데 <b>S1은 98,000, S4는 51,000</b>. 정상 약효 기준(S2·S3≈51,000) 대비 S1은 <strong>약 2배 노출</strong> <span class="cite">G&amp;W Case Study PK1, Table 1.2/1.3, p.473–474</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{K}_{\text{기울기}}=\frac{\overbrace{CL}^{\text{정화능(배수구)}}}{\underbrace{V}_{\text{분포공간(욕조)}}} \]</div></div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 살 빠지는 속도 비유</div><p style="margin:0;">두 사람이 매주 체중의 같은 %씩 빠져도 "하루 소비 열량"은 다를 수 있음 — 몸집(=\(V\))과 소비량(=\(CL\))이 같이 두 배면 <b>비율(속도)만 우연히 같음</b>. S4는 큰 욕조에 큰 배수구.</p></div>
+  </div>
+</section>
+
+<!-- 4 · §2 욕조 -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow" style="color:var(--coral-d)">마스터 비유</span></div>
+    <h2>이 세션의 <em>욕조 한 개</em></h2>
+    <div class="flow">
+      ┌─────────────┐<br>
+      │ &nbsp;물 = 약물 (총량 D) │<br>
+      │ &nbsp;<span class="step">욕조 V</span> = 분포공간 &nbsp;│<br>
+      │ &nbsp;농도 = C &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      └─────┬───────┘<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│ 배수구 = <span class="step">CL</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ar">▼</span> 단위시간당 빠지는 "깨끗한 물"의 부피<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;제거됨 (소변·대사)
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>욕조 좌표</th><th>PK 파라미터</th><th>단위</th><th>직관</th></tr></thead>
+      <tbody>
+        <tr><td>배수구 크기</td><td>\(CL\) 청소율</td><td>부피/시간</td><td>단위시간당 완전히 깨끗해지는 혈액 부피</td></tr>
+        <tr><td>욕조 크기</td><td>\(V\) 분포용적</td><td>부피</td><td>같은 약량이 얼마나 묽어지나</td></tr>
+        <tr><td>수위 속도</td><td>\(K=CL/V\)</td><td>1/시간</td><td>남은 양 중 매시간 빠지는 비율</td></tr>
+        <tr><td>절반 시간</td><td>\(t_{1/2}=\ln 2/K\)</td><td>시간</td><td>반감기</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><span class="lbl">🛁 절대 잊지 말 것</span><strong>수위가 떨어지는 속도(\(K\))만 보고 배수구 크기(\(CL\))를 알 수 없음.</strong> 욕조 A(10 L·0.1) vs 욕조 B(20 L·0.2): 둘 다 \(K=0.01\)인데 B의 배수구는 A의 두 배 — 바로 S1 vs S4.</div>
+  </div>
+</section>
+
+<!-- 5 · §3 위계 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3</span><span class="eyebrow" style="color:var(--coral-d)">위계 규칙</span></div>
+    <h2>원인(일차)과 결과(이차)를 <em>영구히 분리</em></h2>
+    <p class="lead">교재가 직접 못 박음 — "반감기·소실속도상수는 청소율·분포용적에 의존하지, 그 반대가 아님" <span class="cite">R&amp;T p.53·Eq.3-16</span> <span class="cite">G&amp;W p.17</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>파라미터</th><th>위계</th><th>무엇이 정함</th><th>임상에서 결정</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>\(CL\) 청소율</td><td><b>일차(원인)</b></td><td>혈류·추출·대사·배설</td><td>\(AUC\)·\(C_{ss}\)·<b>유지용량</b></td></tr>
+        <tr class="hot"><td>\(V\) 분포용적</td><td><b>일차(원인)</b></td><td>조직 결합·체수분</td><td>\(C^0\)·<b>부하용량</b></td></tr>
+        <tr><td>\(K\) 소실속도상수</td><td>이차(결과)</td><td>\(CL/V\) 비율</td><td>반로그 기울기</td></tr>
+        <tr><td>\(t_{1/2}\) 반감기</td><td>이차(결과)</td><td>\(0.693V/CL\)</td><td>항정 도달 시간·채혈 창</td></tr>
+        <tr><td>\(MRT\) 평균체류</td><td>이차(결과)</td><td>\(AUMC/AUC\)</td><td>평균 체류 시간</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 요리 비유 + 부종 사례</div><p style="margin:0;">불 세기·물 양(=\(CL\)·\(V\), 원인) → 끓는 시간(=\(t_{1/2}\), 결과). 부종으로 \(V\)가 10→20 L 되면 \(CL\)이 그대로(0.1)여도 \(t_{1/2}\)가 68→139분, <b>약 2배</b>. <strong>신장이 멀쩡한데(=\(CL\) 그대로) 반감기가 2배 — 분자 \(V\)가 커졌기 때문.</strong> "반감기 늘었으니 신기능 저하"는 오진.</p></div>
+  </div>
+</section>
+
+<!-- 6 · C1 청소율 정의 -->
+<section class="card" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C1</span><span class="eyebrow f2">청소율 \(CL\) — 가장 중요</span></div>
+    <h2>\(CL\)은 속도가 아니라 <em>유량(flow)</em>이다</h2>
+    <p class="lead">노출량과 유지용량을 정하는 단 하나의 일차 파라미터. 단위가 mg/min(질량)이 아니라 <b>L/min(부피)</b>임 <span class="cite">G&amp;W p.16</span> <span class="cite">R&amp;T p.56</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\text{제거속도}}_{\text{mg/min}}=\underbrace{CL}_{\text{정화부피/시간}}\cdot\underbrace{C}_{\text{현재농도}},\qquad \underbrace{CL}_{}=\underbrace{Q}_{\text{장기 혈류}}\cdot\underbrace{E}_{\text{추출분율}} \]</div></div>
+    <div class="params">
+      <span class="chip"><b>\(Q\)</b> 장기로 약을 실어 나르는 혈류량</span>
+      <span class="chip"><b>\(E\)</b> 한 번 통과 시 제거 분율 (0~1)</span>
+      <span class="cite">R&amp;T Eq.3-4·3-5, p.56</span>
+    </div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 배수구 크기</div><p style="margin:0;">"얼마나 많은 혈액이 장기를 지나고(\(Q\)), 그중 얼마를 빼내나(\(E\))." \(Q{=}1\) L/min·\(E{=}0.5\)면 \(CL{=}0.5\). 아무리 효율적이어도(\(E{=}1\)) <strong>\(CL\)은 혈류 \(Q\)를 못 넘음</strong> — 배달이 운반량보다 많을 순 없음.</p></div>
+    <div class="thread"><span class="ico">🎯</span><div>농도가 높을수록 빨리 사라지고, 그 비례상수가 \(CL\). 다음 카드 — 노출·항정 식에서 \(V\)가 사라지는 걸 직접 봄.</div></div>
+  </div>
+</section>
+
+<!-- 7 · C1 V가 사라지는 두 식 -->
+<section class="card dark top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C1</span><span class="eyebrow">왜 \(CL\)이 일차인가</span></div>
+    <h2>노출·항정에선 <em>V가 사라진다</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{CL}_{\text{정화능}}=\frac{\overbrace{Dose}^{\text{투여량}}}{\underbrace{AUC_0^\infty}_{\text{총노출}}},\qquad \frac{dC}{dt}=\frac{R_{in}}{V}-\frac{CL}{V}C\ \xrightarrow{\,dC/dt=0\,}\ \underbrace{C_{ss}}_{\text{항정농도}}=\frac{\overbrace{R_{in}}^{\text{주입속도}}}{\underbrace{CL}_{}} \]</div></div>
+    <p>준 양을 총 노출로 나누면 청소율 — <b>여기에 \(V\)가 없음.</b> 일정속도 주입에서 들어오는 양=나가는 양이면(\(dC/dt{=}0\)) \(C_{ss}{=}R_{in}/CL\), <strong>또 \(V\)가 사라짐</strong>. G&amp;W 원문: "Clearance is the sole parameter that determines the maintenance dose" <span class="cite">G&amp;W Eq.2:12·2:22, p.19·23</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Subject</th><th>\(K\)</th><th>\(CL\)</th><th>\(R_{in}{=}10\) µg/min → \(C_{ss}{=}R_{in}/CL\)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>0.01</td><td>0.1</td><td>\(10/0.1=\) <span class="em">100 µg/L</span></td></tr>
+        <tr class="hot"><td>4</td><td>0.01</td><td>0.2</td><td>\(10/0.2=\) <span class="em">50 µg/L</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><span class="lbl">C1 핵심</span>① 노출(\(AUC\))·유지용량 → 무조건 \(CL\). ② \(K\) 같음 ≠ \(CL\) 같음. <strong>같은 기울기인데 항정 농도는 정확히 두 배</strong> — \(K\)로 건너뛰면 유지용량 권고가 두 배 어긋남.</div>
+  </div>
+</section>
+
+<!-- 8 · C2 분포용적 정의 -->
+<section class="card top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C2</span><span class="eyebrow f2">분포용적 \(V\)</span></div>
+    <h2>곡선의 출발점과 <em>부하용량</em>을 쥔다</h2>
+    <p class="lead">결정적으로 \(V\)는 <b>실제 해부학적 부피가 아니라</b>, "체내 총량을 혈장 농도 하나로 환산할 때 필요한 겉보기 공간"임 <span class="cite">G&amp;W p.14·20</span> <span class="cite">R&amp;T p.63</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{V}_{\text{환산공간}}=\frac{\overbrace{A_b}^{\text{체내 총량}}}{\underbrace{C}_{\text{측정농도}}},\qquad \underbrace{V}_{\text{초기 희석}}=\frac{D_{iv}}{C^0}=\frac{CL}{K}=\underbrace{1.44}_{1/\ln 2}\,CL\cdot t_{1/2} \]</div></div>
+    <p><b>외삽(extrapolation)</b><span class="gloss">(말단 직선을 시간 0으로 연장해 절편 \(C^0\)을 읽음)</span> — IV bolus 직후엔 약이 다 안 섞여 진짜 0시점을 못 재서 거꾸로 늘여 추정 <span class="cite">G&amp;W Eq.2:13, p.20</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{LD}_{\text{부하용량}}=\underbrace{V}_{}\cdot\underbrace{C_{target}}_{\text{목표농도}},\qquad \underbrace{MD}_{\text{유지용량/시간}}=\underbrace{CL}_{}\cdot\underbrace{C_{ss,target}}_{} \]</div></div>
+    <div class="key"><span class="lbl">한 줄</span><strong>부하용량은 \(V\) 함수, 유지용량은 \(CL\) 함수.</strong> 이 한 줄이면 임상 용량 결정의 80%가 정리됨 <span class="cite">G&amp;W p.472</span>.</div>
+  </div>
+</section>
+
+<!-- 9 · C2 겉보기 Quinacrine -->
+<section class="card dark top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C2</span><span class="eyebrow">"겉보기"가 핵심</span></div>
+    <h2>분포용적 <em>40,000 L</em>의 정체</h2>
+    <p class="lead"><b>Quinacrine</b>(항말라리아제, 조직 결합 극단적으로 강함)의 \(V\approx40{,}000\) L. 70 kg 사람에 그런 부피는 없음(체수분 ~42 L). <strong>그게 포인트 — \(V\)는 진짜 부피가 아님</strong> <span class="cite">G&amp;W Eq.2:16, p.20</span>.</p>
+    <ul>
+      <li>약물 총량은 그대로(분자 \(A_b\)),</li>
+      <li>측정 농도 \(C\)가 아주 낮음 — 약 대부분이 조직에 묶여 혈장엔 거의 안 나옴,</li>
+      <li>\(V=A_b/C\)에서 분모 \(C\)가 작아지니 \(V\)가 거대해 보임.</li>
+    </ul>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 양동이 + 활성탄 (G&amp;W Fig.2.3)</div><p style="margin:0;">진짜 부피 10 L로 같은 두 양동이에 약 100 단위씩. 오른쪽엔 활성탄(약을 빨아들이는 숯) → 물에서 잰 농도 왼쪽 10, 오른쪽 1. 100÷농도 = 겉보기 부피 왼쪽 10 L, <strong>오른쪽 100 L</strong>. 진짜 부피는 같은데! <span class="cite">G&amp;W p.15</span> <span class="cite">R&amp;T p.63–64</span></p></div>
+    <p class="muted">📌 \(V\) 경계 — 하한은 혈장 부피(고분자량 약 ~3 L), 상한은 quinacrine 4만 L. 알부민 강결합 약(warfarin)은 ~0.1 L/kg <span class="cite">G&amp;W Table 2.1, p.20–21</span>. S4만 \(V{=}20\) L라 절편 \(C^0\)이 낮음(같은 10 mg인데 농도 절반). 단 \(V\) 두 배여도 \(AUC\)는 두 배 아님(\(CL\)이 정함).</p>
+  </div>
+</section>
+
+<!-- 10 · C3 K ODE -->
+<section class="card top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C3</span><span class="eyebrow f2">소실속도상수 \(K\)</span></div>
+    <h2>반로그 기울기는 원인이 아니라 <em>결과</em></h2>
+    <p class="lead">반로그에서 가장 눈에 띄는 게 기울기라 사람들이 "원인"으로 착각함. \(K\)는 능력(\(CL\))이 아니라 <b>능력÷공간 비율</b>임 <span class="cite">R&amp;T Eq.3-7, p.56</span>.</p>
+    <p>ODE<span class="gloss">("약 줄어드는 속도가 지금 남은 양에 비례"를 적은 식)</span>를 풀어 반로그 직선까지 한 호흡에:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dC}{dt}}_{\text{변화율}}=-\underbrace{K}_{}C=-\frac{CL}{V}C\ \Rightarrow\ \underbrace{C(t)}_{}=\underbrace{C^0}_{}e^{-Kt}\ \Rightarrow\ \underbrace{\ln C}_{}=\ln C^0-\underbrace{K}_{\text{기울기}}\,t \]</div></div>
+    <p>로그를 씌우니 곡선이 <strong>직선</strong>이 되고, 그 직선의 기울기가 \(-K\) — §1 반로그 도표가 직선인 이유 <span class="cite">G&amp;W Eq.2:1·2:4, p.16–17</span> <span class="cite">R&amp;T Eq.3-9~3-11, p.57–58</span>.</p>
+    <div class="thread"><span class="ico">🎯</span><div>\(K{=}CL/V\)는 <b>표면 표지</b>일 뿐 일차 파라미터가 아님. 다음 — "분율 제거"의 직관과 S1 vs S4 적용.</div></div>
+  </div>
+</section>
+
+<!-- 11 · C3 분율 제거 -->
+<section class="card" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C3</span><span class="eyebrow f2">분율 제거 · S1 vs S4</span></div>
+    <h2>매시간 같은 양이 아니라 <em>같은 비율</em></h2>
+    <p class="lead">지수감소가 헷갈리는 건 "매시간 똑같은 양 퍼낸다"는 착각 때문. <b>남은 양의 같은 비율</b>을 계속 퍼냄 <span class="cite">R&amp;T Table 3-1, p.57</span>.</p>
+    <div class="stats">
+      <div class="stat"><span class="lab">시작</span><span class="val">100<span class="u">mg</span></span></div>
+      <span class="arrow">→</span>
+      <div class="stat"><span class="lab">1h (−10%)</span><span class="val">90</span></div>
+      <span class="arrow">→</span>
+      <div class="stat"><span class="lab">2h (−9)</span><span class="val">81</span></div>
+      <span class="arrow">→</span>
+      <div class="stat"><span class="lab">3h (−8.1)</span><span class="val">72.9</span></div>
+    </div>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{\frac{A}{Dose}}_{\text{남은 분율}}=e^{-Kt}=\left(\tfrac12\right)^{n},\qquad n=t/t_{1/2} \]</div></div>
+    <p>반감기 1번이면 1/2, 2번이면 1/4, 4번이면 6.25% 남음(10% 남는 데 3.32 반감기) <span class="cite">R&amp;T p.59</span>. \(K{=}0.01\)이 같다는 건 \(CL/V\) 비율(S1: 0.1/10, S4: 0.2/20)이 같다는 뜻 — <strong>같은 비율을 만드는 \((CL,V)\) 조합은 무한히 많음.</strong></p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">💼</span> 모수화 (교과서 외)</div><p style="margin:0;">NONMEM에서 \(K\)를 직접 추정하면(TRANS1) 공변량이 \(CL\) 변화인지 \(V\) 변화인지 못 가림. <b>TRANS2(\(CL\)·\(V\) 분리)</b>가 위계 보존 안전장치. G&amp;W도 "clearance model이 condition number가 낮아 선호" <span class="flag">교과서 외 · G&amp;W p.474</span>.</p></div>
+  </div>
+</section>
+
+<!-- 12 · C4 t½ 절정 -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C4</span><span class="eyebrow f2">반감기 \(t_{1/2}\) · 절정</span></div>
+    <h2>가장 자주 <em>오해받는</em> 파라미터</h2>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 가장 위험한 실수</div><p style="margin:0;">"반감기 늘었다 → 신기능 저하 → 감량." <strong>진실: \(t_{1/2}=0.693\,V/CL\) — \(V\)가 늘어도 길어짐.</strong> 부종 환자에서 반감기가 늘었다고 신장 감량을 권하면 실제론 분포공간만 커진 것일 수 있음.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{t_{1/2}}_{\text{반감기}}=\frac{\overbrace{\ln 2}^{\text{절반 조건}}}{\underbrace{K}_{}}=\frac{0.693\cdot V}{CL} \]</div></div>
+    <p>\(\ln 2{=}0.693\)은 "절반" 조건 \(0.5=e^{-Kt_{1/2}}\)에서 자동으로 나오는 상수(외울 필요 없음). <b>같은 \(CL\), 다른 \(t_{1/2}\)</b>의 깔끔한 증거 <span class="cite">R&amp;T p.58</span>:</p>
+    <div class="grid2" style="align-items:start;">
+      <div class="tbl"><table>
+        <thead><tr><th>마커</th><th>\(CL\)</th><th>\(V\)</th><th>\(t_{1/2}\)</th></tr></thead>
+        <tbody>
+          <tr><td>Creatinine</td><td>4.5</td><td>42</td><td><span class="em">6.5 h</span></td></tr>
+          <tr><td>Inulin</td><td>4.5</td><td>16</td><td><span class="em">2.5 h</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">항정 도달 시간</div><p style="margin:0;">1·2·3·4 반감기 = 50·75·87.5·94%. <b>"3~4 반감기면 항정 약 90%."</b> \(C_{ss}{=}R_{in}/CL\)엔 \(V\)가 없지만, 도달 "시간"은 \(t_{1/2}\) 통해 \(V\)에 비례 <span class="cite">G&amp;W p.22·28</span>.</p></div>
+    </div>
+    <p class="muted">\(CL\) 똑같이 4.5인데 \(V\)(42 vs 16) 때문에 반감기 약 2.6배 — <strong>"긴 반감기 ≠ 낮은 청소율".</strong></p>
+  </div>
+</section>
+
+<!-- 13 · C4 말단=소실? -->
+<section class="card dark top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C4</span><span class="eyebrow">말단 직선 = 소실 단계?</span></div>
+    <h2>자동 성립이 <em>아니다</em></h2>
+    <p class="lead">"반로그 말단 직선 = 소실 단계"는 자동이 아님. 판정 기준은 <strong>"분포 단계 \(AUC\)가 전체의 몇 %냐"</strong> 하나임.</p>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--f3)"><div class="bh">Midazolam — 비교적 안전</div><p style="margin:.2em 0;">5분에 최고 180 µg/L, 혈장 내 \(0.18{\times}3.4{=}0.61\) mg → <b>나머지 92%가 5분 만에 조직으로</b>. 2시간까지 누적 \(AUC\)가 전체의 <b>48%</b>(분포 단계서 절반 미만 사라짐) → 일부 목적 1구획 OK. \(CL{\approx}26\) L/hr, \(t_{1/2}{=}3.8\) h <span class="cite">R&amp;T Fig.3-4·3-5, p.61–64</span>.</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">Gentamicin — 위험</div><p style="margin:.2em 0;">원문: <b>"95% 이상이 분포 평형 전에 소변으로 배설"</b>. 말단 단계는 ≈36시간 가서야 도달 <span class="cite">R&amp;T Fig.3-7, p.66</span>. 말단 직선은 깊은 조직에서 천천히 나오는 5% 미만을 볼 뿐, <strong>소실 능력의 대표가 아님.</strong></p></div>
+    </div>
+    <div class="formula-hero"><div class="mathblock">\[ \underbrace{t_{\alpha}}_{\text{빠른 조직 평형}}\ \ll\ \underbrace{t_{\beta\text{-deep}}}_{\text{깊은 조직 평형}}\approx 36\ \text{hr} \]</div></div>
+    <p class="muted">📌 흔히 적는 "gentamicin 초기 ≈30분 꺾임"은 이 PDF엔 theophylline 문제(p.76)로 나옴 — <span class="flag">확인 필요</span>. 확실한 건 말단 도달 ≈36시간 + 95% 평형 전 배설.</p>
+  </div>
+</section>
+
+<!-- 14 · C5 MRT -->
+<section class="card top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · C5</span><span class="eyebrow f2">평균체류시간 \(MRT\)</span></div>
+    <h2>1구획 IV의 <em>수학적 서명</em></h2>
+    <p class="lead">약 분자가 몸에 머무는 시간의 (시간가중) 평균 = "출석부의 무게중심". 모델 없이(NCA) \(V_{ss}\)를 뽑는 무기 <span class="cite">G&amp;W Eq.2:19, p.22</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ AUC_0^\infty=\int_0^\infty C\,dt,\quad AUMC_0^\infty=\int_0^\infty t\,C\,dt\ \Rightarrow\ \underbrace{MRT}_{}=\frac{\overbrace{AUMC}^{\text{시간가중}}}{\underbrace{AUC}_{\text{총면적}}}=\frac{1}{K}=\frac{t_{1/2}}{\ln 2}\approx 1.443\,t_{1/2} \]</div></div>
+    <div class="grid2" style="align-items:start;">
+      <div class="tbl"><table>
+        <thead><tr><th>Subj</th><th>\(t_{1/2}\)</th><th>\(MRT\)</th><th>비</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>68</td><td>98</td><td>1.44</td></tr>
+          <tr><td>2</td><td>34</td><td>48</td><td>1.41</td></tr>
+          <tr><td>4</td><td>71</td><td>100</td><td>1.41</td></tr>
+        </tbody>
+      </table></div>
+      <div class="box" style="--ac:var(--f4)"><div class="bh">서명이 깨지면?</div><p style="margin:0;">이론값은 정확히 \(1/\ln 2\approx1.4427\)(표의 산포는 분 단위 반올림 탓). \(MRT/t_{1/2}\)가 1.443에서 멀어지면 <b>다구획·혈관외(flip-flop)·말단 외삽 품질</b>을 의심 <span class="cite">R&amp;T Eq.3-25, p.60</span>.</p></div>
+    </div>
+    <div class="key"><span class="lbl">실무 가치</span><strong>\(V_{ss}=CL\cdot MRT\)</strong> — 구획 모델 없이 항정 분포용적을 뽑는 NCA의 무기. 단 \(1.443\,t_{1/2}\)를 "정의"로 외우면 안 됨(1구획 IV에서만 성립, 정의는 \(AUMC/AUC\)).</div>
+  </div>
+</section>
+
+<!-- 15 · §5 혼동쌍 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5</span><span class="eyebrow" style="color:var(--coral-d)">자주 헷갈리는 세 쌍</span></div>
+    <h2>표면은 비슷, <em>위계는 다름</em></h2>
+    <div class="grid3">
+      <div class="box" style="--ac:var(--f1)"><div class="bh">\(CL\) vs \(K\)</div><p style="margin:0;">유량(일차) vs 속도(이차). 배수구 크기 vs 수위 속도. <b>의미는 배수구(\(CL\))에 붙지 그 비율(\(K\))에 안 붙음.</b></p></div>
+      <div class="box" style="--ac:var(--f4)"><div class="bh">\(V\) vs \(V_{ss}\)</div><p style="margin:0;">bolus 외삽 용적 vs 항정 분포 용적(\(CL\cdot MRT\)). 다구획에선 중심구획 \(V_c\)와 구분 필요.</p></div>
+      <div class="box" style="--ac:var(--f5)"><div class="bh">\(t_{1/2}\) vs \(MRT\)</div><p style="margin:0;">반감의 한 시점(중위 느낌) vs 체류시간 평균(무게중심). 1구획 IV에서만 \(MRT{=}1.443\,t_{1/2}\).</p></div>
+    </div>
+    <div class="key"><span class="lbl">공통 패턴</span>세 쌍 모두 <strong>표면 비슷·위계 다름.</strong> 혼동하면 — \(K\)로 유지용량·공변량 위치가 망가지고, \(V\)를 해부 부피로 읽으면 부하용량이 무너짐 <span class="cite">G&amp;W p.20–21</span> <span class="cite">R&amp;T p.63–64</span>.</div>
+  </div>
+</section>
+
+<!-- 16 · §6 BLQ -->
+<section class="card dark top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6</span><span class="eyebrow">실무 게이트 · BLQ</span></div>
+    <h2>말단을 어떻게 다루나가 <em>전부를 정한다</em></h2>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;"><span class="flag">교과서 외</span> 이 §6은 두 PDF 본문 범위 밖 실무 보강. 1구획 단계에서 미리 잡아두면 후속이 안정됨.</p></div>
+    <p class="lead"><b>BLQ</b>(정량 한계 미만) 구간은 농도 낮은 <b>말단</b>에 모이고, 그 자리가 바로 \(K\)를 결정하는 자리라 사슬 전체를 흔듦:</p>
+    <div class="flow">BLQ 처리 규칙 <span class="ar">→</span> 말단 회귀 <span class="ar">→</span> <span class="step">K</span> <span class="ar">→</span> t½ <span class="ar">→</span> AUC 외삽 <span class="ar">→</span> CL=Dose/AUC <span class="ar">→</span> 유지용량</div>
+    <p>말단 BLQ를 0으로 치환 후 단순 회귀하면 ① \(K\) 과대(회귀선 가팔라짐) ② 외삽 \(AUC{=}C_{last}/K\) 과소 → \(CL\) 과대 → 유지용량 어긋남.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">Beal 방법 — M3가 표준</div><p style="margin:0;">M1(결측, BLQ&lt;10%) · <b>M3(누적확률 \(\Phi(LLOQ\mid\hat C,\sigma)\)를 우도에 추가 — 표준, 10–60%)</b> · M5(LLOQ/2) · M7(0 치환, 비권장). 핵심 — <strong>"BLQ는 0이 아니라 'LLOQ보다 작다는 사실(censoring)'만 안다"</strong>를 우도에 반영 <span class="flag">교과서 외 · Beal 2001</span>. NCA에선 % AUC 외삽 &gt;20%면 신뢰 약함.</p></div>
+  </div>
+</section>
+
+<!-- 17 · §6 알로메트리 -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6</span><span class="eyebrow f3">실무 게이트 · 알로메트릭</span></div>
+    <h2>체중 표준화 — <em>0.75 vs 1.0</em></h2>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;"><span class="flag">교과서 외 · Anderson &amp; Holford 2008</span> 환자 체중이 50~100 kg로 흩어지면 \(CL\)·\(V\) 원값 비교가 무의미 — 체격을 먼저 표준화하고 남는 잔차가 진짜 공변량 신호.</p></div>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{CL_i}_{}=CL_{std}\cdot\underbrace{\Big(\tfrac{BW_i}{70}\Big)^{0.75}}_{\text{size}}\cdot\underbrace{F_{mat}(PMA_i)}_{\text{성숙도}},\qquad \underbrace{F_{mat}}_{}=\frac{PMA^{Hill}}{TM_{50}^{Hill}+PMA^{Hill}}\in[0,1] \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>파라미터</th><th>표준 지수</th><th>직관</th></tr></thead>
+      <tbody>
+        <tr><td>\(CL\), \(Q\)</td><td><span class="em">0.75</span></td><td>대사·열손실 = 표면적·활동의 절충</td></tr>
+        <tr><td>\(V\), \(V_{ss}\)</td><td><span class="em">1.0</span></td><td>체수분·조직 부피는 체중에 선형</td></tr>
+        <tr><td>\(t_{1/2}\)(예측)</td><td>0.25</td><td>\(V^{1.0}/CL^{0.75}=BW^{0.25}\)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">💡</span> 왜 출생일이 아니라 PMA?</div><p style="margin:0;">체격(size)과 효소·신기능 성숙(maturation)은 시간 척도가 다름 — 체중은 단조 증가, 효소는 늦게 익는 S자. 조산아·만삭아를 <b>수태 후 주수(PMA)</b>로 정렬하면 같은 S자 위에 놓임(GFR \(TM_{50}\approx47.7\)주). 1주차 흔한 실수 — 체중을 선형(1.0)으로 넣어 큰 환자 \(CL\) 과대.</p></div>
+  </div>
+</section>
+
+<!-- 18 · §7 자가점검 -->
+<section class="card top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 입으로 답하기</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q6</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> \(t_{1/2}\)를 \(V\)·\(CL\)로 쓰고, 왜 "이차(결과)"인가?</div>
+      <div class="a"><b>A.</b> \(t_{1/2}{=}0.693V/CL\). 하나만으론 \(CL\downarrow\)인지 \(V\uparrow\)인지 못 가림 → 다른 두 변수가 만든 표지값이라 이차 <span class="cite">R&amp;T Eq.3-16, p.58</span>.</div>
+      <div class="q"><span class="n">Q2.</span> S1·S4에 같은 \(R_{in}{=}10\) µg/min이면 \(C_{ss}\)?</div>
+      <div class="a"><b>A.</b> \(C_{ss}{=}R_{in}/CL\). S1=100, S4=50 µg/L. <b>두 배 차이</b> — §1 함정의 결정적 숫자 <span class="cite">G&amp;W Eq.2:22, p.23</span>.</div>
+      <div class="q"><span class="n">Q3.</span> \(t_{1/2}\)가 늘었음. \(CL\downarrow\)인지 \(V\uparrow\)인지 분리?</div>
+      <div class="a"><b>A.</b> \(AUC\)·\(C^0\) 함께 봄. \(CL\downarrow\)면 \(AUC{=}Dose/CL\uparrow\), \(V\uparrow\)면 \(C^0{=}D/V\downarrow\). 둘 다 변하면 \(t_{1/2}\) 하나론 불가 <span class="cite">R&amp;T p.58–60</span>.</div>
+      <div class="q"><span class="n">Q4.</span> Midazolam: \(AUC{=}287\), \(t_{1/2}{=}3.8\)h → \(CL\)? \(V\)? 5분 혈장 밖 분율?</div>
+      <div class="a"><b>A.</b> \(CL{=}7500/287{\approx}26\) L/h, \(V{=}1.44{\times}26{\times}3.8{\approx}142\) L, 혈장 밖 \({\approx}\)<b>92%</b> <span class="cite">R&amp;T p.61–64</span>.</div>
+      <div class="q"><span class="n">Q5.</span> IV bolus 자료에서 \(MRT/t_{1/2}{=}1.85\). 무엇을 의심?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> 1구획 단일지수 가정 위배 — <b>다구획</b> 또는 <b>말단 외삽 품질</b> <span class="cite">R&amp;T p.60–66</span>.</div>
+      <div class="q"><span class="n">Q6.</span> 이상성(biphasic) 곡선, 1구획 vs 2구획 판정?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> "어느 모델이 항상 옳나"가 아니라 <b>분포 단계 \(AUC\) 비율·임상 결정 시점</b>으로. midazolam(48%)→일부 1구획 OK, gentamicin(95% 평형 전)→말단 신뢰 위험 <span class="cite">R&amp;T Fig.3-5·3-7, p.61–66</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 · §8 연결 + 요약 -->
+<section class="card dark center" id="s19">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">§8 · 요약</span><span class="eyebrow">한 장으로 꿰기</span></div>
+    <h2>네 식으로 압축한 <em>위계</em></h2>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{CL}_{\text{노출 결정}}=\frac{Dose}{AUC},\quad \underbrace{V}_{\text{초기농도}}=\frac{D}{C^0},\quad \underbrace{K}_{\text{기울기}}=\frac{CL}{V},\quad \underbrace{t_{1/2}}_{\text{시간척도}}=\frac{0.693\,V}{CL} \]</div></div>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.4em auto; max-width:860px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> 노출·유지용량 질문 → <b style="color:#fff;">\(CL\)</b> (\(AUC{=}Dose/CL\), \(C_{ss}{=}R_{in}/CL\), \(V\) 사라짐).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> 초기농도·부하용량 질문 → <b style="color:#fff;">\(V\)</b> (겉보기 공간, 진짜 부피 아님).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> \(K\)·\(t_{1/2}\)는 결과 — "긴 반감기 ≠ 낮은 \(CL\)"(creatinine/inulin), 말단 직선 ≠ 자동 소실(gentamicin).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> 다음 — 02 분포·05 2구획(말단 판정), 03 경구(flip-flop), 04 청소율(\(CL_R{=}f_e\,CL\)), 06 NCA, 07 항정·다중투여.</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:22px auto 0; text-align:left;"><span class="lbl">🧵 한 줄 요약</span><strong>\(CL\)·\(V\)를 먼저 보고 \(K\)·\(t_{1/2}\)를 그 결과로 읽음.</strong> 반로그 기울기가 같다는 건 \(CL/V\) 비율이 같다는 뜻일 뿐 — S1 vs S4가 끝까지 가르쳐준 한 줄.</div>
+    <div class="foot">Gabrielsson &amp; Weiner Ch.2 §2.2 + Case Study PK1 · Rowland &amp; Tozer Ch.3 — 수치·인용 원문 대조 (원본: 01_1cmt_IV_kinetics_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var tocEl = document.querySelector('.toc');
+  var total = cards.length;
+  var cur = 0;
+
+  function linkFor(id){
+    for(var i=0;i<links.length;i++){ if(links[i].getAttribute('href') === '#'+id) return links[i]; }
+    return null;
+  }
+  function ensureVisible(l){
+    var lr = l.getBoundingClientRect(), tr = tocEl.getBoundingClientRect();
+    if(lr.top < tr.top + 8) tocEl.scrollTop -= (tr.top + 8 - lr.top);
+    else if(lr.bottom > tr.bottom - 8) tocEl.scrollTop += (lr.bottom - (tr.bottom - 8));
+  }
+  function setActive(idx){
+    cur = idx;
+    var id = cards[idx].id;
+    for(var i=0;i<links.length;i++) links[i].classList.remove('active');
+    var l = linkFor(id);
+    if(l){ l.classList.add('active'); ensureVisible(l); }
+    counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    bar.style.width = ((idx+1)/total*100) + '%';
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(cards.indexOf(e.target)); }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  cards.forEach(function(c){ io.observe(c); });
+
+  function go(d){
+    var n = Math.max(0, Math.min(total-1, cur + d));
+    if(n !== cur) cards[n].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  window.addEventListener('keydown', function(e){
+    if(e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); go(1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); go(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); cards[0].scrollIntoView({behavior:'smooth'}); }
+    else if(e.key === 'End'){ e.preventDefault(); cards[total-1].scrollIntoView({behavior:'smooth'}); }
+  });
+
+  var burger = document.querySelector('.burger');
+  if(burger){
+    burger.addEventListener('click', function(){ document.body.classList.toggle('toc-open'); });
+    links.forEach(function(l){ l.addEventListener('click', function(){ document.body.classList.remove('toc-open'); }); });
+  }
+
+  setActive(0);
+})();
+</script>
+</body>
+</html>

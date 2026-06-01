@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세션 15 · 모델 구축의 기술·진단 — 6명의 형사가 fit을 검문한다 · 카드뉴스</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Serif+KR:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)'], ['$','$']],
+    displayMath: [['\\[','\\]'], ['$$','$$']]
+  },
+  chtml: {
+    mtextInheritFont: true,
+    matchFontHeight: false,
+    displayAlign: 'center',
+    displayIndent: '0'
+  },
+  options: { enableMenu: false, renderActions: { addMenu: [] } },
+  startup: { ready: () => { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#F0EEE6; --paper:#FAF9F5; --paper-2:#F4F1E9;
+  --ink:#211F1B; --ink-2:#56514A; --ink-3:#8A857C; --line:#E4DFD3;
+  --coral:#D97757; --coral-d:#B0501F; --coral-tint:#FBEEE7; --coral-tint-bd:#F1D7C7;
+  --dark:#262019; --dark-2:#2F2820; --cream:#F4EFE6; --cream-2:#D6CFBF;
+  --amber:#EAB45C; --coral-l:#EC9A78; --teal-l:#86C0A9; --tan:#D4A27F;
+  --f1:#CF6A45; --f2:#BB852C; --f3:#3F7A66; --f4:#8A5A86; --f5:#4E6E94;
+  --font-serif:"Newsreader","Noto Serif KR",Georgia,serif;
+  --font-sans:"Pretendard",-apple-system,BlinkMacSystemFont,"Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:20px; line-height:1.72;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  word-break:keep-all; overflow-wrap:break-word;
+  display:grid; grid-template-columns:312px 1fr;
+}
+
+/* ---------- progress bar ---------- */
+.progress{position:fixed; top:0; left:312px; right:0; height:4px; background:transparent; z-index:60;}
+.progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--coral),var(--amber)); transition:width .25s ease;}
+.counter{position:fixed; right:26px; bottom:22px; z-index:60;
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.06em; color:var(--ink-2);
+  background:rgba(250,249,245,.88); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; backdrop-filter:blur(6px);}
+
+/* ---------- TOC ---------- */
+.toc{position:sticky; top:0; height:100vh; overflow-y:auto; z-index:50;
+  background:#EBE7DD; border-right:1px solid var(--line); padding:30px 20px 60px;}
+.toc::-webkit-scrollbar{width:8px;} .toc::-webkit-scrollbar-thumb{background:#D7D1C4; border-radius:8px;}
+.brand{padding:0 8px 18px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+.brand .k{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral-d);}
+.brand .t{font-family:var(--font-serif); font-size:26px; font-weight:600; line-height:1.14; margin-top:6px; color:var(--ink);}
+.toc-group{margin:15px 0 4px;}
+.toc-gh{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+  color:var(--ink-3); text-transform:uppercase; padding:6px 8px 4px;}
+.dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.dot.f1{background:var(--f1)} .dot.f2{background:var(--f2)} .dot.f3{background:var(--f3)} .dot.f4{background:var(--f4)} .dot.f5{background:var(--f5)}
+.toc-link{display:block; text-decoration:none; color:var(--ink-2); font-size:14px; line-height:1.32;
+  padding:6px 10px 6px 12px; border-radius:8px; border-left:2px solid transparent; transition:all .15s;}
+.toc-link:hover{background:rgba(217,119,87,.10); color:var(--ink);}
+.toc-link.active{background:var(--paper); color:var(--coral-d); font-weight:600; border-left-color:var(--coral);
+  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+
+/* ---------- deck / cards ---------- */
+.deck{min-width:0;}
+.card{min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:76px 72px; border-bottom:1px solid var(--line); scroll-margin-top:0; position:relative;}
+.card.top{justify-content:flex-start; padding-top:84px;}
+.wrap{width:100%; max-width:1080px; margin:0 auto;}
+.card.dark{background:var(--dark); color:var(--cream); border-bottom-color:#3a3228;}
+.card.center{text-align:center;}
+.card.center .wrap{margin:0 auto;}
+
+.khead{display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+.sec{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-3); background:rgba(0,0,0,.045); padding:3px 11px; border-radius:7px;}
+.card.dark .sec{color:var(--amber); background:rgba(255,255,255,.08);}
+.eyebrow{font-size:15.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;}
+.f1{color:var(--f1)} .f2{color:var(--f2)} .f3{color:var(--f3)} .f4{color:var(--f4)} .f5{color:var(--f5)}
+.card.dark .eyebrow{color:var(--amber);}
+
+h2{font-family:var(--font-serif); font-weight:500; font-size:clamp(36px,4.6vw,58px);
+  line-height:1.13; letter-spacing:-.012em; margin:.05em 0 .5em;}
+.card.dark h2{color:#fff;}
+h2 em{font-style:italic; color:var(--coral-d);}
+.card.dark h2 em{color:var(--amber);}
+.lead{font-size:clamp(21px,2vw,26px); line-height:1.55; color:var(--ink); margin:0 0 .7em;}
+.card.dark .lead{color:var(--cream);}
+p{font-size:clamp(18.5px,1.5vw,22px); line-height:1.72; margin:.55em 0;}
+.muted{color:var(--ink-2);} .card.dark .muted{color:var(--cream-2);}
+.gloss{color:var(--ink-3); font-size:.9em;} .card.dark .gloss{color:var(--cream-2);}
+strong{font-weight:700; color:var(--coral-d);} .card.dark strong{color:var(--amber);}
+b{font-weight:700; color:var(--ink);} .card.dark b{color:#fff;}
+.hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.45) 58%); padding:0 1px; color:inherit; font-weight:600;}
+.card.dark .hl{background:linear-gradient(transparent 58%, rgba(234,180,92,.30) 58%);}
+
+ul{margin:.5em 0; padding-left:0; list-style:none;}
+ol{margin:.5em 0; padding-left:1.4em;}
+ol li{padding:5px 0; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6;}
+ul li{position:relative; padding:7px 0 7px 26px; font-size:clamp(17.5px,1.45vw,21px); line-height:1.6; list-style:none;}
+ul li::before{content:""; position:absolute; left:4px; top:.95em; width:7px; height:7px; border-radius:50%;
+  background:var(--coral);}
+.card.dark ul li::before{background:var(--amber);}
+ul li.x::before{content:"✕"; background:none; color:var(--coral-d); font-size:.8em; top:.7em; left:2px; width:auto; height:auto;}
+.card.dark ul li.x::before{color:var(--coral-l);}
+ul li.o::before{content:"✓"; background:none; color:var(--f3); font-weight:700; top:.55em; left:0; width:auto; height:auto;}
+.card.dark ul li.o::before{color:var(--amber);}
+
+/* ---------- citations / flags ---------- */
+.cite{font-family:var(--font-mono); font-size:.64em; font-weight:500; color:var(--ink-3);
+  background:rgba(0,0,0,.045); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle; letter-spacing:.01em;}
+.card.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.10);}
+.box .cite{background:rgba(0,0,0,.05);}
+.box.dark .cite{color:var(--cream-2); background:rgba(255,255,255,.12);}
+.flag{font-family:var(--font-mono); font-size:.62em; font-weight:600; letter-spacing:.02em; color:var(--coral-d);
+  background:rgba(217,119,87,.10); border:1px solid var(--coral-tint-bd); padding:2px 8px; border-radius:6px; white-space:nowrap; vertical-align:middle;}
+.card.dark .flag, .box.dark .flag{color:var(--amber); background:rgba(234,180,92,.12); border-color:rgba(234,180,92,.32);}
+
+/* ---------- boxes / callouts ---------- */
+.box{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ac,var(--coral));
+  border-radius:13px; padding:20px 25px; margin:18px 0;}
+.box .bh{display:flex; align-items:center; gap:9px; font-weight:700; font-size:1.02em;
+  color:var(--ac,var(--coral-d)); margin-bottom:.45em;}
+.box .ico{font-size:1.05em; filter:saturate(1.1);}
+.box p, .box li{font-size:clamp(17px,1.38vw,20px);}
+.box.dark{background:var(--dark-2); border-color:rgba(255,255,255,.12); border-left-color:var(--ac,var(--amber)); color:var(--cream);}
+.box.dark .bh{color:var(--amber);}
+.box.dark strong{color:var(--amber);} .box.dark b{color:#fff;}
+.box.dark ul li::before{background:var(--amber);}
+.box.dark .muted{color:var(--cream-2);}
+
+.key{background:var(--coral-tint); border:1px solid var(--coral-tint-bd); border-left:5px solid var(--coral);
+  border-radius:13px; padding:20px 26px; margin:18px 0; font-size:clamp(18.5px,1.5vw,22px); line-height:1.55;}
+.key .lbl{display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral-d); margin-bottom:.35em;}
+.key strong{color:var(--coral-d);}
+.card.dark .key{background:rgba(234,180,92,.10); border-color:rgba(234,180,92,.3); border-left-color:var(--amber); color:var(--cream);}
+.card.dark .key .lbl{color:var(--amber);} .card.dark .key strong{color:var(--amber);} .card.dark .key b{color:#fff;}
+
+.thread{font-family:var(--font-serif); font-style:italic; font-size:clamp(17.5px,1.5vw,22px);
+  color:var(--ink-2); border-top:1px dashed var(--line); padding-top:16px; margin-top:22px; display:flex; gap:10px;}
+.thread .ico{font-style:normal;}
+.thread b{color:var(--coral-d);}
+.card.dark .thread{color:var(--cream-2); border-top-color:rgba(255,255,255,.18);}
+.card.dark .thread b{color:var(--amber);}
+
+/* ---------- stats ---------- */
+.stats{display:flex; flex-wrap:wrap; gap:14px 30px; align-items:flex-end; margin:14px 0 6px;}
+.stat{display:flex; flex-direction:column; gap:2px;}
+.stat .lab{font-size:14.5px; color:var(--ink-2); letter-spacing:.01em;}
+.card.dark .stat .lab{color:var(--cream-2);}
+.stat .val{font-family:var(--font-serif); font-weight:500; font-size:clamp(34px,4.4vw,58px); line-height:1; color:var(--ink);}
+.stat .val .u{font-size:.42em; color:var(--ink-2); font-family:var(--font-sans); font-weight:500;}
+.card.dark .stat .val{color:#fff;} .card.dark .stat .val .u{color:var(--cream-2);}
+.arrow{font-family:var(--font-serif); font-size:clamp(30px,3.4vw,46px); color:var(--coral); align-self:center; padding-bottom:.18em;}
+.card.dark .arrow{color:var(--coral-l);}
+.bignum{font-family:var(--font-serif); font-weight:500; font-size:clamp(64px,10vw,140px); line-height:.9; color:var(--coral-d);}
+.card.dark .bignum{color:var(--amber);}
+
+/* ---------- tables ---------- */
+.tbl{width:100%; overflow-x:auto; margin:16px 0;}
+table{width:100%; border-collapse:collapse; font-size:clamp(15px,1.3vw,18.5px);}
+th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+thead th{font-weight:700; color:var(--coral-d); border-bottom:2px solid var(--coral); font-size:.94em; letter-spacing:.01em;}
+tbody tr:last-child td{border-bottom:none;}
+td .em{color:var(--coral-d); font-weight:600;}
+tr.hot td{background:rgba(234,180,92,.13);}
+.card.dark th,.card.dark td{border-bottom-color:rgba(255,255,255,.13); color:var(--cream);}
+.card.dark thead th{color:var(--amber); border-bottom-color:var(--amber);}
+.card.dark td .em{color:var(--amber);}
+.card.dark tr.hot td{background:rgba(234,180,92,.16);}
+.box table{font-size:clamp(14.5px,1.2vw,17px);}
+.fcell{display:inline-flex; align-items:center; gap:7px; font-weight:600;}
+
+/* ---------- math ---------- */
+.mathblock{font-size:clamp(21px,2.15vw,30px); margin:1.2em 0; overflow-x:auto; overflow-y:hidden; padding:8px 2px;}
+.mathblock.tight{margin:.6em 0;}
+.mathblock.tall{margin:1.6em 0; padding:14px 2px;}
+.mathblock.wide{font-size:clamp(15.5px,1.7vw,22px);}
+mjx-container{color:inherit !important;}
+mjx-container[display="true"]{margin:0 !important;}
+.card.dark .mathblock, .box.dark .mathblock, .key .mathblock{color:inherit;}
+.formula-hero{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 22px; margin:18px 0;}
+.card.dark .formula-hero{background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.12);}
+.box.dark .formula-hero, .key .formula-hero{background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.14);}
+
+/* ---------- params chips ---------- */
+.params{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;}
+.chip{font-family:var(--font-mono); font-size:15px; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:9px; padding:8px 13px; color:var(--ink);}
+.chip b{color:var(--coral-d);}
+.card.dark .chip{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--cream);}
+.card.dark .chip b{color:var(--amber);}
+
+/* ---------- grids ---------- */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin:16px 0;}
+@media (max-width:1180px){ .grid3{grid-template-columns:1fr;} }
+
+/* ---------- code ---------- */
+.codeblock{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:18px 22px; margin:12px 0; font-size:clamp(12.5px,1.05vw,15px); line-height:1.7;
+  overflow-x:auto; border:1px solid rgba(255,255,255,.10);}
+.codeblock .ttl{display:block; color:var(--amber); font-weight:600; margin-bottom:8px; font-size:.95em;}
+.codeblock pre{margin:0; white-space:pre;}
+.codeblock .cm{color:var(--coral-l);}
+.codeblock .kw{color:var(--amber);}
+
+/* ---------- flow ---------- */
+.flow{font-family:var(--font-mono); background:var(--dark); color:var(--cream); border-radius:14px;
+  padding:22px 26px; margin:16px 0; font-size:clamp(14px,1.25vw,17px); line-height:1.85;}
+.flow .step{color:var(--amber); font-weight:600;}
+.flow .ar{color:var(--coral-l);}
+
+/* ---------- Q&A ---------- */
+.qa{margin:10px 0;}
+.qa .q{font-weight:700; color:var(--ink); font-size:clamp(16.5px,1.35vw,19px); margin-top:15px; display:flex; gap:10px;}
+.qa .q .n{font-family:var(--font-mono); color:var(--coral-d); flex:0 0 auto;}
+.qa .q .lv{font-family:var(--font-mono); font-size:.7em; color:var(--ink-3); margin-left:auto; white-space:nowrap;}
+.qa .a{color:var(--ink-2); font-size:clamp(15.5px,1.3vw,18px); padding-left:30px; margin-top:3px; line-height:1.58;}
+.qa .a b{color:var(--coral-d);}
+.card.dark .qa .q{color:#fff;} .card.dark .qa .q .n{color:var(--amber);} .card.dark .qa .a{color:var(--cream-2);} .card.dark .qa .a b{color:var(--amber);}
+
+.scroll-hint{position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2); opacity:.8;
+  display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scroll-hint .dn{font-size:18px; animation:bob 1.8s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)}}
+
+.foot{margin-top:26px; font-size:14.5px; color:var(--ink-3); letter-spacing:.01em;}
+.card.dark .foot{color:var(--cream-2);}
+.divider{height:1px; background:var(--line); margin:20px 0;}
+.card.dark .divider{background:rgba(255,255,255,.14);}
+
+/* ---------- burger / mobile ---------- */
+.burger{display:none; position:fixed; top:14px; left:14px; z-index:70; width:46px; height:46px;
+  border-radius:11px; background:var(--dark); color:var(--cream); border:none; cursor:pointer; font-size:20px;}
+@media (max-width:980px){
+  body{grid-template-columns:1fr; font-size:18px;}
+  .toc{position:fixed; left:0; top:0; width:300px; transform:translateX(-100%); transition:transform .25s; box-shadow:0 0 40px rgba(0,0,0,.25);}
+  body.toc-open .toc{transform:translateX(0);}
+  .burger{display:block;}
+  .progress{left:0;}
+  .card{padding:78px 26px 64px;}
+  .card.top{padding-top:78px;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="burger" aria-label="목차 열기">☰</button>
+<div class="progress"><i id="bar"></i></div>
+<div class="counter" id="counter">01 / 27</div>
+
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 15 · Model Building &amp; Diagnostics</div>
+    <div class="t">6명의 형사 — 좋은 fit의 검문</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 관통 척추</a>
+      <a class="toc-link" href="#s2">읽는 법 · 6형사</a>
+      <a class="toc-link" href="#s3">한 장 지도 · 사슬</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>M1·M2 · 출발과 잔차</div>
+      <a class="toc-link" href="#s4">M1 출발 좌표 · 도미노</a>
+      <a class="toc-link" href="#s5">M1 IV bolus · 4단계</a>
+      <a class="toc-link" href="#s6">M1 곡선 벗기기 · 경계 함정</a>
+      <a class="toc-link" href="#s7">M2 잔차 · WRSS</a>
+      <a class="toc-link" href="#s8">M2 바나나 vs 부채</a>
+      <a class="toc-link" href="#s9">M2 4분할 · Emax 결정</a>
+      <a class="toc-link" href="#s10">M2 순수오차 vs 적합결여</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>M3·M4 · 비교와 식별성</div>
+      <a class="toc-link" href="#s11">M3 비교 자격 · 중첩</a>
+      <a class="toc-link" href="#s12">M3 AIC/SC · WRSS≠OFV</a>
+      <a class="toc-link" href="#s13">M3 ΔOFV · 카이제곱</a>
+      <a class="toc-link" href="#s14">M4 정확도 vs 정밀도 · r</a>
+      <a class="toc-link" href="#s15">M4 능선 기하 · bootstrap</a>
+      <a class="toc-link" href="#s16">M4 점근 SE · Bootstrap/SIR</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>M5·M6 · 설계와 스트레스</div>
+      <a class="toc-link" href="#s17">M5 다음 채혈 · 손전등</a>
+      <a class="toc-link" href="#s18">M5 Sigmoid Imax 설계점</a>
+      <a class="toc-link" href="#s19">M6 임상 스트레스 테스트</a>
+      <a class="toc-link" href="#s20">M6 독성동태 설계표</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>생성 검증</div>
+      <a class="toc-link" href="#s21">설명 vs 생성 · VPC</a>
+      <a class="toc-link" href="#s22">pcVPC · NPDE</a>
+      <a class="toc-link" href="#s23">신호 환승 · NPDE 판정</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s24">혼동쌍 4쌍</a>
+      <a class="toc-link" href="#s25">마인드맵 · 의존성</a>
+      <a class="toc-link" href="#s26">자가점검</a>
+      <a class="toc-link" href="#s27">한 줄 요약 · 연결</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 15 · 모델 구축의 기술·진단 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,78px); margin-top:.25em; line-height:1.08;">좋은 fit이 어떻게<br><em>임상에서 무너지는가</em></h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">곡선이 점들 위에 예쁘게 깔려도 모델은 틀릴 수 있음 — <b style="color:var(--amber)">6명의 형사(M1~M6)</b>가 순차로 검문해 이 모델을 믿을지 정함</p>
+    <div class="key" style="max-width:900px; margin:32px auto 0; text-align:left;">
+      <span class="lbl">관통 척추</span>
+      한 용의자(=내 모델)가 검문소 6개를 차례로 통과해야 풀려남. <strong>잔차만 봐서는 초기값 오류를 못 잡고, 한 형사가 통과시킨 게 다음 형사에서 무너짐.</strong> 한 단계의 실패가 다음 모든 단계의 결론을 오염시킴 — 그래서 검문은 <b>순서</b>가 있음.
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(19px,2.2vw,28px); color:#fff; margin-top:28px;">"진단은 체크박스가 아니라 —<br>6명의 형사가 순차로 검문하는 하나의 사건이다."</p>
+    <div class="foot">Gabrielsson &amp; Weiner 5판 (이 세션의 유일한 원천 교재) — R&amp;T 없음, 임상 귀결은 [확인 필요: 자료 미포함]으로 정직 표기</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 6형사 -->
+<section class="card top" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">메타</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 6명의 형사</span></div>
+    <h2>각 형사는 <em>딱 한 가지 의심</em>만</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>형사</th><th>한 가지 의심</th><th>쉬운 한마디</th></tr></thead>
+      <tbody>
+        <tr><td><b>M1</b></td><td>출발 좌표(초기값)가 맞나?</td><td>"너 어디서 출발했어? 엉뚱한 골짜기로 갔지?"</td></tr>
+        <tr><td><b>M2</b></td><td>잔차 패턴이 수상하지 않나?</td><td>"곡선은 예쁜데, 빗나간 흔적에 규칙이 보이는데?"</td></tr>
+        <tr><td><b>M3</b></td><td>두 모델 비교할 자격이 되나?</td><td>"같은 규칙으로 시합한 거 맞아?"</td></tr>
+        <tr class="hot"><td><b>M4</b></td><td>모수가 따로 식별되나?</td><td>"두 숫자가 손잡고 움직이면 각각은 못 정해."</td></tr>
+        <tr><td><b>M5</b></td><td>다음 채혈을 어디서?</td><td>"어느 시간에 피 뽑아야 가장 또렷해져?"</td></tr>
+        <tr><td><b>M6</b></td><td>불확실성이 임상을 흔드나?</td><td>"숫자가 조금 틀리면 용량 결론이 흔들리나?"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">유일 원천 = G&amp;W</div><p style="margin:0;">Gabrielsson &amp; Weiner 5판. <b>이 세션은 R&amp;T가 아예 없음</b> — 임상·환자 사례가 G&amp;W에 없으면 <span class="flag">확인 필요: 자료 미포함</span>으로 표기. 지어내지 않음.</p></div>
+      <div class="box" style="--ac:var(--coral)"><div class="bh">정직 플래그 2종</div><p style="margin:0;"><span class="flag">확인 필요: 자료 미포함</span> R&amp;T 영역인데 G&amp;W에 없는 것 · <span class="flag">교과서 외</span> 현대 표준(VPC·bootstrap·SCM·NONMEM)인데 G&amp;W 본문엔 없는 것.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · 한 장 지도 -->
+<section class="card dark" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow">한 장 지도 · 사슬</span></div>
+    <h2>평행한 6카드가 아니라 <em>사슬</em></h2>
+    <div class="flow">
+      [M1] 출발 좌표 anchor (그래프/NCA)<br>
+      &nbsp;&nbsp;<span class="ar">▼</span> 틀리면 local minimum → 이하 전부 무의미<br>
+      [M2] 잔차: 바나나(구조) vs 부채(분산)<br>
+      [M3] 비교 자격: 중첩 + 동일 가중치<br>
+      [M4] 정밀도·상관·능선 (식별성)<br>
+      [M5] 편미분 peak로 다음 채혈 위치<br>
+      [M6] 민감도 흔들기로 임상 스트레스 테스트<br>
+      &nbsp;&nbsp;<span class="ar">▼</span><br>
+      [VPC/Bootstrap] 생성 모델로서의 마지막 검문 <span class="step">교과서 외</span>
+    </div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🦴 척추 박스 (이 노트의 등뼈)</div><p style="margin:0;">초기값은 <b>출발 골짜기</b>를 정하고, 잔차는 <b>모델의 거짓말</b>을 드러내며, 모델 비교는 <b>같은 운동장</b>에서만 의미가 있고, 정밀도·상관은 <b>실험설계의 품질</b>을 말하며, 편미분은 <b>다음 채혈 위치</b>를 정하고, 민감도는 <b>임상 결론의 스트레스 테스트</b>임. VPC와 Bootstrap이 마지막 검문을 통과시킴.</p></div>
+  </div>
+</section>
+
+<!-- 4 · M1 출발 좌표 -->
+<section class="card top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§1 · M1</span><span class="eyebrow f1">출발 좌표 — 안 박으면 알고리즘이 길을 잃음</span></div>
+    <h2>등산로 입구를 <em>잘못 잡으면</em></h2>
+    <p class="lead"><b>등산로 입구 비유</b> — 잔차를 "고도"라 보면 알고리즘은 가장 가까운 골짜기 바닥으로 굴러감. 입구(초기값)를 잘못 잡으면 더 깊은 골짜기(=더 좋은 답)가 옆에 있어도 <b>안 감</b> — 얕은 골짜기(<b>local minimum</b>)에 갇힘. 초기값이 부실하면 3가지 사고 <span class="cite">G&amp;W p.353</span>:</p>
+    <div class="params">
+      <span class="chip">① 잘못된 최종값으로 수렴</span>
+      <span class="chip">② local minimum에 갇힘</span>
+      <span class="chip">③ 생리학적으로 불가능한 모수 (V 음수 등)</span>
+    </div>
+    <div class="key"><span class="lbl">🔑 M1의 핵심</span>이 세 사고는 <strong>fit이 끝난 뒤 잔차 그림으로 못 잡음</strong> — 잔차는 "지금 이 골짜기 안에서 얼마나 설명하나"만 보여줄 뿐 옆 골짜기가 더 좋았는지는 안 알려줌. 그래서 출발 좌표는 fit <i>이전에</i> 그래프·NCA로 박아둬야 함.</div>
+    <p>IV bolus 1구획 — 반로그 직선 기울기 한 숫자에서 <b>도미노처럼</b> 따라 나옴 <span class="cite">G&amp;W Eq.4:16–4:20, p.354</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{\text{slope}}^{\text{반로그 기울기}}=-K \;\Rightarrow\; \underbrace{t_{1/2}=\frac{\ln 2}{K}}_{\approx65\,\text{min}} \;\Rightarrow\; \underbrace{AUC=\frac{C^0}{K}}_{100{,}000} \;\Rightarrow\; \underbrace{Cl=\frac{D}{AUC}}_{0.1\,L/\text{min}},\ \underbrace{V=\frac{D}{C^0}}_{10\,L} \]</div></div>
+    <p class="muted"><span class="ico">🛠️</span> 흔한 실수 — 단위를 안 맞춰 Cl이 1000배 틀림. Dose가 mg면 농도(µg/L)와 안 맞음 → <b>µg로 통일</b>(10 mg = 10,000 µg). 자릿수 한 번 더 검산할 것.</p>
+  </div>
+</section>
+
+<!-- NEW · M1 IV bolus 4-step domino -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§1 · M1</span><span class="eyebrow f1">가장 단순한 anchor — IV bolus 1구획 (숫자로 따라 하기)</span></div>
+    <h2>기울기 한 숫자에서 <em>네 숫자가 도미노로</em></h2>
+    <p class="lead">반로그 plot에서 직선 두 점(농도 800·400)의 로그값 차를 시간 차로 나누면 기울기 \(=-K\). 이 <b>한 숫자</b>에서 \(t_{1/2}\)·AUC·Cl·V가 차례로 떨어짐 <span class="cite">G&amp;W Eq.4:16, p.354</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{\text{slope}}^{\text{반로그 기울기}}=\frac{\overbrace{\ln 800-\ln 400}^{=\,\ln 2\,=\,0.693}}{\underbrace{23-87}_{=\,-64\ \text{min}}}=\underbrace{-0.01\ \text{min}^{-1}}_{=\,-K} \]</div></div>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f1)"><div class="bh">② 반감기 → ③ AUC</div>
+        <div class="formula-hero" style="margin:.4em 0;"><div class="mathblock wide">\[ t_{1/2}=\frac{\ln 2}{K}=\frac{0.693}{0.01}\approx 65\ \text{min} \]</div></div>
+        <div class="formula-hero" style="margin:.4em 0;"><div class="mathblock wide">\[ AUC=\frac{C^0}{K}=\frac{1000}{0.01}=100{,}000 \]</div></div>
+        <p style="margin:.2em 0 0;"><span class="cite">G&amp;W Eq.4:17–4:18</span></p>
+      </div>
+      <div class="box" style="--ac:var(--f1)"><div class="bh">④ 청소율·분포용적</div>
+        <div class="formula-hero" style="margin:.4em 0;"><div class="mathblock wide">\[ Cl=\frac{D}{AUC}=0.1\ L/\text{min} \]</div></div>
+        <div class="formula-hero" style="margin:.4em 0;"><div class="mathblock wide">\[ V=\frac{D}{C^0}=\frac{10{,}000}{1000}=10\ L \]</div></div>
+        <p style="margin:.2em 0 0;"><span class="cite">G&amp;W Eq.4:19–4:20</span></p>
+      </div>
+    </div>
+    <p class="muted"><span class="ico">🛠️</span> 흔한 실수 — 단위 불일치로 Cl이 1000배 틀림. Dose가 mg면 농도(µg/L)와 안 맞음 → <b>µg로 통일</b>(10 mg = 10,000 µg). G&amp;W 팁 — 데이터·모델이 단순하면 <b>한 사람 값을 다른 사람 초기값으로 그냥 써도 됨</b> <span class="cite">G&amp;W p.354</span>.</p>
+  </div>
+</section>
+
+<!-- 5 · M1 stripping + 경계 -->
+<section class="card top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§1 · M1</span><span class="eyebrow f1">곡선 벗기기 · turnover anchor · 경계 함정</span></div>
+    <h2>양파 까듯 <em>겉부터 한 겹씩</em></h2>
+    <p class="lead">약이 두 칸을 오가면 농도가 <b>두 지수의 합</b> — 말단상(느린 쪽)부터 읽음. \(\alpha\gg\beta\)면 말단에선 빠른 항이 사실상 0이라 \(Be^{-\beta t}\) 하나만 남음(자연이 만든 "한 단계 분리 구간"):</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{C}^{\text{총농도}}=\overbrace{\underbrace{A}_{\text{초기 절편}}e^{-\alpha t}}^{\text{분포상(빠름)}}+\overbrace{\underbrace{B}_{\text{말단 절편}}e^{-\beta t}}^{\text{말단상(느림)}} \]</div></div>
+    <p class="muted">예: \(A=1.0\), \(B=0.8\), \(\alpha=0.05\), \(\beta=0.003\) — \(\alpha/\beta\approx17\)배라 벗기기가 잘 됨 <span class="cite">G&amp;W p.355</span>. ⚠️ 두 기울기가 안 떨어지면(\(\alpha/\beta&lt;5\)) 말단상에 빠른 항 찌꺼기가 섞여 \(\beta\)를 너무 작게 추정 — 나중에 조직 부피·구획간 청소율이 이상하게 나오는 형태로 뒤늦게 터짐.</p>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">🔑</span> turnover도 그래프에서 — warfarin</div><p style="margin:0;">와파린이 응고인자(PCA) 생성을 막으면 PCA가 1차로 하강 → <b>그 직선 기울기가 그대로 \(-k_{out}\) anchor</b>(생성이 막힌 동안엔 소실만 남으니까). 자릿수 \(\approx0.03\ h^{-1}\), baseline·\(k_{out}\)에서 \(k_{in}\)이 따라 나옴 <span class="cite">G&amp;W Eq.4:22, p.356</span>. PK(농도)뿐 아니라 <b>비정상상태 PD</b>에서도 초기값을 그래프로 박음.</p></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 경계가 답을 만들어버리는 함정 (→ M4 직결)</div><p style="margin:0;">anchor를 못 읽으면 경계(하한·상한)만 주고 격자 탐색하는데, 최종 추정값이 <b>상한에 딱 붙어</b> 나오면 모델이 정보를 준 게 아니라 <b>경계가 추정값을 만들어낸 것</b>(boundary parameter). 데이터가 "여기야"라 한 게 아니라 울타리에 갇힌 것 — M4에서 SE가 무너지는 자리와 직결.</p></div>
+  </div>
+</section>
+
+<!-- 6 · M2 잔차 정의 -->
+<section class="card top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2 · M2</span><span class="eyebrow f1">잔차는 곡선이 못 말하는 것을 말함</span></div>
+    <h2>곡선은 거짓말해도 <em>잔차의 부호·순서</em>는 안 함</h2>
+    <p class="lead">곡선 overlay는 예쁘게 깔린 것처럼 보일 수 있어도 <b>잔차는 부호(+/−)와 순서를 보존</b>함. 거기 구조적 흔적이 남으면 모델이 어딘가 거짓말하는 것. <b>잔차 = 관측값 − 예측값</b> <span class="cite">G&amp;W p.369</span>:</p>
+    <div class="formula-hero"><div class="mathblock">\[ \overbrace{residual_i}^{\text{i번째 잔차}}=\underbrace{C_{obs,i}}_{\text{관측농도}}-\underbrace{\hat C_{calc,i}}_{\text{예측농도}},\qquad \overbrace{\epsilon}^{\text{잔차오차}}\sim\underbrace{N(0,\sigma^2)}_{\text{평균 0·정규분포}} \]</div></div>
+    <p class="muted">이상적 잔차는 평균 0·일정 분산·정규분포(종 모양). 이 정규 가정은 §3 F-검정에 꼭 필요함. 컴퓨터가 줄이는 대상이 <b>WRSS(목적함수)</b>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{WRSS}^{\text{가중잔차제곱합}}=\sum \underbrace{W_i}_{\text{가중치}}\underbrace{(C_i-\hat C_i)^2}_{\text{잔차의 제곱}},\qquad \overbrace{\sigma}^{\text{잔차 표준편차}}=\sqrt{\frac{WRSS}{\underbrace{N_{obs}-N_{par}}_{\text{잔차 자유도}}}} \]</div></div>
+    <p class="muted"><b>가중치 \(W_i\)</b>가 왜 필요? 농도 1000일 때와 1일 때 오차 절대크기가 다른데 그대로 더하면 큰 농도가 다 먹어버림 → 작은 농도 점도 목소리를 내게 균형을 맞춤 <span class="cite">G&amp;W Eq.4:47–4:48, p.371</span>.</p>
+  </div>
+</section>
+
+<!-- 7 · M2 두 거짓말 -->
+<section class="card dark top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2 · M2</span><span class="eyebrow">두 종류의 거짓말 — 처방이 정반대</span></div>
+    <h2>모양이 휘면 구조, <em>폭이 벌어지면 분산</em></h2>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">바나나/U자 (잔차 vs 시간) → 구조 오류</div><p style="margin:0;">빠진 지수 항(1구획인데 사실 2구획), lag-time 빠뜨림, 잘못된 시간 스케일. <b>처방: 모델 구조 자체를 바꿈</b>(지수 항 추가, lag-time 넣기) <span class="cite">G&amp;W pp.372–376</span>.</p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">부채(fan) (잔차 vs 예측값) → 분산 오류</div><p style="margin:0;">농도 클수록 잔차가 부채처럼 벌어짐 — 농도의존 분산, 등분산 위반, 잘못된 가중치(\(W_i=C_i^{-\lambda_z}\)). <b>처방: 가중치 방식을 바꿈</b>(구조는 그대로) <span class="cite">G&amp;W Eq.4:49, pp.373–374</span>.</p></div>
+    </div>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">⚠️ 가장 흔한 실수</div><p style="margin:0;"><b>부채 모양인데 구획을 추가하는 것.</b> 구조는 멀쩡하고 분산 모델만 틀렸는데 구획을 추가하면 WRSS가 약간 떨어져 "개선된 것처럼" 보이지만 <b>분산 문제는 그대로</b>, 모델만 복잡해지고 추가 구획 모수는 경계에 닿음(→ M4). <b>모양이 휘면 구조, 폭이 벌어지면 분산</b> — 이 한 줄.</p></div>
+    <p class="muted">반복 측정(주로 in vitro)이 있으면 잔차를 <b>순수오차</b>(어쩔 수 없는 측정 산포)와 <b>적합결여(LOF)</b>(모델 탓)로 쪼개 F-검정 — \(F_{LOF}=\dfrac{69.06/4}{23.61/21}=\dfrac{17.27}{1.124}\approx15.35\), 임계 \(F_{crit}=2.76\)보다 훨씬 커서 <b>적합결여 있음</b> <span class="cite">G&amp;W Eq.4:51, p.379</span>. (단 sparse 임상 채혈엔 반복이 없어 못 씀.)</p>
+  </div>
+</section>
+
+<!-- NEW · M2 GOF 4-panel + Emax decision -->
+<section class="card top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2 · M2</span><span class="eyebrow f1">두 축을 모두 봐야 함 · 잔차가 모델 선택을 결정</span></div>
+    <h2>한 축에서 깨끗해도 <em>다른 축에서 패턴이 튐</em></h2>
+    <p class="lead">잔차 vs <b>시간</b>은 시간 스케일·구조 문제(바나나)를, 잔차 vs <b>예측값</b>은 분산·가중치 문제(부채)를 잡음. 한 축이 무작위라도 다른 축에서 패턴이 나올 수 있어 <b>둘 다 봐야 함</b>.</p>
+    <div class="box" style="--ac:var(--f5)"><div class="bh">🛠️ NONMEM 표준 GOF 4분할 <span class="flag">교과서 외</span></div><p style="margin:0;">현대 PopPK 도구(NONMEM/xpose)는 표준으로 4개 그림을 한 화면에 — <b>DV vs PRED · DV vs IPRED · CWRES vs TIME · CWRES vs PRED</b>. 정확히 위 두 축을 강제로 다 보게 만드는 장치. <b>DV</b>=관측, <b>PRED</b>=집단 전형 예측, <b>IPRED</b>=개인별 예측, <b>CWRES</b>=조건부 가중잔차(옛 가중잔차보다 진단 정확). 약어는 G&amp;W엔 없고 NONMEM 관습.</p></div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">🔑</span> Ordinary vs Sigmoid Emax — 잔차가 단정</div><p style="margin:0;">곡선 overlay에선 두 모델 차이가 애매한데, <b>잔차 그림으로 가면</b> Ordinary Emax 쪽에서 양·음 잔차가 명확히 <b>군집</b>(계통적 이탈)으로 드러남. Sigmoid Emax는 잔차가 더 무작위·소진폭으로 흩어짐 → overlay가 "둘 다 비슷한데?"라 흐려놓은 모델 선택을 잔차가 "Sigmoid가 더 맞다"고 단정해줌 <span class="cite">G&amp;W Fig.4.44–4.45, pp.372–373</span>.</p></div>
+  </div>
+</section>
+
+<!-- NEW · M2 pure-error vs LOF ANOVA -->
+<section class="card dark top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2 · M2</span><span class="eyebrow">순수오차 vs 적합결여 — 반복 측정이 있을 때만</span></div>
+    <h2>잔차를 <em>둘로 쪼개</em> 모델 탓인지 가림</h2>
+    <p class="lead">같은 시간점에 <b>반복 측정</b>이 있으면(주로 in vitro) 잔차를 둘로 쪼갬 — <b>순수오차</b>(어쩔 수 없는 측정 산포, 모델 탓 아님) vs <b>적합결여(LOF)</b>(모델이 경향을 못 잡은 추가 오차, 모델 탓). 둘의 비율로 F-검정:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{F_{LOF}}^{\text{LOF F값}}=\frac{\overbrace{(92.67-23.61)/(25-21)}^{\text{적합결여 평균제곱}=\,69.06/4=17.27}}{\underbrace{23.61/21}_{\text{순수오차 평균제곱}=\,1.124}}\approx\underbrace{15.35}_{\text{F 비교값}} \]</div></div>
+    <p class="muted" style="text-align:center; margin-top:-4px;"><span class="cite">G&amp;W Eq.4:51, p.379</span> — 92.67=전체 잔차 SS(df 25), 23.61=순수오차 SS(df 21), 차이 69.06=적합결여(df 4).</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">결론 · 자릿수 검산</div><p style="margin:0;">분자 \(69.06/4=17.27\), 분모 \(23.61/21=1.124\), 비율 \(\approx15.35\). 임계 \(F_{crit}=2.76\)보다 훨씬 커서 <b>적합결여 있음</b>(\(\alpha=0.05\), 모델이 유의하게 안 맞음).</p></div>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">⚠️ 임상 sparse 채혈엔 못 쓰는 검정</div><p style="margin:0;">환자에서 드물게 채혈(sparse)하면 같은 시간점 반복이 없어 순수오차를 분리 못 함 → 이 LOF F-검정 불가. 억지로 만들지 말고 <b>잔차 패턴 + 기전 타당성 + VPC</b>의 삼각 검증으로 가야 함(→ §7). (구체적 환자 사례는 <span class="flag">확인 필요: 자료 미포함</span>.)</p></div>
+  </div>
+</section>
+
+<!-- 8 · M3 비교 자격 -->
+<section class="card top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · M3</span><span class="eyebrow f2">같은 운동장에 있을 때만 심판을 부름</span></div>
+    <h2>"WRSS 더 낮으니 이긴 거다"의 <em>함정</em></h2>
+    <p class="lead">F-검정(두 모델 우열 심판)은 <b>두 자물쇠</b>가 다 맞아야 열림 — ① <b>중첩(nested)</b>: 한 모델이 다른 모델의 특수 사례 · ② <b>동일 가중치</b>: 같은 가중치 방식. 자격 없는 비교의 "더 낮은 WRSS"는 우열이 아니라 <b>다른 자(尺)로 잰 숫자</b>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{F^*}^{\text{중첩 F값}}=\frac{\overbrace{(WRSS_{reduced}-WRSS_{full})/(df_{reduced}-df_{full})}^{\text{자유도 1당 제곱합 감소}}}{\underbrace{WRSS_{full}/df_{full}}_{\text{full 모델 잔차 분산}}} \]</div></div>
+    <p class="muted" style="text-align:center; margin-top:-4px;"><span class="cite">G&amp;W Eq.4:54–4:55, p.387</span> — \(F^*\)가 F-표 임계값보다 크면 full 모델이 통계적으로 우월(단, 두 자물쇠 만족 시에만).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>비교</th><th>중첩?</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>Ordinary vs Sigmoid Emax</td><td><b>예</b></td><td>Sigmoid에서 지수 \(n=1\) 고정하면 Ordinary</td></tr>
+        <tr><td>1구획 vs 2구획</td><td><b>예</b></td><td>2지수에서 \(B=0\) 고정하면 1지수</td></tr>
+        <tr class="hot"><td>Linear vs Ordinary Emax</td><td><span class="em">아니오</span></td><td>\(C\ll EC_{50}\) 극한에서만 비슷, 일반 중첩 아님</td></tr>
+        <tr><td>MM weighted vs first-order unweighted</td><td><span class="em">아니오 + 가중치도 다름</span></td><td>F-검정도 AIC도 둘 다 불가</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> AIC/SC — 중첩은 안 요구하나 동일 가중치는 요구</div><p style="margin:0;">\(AIC=N_{obs}\ln(WRSS)+2N_{par}\)(모수당 벌점 +2). <b>G&amp;W는 AIC 차이 cutoff를 안 줌</b> — "얼마나 더 작아야 유의한지 알 수 없음" <span class="cite">G&amp;W p.389</span>. 그래서 낮은 AIC 하나로 결정 말고 <b>도구 묶음 전체</b>(잔차·정밀도·상관·기전)를 봐야 함.</p></div>
+  </div>
+</section>
+
+<!-- NEW · M3 AIC/SC/BIC + WRSS vs OFV -->
+<section class="card top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · M3</span><span class="eyebrow f2">AIC/SC — 중첩은 안 요구, 동일 가중치는 요구</span></div>
+    <h2>모수당 <em>벌점</em>으로 과적합을 막음</h2>
+    <p class="lead">모수를 많이 넣으면 WRSS는 무조건 떨어짐(과적합). 그래서 모수당 벌점을 매겨 <b>충분히 값을 한 모수만</b> 채택 — <b>AIC</b>는 모수당 +2, <b>SC(=BIC)</b>는 표본수로 더 세게 벌점:</p>
+    <div class="grid2">
+      <div class="formula-hero"><div class="mathblock wide">\[ \overbrace{AIC}^{\text{WRSS형}}=\underbrace{N_{obs}\ln(WRSS)}_{\text{불일치}}+\underbrace{2N_{par}}_{\text{복잡도 +2}} \]</div></div>
+      <div class="formula-hero"><div class="mathblock wide">\[ \overbrace{SC}^{\text{Schwarz}}=N_{obs}\ln(WRSS)+\underbrace{N_{par}\ln N_{obs}}_{\text{표본수 벌점}} \]</div></div>
+    </div>
+    <p class="muted" style="text-align:center; margin-top:-4px;"><span class="cite">G&amp;W Eq.4:56–4:57, p.389</span> — AIC/SC는 중첩 아니어도 됨. 단 <b>동일 가중치는 여전히 필요</b>(WRSS가 같은 좌표여야).</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> WRSS형 AIC ≠ likelihood형 OFV</div>
+    <div class="tbl"><table>
+      <thead><tr><th>환경</th><th>비교 좌표</th><th>절대 scale</th></tr></thead>
+      <tbody>
+        <tr><td>WinNonlin/Phoenix (WRSS 기반)</td><td>\(N_{obs}\ln(WRSS)+2N_{par}\)</td><td>WRSS형(상수항 없음)</td></tr>
+        <tr><td>NONMEM OFV (\(-2\log L\))</td><td>\(\Delta\)OFV로 중첩 비교</td><td>full likelihood 눈금(상수항 포함)</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin:.4em 0 0;">WinNonlin AIC=83, NONMEM OFV=120이면 <b>두 숫자는 서로 환산 불가</b> — 한 환경 내부에서만 비교 의미 <span class="cite">G&amp;W p.386</span>.</p></div>
+    <p class="muted"><b>G&amp;W의 경고</b> — "AIC가 얼마나 더 작아야 유의한지는 <b>알 수 없음</b>(분포가 알려지지 않음)" <span class="cite">G&amp;W p.389</span>. 낮은 AIC 하나로 결정 말고 <b>도구 묶음(battery) 전체</b>(잔차·정밀도·상관·기전)를 봐야 함.</p>
+  </div>
+</section>
+
+<!-- 9 · M3 WRSS≠OFV + ΔOFV -->
+<section class="card dark top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · M3</span><span class="eyebrow">WRSS형 AIC ≠ likelihood OFV · ΔOFV</span></div>
+    <h2>두 숫자는 <em>서로 환산 불가</em></h2>
+    <p class="lead">WinNonlin/Phoenix는 <b>WRSS 기반 AIC</b>, NONMEM은 <b>\(-2\log L\) 기반 OFV</b>를 보고함. 같은 해로 수렴해도 <b>절대 눈금이 다름</b> <span class="cite">G&amp;W p.386</span>. WinNonlin AIC=83, NONMEM OFV=120이면 <b style="color:var(--amber)">두 숫자는 서로 환산 불가</b> — 한 환경 내부에서만 비교 의미.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">ΔOFV의 통계 <span class="flag">교과서 외</span></div><p style="margin:0;">현대 PopPK는 ΔOFV로 비교 — 중첩 모델 사이 ΔOFV는 자유도 차이에 대해 <b>카이제곱(χ²)</b>을 따름 <span class="cite">Wilks 1938</span>:</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{\Delta\text{OFV}=\text{OFV}_{reduced}-\text{OFV}_{full}}^{\text{음의 로그가능도 비}}\;\overset{H_0}{\sim}\;\overbrace{\chi^2_{\Delta df}}^{\Delta df=\text{모수 수 차이}} \]</div></div>
+    <p class="muted">자유도 1: 5% 임계 \(\chi^2\approx3.84\), 1% 임계 \(\approx6.63\). <b>SCM</b>(단계적 공변량 모델링)은 전진 추가 \(\alpha=0.05\)(임계 3.84), 후진 제거 \(\alpha=0.01\)(임계 6.63, 더 엄격) <span class="flag">교과서 외 · Wählby 2002</span>. 예: \(\Delta\text{OFV}=5.2\)면 전진(\(5.2&gt;3.84\)) 채택, 후진(\(5.2&lt;6.63\)) 탈락.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">⚠️ 카이제곱이 깨지는 곳 — 경계 모수</div><p style="margin:0;"><code>$OMEGA</code>(개체간 분산)를 0으로 고정하느냐 같은 <b>모수가 경계(0)에 닿는 검정</b>은 단순 χ²가 아니라 <b>혼합분포</b>를 따름 <span class="flag">교과서 외 · Stram-Lee 1994</span>. 그냥 3.84를 쓰면 너무 보수적 — OMEGA/SIGMA 구조 결정에서 가장 자주 놓치는 함정. (← 세션 13 IIV의 개체간 변이가 여기서 경계 모수로.)</p></div>
+  </div>
+</section>
+
+<!-- 10 · M4 정확도 정밀도 r -->
+<section class="card top" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M4</span><span class="eyebrow f2">좋은 fit ≠ 식별 가능한 모수</span></div>
+    <h2>다트 과녁 — <em>정확도 vs 정밀도</em></h2>
+    <p class="lead"><b>정확도</b>(화살이 과녁 중심에 가까운가, 빗나가면 편향) vs <b>정밀도</b>(반복하면 얼마나 좁게 모이나). 셋이 분리됨 — 중심 근처 좁게(이상), 중심 근처 넓게(정확하나 부정밀), 한쪽에 좁게(부정확하나 정밀=편향). <b>곡선이 잘 맞아도 모수 추정값은 쓸모없을 수 있음</b> <span class="cite">G&amp;W pp.379–380</span>:</p>
+    <div class="formula-hero"><div class="mathblock">\[ \overbrace{CV\%}^{\text{상대 표준오차}}=\frac{\overbrace{SE(\hat p)}^{\text{추정 표준오차}}}{\underbrace{\hat p}_{\text{모수 값}}}\cdot 100 \]</div></div>
+    <p class="muted" style="text-align:center; margin-top:-4px;"><span class="cite">G&amp;W Eq.4:52, p.380</span> — SE는 절대 크기라 모수마다 달라서, 모수값으로 나눠 상대화함.</p>
+    <p class="muted">예: \(V=1000\pm30\)이면 CV 3%(정밀), \(K=0.01\pm0.005\)이면 CV 50%(불확실 신호). 통상 30% 넘으면 의심, 50% 넘으면 식별성 재검토(관습). 단 G&amp;W — <b>CV 크다고 모델이 틀린 건 아님</b>, 표본을 적절한 시간에 안 뽑았을 수도(→ M5) <span class="cite">G&amp;W p.380</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 상관계수 \(r\) — GOF 오용 1위</div><p style="margin:0;">좋은 fit이면 \(r\)이 높지만 <b>그 역은 거짓</b>. PK는 동적 범위가 넓어(1000→1 ng/mL) \(r\)이 거의 항상 0.95+ — 즉 <b>\(r\)은 적합도가 아니라 "데이터 범위가 얼마나 넓냐"를 잼</b>. 사례: OLS \(r=0.96\)인데 말단 3점 과소예측, IRLS \(r=0.94\)인데 더 좋은 fit <span class="cite">G&amp;W p.382</span>.</p></div>
+  </div>
+</section>
+
+<!-- 11 · M4 능선 기하 -->
+<section class="card dark top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M4</span><span class="eyebrow">능선 기하 — 좋은 fit 뒤에 숨는 결합 불확실성</span></div>
+    <h2>로프로 묶인 <em>두 등산가</em></h2>
+    <p class="lead">모수 상관행렬은 "두 모수가 독립인가, 맞바꾸며 움직이나"를 보여줌. \(V\)와 \(K\)의 비대각 원소가 \(-0.810\) — \(V\)를 키우면 \(K\)를 줄여 <b>거의 같은 WRSS</b>를 만듦(데이터가 둘을 따로 못 정함):</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \begin{array}{c|cc} &amp; V &amp; K \\ \hline V &amp; 1.000 &amp; \\ K &amp; -0.810 &amp; 1.000 \end{array} \]</div></div>
+    <p class="muted" style="text-align:center; margin-top:-4px;"><span class="cite">G&amp;W p.383</span> — 비대각 \(-0.810\): 0이면 완전 독립(이상), 절댓값이 1에 가까우면 강하게 묶임.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">💡 로프 등산가 ↔ 능선 식 (1:1)</div><p style="margin:0;">두 등산가(\(\theta_1, \theta_2\))가 늘어진 골짜기(능선) 위에 섬. 능선을 따라 같이 움직여도 <b>고도(WRSS)는 거의 안 변함</b> → 각자 단변량 SE는 좁아 보여도(<b>"나 여기쯤"</b>) "둘이 동시에 어디"(결합 불확실성)는 거대함. 로프 = 강한 상관(\(r\approx0.99\)).</p></div>
+    <p class="muted"><b>모수 상관은 모델의 본질이 아니라 실험설계의 결과</b> — \(IC_{50}/Imax\) 상관이 평탄부 안 본 부실 설계 B에선 \(-0.95\), 평탄부까지 본 full 설계 A에선 \(-0.65\)로 완화 <span class="cite">G&amp;W Fig.4.57, p.385</span>. 그래서 자동으로 M5(채혈 보강)로 이어짐.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">점근 SE가 거짓말일 때 — Bootstrap / SIR <span class="flag">교과서 외</span></div><p style="margin:0;"><code>$COV</code> step의 SE는 최솟값 근방이 포물선이라 가정 — <b>능선·경계에선 거짓말</b>. <b>Bootstrap</b>: 데이터를 복원추출 재표집해 각각 다시 fit → \(\hat\theta\) 분포에서 CI(정규 가정 불요, 비용 큼). <b>SIR</b>: 제안분포에서 후보를 뽑아 가능도로 가중 재표집(fit 1회로 쌈) <span class="flag">Efron 1979 · Dosne 2016</span>. (fix는 불확실성을 통계→생물학으로 떠넘기는 것.)</p></div>
+  </div>
+</section>
+
+<!-- NEW · M4 bootstrap/SIR + FIM -->
+<section class="card dark top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · M4</span><span class="eyebrow">점근 SE가 거짓말일 때 — Bootstrap / SIR <span class="flag">교과서 외</span></span></div>
+    <h2>최솟값 근처가 <em>포물선이 아니면</em> SE가 거짓말</h2>
+    <p class="lead">NONMEM <code>$COV</code> step의 SE는 목적함수가 최솟값 근방에서 <b>정규분포 형태의 곡률</b>(Fisher 정보의 역행렬)이라는 가정 위에 섬 — 능선·경계에선 포물선이 아니라 <b>거짓말함</b>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{\widehat{\text{Var}}(\hat\theta)}^{\text{점근 분산행렬}}\approx\overbrace{\left[-\nabla^2\ell(\hat\theta)\right]^{-1}}^{\text{Fisher 정보의 역행렬}} \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>상황</th><th>표준 점근 SE</th><th>Bootstrap/SIR 필요성</th></tr></thead>
+      <tbody>
+        <tr><td>풍부한 데이터 + 낮은 상관</td><td>충분</td><td>추가 이득 적음</td></tr>
+        <tr class="hot"><td>경계 모수(\(Imax\to 1\), \(\omega\to 0\))</td><td><span class="em">깨짐</span></td><td><b>필수</b></td></tr>
+        <tr><td>높은 모수 상관(능선 기하)</td><td>좁아 보여도 결합 불확실성 큼</td><td>권장</td></tr>
+        <tr><td>작은 표본(소아·희귀질환)</td><td>정규 근사 약함</td><td>권장</td></tr>
+        <tr><td>\(COV\) step 실패·행렬 비정상</td><td><span class="em">사용 불가</span></td><td><b>대안 필요</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">Bootstrap — 다시 뽑아 재구성</div><p style="margin:0;">환자 명단에서 <b>복원추출</b>(중복 허용)로 가짜 데이터셋 수백 개를 만들고 각각 다시 fit → \(\hat\theta\) 분포의 2.5–97.5%로 CI. 정규 가정 불요지만 보통 B=500–1000회라 <b>비용 큼</b> <span class="cite">Efron 1979 · Ette 1997</span>.</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">SIR — 뽑고 가중 재표집</div><p style="margin:0;">제안분포 \(q(\theta)\)에서 후보 수천 개를 뽑아 가능도비 \(w_m=L(\theta_m)/q(\theta_m)\)로 가중해 재표집 → 사후분포 근사. <b>fit 1회 + 가능도 평가</b>라 훨씬 쌈, 제안분포가 너무 멀면 무너짐(반복 SIR로 보완) <span class="cite">Dosne 2016</span>.</p></div>
+    </div>
+    <p class="muted">G&amp;W도 — 모수는 못 정해도 <b>data descriptor(예측 농도·반응)는 더 정밀</b>할 수 있음 <span class="cite">G&amp;W p.384</span>. fix은 정밀도를 창조하는 게 아니라 불확실성을 <b>통계→생물학</b>으로 떠넘기는 것.</p>
+  </div>
+</section>
+
+<!-- 12 · M5 다음 채혈 -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · M5</span><span class="eyebrow f3">다음 채혈을 어디서 — 정보가 가장 크게 생기는 곳</span></div>
+    <h2>어두운 방의 <em>손전등</em></h2>
+    <p class="lead">M4에서 "모수 상관이 높다"고 나오면 다음 질문은 자동 — "그 상관을 깨려면 어느 시간에 표본을 더?" <b>편미분 \(\partial C/\partial\theta_i\)</b>(모수를 조금 흔들면 농도가 얼마나 변하나)가 최대인 시점이 그 모수 정보 명당.</p>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 손전등 비유 ↔ 편미분 (1:1)</div><p style="margin:0;">각 모수는 어두운 방의 가구 하나. 손전등(편미분)이 그 가구를 가장 밝게 비추는 위치에 채혈을 두면 윤곽이 선명해짐. 편미분 = 손전등 밝기, 최댓값 시점 = 채혈 명당.</p></div>
+    <p>이중지수에서 기울기 모수 정보는 각각 \(t=1/\alpha\), \(t=1/\beta\)에서 peak — 편미분에 \(t\,e^{-\alpha t}\) 꼴이 들어가 미분=0으로 풀면 극값이 거기 생김 <span class="cite">G&amp;W Eq.5:11, p.400</span>:</p>
+    <div class="formula-hero"><div class="mathblock">\[ \overbrace{t}^{\alpha\text{ 정보 peak}}=\frac{1}{\alpha},\qquad \overbrace{t}^{\beta\text{ 정보 peak}}=\frac{1}{\beta} \]</div></div>
+    <p class="muted">예: \(\alpha=0.69\), \(\beta=0.069\)면 peak는 약 <b>1.4 h와 14 h</b>(반드시 잡아야 할 채혈 슬롯). Sigmoid Imax는 \(IC_{50}\) 정보가 반최대 효과에, 지수 \(n\)은 20·80% 효과에, \(Imax\)는 평탄부에 집중 — <b>균등 채혈은 비효율</b> <span class="cite">G&amp;W pp.400–402</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> peak에만 몰빵 금지</div><p style="margin:0;">편미분 극값은 <b>추정값 기준</b>이라 추정이 틀리면 peak 위치도 틀림 → peak에 우선 배치하되 <b>전체 농도 범위에도 보조 표본</b>(견고성). pooled 평균을 무비판적으로 쓰지 말 것(개체간 변이). 도구 PFIM/PopED가 자동화 <span class="flag">교과서 외</span>.</p></div>
+  </div>
+</section>
+
+<!-- NEW · M5 Sigmoid Imax design points -->
+<section class="card top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · M5</span><span class="eyebrow f3">Sigmoid Imax/Emax — 모수마다 다른 효과 수준</span></div>
+    <h2>모수마다 <em>잘 보이는 자리가 다름</em></h2>
+    <p class="lead">농도가 독립변수인 효과 모델에선 모수마다 정보 명당이 따로 — <b>균등 채혈은 비효율</b>. 절편·기울기 정보가 한곳에 안 모임 <span class="cite">G&amp;W pp.400–402</span>:</p>
+    <div class="params">
+      <span class="chip"><b>\(IC_{50}\)</b> → 반최대 효과 부근 (예: 140 µg/L)</span>
+      <span class="chip"><b>지수 \(n\)</b> → 20%·80% 효과 수준</span>
+      <span class="chip"><b>\(Imax\)</b> → 높은 농도/평탄부</span>
+    </div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">📍</span> Fig.5.6 — 다섯 모수의 설계점</div><p style="margin:0;">관측 1 = baseline(\(E_0\)), 관측 2·4 = 지수 \(n\), 관측 3 = \(EC_{50}\), 관측 5 = \(E_{max}\) 정보가 큼 <span class="cite">G&amp;W p.401</span>. 즉 "모든 모수가 같은 시간점에서 잘 보이는 게 아님" — 어떤 모수는 중간 효과에서, 어떤 모수는 양쪽 끝에서 정보를 줌.</p></div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">🔧</span> Turnover의 \(k_{out}\) 시간대 — warfarin과 일치</div><p style="margin:0;">Turnover 반응 모델에서 \(k_{out}\) 민감도가 <b>25 h·약 100 h</b> 투여 후에 큼. 초기 시간대에선 \(k_{out}\)이 \(IC_{50}\)·\(n\)보다 더 민감 → <b>초기 채혈이 \(k_{out}\) 초기 추정을 직접 강화</b> <span class="cite">G&amp;W pp.402–404</span>. (그래서 §1.4 warfarin에서 하강 기울기로 \(k_{out}\)을 읽은 게 정당화됨.)</p></div>
+    <p class="muted">도구 <b>PFIM/PopED</b>가 이 편미분을 자동화해 <b>D-optimal design</b>을 출력 <span class="flag">교과서 외</span>. G&amp;W가 실험설계 이론으로 인용하는 건 <span class="cite">Mannervik 1981</span>뿐.</p>
+  </div>
+</section>
+
+<!-- 13 · M6 스트레스 테스트 -->
+<section class="card dark top" id="s19">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · M6</span><span class="eyebrow">불확실성이 임상 결론을 어디까지 흔드나</span></div>
+    <h2>잘 추정했나보다 <em>잘못 추정하면 뭐가 무너지나</em></h2>
+    <p class="lead">민감도 분석 — 각 모수를 <b>+100%(2배)·−50%(절반)</b>로 흔들고 예측이 얼마나 변하는지 봄. <b>모수 불확실성을 예측 불확실성으로 번역</b> <span class="cite">G&amp;W pp.404–405</span>. Warfarin-PCA: \(k_{in}\) 변화→곡선 수직 이동(baseline 채혈 중요), \(k_{out}\)→초기 하강 기울기(초기 채혈, M5와 일치), \(IC_{50}\)→말단 수평 이동(상승부 채혈).</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">☠️ 가장 함정 — Day 1 AUC ≈ 정상상태 AUC</div><p style="margin:0;">포화 제거(고용량서 제거 막힘, AUC 올림)와 자가유도(약이 자기 분해효소 늘림, AUC 내림)가 <b>동시에</b> 있으면:</p></div>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{\text{Day 1 AUC}\approx\text{정상상태 AUC}}^{\text{노출이 안 변한 것처럼 보임}}=\underbrace{\text{포화(capacity)}}_{\text{AUC 올림}}+\underbrace{\text{유도(induction)}}_{\text{AUC 내림}} \]</div></div>
+    <p class="muted" style="text-align:center; margin-top:-4px;"><span class="cite">G&amp;W Fig.5.20, p.414</span></p>
+    <p class="muted">두 효과가 <b>상쇄</b>되어 AUC가 안 변한 것처럼 보이지만 <b>기전은 둘 다 작동 중</b> — <b style="color:var(--amber)">"AUC 같음 = 기전 같음"은 거짓</b>. 시간의존성을 문서화하려면 첫 며칠 peak·trough를 추가 채혈 <span class="cite">G&amp;W p.414</span>. (구체적 임상 귀결은 <span class="flag">확인 필요: 자료 미포함</span>.)</p>
+  </div>
+</section>
+
+<!-- NEW · M6 TK design table -->
+<section class="card dark top" id="s20">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · M6</span><span class="eyebrow">독성동태(TK) 설계 — profile 중심 vs \(C_{max}\) 중심</span></div>
+    <h2>시험이 길수록 <em>profile을 종료일로</em> 미룸</h2>
+    <p class="lead"><b>독성동태(TK)</b>는 독성시험에서 노출을 독성 결과와 연결하는 PK. G&amp;W의 최소주의 설계 — 노출 확인 목적이면 만성시험에서 <b>\(C_{max}\)만</b> 측정해도 충분한 경우가 있음(예외는 연구자 판단) <span class="cite">G&amp;W p.413, Table 5.6</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>시험 종류</th><th>Day 1</th><th>중간일</th><th>종료일</th></tr></thead>
+      <tbody>
+        <tr><td>PK(단회)</td><td>Profile</td><td>–</td><td>–</td></tr>
+        <tr><td>DRF(용량범위탐색)</td><td>Profile</td><td>–</td><td>–</td></tr>
+        <tr><td>1개월</td><td>\(C_{max}\)</td><td>Profile</td><td>Profile</td></tr>
+        <tr><td>3개월</td><td>\(C_{max}\)</td><td>\(C_{max}\)</td><td>Profile</td></tr>
+        <tr class="hot"><td>12개월</td><td>\(C_{max}\)</td><td>\(C_{max}\)</td><td>Profile</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted" style="margin-top:-2px;">Profile = 곡선 전체 연속 채혈 · \(C_{max}\) = 최고점만. 노출지표 \(C_{max}\)·AUC·\(n\!\cdot\!AUC\)를 용량·성별·시간에 대해 분석 <span class="cite">G&amp;W Table 5.6, p.413</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">⚠️ 비선형 제거 — 1차 영역까지 채혈</div><p style="margin:0;">비선형 제거가 있는 약물은 농도가 <b>1차(선형) 영역</b>으로 떨어지거나 무시 가능한 수준까지 채혈을 이어가야 함. 안 그러면 <b>진짜 무한대 외삽 AUC</b>(\(AUC_{0-\infty}\))를 못 얻음 <span class="cite">G&amp;W p.414, Fig.5.19</span>.</p></div>
+  </div>
+</section>
+
+<!-- 14 · 설명 vs 생성 VPC -->
+<section class="card top" id="s21">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 마지막 검문</span><span class="eyebrow f4">설명 vs 생성 · VPC <span class="flag">교과서 외</span></span></div>
+    <h2>fit이 좋아도 <em>"생성"은 다른 얘기</em></h2>
+    <p class="lead">M2에서 잔차가 random이어도 끝이 아님. fit된 곡선은 <b>정의상 잔차를 최소화하도록 데이터에 끌려간</b> 좌표라 잔차 random은 거의 보장됨 — "<b>설명</b> 가능"의 증거지 "<b>생성</b> 가능"의 증거가 아님:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{\text{GOF 잔차·정밀도·AIC}}_{\text{fit 기반: 얼마나 잘 } \textbf{설명}?}\quad\longrightarrow\quad \underbrace{\text{VPC·pcVPC·NPDE}}_{\text{시뮬레이션 기반: 얼마나 잘 } \textbf{생성}?} \]</div></div>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 채점 비유</div><p style="margin:0;">(설명) "정답지를 보고 맞다고 확인"과 (생성) "그 학생이 비슷한 문제를 <b>직접 풀어낼 수 있나</b>"는 다름.</p></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">VPC — 모델로 데이터를 수백 번 생성해 겹쳐보기</div><p style="margin:0;">추정 모델 + 추정 변이 구조(개체간 변이·잔차오차)로 <b>새 데이터셋을 수백 번 시뮬레이션</b>하고, 그 백분위 띠(5·50·95%)와 실제 관측의 같은 백분위를 겹쳐 봄 <span class="flag">Holford 2005</span>. 모델한테 "가상 환자 1000명을 만들어봐" 시켜서 진짜 환자 점들이 예측 띠 안에 알맞게 들어오나 — 중앙 경향뿐 아니라 <b>변이의 폭(envelope)까지</b> 재현해야 "생성 모델로도 믿을 만함".</p></div>
+  </div>
+</section>
+
+<!-- 15 · pcVPC NPDE -->
+<section class="card dark top" id="s22">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 마지막 검문</span><span class="eyebrow">pcVPC · NPDE <span class="flag">교과서 외</span></span></div>
+    <h2>흐려진 그림 보정 + <em>수치 검정</em></h2>
+    <p class="lead">용량·공변량이 섞이면 같은 시간점도 다른 scale을 만들어 띠가 흐려짐 → "모델 실패"인지 "설계 차이"인지 구분 안 됨. <b>pcVPC</b>는 각 관측을 자기 조건의 모집단 예측으로 나눠 눈높이를 맞춤 <span class="flag">Bergstrand 2011</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{Y_{ij}^{pc}}^{\text{예측보정 관측}}=\overbrace{Y_{ij}}^{\text{원관측}}\cdot\frac{\overbrace{\widetilde{\text{PRED}}_{bin}}^{\text{구간 전형예측 중앙값}}}{\underbrace{\text{PRED}_{ij}}_{\text{개체별 전형예측}}} \]</div></div>
+    <p class="muted">용량·공변량 차이로 생긴 scale 차만 사라지고 모델이 진짜 못 맞춘 부분은 남음. pcVPC 실패 = "경향은 따라가는데 <b>변이 구조를 못 잡았다</b>".</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">NPDE — 시각 검토에 수치 검정을 더함</div><p style="margin:0;">각 관측이 시뮬 분포 안에서 차지하는 위치를 표준정규로 변환 — \(npde_{ij}=\Phi^{-1}(pde_{ij})\). N(0,1) 따르면 적합, 평균≠0이면 편향, 분산≠1이면 변이 오설정, Shapiro–Wilk 깨지면 분포 형태 오류 <span class="flag">Brendel 2006</span>.</p></div>
+    <p class="muted">M2~M4 환승 — M2 바나나 → VPC 중앙 띠가 관측 중앙값을 계통적으로 빗나감 · M2 부채 → VPC 5–95% 띠 폭이 관측 산포를 못 따라감 · M4 높은 상관 → pcVPC도 능선 위 두 모델 구분 못 함 → bootstrap/SIR로 추가 환승.</p>
+  </div>
+</section>
+
+<!-- NEW · M2-M4 to VPC/NPDE transit -->
+<section class="card top" id="s23">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 환승</span><span class="eyebrow f4">앞 단계 신호 → VPC/NPDE에서의 대응 <span class="flag">교과서 외</span></span></div>
+    <h2>같은 결함이 <em>생성 검문에서 다른 얼굴로</em></h2>
+    <p class="lead">M2~M4에서 잡은 신호가 VPC/NPDE에서 어떻게 다시 나타나는지 1:1로 환승 — 진단이 따로 노는 게 아니라 같은 결함의 다른 표현:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>앞 단계 진단 신호</th><th>VPC/NPDE에서의 대응</th></tr></thead>
+      <tbody>
+        <tr><td>M2 바나나/U자 (구조 오류)</td><td>VPC 중앙 띠가 관측 중앙값을 시간축에서 계통적으로 빗나감</td></tr>
+        <tr><td>M2 부채 (분산 오류)</td><td>VPC의 5–95% 띠 폭이 관측 산포를 못 따라감</td></tr>
+        <tr><td>M3 F/AIC가 우열 못 가림</td><td>VPC 띠 적합도 비교가 결정권을 가져옴</td></tr>
+        <tr class="hot"><td>M4 높은 모수 상관</td><td>pcVPC도 능선 위 동일 fit 두 모델을 구분 못 함 → bootstrap/SIR로 추가 환승</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f4)"><div class="bh">NPDE 판정표 — 시각에 수치를 더함</div>
+    <div class="tbl"><table>
+      <thead><tr><th>NPDE 결과</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td>N(0,1) 따름</td><td>모델 적합</td></tr>
+        <tr><td>평균 ≠ 0</td><td>편향(bias)</td></tr>
+        <tr><td>분산 ≠ 1</td><td>변이 오설정</td></tr>
+        <tr><td>Shapiro–Wilk 깨짐</td><td>분포 형태 오류</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin:.3em 0 0;"><span class="cite">Brendel 2006</span> · \(npde_{ij}=\Phi^{-1}(pde_{ij})\), 시뮬 누적분포 위치를 표준정규로 변환.</p></div>
+    <p class="muted"><b>§7 결론</b> — VPC는 GOF의 대체가 아니라 <b>다음 검문</b>. GOF가 "설명"이라면 VPC는 "생성"을 물음. pcVPC는 용량·공변량 좌표 차를 제거, NPDE는 시각에 수치 검정을 더함 (전부 <span class="flag">교과서 외</span>).</p>
+  </div>
+</section>
+
+<!-- 16 · 혼동쌍 4쌍 -->
+<section class="card top" id="s24">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8 · 혼동쌍</span><span class="eyebrow f5">실무에서 헷갈리는 4쌍</span></div>
+    <h2>즉시 판정하는 <em>네 자물쇠</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>쌍</th><th>가르는 한 줄 (기억 고리)</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b> 비교 자격</td><td>F-검정은 <b>"중첩 + 같은 가중치"</b> 자물쇠 <b>둘 다</b> 맞아야 열림. MM weighted vs first-order unweighted는 둘 다 불가</td></tr>
+        <tr><td><b>2</b> 상관계수 \(r\) vs 진짜 GOF</td><td><b>\(r\)은 큰 방향만 보고, 잔차는 모델의 거짓말을 봄.</b> PK에선 \(r\) 거의 항상 0.95+</td></tr>
+        <tr class="hot"><td><b>3</b> 구조 vs 분산 오류</td><td><b>모양이 휘면 구조(바나나) 의심, 폭이 벌어지면 분산(부채) 의심.</b> 처방 정반대</td></tr>
+        <tr><td><b>4</b> 이상치 A(수직) vs B(시간축)</td><td>A는 위아래로 튄 점(잡음), <b>B는 시간을 잘못 말하는 점(높은 지렛대) — 곡선 방향 자체를 바꿔 더 위험</b> <span class="cite">G&amp;W p.390</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f5)"><p style="margin:0;"><span class="ico">📍</span> 이상치는 <b>표만 봐서는 A와 B를 구분 못 함</b> — 그래프(graphical presentation)가 결정적임 <span class="cite">G&amp;W p.390</span>.</p></div>
+  </div>
+</section>
+
+<!-- 17 · 마인드맵 의존성 -->
+<section class="card dark top" id="s25">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10 · 마인드맵</span><span class="eyebrow">어디가 무너지면 무엇이 무너지나</span></div>
+    <h2>의존성 사슬과 <em>GOF 체크리스트</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>변화 상황</th><th>1차 영향</th><th>조치</th></tr></thead>
+      <tbody>
+        <tr><td>초기값 틀림</td><td>잘못된 수렴/국소 최소</td><td>EDA·NCA·그래프 anchor 재설정</td></tr>
+        <tr><td>잔차 계통적</td><td>GOF 성립 불가</td><td>구조 또는 가중치 재검토</td></tr>
+        <tr><td>비중첩/다른 가중치</td><td>F-검정·AIC 무력화</td><td>기전·잔차·외부근거 삼각검증</td></tr>
+        <tr class="hot"><td>모수 상관 높음</td><td>식별성 취약</td><td>다음 채혈 설계 보강</td></tr>
+        <tr><td>점근 SE 가정 깨짐</td><td>표준 CI 신뢰 불가</td><td>bootstrap/SIR 재구성 <span class="flag">교과서 외</span></td></tr>
+        <tr><td>생성 적합 미확인</td><td>fit만 입증</td><td>VPC/pcVPC/NPDE <span class="flag">교과서 외</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">GOF 체크리스트 (G&amp;W Table 4.9)</div><p style="margin:0;">① 생물학적 관련성(기전 없는 낮은 AIC는 취약) · ② 곡선이 데이터 경향 재현 · ③ 모수 정밀도 충분(필요 시 bootstrap/SIR) · ④ 잔차에 계통적 이탈 없음 · ⑤ 잔차 무작위 산포 <span class="cite">G&amp;W p.391</span>. G&amp;W 요약 — <b>통계 검정(F·AIC·SC)보다 잔차·정밀도·상관을 비판적으로 보는 게 종종 더 낫다.</b></p></div>
+  </div>
+</section>
+
+<!-- 18 · 자가점검 -->
+<section class="card top" id="s26">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 능동 회상</span></div>
+    <h2>답을 가리고 <em>스스로 떠올리기</em></h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1</span><span class="lv">M1</span> 초기값이 부실할 때 G&amp;W가 명시한 세 위험은?</div>
+      <div class="a">① 잘못된 최종값 수렴, ② local minimum(국소 최소) 갇힘, ③ 생리학적으로 불가능한 모수(V 음수 등) <span class="cite">G&amp;W p.353</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q2</span><span class="lv">M2</span> 잔차 그림의 바나나와 부채는 각각 무엇을 의심하게 하나?</div>
+      <div class="a">바나나/U자(잔차 vs 시간)는 <b>구조 오류</b>(빠진 지수항·잘못된 구획), 부채(잔차 vs 예측값)는 <b>분산/가중치 오류</b>. 처방이 정반대 <span class="cite">G&amp;W pp.372–376</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q3</span><span class="lv">M3</span> MM weighted vs first-order unweighted에서 AIC 낮은 쪽을 그냥 골라도 되나?</div>
+      <div class="a">안 됨. <b>비중첩 + 다른 가중치</b>라 F-검정도 AIC도 둘 다 불가 <span class="cite">G&amp;W p.389</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q4</span><span class="lv">M3·교과서 외</span> 공변량을 넣었더니 \(\Delta\text{OFV}=5.2\). 전진(\(\alpha\)=0.05)·후진(\(\alpha\)=0.01)?</div>
+      <div class="a">전진 임계 3.84이므로 \(5.2&gt;3.84\) → <b>채택</b>. 후진 임계 6.63이므로 \(5.2&lt;6.63\) → <b>탈락</b>. 후진을 더 엄격히 해 우연 공변량을 거름 <span class="flag">Wilks 1938 · Wählby 2002</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q5</span><span class="lv">생성·교과서 외</span> M2/M3/M4 다 통과한 모델이 VPC에서 실패함. 무엇이 잘못?</div>
+      <div class="a">GOF/잔차/AIC는 <b>fit 기반</b>(설명 능력만 입증). VPC는 <b>시뮬레이션 기반</b>(생성 능력 검증). VPC 실패 = <b>변이 구조(IIV/잔차오차) 오설정</b>. pcVPC 실패 = 용량·공변량 차이를 변이로 흡수. NPDE가 N(0,1) 벗어남 = 분포 형태 오류 <span class="flag">Holford 2005 · Bergstrand 2011</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 · 요약 연결 -->
+<section class="card dark" id="s27">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10 · 닫기</span><span class="eyebrow">한 줄 요약 · 세션 연결</span></div>
+    <h2>진단은 체크박스가 아니라 <em>하나의 사건</em></h2>
+    <div class="key"><span class="lbl">한 줄 요약</span>초기값은 <b>출발 골짜기</b>를 정하고, 잔차는 <b>거짓말</b>을 드러내며, 비교는 <b>같은 운동장</b>에서만 유효하고, 정밀도·상관은 <b>설계 품질</b>을 말하며, 편미분은 <b>다음 채혈</b>을 정하고, 민감도는 <b>임상 결론을 스트레스 테스트</b>하며, VPC/Bootstrap이 마지막 검문을 통과시킴 — <strong>6명의 형사가 순차로 검문하는 하나의 사건임.</strong></div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(19px,2.3vw,29px); color:#fff; text-align:center; margin:20px 0 6px;">"모델링 회전목마(carousel) — 데이터 탐색 → fit → 출력 분석 → 다음 설계로 환승."</p>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">← 이전 (11·12·13)</div><p style="margin:0;">세션 13 IIV의 OMEGA·변이 구조가 M3 경계 모수·M4 식별성에서 재등장. 세션 11 turnover·12 effect compartment의 \(k_{in}/k_{out}\)·\(IC_{50}\)가 M1 anchor·M5/M6 민감도에서 재사용.</p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">→ 16 임상 캡스톤</div><p style="margin:0;">이 6형사 진단이 실제 임상 의사결정으로 통합됨. (본 세션은 R&amp;T 없어 임상 귀결을 <span class="flag">확인 필요: 자료 미포함</span>으로 표기했음.)</p></div>
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; color:var(--cream); margin-top:6px; text-align:center;">"6명의 형사를 다 통과한 모델만 임상으로 내보낼 것."</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var tocEl = document.querySelector('.toc');
+  var total = cards.length;
+  var cur = 0;
+
+  function linkFor(id){
+    for(var i=0;i<links.length;i++){ if(links[i].getAttribute('href') === '#'+id) return links[i]; }
+    return null;
+  }
+  function ensureVisible(l){
+    var lr = l.getBoundingClientRect(), tr = tocEl.getBoundingClientRect();
+    if(lr.top < tr.top + 8) tocEl.scrollTop -= (tr.top + 8 - lr.top);
+    else if(lr.bottom > tr.bottom - 8) tocEl.scrollTop += (lr.bottom - (tr.bottom - 8));
+  }
+  function setActive(idx){
+    cur = idx;
+    var id = cards[idx].id;
+    for(var i=0;i<links.length;i++) links[i].classList.remove('active');
+    var l = linkFor(id);
+    if(l){ l.classList.add('active'); ensureVisible(l); }
+    counter.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    bar.style.width = ((idx+1)/total*100) + '%';
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(cards.indexOf(e.target)); }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  cards.forEach(function(c){ io.observe(c); });
+
+  function go(d){
+    var n = Math.max(0, Math.min(total-1, cur + d));
+    if(n !== cur) cards[n].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  window.addEventListener('keydown', function(e){
+    if(e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)){ e.preventDefault(); go(1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)){ e.preventDefault(); go(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); cards[0].scrollIntoView({behavior:'smooth'}); }
+    else if(e.key === 'End'){ e.preventDefault(); cards[total-1].scrollIntoView({behavior:'smooth'}); }
+  });
+
+  var burger = document.querySelector('.burger');
+  if(burger){
+    burger.addEventListener('click', function(){ document.body.classList.toggle('toc-open'); });
+    links.forEach(function(l){ l.addEventListener('click', function(){ document.body.classList.remove('toc-open'); }); });
+  }
+
+  setActive(0);
+})();
+</script>
+</body>
+</html>

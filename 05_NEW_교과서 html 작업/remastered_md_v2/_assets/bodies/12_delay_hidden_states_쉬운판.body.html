@@ -1,0 +1,457 @@
+<!--META
+title: 세션 12 · Effect Compartment·지연·숨은 상태 — 늦음을 만드는 시계 찾기 · 카드뉴스
+-->
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 12 · Delay &amp; Hidden States</div>
+    <div class="t">지연의 정체 — 다리·수조·릴레이</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 관통 척추</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">한 장 지도 · 4막</a>
+      <a class="toc-link" href="#s4">마취과 의사의 5초</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>함정 · 1막</div>
+      <a class="toc-link" href="#s5">같은 단위 ≠ 같은 시계</a>
+      <a class="toc-link" href="#s6">Hysteresis 방향 = 필터</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>2막 · 약물 시계 (다리)</div>
+      <a class="toc-link" href="#s7">효과구획 · k_e0</a>
+      <a class="toc-link" href="#s8">평형 반감기 · 용량 무관 t_max</a>
+      <a class="toc-link" href="#s9">EC50 용량 분기 (☠️)</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>3막 · 시스템 시계 (수조)</div>
+      <a class="toc-link" href="#s10">니트로글리세린 한 주</a>
+      <a class="toc-link" href="#s11">조절자 ODE · 음의 되먹임</a>
+      <a class="toc-link" href="#s12">PD13 · Model II 승리</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>4막 · 신호 시계 (릴레이)</div>
+      <a class="toc-link" href="#s13">Transit chain · n×τ</a>
+      <a class="toc-link" href="#s14">PD35 · n 고르기</a>
+      <a class="toc-link" href="#s15">Friberg · Black–Leff</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s16">네 갈래 감별표</a>
+      <a class="toc-link" href="#s17">NONMEM 코딩</a>
+      <a class="toc-link" href="#s18">진단 시그니처 4종</a>
+      <a class="toc-link" href="#s19">혼동쌍 5쌍</a>
+      <a class="toc-link" href="#s20">캡스톤 · 한 줄 요약</a>
+      <a class="toc-link" href="#s21">자가점검</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 12 · Effect Compartment·지연·숨은 상태 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,78px); margin-top:.25em; line-height:1.08;">농도와 효과가 어긋날 때<br><em>늦음을 만드는 시계</em>는 어디 있나</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">농도는 떨어지는데 효과는 늦게 따라옴 — 그 늦음의 <b style="color:var(--amber)">정체</b>를 다리·수조·릴레이 셋으로 가려내는 노트</p>
+    <div class="key" style="max-width:900px; margin:34px auto 0; text-align:left;">
+      <span class="lbl">관통 척추</span>
+      농도-효과가 어긋나는(hysteresis) 이유는 둘 사이에 <strong>숨은 상태(hidden state)</strong>가 끼어서임. 그게 <b>분포 지연(effect compartment·다리)</b>이냐, <b>신호 지연(transduction·릴레이)</b>이냐, <b>내성(tolerance·수조+자동조절기)</b>이냐를 가려내는 게 이 세션임.
+    </div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.3vw,30px); color:#fff; margin-top:30px;">"지연은 메커니즘이 아니다. 지연되는 <em>상태</em>에 이름부터 붙여라."</p>
+    <div class="foot">Gabrielsson &amp; Weiner 5판 §3.9–3.14 (사례 PD13·PD20·PD21·PD35) · Rowland &amp; Tozer 5판 Ch.8 — 모든 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 / 메타블록 -->
+<section class="card top" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처 약속</span></div>
+    <h2>시작 전에 딱 한 번 — <em>두 교과서</em>와 사례연구 약속</h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)">
+        <div class="bh">G&amp;W = Gabrielsson &amp; Weiner</div>
+        <p class="muted"><i>Pharmacokinetic and Pharmacodynamic Data Analysis</i> 5판. 계량약리학(pharmacometrics) 표준 분석 교재. 사례연구 <b>PD13·PD20·PD21·PD35</b>가 이 세션의 앵커. (파일명 <span class="cite">_G_</span>)</p>
+      </div>
+      <div class="box" style="--ac:var(--f2)">
+        <div class="bh">R&amp;T = Rowland &amp; Tozer</div>
+        <p class="muted"><i>Clinical Pharmacokinetics and Pharmacodynamics</i> 5판 Chapter 8 "Response". 임상 hysteresis 사례(digoxin·naproxen)의 출처. (파일명 <span class="cite">_T_</span>)</p>
+      </div>
+    </div>
+    <div class="key"><span class="lbl">📌 PD 사례연구란</span><b>PDnn</b> = "Case Study nn번"의 약자임. G&amp;W가 실제 데이터로 모델을 굴려보는 실습 코너 — <b>PD21</b>(길항제 X), <b>PD20</b>(새 진통제), <b>PD13</b>(반복 IV·내성), <b>PD35</b>(transduction). 쪽번호는 전부 <b>원판 종이책</b> 기준, 원서에 없으면 <span class="flag">확인 필요</span> 또는 <span class="flag">교과서 외</span>로 표기함.</div>
+    <p class="muted"><b>대상</b> 비전공·대학 1학년 OK · <b>선행지식</b> 거의 없음 — "약을 먹으면 혈장 농도가 시간 따라 오르내린다"만 알면 됨. 나머지 용어는 나올 때마다 괄호로 풀어줌.</p>
+  </div>
+</section>
+
+<!-- 3 · 한 장 지도 -->
+<section class="card dark" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§1</span><span class="eyebrow">한 장 지도 · 관통 척추</span></div>
+    <h2>관찰 하나, <em>4막의 추적</em></h2>
+    <p class="lead">농도-효과 데이터를 그리면 고리(loop)가 보임. 그 고리 뒤의 <b style="color:var(--amber)">숨은 상태</b>가 누구인지 4막으로 추적함.</p>
+    <div class="flow">
+      [관찰] 농도와 효과가 시간상 떨어져 있다 <span class="step">hysteresis loop</span><br>
+      &nbsp;&nbsp;<span class="ar">│</span><br>
+      &nbsp;&nbsp;├─ <span class="step">1막 §4</span> loop 방향(CCW/CW)으로 후보 좁히기 &nbsp;<span class="ar">←</span> 필터지 판결 아님<br>
+      &nbsp;&nbsp;├─ <span class="step">2막 §5</span> "약물 시계"인가? → Effect compartment, \(k_{e0}\) &nbsp;<span class="ar">←</span> 다리 통행<br>
+      &nbsp;&nbsp;├─ <span class="step">3막 §6</span> "시스템 시계"인가? → 내성/반동, Moderator \(M\) &nbsp;<span class="ar">←</span> 수조+조절기<br>
+      &nbsp;&nbsp;└─ <span class="step">4막 §7</span> "신호 시계"인가? → Transit chain, \(n\times\tau\) &nbsp;<span class="ar">←</span> 릴레이 경주
+    </div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🦴 척추 선언</div><p style="margin:0;">농도-효과 어긋남은 둘 사이 <b>숨은 상태</b>가 끼어서임. 그게 <b>분포 지연이냐, 신호 지연이냐, 내성이냐</b>를 가려내는 게 이 세션 전부임. 막 넷을 본 뒤 <b>감별표(§8)→NONMEM(§9)→진단 시그니처(§10)→혼동쌍(§11)→큰 그림(§12)→요약(§13)</b>으로 마감함.</p></div>
+    <p style="font-family:var(--font-serif); font-style:italic; color:var(--cream); margin-top:4px;">"식(ODE)을 고르는 건 그다음이다. 지금 늦는 게 누구냐를 먼저 묻는다."</p>
+  </div>
+</section>
+
+<!-- 4 · 도입 마취과 의사 -->
+<section class="card" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow" style="color:var(--coral-d)">도입 · 척추를 실제 약으로</span></div>
+    <h2>같은 표적인데 회복 속도가 <em>100배</em></h2>
+    <p class="lead">수술 끝 무렵 마취과 의사의 고민 — "약을 지금 끌까?" 둘 다 <b>μ-opioid 수용체</b>(통증·의식을 누르는 단백질)에 똑같이 붙는 약인데:</p>
+    <div class="stats">
+      <div class="stat"><span class="lab">Remifentanil · 끄면</span><span class="val">1<span class="u">분이면 깸</span></span></div>
+      <span class="arrow">vs</span>
+      <div class="stat"><span class="lab">Morphine · 끄면</span><span class="val">2<span class="u">시간 못 깨움</span></span></div>
+    </div>
+    <p>표적이 같은데 임상에서는 완전히 다른 약처럼 행동함. <strong>답은 혈장 동태(plasma kinetics)가 아님.</strong> 혈장 반감기 \(t_{1/2}\)만 봐서는 절대 못 맞춤 — 진짜 답은 <b>약이 "작용하는 곳"으로 건너갔다 떠나는 다리의 통행 속도가 100배 다르기 때문</b>임. 이 통행 속도의 이름이 \(k_{e0}\)인데, §5에서 정식으로 만남.</p>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 학생 vs 마스터의 5초</div><p style="margin:0;">지연이 보이면 학생은 손이 먼저 \(k_{e0}\)로 감("효과구획 붙이면 되겠네"). 마스터는 정반대 — <b>"지금 늦는 게 누구냐?"</b>를 먼저 묻고, 답이 나온 <i>다음에야</i> 식 모양을 고름. 이 강의가 가르치는 건 그 5초의 사고 순서임.</p></div>
+    <div class="thread"><span class="ico">🎯</span><div>가장 충격적인 임상 장면으로 "농도만 봐선 효과를 못 맞춘다"를 몸으로 느끼는 자리. <b>다리문장:</b> 그전에 초보가 가장 잘 빠지는 함정 — "단위가 같으면 의미도 같다"는 착각부터 깔자.</div></div>
+  </div>
+</section>
+
+<!-- 5 · PD21 같은 단위 ≠ 같은 시계 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3 · 함정</span><span class="eyebrow f1">같은 단위라고 같은 의미가 아님 (PD21)</span></div>
+    <h2>세 속도상수, <em>같은 단위 다른 시계</em></h2>
+    <p class="lead">PD21 — 토끼에 길항제 X를 경구 투여. 세 속도상수가 보고됨 <span class="cite">G&amp;W p.845</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{k_{e0}=0.025}^{\text{생체상 평형}},\quad \overbrace{k_{out}=0.031}^{\text{시스템 회전}},\quad \overbrace{k_{off}=0.018\ \text{min}^{-1}}^{\text{수용체 해리}} \]</div></div>
+    <p>세 값이 거의 비슷하고 단위도 셋 다 \(\text{min}^{-1}\)(분의 역수 = "1분당 몇 번")으로 같음. 초보는 "어차피 다 비슷한 시간상수네" 하고 넘어감 — <strong>이게 함정임.</strong> 셋은 완전히 다른 시계를 가리킴:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>기호</th><th>비유</th><th>실제 의미</th><th>어느 막?</th></tr></thead>
+      <tbody>
+        <tr><td>\(k_{e0}\)</td><td><b>다리 통행 속도</b></td><td>혈장→작용부위로 건너가는 속도</td><td>2막</td></tr>
+        <tr><td>\(k_{out}\)</td><td><b>수조 배수 속도</b></td><td>시스템이 반응을 만들고 비우는 속도</td><td>3막</td></tr>
+        <tr><td>\(k_{off}\)</td><td><b>빗장 풀림 속도</b></td><td>약물-표적 결합이 풀리는 속도</td><td>수용체 결합</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">🔢</span> 해리 반감기 직접 계산</div><p style="margin:0;">\(k_{off}=0.018\ \text{min}^{-1}\)이면 결합이 절반 풀리는 반감기 \(=\ln 2/k_{off}=0.693/0.018\approx38.5\)분 (G&amp;W는 <b>39분</b>으로 반올림 <span class="cite">G&amp;W p.845</span>). 같은 식으로 \(k_{e0}\)≈28분, \(k_{out}\)≈22분. 비슷해 보여도 <i>가리키는 물리적 대상이 다름</i>.</p></div>
+    <div class="key"><span class="lbl">한 줄 결론</span>세 값이 비슷한 건 <strong>우연이지 동치가 아님</strong>. 단회투여(single-dose)만으론 어느 시계가 율속인지 못 가림 — 용량 층화·반복투여·washout 같은 풍부한 설계가 필요 <span class="cite">G&amp;W p.846</span>. <b>다리·수조·빗장</b>, 끝까지 따라옴.</div>
+  </div>
+</section>
+
+<!-- 6 · 1막 Hysteresis -->
+<section class="card dark top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4 · 1막</span><span class="eyebrow">Hysteresis 방향 = 결론이 아니라 필터</span></div>
+    <h2>고리 방향은 <em>단서지 판결이 아님</em></h2>
+    <p class="lead"><b>이력현상(hysteresis)</b> = 농도가 오를 때와 내릴 때 반응이 <i>다른 경로</i>를 따르는 현상. 농도-반응을 시간 순서로 이으면 <b style="color:var(--amber)">고리(loop)</b>가 생김.</p>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">Digoxin (강심제)</div><p style="margin:0;">IV bolus 후 첫 4시간, 혈장 농도는 <i>감소</i>하는데 심장 효과는 <i>증가</i> — 약이 심장 조직으로 늦게 드는 분포 지연. 그래서 약 6시간 뒤 측정해야 함 <span class="cite">R&amp;T Fig.8-1, p.234</span>.</p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">Naproxen (NSAID)</div><p style="margin:0;">경구 500mg 후 치통 완화에서 명확한 <b>반시계(CCW)</b> 고리 — 약 5시간 뒤에야 반응이 농도 하강을 따라감 <span class="cite">R&amp;T Fig.8-2, pp.234–235</span>.</p></div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>방향</th><th>1차 해석</th><th>후보(hidden state)</th><th>검증 단서</th></tr></thead>
+      <tbody>
+        <tr><td><b>CCW</b> 반시계</td><td>반응이 농도보다 <i>늦음</i></td><td>분포 지연·회전·느린 결합·동조성 대사체</td><td>용량 무관 \(t_{max}\)? · loop collapse · 반복투여</td></tr>
+        <tr><td><b>CW</b> 시계</td><td>반응이 <i>일찍 약화</i></td><td>내성·길항성 대사체·수용체 감소</td><td>반복투여 trough · washout 후 rebound</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">🔬</span> Loop collapse · ⚠️ Input-rate artifact</div><p style="margin:0;">측정 농도 \(C\) 대신 추정 \(C_e\)로 다시 그렸을 때 고리가 <b>한 곡선으로 접히면(collapse)</b> 분포 지연이 율속 — 가장 깨끗이 접는 \(k_{e0}\)가 추정치 <span class="cite">R&amp;T Fig.8-14, pp.245–246</span>. ⚠️ 단, <b>매우 빠른 IV bolus</b>는 진짜 내성이 아닌데도 CW를 만듦(주입속도 아티팩트) — 더 느린 주입으로 재확인 <span class="cite">R&amp;T p.236; G&amp;W p.296</span>.</p></div>
+    <p style="font-family:var(--font-serif); font-style:italic; color:var(--cream); margin-top:2px;">"같은 농도를 두 번 방문했을 때 두 번째에 더 환영받으면 CCW, 덜 환영받으면 CW."</p>
+  </div>
+</section>
+
+<!-- 7 · 2막 effect compartment ODE -->
+<section class="card top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 2막</span><span class="eyebrow f2">약물 시계 \(k_{e0}\) — 다리 통행 속도</span></div>
+    <h2>딱 한 줄만 외우면 됨 — <em>효과구획 ODE</em></h2>
+    <p class="lead">혈장 농도 \(C(t)\)는 측정되지만 약이 <b>실제로 작용하는 곳</b>(effect site·biophase)의 농도 \(C_e\)는 측정 안 됨. 거기로 가는 길에 시간이 걸려 CCW 고리가 생김. \(C_e\)는 <b>반응 곡선으로 역추정되는 숨은 상태</b> <span class="cite">G&amp;W p.263</span>.</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dC_e}{dt}}_{\text{Ce 변화율}}=\underbrace{k_{e0}}_{\text{추종 속도}}\left(\overbrace{C}^{\text{혈장 농도}}-\overbrace{C_e}^{\text{생체상 농도}}\right) \]</div></div>
+    <p><b>읽는 법:</b> "효과부위 농도는 혈장과의 <i>차이</i>(\(C-C_e\))에 비례해 변한다." 차이가 크면 빨리 따라가고 줄면 천천히. \(k_{e0}\)가 크면 골목 문이 활짝 열려 금방 같아지고, 작으면 한참 늦음. 좋은 점 — <b>구동 함수 \(C(t)\)에 뭘 넣든 작동</b>함(선형·비선형 PK, 심지어 관측값을 그대로 꽂는 table function). 그래서 NONMEM이 깔끔하게 받음 <span class="cite">G&amp;W p.269; PD21 pp.840–842</span>.</p>
+    <p class="muted">이 \(C_e\)를 약효 식(Hill = sigmoid \(E_{max}\))에 넣어 반응을 계산함 <span class="cite">G&amp;W Eq.3:141, p.268</span>:</p>
+    <div class="formula-hero"><div class="mathblock">\[ E = E_{max}\cdot\frac{C_e^{\,n}}{EC_{50}^{\,n}+C_e^{\,n}} \]</div></div>
+    <div class="params">
+      <span class="chip"><b>\(EC_{50}\)</b> 최대효과 절반을 내는 농도 = 효력</span>
+      <span class="chip"><b>\(n\)</b> Hill 지수 = S자의 가파름</span>
+      <span class="chip"><b>역사</b> Segre·Wagner(1968)·Sheiner(1979) <span class="cite">G&amp;W Fig.3.52, p.262</span></span>
+    </div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 닫힌 해의 단순화 가정 두 개</div><p style="margin:0;">IV bolus+1구획일 때 닫힌 해는 \(k_{1e}=k_{e0}\)와 \(K_p=1\)(평형에서 \(C_e=C\))을 깔고 있음 <span class="cite">G&amp;W pp.263–265</span>. <strong>보편 물리법칙이 아님</strong> — 두 파라미터를 따로 못 떼는 식별성 문제 때문의 표준 단순화임. 약이 생체상에 더 농축되면 \(K_p\ne 1\).</p></div>
+  </div>
+</section>
+
+<!-- 8 · 2막 평형 반감기 -->
+<section class="card" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 2막</span><span class="eyebrow f2">평형 반감기 · 용량 무관 \(t_{max}\)</span></div>
+    <h2>마취과 의사가 외우는 <em>그 시간</em></h2>
+    <p class="lead">일정 농도(step input)를 넣으면 \(C_e\)가 평형 도달하는 반감기가 한 줄로 떨어짐 — <b>"새 용량의 효과는 언제 시작되나?"</b>의 답은 혈장 \(t_{1/2}\)가 아니라 이것 <span class="cite">G&amp;W p.269</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \overbrace{t_{1/2,\,k_{e0}}}^{\text{생체상 평형 반감기}} = \frac{\ln 2}{k_{e0}} \]</div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>반응 지표 · 약물 (G&amp;W Table 3.9)</th><th>\(t_{1/2,k_{e0}}\) (min)</th></tr></thead>
+      <tbody>
+        <tr><td>Spectral edge(뇌파) · Alfentanil / Thiopental</td><td>1.1 / 1.2</td></tr>
+        <tr class="hot"><td>Spectral edge · <b>Fentanyl</b></td><td><span class="em">6.4</span></td></tr>
+        <tr><td>근마비 · Vecuronium / d-Tubocurarine</td><td>4 / 4</td></tr>
+        <tr><td>FEV-1(폐기능) · Terbutaline / Theophylline</td><td>7.5 / 11</td></tr>
+        <tr><td>QT 연장 · Quinidine</td><td>8</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 출처 경계 정직하게</div><p style="margin:0;">Fentanyl 6.4분은 G&amp;W Table 3.9가 명시 <span class="cite">G&amp;W p.269</span>. <b>Remifentanil ~1분·Morphine ~2시간은 같은 표에 없음</b> — 마취 임상약리 문헌의 통상값임 <span class="flag">확인 필요 · Minto 1997, Lötsch 2002</span>. 세 약을 한 표로 묶은 건 <i>교육적 대비</i>지 단일 교과서 출처가 아님.</p></div>
+    <div class="key"><span class="lbl">🔑 가장 강력한 진단</span>약물 동태가 <b>선형(linear)</b>이면 효과구획 모델은 용량이 커져도 \(t_{max}\)(반응 peak 시각)가 <strong>똑같다</strong>고 예측 <span class="cite">G&amp;W p.264</span>. 5/45/225 µg/kg 세 곡선 peak가 다 8시간 근처면 → link 지지(PD20 <span class="cite">G&amp;W Fig.20.2, p.839</span>). 단, "\(t_{max}\) 다름"은 link 기각이지 turnover 확정은 아님(turnover는 양쪽 다 가능).</div>
+  </div>
+</section>
+
+<!-- 9 · 2막 EC50 용량 분기 -->
+<section class="card dark top" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 2막</span><span class="eyebrow">☠️ 가장 위험한 함정 — EC50 용량 분기</span></div>
+    <h2>수렴은 했는데 <em>생물학이 헛소리</em></h2>
+    <p class="lead">G&amp;W §3.9.7의 유명한 실험 — <b>회전(turnover)으로 만든 데이터</b>를 억지로 effect compartment에 끼워 맞춤. 세 용량을 따로 피팅했더니 \(EC_{50}\)이 이렇게 튐 <span class="cite">G&amp;W Table 3.10, p.271</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \overbrace{\text{dose 1: } EC_{50}=0.681}^{\text{저용량}} \quad\to\quad \overbrace{\text{dose 10: } EC_{50}=4.85}^{\text{중용량}} \quad\to\quad \overbrace{\text{dose 100: } EC_{50}=0.941}^{\text{고용량}} \]</div></div>
+    <p>용량 사이에 \(EC_{50}\)이 <b style="color:var(--amber)">약 7배 출렁임</b>. (원래 데이터를 만든 turnover의 진짜 값은 \(k_{out}=0.024\), \(EC_{50}=0.164\).) 게다가 셋을 동시 피팅하면 곡선이 <i>전부 같은 시각에 peak</i>를 찍어 데이터보다 일찍 솟음. 수용체가 용량 따라 7배 민감해진다는 건 말이 안 됨 — <strong>Link 모델이 회전/적응 misspecification을 강제로 흡수</strong>하는 것임 <span class="cite">G&amp;W p.272</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh"><span class="ico">⚠️</span> 인용 주의 + 경계 사례</div><p style="margin:0;">Fig.3.59·Table 3.10은 <b>PD12 데이터</b>임 — PD13이 아님! · 그리고 <b>Succinylcholine</b>의 "근마비 회복 4분"은 <i>용량-지속시간</i> 예시지 효과구획 평형 반감기가 아님 — Table 3.9의 "근마비 4분"과 숫자만 같고 가리키는 양이 다름 <span class="cite">R&amp;T Fig.8-18·8-24, pp.249–256</span>.</p></div>
+    <div class="key"><span class="lbl">한 줄 결론</span>CCW + 선형 PK + 용량 무관 \(t_{max}\) + 단일 \(k_{e0}\)로 깨끗한 loop collapse → 효과구획 가설 생존. 하나라도 흔들리거나 \(EC_{50}\)이 용량 따라 출렁이면 → <b>다른 숨은 상태가 link 뒤에 숨었다는 신호</b> → 3막으로. (§10 Signature 1)</div>
+  </div>
+</section>
+
+<!-- 10 · 3막 니트로글리세린 -->
+<section class="card" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 3막</span><span class="eyebrow f3">시스템 시계 — 수조 + 자동조절기</span></div>
+    <h2>월요일 두통, 일요일 <em>협심증</em></h2>
+    <p class="lead">니트로글리세린(혈관확장제)을 다루는 모자 공장 작업자의 한 주 — 내성과 반동이 <b>한 사람 안에 다 나타남</b> <span class="cite">G&amp;W pp.284–286</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>시점</th><th>증상</th><th>정체</th></tr></thead>
+      <tbody>
+        <tr><td>월요일(첫날)</td><td>심한 두통 (뇌혈관 확장)</td><td>효과 full</td></tr>
+        <tr><td>화~금</td><td>두통 점점 줄어듦</td><td><b>내성(tolerance)</b> 발달</td></tr>
+        <tr class="hot"><td>일요일(노출 끊김)</td><td>기저선 넘어선 혈관 수축 → 협심증 비슷</td><td><span class="em">반동(rebound)</span></td></tr>
+        <tr><td>다시 월요일</td><td>두통 재시작</td><td>(주말엔 모자에 발라뒀다 함)</td></tr>
+      </tbody>
+    </table></div>
+    <p>두 현상이 따로가 아니라 <strong>같은 ODE 쌍의 두 국면(phase)</strong>임. 핵심은 — 약이 사라져도 시스템이 노출의 흔적을 한동안 <b>기억</b>함. 그 기억이 내성을 만들고, 같은 기억이 반동을 만듦.</p>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 욕조 + 자동온도조절기</div><p style="margin:0;">욕조에 수도꼭지(\(k_{in}\))로 물이 들고 배수구(\(k_{out}\))로 빠짐. 약은 수도꼭지를 더 트는 자극. 그런데 <b>수위가 오르면 뒤늦게 배수구를 더 여는 자동조절기</b>가 하나 더 달려 있음 — 이게 조절자 \(M\)임. 약을 끊어도 \(M\)은 아직 높이 올라가 있어 배수를 세게 함 → 수위가 기저선 <i>아래로</i>(반동).</p></div>
+    <div class="thread"><span class="ico">⚠️</span><div>혼동쌍 — <b>내성 vs 반동은 다른 두 기전이 아님.</b> 약 있을 때 효과 깎는 국면=내성, 약 끊은 뒤 \(M\)이 남아 미는 국면=반동. 헷갈리면 "수조에 조절기 하나"로 돌아오면 됨.</div></div>
+  </div>
+</section>
+
+<!-- 11 · 3막 조절자 ODE -->
+<section class="card top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 3막</span><span class="eyebrow f3">조절자 ODE · 음의 되먹임</span></div>
+    <h2>시스템 기억을 <em>두 줄</em>로</h2>
+    <p>반응 \(R\)(수조)와 그 뒤를 따라오는 조절자 \(M\)(자동조절기), 두 식이 필요함 <span class="cite">G&amp;W Eq.3:193–194, p.299</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dR}{dt}}_{\text{R 변화율}}=\overbrace{k_{in}\,S(C)}^{\text{자극 입력(수도꼭지)}}-\overbrace{k_{out}\,M}^{\text{조절기가 키운 배수}} \]</div></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dM}{dt}}_{\text{M 변화율}}=\underbrace{k_{tol}}_{\text{적응 속도}}\left(\overbrace{R}^{\text{현재 수위}}-\overbrace{M}^{\text{지연된 조절기}}\right) \]</div></div>
+    <p class="muted"><b>\(S(C)\)</b>=약물 자극 함수(약 없으면 1, 있으면 1보다 커져 생성↑, 무차원). 둘째 식은 \(k_{e0}\) ODE와 <i>똑같은 "차이에 비례" 꼴</i> — 다리 ODE를 봤으면 거저임.</p>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 부호가 음수여야 하는 이유</div><p style="margin:0;">\(M\)이 <b>\(-k_{out}M\)</b>로 들어가는 건 임의가 아님 — 부호가 \(+\)면 자기증폭해 <b>무한 발산</b>(시스템 폭주). 음의 되먹임(negative feedback) 한 글자가 항상성(homeostasis)을 만드는 유일한 구조 <span class="cite">G&amp;W pp.297–298</span>.</p></div>
+      <div class="box" style="--ac:var(--f4)"><div class="bh"><span class="ico">🔢</span> 자극 크면 겉보기 반감기 짧아짐</div><p style="margin:.2em 0;">겉보기 반감기 \(t_{1/2,k_{out}}=\dfrac{\ln 2\,R_0}{k_{in}\,S(C)}\) <span class="cite">G&amp;W Eq.3:204, p.299</span>. 분모에 \(S(C)\) — 고용량일수록 같은 상수인데도 시간척도가 짧아짐. \(S(C)\) 2→10이면 반감기 약 5배 단축("고용량에서 내성이 빨리 보이는" 정체).</p></div>
+    </div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">🔬</span> AUC 비대칭 — 내장된 시그니처</div><p style="margin:0;">약 주는 동안 효과 면적이 끊은 뒤 반동 면적보다 큼 <span class="cite">G&amp;W Fig.3.82, p.298</span>: \(\,AUC_R&lt;AUC_E\,\). 만약 \(AUC_R\approx AUC_E\)(대칭)면 조절자 구조 설정이 의심됨(또는 pool/precursor 쪽). 비율 0.3이면 전형적 조절자.</p></div>
+  </div>
+</section>
+
+<!-- 12 · 3막 PD13 -->
+<section class="card dark top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6 · 3막</span><span class="eyebrow">PD13 — 반복 IV 주입의 정식 사례</span></div>
+    <h2>Model II의 <em>압도적 승리</em>, 그런데 왜?</h2>
+    <p class="lead">워시아웃을 사이에 둔 IV 주입 두 번. 일반 회전·조절자·pool/precursor 세 후보를 같은 데이터에 피팅 <span class="cite">G&amp;W pp.805–809</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>파라미터</th><th>I (되먹임 없음)</th><th>II (조절자)</th><th>III (pool)</th></tr></thead>
+      <tbody>
+        <tr><td>\(k_{tol}\)</td><td>—</td><td class="em">4.2</td><td>0.05</td></tr>
+        <tr><td>\(k_{out}\)</td><td>7.3</td><td class="em">2.9</td><td>35</td></tr>
+        <tr class="hot"><td>AIC</td><td>−39.0</td><td><span class="em">−97.5</span></td><td>−43.5</td></tr>
+        <tr><td>WRSS</td><td>0.33</td><td><span class="em">0.083</span></td><td>0.28</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted" style="margin:.2em 0;"><b>AIC</b>=파라미터 벌점까지 넣은 적합 점수(작을수록↑), <b>WRSS</b>=가중 잔차제곱합. Model II가 둘 다 압도. 하지만 진짜 발견은 숫자 하나 — <b style="color:var(--amber)">내성 속도 &gt; 회전 속도</b>:</p>
+    <div class="formula-hero"><div class="mathblock">\[ \overbrace{k_{tol}=4.2}^{\text{내성 속도}}\ &gt;\ \underbrace{k_{out}=2.9}_{\text{회전 속도}},\qquad \underbrace{k_{tol}=0.05}_{\text{Model III: 비현실}} \]</div></div>
+    <p>이 부등식이 <i>단 한 번의 주입 안에서도</i> 내성이 보이는 이유임(조절자가 회전보다 빨라야 주입 도중 따라잡아 효과를 깎음). 또 두 번째 주입의 골짜기(trough)가 첫 번째로 그냥 reset되지 않음을 자연스럽게 예측 — §10 Signature 2의 앵커 <span class="cite">G&amp;W p.808</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">대안 구조들 (적재적소)</div><p style="margin:0;">시간 의존 감쇠(Colburn–Eldon, 반동 못함) · 길항성 대사체(Porchet) · 내성 구획 · <b>pool/precursor(III)</b>는 <i>완전 내성+AUC 대칭</i>만 예측해 비대칭 데이터엔 부적합 <span class="cite">G&amp;W Table 3.12, pp.287–295</span>. <b>남는 건 약물이 아니라 시스템 기억 \(M\)</b>임.</p></div>
+  </div>
+</section>
+
+<!-- 13 · 4막 transit chain -->
+<section class="card top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 4막</span><span class="eyebrow f4">신호 시계 \(n\times\tau\) — 릴레이 경주</span></div>
+    <h2>단거리가 아니라 <em>이어달리기</em></h2>
+    <p class="lead"><b>1차 ODE 하나</b>(단일 link)는 <i>단거리</i> — 출발 총성에 곧바로 최대 속도. <b>여러 1차 ODE 연쇄</b>(transit chain)는 <i>릴레이</i> — 바통이 마지막 주자에 갈 때까지 결승선 반응이 느리게, S자로 나타남.</p>
+    <div class="codeblock"><span class="ttl">출발 기울기 한 차이</span><pre>단거리 (n=1):   t=0에서 최대 기울기  → 부드러운 지수 접근
+릴레이 (n=3):   t=0에서 기울기 ≈ 0   → 지연된 S자(sigmoid) 상승</pre></div>
+    <p>약물 자극을 받는 첫 단계 + 바통 넘기는 단계들 + "관찰값은 맨 끝"이라는 세 줄 <span class="cite">G&amp;W Eq.3:257–259, pp.323–325</span>:</p>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dR_e}{dt}}_{\text{Re 변화율}}=\underbrace{\frac{1}{\tau}}_{\text{단계 전달속도}}\left(\overbrace{E_0\,S(C)}^{\text{목표 반응}}-\overbrace{R_e}^{\text{현재 Re}}\right) \]</div></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{dR_i}{dt}}_{\text{Ri 변화율}}=\underbrace{\frac{1}{\tau}}_{\text{단계 전달}}\left(\overbrace{R_{i-1}}^{\text{앞 주자}}-\overbrace{R_i}^{\text{현재 주자}}\right),\quad \underbrace{R_{obs}=R_n}_{\text{관찰=맨 끝}} \]</div></div>
+    <div class="box" style="--ac:var(--f4)"><div class="bh">🦴 척추 호출 — 2막 vs 4막</div><p style="margin:0;">여기서 늦는 건 <i>약물의 이동</i>이 아니라 <i>반응 신호의 전달</i>임. <b>2막은 "약이 부위에 도달했는가", 4막은 "신호가 측정 지점에 도달했는가"</b> — 서로 다른 질문, 다른 숨은 상태. 보통 회전 모델로 못 잡는 <b>15–20시간 onset 지연</b>이 여기 영역 <span class="cite">G&amp;W Fig.3.98–3.99, p.323</span>.</p></div>
+  </div>
+</section>
+
+<!-- 14 · 4막 PD35 -->
+<section class="card" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 4막</span><span class="eyebrow f4">PD35 — 단계 수 \(n\) 고르기</span></div>
+    <h2><em>n은 생물학 단계 수가 아니다</em></h2>
+    <p class="lead">건강한 지원자, 세 용량. 1단계 간접반응으론 15–20시간 onset 지연을 못 잡아 transit chain이 필요해진 사례 <span class="cite">G&amp;W Table 35.1, p.914</span>:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>\(n\)</th><th>\(\tau\) (h)</th><th>\(MTT=n\times\tau\) (h)</th><th>WRSS</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>20</td><td>20</td><td>1319</td></tr>
+        <tr><td>2</td><td>13</td><td>26</td><td>789</td></tr>
+        <tr class="hot"><td><b>3</b></td><td>9.8</td><td>29.4</td><td><span class="em">642</span></td></tr>
+        <tr><td>4</td><td>7.8</td><td>31.2</td><td>632</td></tr>
+        <tr><td>5</td><td>6.4</td><td>32</td><td>682</td></tr>
+      </tbody>
+    </table></div>
+    <p>WRSS만 보면 \(n=4\)가 살짝 낮지만(642→632), \(n=5\)에서 <i>도로 악화</i>(632→682). \(n=1\)은 명백히 부족(1319→789), \(n=3\)이 실용적으로 충분, \(n=4\)부터는 정보 한계. <strong>\(n\)은 진짜 생물학 단계 수가 아니라 데이터가 해상(resolve)하는 cascade 깊이</strong>임. 절약 원칙(parsimony)이 \(n=3\)을 추천 <span class="cite">G&amp;W p.914</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> \(n\times\tau\)는 정확히 상수가 아님</div><p style="margin:0;">"\(n\tau\)는 trade-off라 상수"는 오해. 위 표에서 \(MTT\)가 \(n{=}1\to5\)로 가며 <b>20→32시간, 약 60% 단조 증가</b>함. \(n\)이 커질수록 초기 lag가 커져 평균 지연을 약간 더 늘려야 onset이 더 S자가 됨. <i>민감도·기저(\(EC_{50}\)≈0.35, \(E_0\)≈15–20)는 안정한데 시간 구조만 재배치.</i></p></div>
+    <div class="key"><span class="lbl">한 줄</span>transit chain은 지연의 <strong>크기가 아니라 모양(형상)</strong>을 만듦. WRSS가 평탄해지는 곳에서 \(n\) 선택 종료 — "데이터가 해상하는 것 이상을 주장"하지 말 것.</div>
+  </div>
+</section>
+
+<!-- 15 · 4막 임상 응용 -->
+<section class="card dark top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 4막</span><span class="eyebrow">임상 응용 · 효력 차원 확장</span></div>
+    <h2>릴레이가 <em>임상 표준</em>이 되는 자리</h2>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">Friberg–Karlsson 골수억제 모델 <span class="flag">교과서 외 · J Clin Oncol 2002</span></div><p style="margin:0;">항암제 호중구 감소·회복의 표준 PD 모델이 정확히 transit chain 골격 위에 있음 — 골수 전구세포 → <b>3단계 성숙 transit chain</b> → 순환 호중구. 핵심 증식 식 하나에 이 강의 도구가 다 들어감:</p></div>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{\frac{dProl}{dt}}_{\text{골수 전구세포}}=\overbrace{k_{prol}\,Prol\left(1-\underbrace{E_{drug}(C)}_{\text{세포살상}}\right)\left(\frac{Circ_0}{Circ}\right)^{\gamma}}^{\text{생성: 자기증식 × 약물억제 × 음의 되먹임 보상}}-\underbrace{k_{tr}\,Prol}_{\text{다음 단계로}} \]</div></div>
+    <p class="muted" style="margin:.2em 0;"><b style="color:var(--amber)">Transit \(n\times\tau\)</b>=4막 · <b style="color:var(--amber)">음의 되먹임</b> \((Circ_0/Circ)^{\gamma}\)=3막 조절자 직관 · <b style="color:var(--amber)">간접반응</b> \(k_{prol}\) vs \(k_{circ}\)=11번 세션 · <b style="color:var(--amber)">자극 함수</b> \(E_{drug}(C)\)=Hill. 약이 바뀌어도 사슬 구조는 유지되고 세포살상 항만 달라짐 — <b>신호 시계는 약물이 아니라 시스템에 속함</b>.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">확장 — Black–Leff Operational Model <span class="flag">교과서 외 · Proc R Soc 1983</span></div><p style="margin:.3em 0;">transit chain이 <i>시간 차원</i> 신호전달이면, operational model은 <i>효력 차원</i>. 여기 \(\tau\)는 <b>transducer ratio</b>(무차원 효력 지표) — ⚠️ transit chain의 \(\tau\)(시간)와 <b>기호만 같고 의미 완전 다름</b>(§3 함정 반복!).</p>
+    <div class="formula-hero"><div class="mathblock">\[ \overbrace{EC_{50}^{obs}\big|_{n=1}}^{\text{Hill }n=1\text{ 관찰 EC50}} = \frac{\underbrace{K_A}_{\text{실제 친화도}}}{\underbrace{1+\tau}_{\text{효력 보정}}} \]</div></div>
+    <p style="margin:.2em 0;">완전 작용제(\(\tau\gg1\))면 \(EC_{50}^{obs}\to K_A/\tau\)로 매우 작아짐. onset 모양이 안 맞으면 transit chain, 점근선 높이(\(E_{max}^{obs}&lt;E_m\))가 안 맞으면 operational \(\tau\) — <b>경쟁이 아니라 직교 차원</b>.</p></div>
+  </div>
+</section>
+
+<!-- 16 · 종합 감별표 -->
+<section class="card top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8 · 종합</span><span class="eyebrow f5">같은 "늦음"을 네 갈래로</span></div>
+    <h2>direct · 분포 · 신호 · 회전 <em>감별표</em></h2>
+    <div class="tbl"><table>
+      <thead><tr><th>묻는 것</th><th>직접효과</th><th>분포 (2막)</th><th>신호 (4막)</th><th>회전·내성 (3막)</th></tr></thead>
+      <tbody>
+        <tr><td>숨은 상태</td><td>없음</td><td>\(C_e\)</td><td>\(R_1\ldots R_n\)</td><td>\(R\)+조절자 \(M\)</td></tr>
+        <tr><td>비유</td><td>—</td><td>다리 통행</td><td>릴레이</td><td>수조+조절기</td></tr>
+        <tr class="hot"><td>용량 ↑ 시 \(t_{max}\)</td><td>—</td><td><span class="em">변화 없음</span>(선형 PK)</td><td>대체로 변화</td><td><span class="em">이동</span>(peak shift)</td></tr>
+        <tr><td>onset 모양</td><td>즉각</td><td>즉각+ramp</td><td><b>늦게+S자</b></td><td>느린 출발</td></tr>
+        <tr><td>반복투여 carry-over</td><td>없음</td><td>없음</td><td>없음</td><td><b>있음</b>(trough drift)</td></tr>
+        <tr><td>loop collapse</td><td>—</td><td><b>단일 \(k_{e0}\)로 깨끗</b></td><td>안 깨끗</td><td>안 깨끗</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--f5)"><div class="bh">감별 3종 세트 — 같은 늦음을 가르는 세 단서</div><p style="margin:0;"><b>① 용량 의존성:</b> peak 시각 그대로면 분포(선형 PK), 이동하면 회전/신호 · <b>② hysteresis 방향:</b> CCW면 셋 다 후보, CW면 내성(아티팩트 먼저 배제) · <b>③ 반복투여 carry-over:</b> trough drift·반동 보이면 회전·내성 확정, 없으면 분포/신호.</p></div>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 가장 비싼 실수 + 11번 연결</div><p style="margin:0;">"CCW 보이니 곧장 effect compartment" → §9에서 봤듯 회전 데이터를 link로 피팅하면 \(EC_{50}\)이 7배 출렁이는 헛소리 <span class="cite">G&amp;W pp.271–272</span>. 또 12의 effect compartment와 <b>11의 turnover는 단회투여에선 같은 곡선</b>(비식별성) — 추가 실험 단서 없이 못 가름.</p></div>
+  </div>
+</section>
+
+<!-- 17 · NONMEM -->
+<section class="card" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9 · 도구</span><span class="eyebrow f2">NONMEM — 줄 수 = 숨은 상태 개수</span></div>
+    <h2>모델 선택이 어렵지, <em>코딩은 받아쓰기</em></h2>
+    <p class="lead"><b>NONMEM</b> = <b>NON</b>linear <b>M</b>ixed <b>E</b>ffects <b>M</b>odeling = 비선형 혼합효과 모델링. <i>비선형</i>(Hill 곡선) + <i>혼합효과</i>(집단 공통 고정효과 + 개인 변이 임의효과)를 한 모델에 섞어 추정하는 인구집단 PK/PD 표준 프로그램임.</p>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 주방기계 비유</div><p style="margin:0;">ODE가 "레시피"라면 NONMEM은 <b>재료(데이터) 넣고 레시피대로 돌려 양념 비율(파라미터 \(k_{e0}\)·\(k_{tol}\)·\(\tau\))을 역으로 알아내는 주방기계</b>임. 레시피는 우리가 §1–8에서 골랐고, 기계 돌리는 게 NONMEM 몫.</p></div>
+    <div class="codeblock"><span class="ttl">effect compartment — DADT 한 줄 + Hill 한 줄</span><pre><span class="kw">$DES</span>
+  DADT(1) = -K*A(1)                <span class="cm">; 혈장 약물량</span>
+  CE      =  A(2)/V                <span class="cm">; 효과부위 농도</span>
+  DADT(2) =  KE0*(A(1)/V - CE)*V   <span class="cm">; ★ dCe/dt = ke0(C - Ce)</span>
+<span class="kw">$ERROR</span>
+  EFF = EMAX*CE**N/(EC50**N + CE**N)  <span class="cm">; Hill에 Ce 대입</span></pre></div>
+    <p class="muted">transit chain은 구획을 \(n\)개 줄 세워 <code>DADT</code>를 \(n\)줄, moderator는 \(R\)·\(M\) 두 줄(\(M\)이 마이너스로 들어가게 §6). <b>요점: 숨은 상태가 몇 개든 그 개수만큼 <code>DADT</code> 줄을 쓰는 것</b>으로 끝남 — effect cmt 1줄, moderator 2줄, transit(n=3) 3~4줄.</p>
+    <div class="thread"><span class="ico">⚠️</span><div>단계 수 \(n\)을 데이터가 못 받쳐주는데 늘리면 <b>수렴은 하지만</b> WRSS가 평탄→악화하며 잡음을 흡수함(§10 Sig 4). <strong>코드가 돈다고 모델이 옳은 게 아님.</strong></div></div>
+  </div>
+</section>
+
+<!-- 18 · 진단 시그니처 -->
+<section class="card dark top" id="s18">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10 · 진단</span><span class="eyebrow">적합도 4대 시그니처 — 수렴했는데 안 맞을 때</span></div>
+    <h2>네 렌즈, <em>각자 다른 위치</em>를 가리킴</h2>
+    <p class="lead">모델이 수렴했는데 뭔가 안 맞으면 — <i>재모수화 전에</i> 데이터를 통과시키는 네 진단 렌즈. 각 패턴이 "다음 escalation은 어디"인지 알려줌.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>시그니처</th><th>관찰 패턴</th><th>의미 → 다음 단계</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b> \(EC_{50}\) 용량 분기</td><td>용량별 \(EC_{50}/E_{max}/n\)이 정당화 없이 출렁(0.681·4.85·0.941, 7배)</td><td>Link가 회전 흡수 → <b>2막→3막</b></td></tr>
+        <tr class="hot"><td><b>2</b> Trough drift</td><td>AUC 비슷한데 2번째 사이클 trough가 1번째와 다름</td><td>사이클 간 기억 → <b>조절자 \(k_{tol}&gt;k_{out}\)</b></td></tr>
+        <tr><td><b>3</b> S자 onset 잔차</td><td>\(n{=}1\)은 너무 일찍 솟음, 데이터는 늦게 급격히</td><td>1차 지연 부족 → <b>3막→4막 transit</b></td></tr>
+        <tr><td><b>4</b> OFV/WRSS 평탄</td><td>구조 키워도 개선→평탄→소폭 악화(642→632→682)</td><td>정보 한계 → <b>escalation 중단·문서화</b></td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted" style="margin:.2em 0;"><b>OFV</b>=목적함수값(작을수록↑). 교과서 근거: Sig1=§3.9.7 Table 3.10 <span class="cite">G&amp;W p.271</span> · Sig2=PD13 <span class="cite">pp.805–809</span> · Sig3·4=PD35 시퀀스 <span class="cite">p.914</span>. <span class="flag">이름(Signature 1~4)은 교육적 명명</span></p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh">🎯 마스터의 시각</div><p style="margin:0;">넷은 <b>서로 다른 위치</b>의 오설정 — 1=모델 family, 2=반복 노출 기억 누락, 3=사슬 깊이 부족, 4=데이터 해상도 한계. 구분 못 하면 한 패치로 다른 시그니처를 덮으려다 모델이 망가짐.</p></div>
+  </div>
+</section>
+
+<!-- 19 · 혼동쌍 5쌍 -->
+<section class="card top" id="s19">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§11 · 혼동쌍</span><span class="eyebrow f1">가장 자주 미끄러지는 다섯 자리</span></div>
+    <h2>시계가 다른데 <em>단위·글자가 같아</em> 헷갈림</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>쌍</th><th>⚡ 기억 고리 (한 줄)</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td><b>1 ★</b> \(k_{e0}\) vs \(k_{out}\) vs \(k_{off}\)</td><td>시계 바늘 길이(\(\text{min}^{-1}\)) 같아도 대상은 <b>다리·수조·빗장</b>. 단회투여로 구분 불가 <span class="cite">G&amp;W p.845</span></td></tr>
+        <tr><td><b>2</b> 효과구획 vs 회전</td><td>"용량 올리면 반응 peak 시각 달라지나?" 달라지면 효과구획 깨짐(분포는 용량 무관) <span class="cite">G&amp;W p.264</span></td></tr>
+        <tr><td><b>3</b> CCW vs CW</td><td>두 번째 방문에 더 환영받으면 CCW, 덜 받으면 CW. 방향은 후보만 좁힘 <span class="cite">R&amp;T pp.234–246</span></td></tr>
+        <tr><td><b>4</b> 내성 vs 적응</td><td><b>가역성</b>이 가름 — 내성=약 떨어진 뒤에도 지속(피로), 적응=즉각 역전(항상성 재보정)</td></tr>
+        <tr><td><b>5</b> 단일 link vs transit</td><td>단거리(출발 기울기 최대) vs 릴레이(출발 기울기 0). 이 한 차이가 onset 모양 전부</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">🔬</span> Pair 1 확장 — 약물-표적 체류시간</div><p style="margin:0;"><span class="flag">교과서 외 · Copeland 2016</span> \(k_{off}\)를 해리 속도로만 좁히면 현대 신약개발 맥락을 놓침. <b>체류시간</b> \(\bar{t}_R=1/k_{off}\) = 혈장 동태가 끝난 뒤에도 약이 표적에 머무는 평균 시간. PD21의 \(k_{off}=0.018\)이면 \(\bar{t}_R\approx56\)분 — 공유결합·알로스테릭 억제제의 <i>혈장 무관</i> 지속 효과의 출발점. 3막 \(M\)(시스템 기억)과 다른 종류의 <b>약물-표적 결합 기억</b>임.</p></div>
+    <p class="muted"><b>참고:</b> <i>내성 vs 반동</i>은 혼동쌍이 아님 — 같은 조절자 방정식의 두 국면(§6에서 정착). 그래서 Pair 4는 <i>내성 vs 적응</i>을 다룸.</p>
+  </div>
+</section>
+
+<!-- 20 · 캡스톤 + 요약 -->
+<section class="card dark" id="s20">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§12–13</span><span class="eyebrow">큰 그림 · 캡스톤 · 한 줄 요약</span></div>
+    <h2>새 데이터 받으면 <em>5초 안에</em> 하는 일</h2>
+    <div class="grid2">
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">← 이전 11번(간접반응)</div><p style="margin:0;">3막 조절자 = 11번 골격 \(dR/dt=k_{in}S(C)-k_{out}R\)에 \(M\) 한 칸 더 단 것. <b>11번 없이는 3막·감별표가 안 섬.</b></p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">다음 13번(개인차·공변량) →</div><p style="margin:0;">9장 "혼합효과"의 <i>임의효과</i>가 13번 본론. <b>12번에서 숨은 상태를 잘못 명명하면, 13번에서 변이를 엉뚱한 파라미터에 떠넘김.</b></p></div>
+    </div>
+    <p class="lead" style="margin-top:6px;">새 PK/PD 데이터를 받으면 — 네 숨은 상태 중 <b style="color:var(--amber)">어느 게 작동 중인지</b>를 <i>수식 쓰기 전에</i> 결정함:</p>
+    <div class="key"><span class="lbl">네 숨은 상태</span><b>1막</b> loop 방향 = 후보 좁히는 게이트(필터) · <b>2막</b> 생체상 \(C_e\) = <b>다리</b> · <b>3막</b> 조절자 \(M\) = <b>수조+조절기</b>(약물 구획 아님) · <b>4막</b> 신호 단계 \(R_1\ldots R_n\) = <b>릴레이</b>. ODE 선택은 <strong>결과이지 시작이 아님</strong>.</div>
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:clamp(20px,2.4vw,30px); color:#fff; text-align:center; margin:24px 0 6px;">"A delay is not a mechanism. Name the delayed state.<br>지연은 메커니즘이 아니다. 지연되는 상태에 이름을 붙여라."</p>
+    <div class="box dark" style="--ac:var(--amber)"><p style="margin:0;"><b>한 줄 요약:</b> 농도-효과 어긋남은 숨은 상태가 끼어서임. 그게 <b>분포(\(k_{e0}\)·다리)·신호(\(n\times\tau\)·릴레이)·내성(조절자 \(M\)·수조+조절기)</b> 중 누구인지를 <i>용량 의존성·hysteresis 방향·반복투여 carry-over</i>로 가려냄. ODE는 그 이름을 붙인 <i>다음에</i> 고른다.</p></div>
+  </div>
+</section>
+
+<!-- 21 · 자가점검 -->
+<section class="card top" id="s21">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§13</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 풀고 답 확인</span></div>
+    <h2>손에 붙었는지 <em>확인</em></h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1</span><span class="lv">감별</span> CCW hysteresis가 보임. 곧장 effect compartment를 붙여도 되나?</div>
+      <div class="a"><b>안 됨.</b> 방향은 후보를 좁히는 <i>필터지 판결이 아님</i>. 같은 CCW를 분포·신호·회전이 다 만듦. ① 선형 PK 하 용량 무관 \(t_{max}\)+단일 \(k_{e0}\) loop collapse(2막), ② 반복투여 trough drift·반동(3막), ③ 늦은 S자 onset(4막)을 <i>추가로</i> 확인해 가려야 함.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q2</span><span class="lv">2막</span> Fentanyl(6.4분)과 가상의 약(0.7분), 어느 쪽이 효과가 빨리 시작되나?</div>
+      <div class="a">\(t_{1/2,k_{e0}}=\ln 2/k_{e0}=0.693/k_{e0}\) <span class="cite">G&amp;W p.269</span>. 반감기가 <i>짧을수록</i> 빨리 평형 = 빨리 onset. 0.7분짜리가 약 9배 빨리 시작. (혈장 반감기가 아니라 <i>이 평형 반감기</i>가 timing을 결정.)</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q3</span><span class="lv">3막</span> PD13에서 \(k_{tol}=4.2&gt;k_{out}=2.9\). AIC 빼고, 이 부등식 하나가 왜 결정적인가?</div>
+      <div class="a">내성 속도(\(k_{tol}\))가 회전 속도(\(k_{out}\))보다 빨라야 <i>단 한 번 주입 안에서도</i> 조절자 \(M\)이 따라잡아 효과를 깎음. 또 2번째 trough가 1번째로 reset되지 않는 carry-over를 만듦. Model III의 \(k_{tol}=0.05\)는 너무 느려 비현실적 <span class="cite">G&amp;W p.808</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q4</span><span class="lv">4막</span> PD35 WRSS \(1319\to789\to642\to632\to682\). WRSS 최소라고 \(n=4\)를 고르면 왜 안 되나?</div>
+      <div class="a">\(n=4\) 개선은 미미(642→632)하고 \(n=5\)에서 <i>악화</i>(632→682) — \(n=3\) 부근에서 정보 한계 도달(Sig 4). \(n\)은 생물학 단계 수가 아니라 데이터가 해상하는 깊이. 절약 원칙상 \(n=3\). \(n=4\)를 "더 좋다"는 건 데이터가 해상하는 것 이상을 주장하는 것 <span class="cite">G&amp;W p.914</span>.</div>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="n">Q5</span><span class="lv">R&amp;T 앵커</span> Acenocoumarol(\(t_{1/2}\)≈15h)과 phenprocoumon(≈6일)은 같은 쿠마린계인데 회복 시간이 한 자리수 차이. 각 회복을 율속하는 단계는?</div>
+      <div class="a">회복은 (i) 약물 제거와 (ii) 응고인자 회전 중 <i>더 느린 과정</i>이 율속 <span class="cite">R&amp;T pp.236,246</span>. <b>Acenocoumarol:</b> 약물이 빨리 빠져(15h) 회복이 <i>응고인자 회전(동역학)</i>에 제한. <b>Phenprocoumon:</b> 약물 자체가 가장 느려(6일) 회복이 <i>약물 동태</i>에 제한. (Warfarin은 ≈1.5일로 경계라 적정이 까다로움.)</div>
+    </div>
+  </div>
+</section>
+
+</main>

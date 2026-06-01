@@ -1,0 +1,325 @@
+<!--META
+title: 세션 05 · 2구획 모델 — 곡선 하나, 네 갈림길 · 카드뉴스
+-->
+<aside class="toc">
+  <div class="brand">
+    <div class="k">세션 05 · 2구획 모델</div>
+    <div class="t">α·β · 재파라미터화</div>
+  </div>
+  <nav>
+    <div class="toc-group">
+      <div class="toc-gh">도입</div>
+      <a class="toc-link" href="#s1">표지 · 네 갈림길</a>
+      <a class="toc-link" href="#s2">읽는 법 · 출처</a>
+      <a class="toc-link" href="#s3">왜 1구획으로 부족한가</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f1"></span>곡선의 정체</div>
+      <a class="toc-link" href="#s4">ODE — 왜 두 단계</a>
+      <a class="toc-link" href="#s5">잔차법 · 근사 레이블</a>
+      <a class="toc-link" href="#s6">f1/f2 = 제거 단계</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f2"></span>갈림길 1·좌표계</div>
+      <a class="toc-link" href="#s7">① 채혈 — 44% 함정</a>
+      <a class="toc-link" href="#s8">세 좌표계</a>
+      <a class="toc-link" href="#s9">비식별성</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f3"></span>갈림길 2 부피</div>
+      <a class="toc-link" href="#s10">V1·Vss·Vβ</a>
+      <a class="toc-link" href="#s11">② 겐타마이신 6배 ⚡</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f4"></span>갈림길 3·4</div>
+      <a class="toc-link" href="#s12">③ 좌표계 안정 107배</a>
+      <a class="toc-link" href="#s13">④ 반감기 함정</a>
+      <a class="toc-link" href="#s14">조직 vs 혈장 축적</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-gh"><span class="dot f5"></span>종합</div>
+      <a class="toc-link" href="#s15">확장 · 3구획·1/k</a>
+      <a class="toc-link" href="#s16">혼동쌍</a>
+      <a class="toc-link" href="#s17">자가점검</a>
+      <a class="toc-link" href="#s18">한 줄 요약</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="deck">
+
+<!-- 1 · COVER -->
+<section class="card dark center" id="s1">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--amber)">세션 05 · 2구획 모델 · 쉬운판</div>
+    <h2 style="font-size:clamp(38px,5.6vw,76px); margin-top:.25em; line-height:1.08;">곡선 하나가<br>임상에서 <em>네 갈림길</em>을 만든다</h2>
+    <p class="lead" style="max-width:840px; margin:.6em auto 0;">핏줄에 약 한 방 → 두 단계로 꺾이는 농도곡선. 각 갈림길에서 잘못 가면 숫자로 셀 수 있는 손해가 난다</p>
+    <div class="grid2" style="max-width:880px; margin:28px auto 0;">
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">① 채혈</div><p style="margin:0; font-size:16px;">초기 놓치면 \(CL\) <b style="color:#fff">44%</b> 부풀음(아스피린)</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">② 부피 ⚡</div><p style="margin:0; font-size:16px;">잘못 고르면 첫 용량 <b style="color:#fff">6배</b>(겐타마이신)</p></div>
+      <div class="box dark" style="--ac:var(--amber)"><div class="bh">③ 좌표계</div><p style="margin:0; font-size:16px;">추정 안정성 <b style="color:#fff">107배</b>(PK8)</p></div>
+      <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">④ 반감기</div><p style="margin:0; font-size:16px;">그대로 믿으면 다회투여 통째로</p></div>
+    </div>
+    <div class="foot">Gabrielsson &amp; Weiner §2.4 + PK7·PK8 · Rowland &amp; Tozer Ch.19 — 수치·인용 원문 대조</div>
+  </div>
+  <div class="scroll-hint">아래로 스크롤 · ↓<span class="dn">⌄</span></div>
+</section>
+
+<!-- 2 · 읽는 법 -->
+<section class="card" id="s2">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§0</span><span class="eyebrow" style="color:var(--coral-d)">읽는 법 · 출처</span></div>
+    <h2>두 교과서와 <em>척추</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f5)"><div class="bh">G&amp;W</div><p class="muted">Ch.2 §2.4(다구획) + 사례 <b>PK7</b>(모델 차수)·<b>PK8</b>(좌표계 안정성).</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">R&amp;T</div><p class="muted">Ch.19 — Distribution Kinetics(분포 동력학).</p></div>
+    </div>
+    <div class="key"><span class="lbl">🧵 관통 척추</span>핏줄에 약 한 방 쏘고 찍은 농도-시간 곡선 <b>딱 하나</b>가 <strong>4번의 갈림길</strong>을 만든다 — 각 갈림길에서 잘못 가면 약을 너무 많이/적게 주는 손해가 난다. 모든 섹션이 "이 숫자, 믿어도 되나?"로 환원됨.</div>
+    <p class="muted"><b>대상</b> 비전공·1학년 OK · <b>이전</b> 04에서 새긴 "\(CL\)·\(V\)=원인(1차), \(t_{1/2}\)·\(k\)=결과(2차)"가 여기서 α·β로 이어짐 · <b>쪽수</b>는 원판 교재 기준.</p>
+  </div>
+</section>
+
+<!-- 3 · 왜 1구획 부족 -->
+<section class="card" id="s3">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§2</span><span class="eyebrow" style="color:var(--coral-d)">시작 동기</span></div>
+    <h2>분포에는 <em>시간이 걸린다</em></h2>
+    <div class="box" style="--ac:var(--f3)"><div class="bh"><span class="ico">💡</span> 강당 비유</div><p style="margin:0;">큰 강당에 사람들을 우르르 들여보냄 — 처음엔 입구(혈장)에 빽빽하다 <b>금방 옆방·복도(조직)로 퍼짐(빠른 감소)</b>, 그다음 천천히 출구로(느린 감소). 그래서 농도가 처음엔 급히, 나중엔 천천히 떨어짐.</p></div>
+    <p>핏줄에 한 방 쏘고 <b>초반에 자주 채혈</b>하면 농도가 한 직선이 아니라 <strong>두 단계로 꺾여</strong> 떨어짐. R&amp;T: "1구획의 두 가정(즉시·균일 평형)은 현실과 다름. 분포에는 시간이 걸림" <span class="cite">R&amp;T p.613</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 흔한 실수</div><p style="margin:0;">"1구획 vs 2구획은 약의 종류 문제"는 틀림. G&amp;W: <strong>"분자 크기와 무관하게 대부분의 약이 다구획 거동을 보임"</strong> <span class="cite">G&amp;W p.58</span> — <b>데이터(채혈 시점)가 그 단계를 잡아주느냐</b>의 문제. 아스피린은 처음 20분 채혈을 놓치면 1구획처럼 보임(이게 §5의 44% 함정).</p></div>
+  </div>
+</section>
+
+<!-- 4 · ODE 구조 -->
+<section class="card dark top" id="s4">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3</span><span class="eyebrow">왜 정확히 "두 단계"인가</span></div>
+    <h2>α·β는 <em>ODE의 고유값</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><p style="margin:0;"><b>거장의 시각</b> — 두 단계를 "제거 경로 2개"로 읽으면 핵심을 놓침. 단계의 기울기는 <strong>ODE의 고유값(eigenvalue)</strong> — 두 사람이 따로 문 나가는 게 아니라 <b>한 시스템에서 관찰되는 두 회전 속도</b>. 방 2개짜리 선형계는 고유값이 정확히 2개라 단계도 2개.</p></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{C(t)}_{\text{혈장농도}}=\underbrace{A\,e^{-\alpha t}}_{\text{빠른 α단계}}+\underbrace{B\,e^{-\beta t}}_{\text{느린 β단계}},\qquad \alpha&gt;\beta&gt;0 \]</div></div>
+    <div class="formula-hero"><div class="mathblock tall wide">\[ \underbrace{\alpha+\beta}_{\text{고유값 합}}=k_{12}+k_{21}+k_{10},\qquad \underbrace{\alpha\beta}_{\text{고유값 곱}}=k_{21}\,k_{10} \]</div></div>
+    <p>중앙(\(A_1\))에서 몸 밖으로 빠짐(제거 \(k_{10}\)) + 중앙↔말초 분포(\(k_{12},k_{21}\))가 <b>동시에</b> 돌아 두 ODE를 같이 풀면 두 지수항의 합이 나옴 <span class="cite">G&amp;W pp.61–62</span> <span class="cite">R&amp;T Eq.19-4·19-5</span>. <strong>곡선 숫자 4개(\(A,\alpha,B,\beta\))는 서로 독립이 아니라 micro 파라미터의 수학 제약을 받음.</strong> (G&amp;W α·β = R&amp;T λ₁·λ₂)</p>
+  </div>
+</section>
+
+<!-- 5 · 잔차법 + 근사 -->
+<section class="card top" id="s5">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§3</span><span class="eyebrow f1">잔차법 · 근사 레이블</span></div>
+    <h2>곡선을 <em>두 직선으로 벗겨내기</em></h2>
+    <p class="lead">컴퓨터 회귀에 넣을 <b>초기 추정치</b>를 손으로 잡으려면 한 번 벗겨봐야 함 — 말단(β) 직선을 시간 0까지 늘려 빼고, 남은 잔차로 α를 잡음 <span class="cite">G&amp;W p.60</span> <span class="cite">R&amp;T p.616</span>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>단계</th><th>가정 / 식</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>말단부가 로그-직선: \(C_\beta(t){=}Be^{-\beta t}\)</td></tr>
+        <tr><td>2</td><td>초기 관측치 − 말단 외삽: \(C_{resid}{=}C_{obs}-Be^{-\beta t}\)</td></tr>
+        <tr><td>3</td><td>잔차를 반로그에 재플롯 → 기울기 \(-\alpha\), 절편 \(A\) (\(C_0{=}A{+}B\))</td></tr>
+      </tbody>
+    </table></div>
+    <p>아스피린 650 mg: \(C{=}67e^{-0.23t}{+}33e^{-0.050t}\), \(C_0{=}100\) mg/L <span class="cite">R&amp;T Eq.19-2</span>. 잔차법은 NONMEM 같은 실제 알고리즘이 아니라 <b>초기치 자릿수 감각</b>용(자릿수부터 틀리면 §8에서 추정 폭증).</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚡</span> "이사 vs 청소"는 근사 레이블</div><p style="margin:0;">α=분포(이사), β=제거(청소)는 <b>외우기용 별명</b>이지 기계적 분리가 아님 — 두 단계는 <strong>항상 동시에</strong> 돎. R&amp;T: "제거는 말단에만 있는 게 아니라 항상 있음. IV bolus 직후 농도가 가장 높으니 제거율(\(CL\cdot C\))도 그때 가장 큼" <span class="cite">R&amp;T p.620</span>. "제거 경로 2개"로 곡해하면 중앙 제거 가정이 무너짐.</p></div>
+  </div>
+</section>
+
+<!-- 6 · f1/f2 -->
+<section class="card top" id="s6">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§4</span><span class="eyebrow f1">2차 파라미터 · f1/f2</span></div>
+    <h2>"제거 단계"는 시간 순서가 아니라 <em>넓이 몫</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{AUC}_{}=\frac{A}{\alpha}+\frac{B}{\beta},\quad CL=\frac{Dose}{AUC},\quad \underbrace{f_1}_{\text{α분율}}=\frac{A/\alpha}{AUC},\ \underbrace{f_2}_{\text{β분율}}=\frac{B/\beta}{AUC} \]</div></div>
+    <p>지수항 하나의 넓이 = "절편÷기울기". 두 반감기 \(t_{1/2,\alpha}{=}0.693/\alpha\), \(t_{1/2,\beta}{=}0.693/\beta\) <span class="cite">G&amp;W p.62·64</span> <span class="cite">R&amp;T Eq.19-8·19-12</span>.</p>
+    <div class="box" style="--ac:var(--amber)"><div class="bh">"제거 단계"의 진짜 정의 (G&amp;W 직접 인용)</div><p style="margin:0;">"전체 넓이에 <b>가장 많이 기여하는 단계</b>를 제거 단계라 부름. 아미노글리코사이드(겐타마이신)는 <strong>초기 α단계가 제거 단계</strong>가 될 수도 있음 — 그게 넓이의 가장 큰 몫이라면. 사람들이 말단을 무조건 '제거 단계'라 부르는데 항상 맞는 건 아님" <span class="cite">G&amp;W p.63</span>.</p></div>
+    <div class="key"><span class="lbl">한 줄</span><strong>\(f_2&gt;0.8\)면 말단이 제거 단계, 작으면 초기가 제거 단계.</strong> 아스피린 \(f_2{=}69\%\)라 말단 t½ 14분이 제거 반감기 <span class="cite">R&amp;T p.622</span>. \(f_2\)를 안 보고 말단을 "제거 단계"라 부르면 반감기·투여간격이 동시에 흔들림(§9의 핵심 열쇠).</div>
+  </div>
+</section>
+
+<!-- 7 · 갈림길1 채혈 -->
+<section class="card dark top" id="s7">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§5 · 갈림길 ①</span><span class="eyebrow">초기 채혈을 놓쳤는가</span></div>
+    <h2>아스피린 — <em>청소율 44% 부풀음</em></h2>
+    <p class="lead">마라톤 초반 스퍼트(분포)를 못 보고 후반 페이스만 보면 평균 속도가 부풀음. 초기 채혈을 놓치면 곡선이 1구획처럼 보이고, 분포단계의 빠른 감소가 전부 <b>제거로 흡수</b>됨.</p>
+    <div class="stats">
+      <div class="stat"><span class="lab">말단상만 (1구획)</span><span class="val">985<span class="u">mL/min</span></span></div>
+      <span class="arrow">vs</span>
+      <div class="stat"><span class="lab">이중지수 (2구획, 참값)</span><span class="val" style="color:var(--amber)">683<span class="u">mL/min</span></span></div>
+    </div>
+    <p style="margin-top:14px;">\(985/683{\approx}1.44\) → 1구획이 청소율을 약 <strong>44% 과대 추정</strong>. R&amp;T: "683이 참값, 985는 과대 — 분포 평형 동안 말단 항이 설명하는 것보다 더 많은 약이 제거되기 때문" <span class="cite">R&amp;T p.620</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><p style="margin:0;">유지속도 \(={CL\times C_{ss,목표}}\)니까 <strong>청소율 44% 부풀면 유지용량도 그대로 44% 부풀어 나감.</strong> 단 <b>초기(분포) 누락이 위험</b>하고, 꼬리 누락은 놓친 넓이가 전체 AUC의 10% 넘을 때만 위험 <span class="cite">R&amp;T p.620</span>.</p></div>
+  </div>
+</section>
+
+<!-- 8 · 세 좌표계 -->
+<section class="card top" id="s8">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6</span><span class="eyebrow f2">같은 곡선, 세 좌표계</span></div>
+    <h2>섞으면 자유도·가정이 <em>뒤엉킨다</em></h2>
+    <p class="lead">같은 사진을 픽셀 좌표(macro)·렌즈 배치(micro)·판독문(생리)으로 말할 수 있음 — 어떤 좌표로 말하느냐에 따라 책임지는 질문이 다름.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>좌표계</th><th>파라미터</th><th>역할</th></tr></thead>
+      <tbody>
+        <tr><td><b>Macro</b></td><td>\(A,\alpha,B,\beta\)</td><td>관측 곡선의 두 지수항</td></tr>
+        <tr><td><b>Micro</b></td><td>\(V_c,k_{10},k_{12},k_{21}\)</td><td>구획 ODE 분율 속도상수</td></tr>
+        <tr class="hot"><td><b>생리</b></td><td>\(V_c,CL,Cl_d,V_t\)</td><td>청소율·분포청소율·부피 (보고·공변량)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ CL=k_{10}V_c,\quad Cl_d(=Q)=k_{12}V_c=k_{21}V_t,\quad V_c=\frac{D_{iv}}{A+B} \]</div></div>
+    <p>곡선 숫자 4개 = <b>자유도 4개</b>. micro \((V_c,k_{10},k_{12},k_{21})\) 또는 생리 \((V_c,CL,Cl_d,V_t)\) 둘 중 하나 — <strong>혼합 표현을 독립 자유도처럼 쓰면 종속 관계가 깨짐</strong> <span class="cite">G&amp;W pp.60–62, Table 2.6</span> <span class="cite">R&amp;T p.618</span>. \(Q\)는 내부 순환(고속도로), \(CL\)은 몸 밖 출구 — \(Q{\gg}CL\)이면 2구획 성격이 약해져 1구획처럼 보임 <span class="cite">G&amp;W p.67</span>.</p>
+  </div>
+</section>
+
+<!-- 9 · 비식별성 -->
+<section class="card" id="s9">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§6.4</span><span class="eyebrow" style="color:var(--coral-d)">혈장 데이터의 근본 한계</span></div>
+    <h2>제거 위치는 <em>혈장 곡선만으론 못 가린다</em></h2>
+    <p class="lead">서로 다른 모델이 <b>똑같은 곡선</b>을 내면 데이터로 구별 못 함 — 비식별성(non-identifiability).</p>
+    <div class="box" style="--ac:var(--coral)"><p style="margin:0;">혈장 이중지수 곡선만으로는 <b>(1)중앙 제거 (2)말초 제거 (3)양 구획 제거</b> 세 모델을 구별 못 함. R&amp;T: "세 2구획 모델이 똑같이 이중지수 곡선을 설명함 ... 혈장 데이터만으론 셋을 구별 불가" <span class="cite">R&amp;T p.618</span>. 보통 중앙 제거를 쓰는 건 <strong>생리적으로 그럴듯해서지(초기 희석부피가 혈장량 3 L를 넘음) 데이터가 증명해서가 아님</strong> <span class="cite">G&amp;W Fig.2.46</span>.</p></div>
+    <div class="box" style="--ac:var(--amber)"><div class="bh"><span class="ico">💼</span> NONMEM — ADVAN3/TRANS4</div><p style="margin:0;">2구획 구조모델 = <b>ADVAN3</b>, \(CL,V_1,Q,V_2\) 언어로 받는 변환 = <b>TRANS4</b>. <strong>보고 좌표 = 추정 좌표</strong>라 심사관이 즉시 읽음 — 이게 §8에서 ODE 좌표가 안정성 승리하는 첫 이유. 보고서엔 "중앙에서만 제거" 가정을 명시해야 함.</p></div>
+  </div>
+</section>
+
+<!-- 10 · 세 부피 -->
+<section class="card dark top" id="s10">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7 · 갈림길 ② ⚡</span><span class="eyebrow">가장 위험한 자리</span></div>
+    <h2>부피가 <em>하나가 아니라 셋</em></h2>
+    <div class="box dark" style="--ac:var(--amber)"><p style="margin:0;"><b>체화할 직관</b> — 부피를 묻는 순간 먼저 <strong>"bolus 직후인가, 정상상태인가, 말단 외삽인가"</strong>를 되물어야 함.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>부피</th><th>공식</th><th>답하는 질문</th></tr></thead>
+      <tbody>
+        <tr><td>\(V_1\)</td><td>\(Dose/(A{+}B)\)</td><td>bolus 직후 peak은? (첫 방)</td></tr>
+        <tr class="hot"><td>\(V_{ss}\)</td><td>\(MRT\cdot CL\)</td><td>loading dose·정상상태 체내량은? (집 전체)</td></tr>
+        <tr><td>\(V_\beta\)</td><td>\(CL/\beta\)</td><td>말단 외삽 시? (배수속도로 거꾸로 추정)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{V_1}_{}\le\underbrace{V_{ss}}_{}\le\underbrace{V_\beta}_{},\qquad \underbrace{V_{ss}}_{V_B+K_p V_T}\ &lt;\ \underbrace{V_\beta}_{V_B+\overbrace{K_{p,app}}^{&gt;K_p} V_T} \]</div></div>
+    <p class="muted" style="margin:2px 0;">\(V_1{=}Dose/(A{+}B)\), \(V_{ss}{=}MRT\cdot CL{=}Dose\cdot AUMC/AUC^2\), \(V_\beta{=}CL/\beta\)(1구획 \(V{=}CL/k\)에서 \(k\to\beta\)) <span class="cite">R&amp;T Eq.19-3·19-11·19-23, p.617·629</span> <span class="cite">G&amp;W pp.63–65</span>.</p>
+    <p>왜 \(V_\beta{\ge}V_{ss}\)? 말단상에서 혈장 농도가 제거로 계속 떨어지는데 <b>느린 조직이 그 하락을 못 따라잡아(lag)</b> 조직/혈장 비가 진짜 \(K_p\)보다 큰 \(K_{p,app}\)가 됨 <span class="cite">R&amp;T Fig.19-9, p.628</span>. "둘 차이는 보통 작지만 <strong>분포 평형 전 제거가 많을수록 커짐</strong>" <span class="cite">R&amp;T p.629</span>.</p>
+  </div>
+</section>
+
+<!-- 11 · 겐타마이신 6배 -->
+<section class="card top" id="s11">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§7</span><span class="eyebrow f3">겐타마이신 참사</span></div>
+    <h2>같은 비율이 <em>1.3 vs 6.2</em>로 갈린다</h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \Big(\frac{V_\beta}{V_{ss}}\Big)_{\text{아스피린}}\approx\frac{13.6}{10.4}\approx 1.3,\qquad \Big(\frac{V_\beta}{V_{ss}}\Big)_{\text{겐타마이신}}\approx\frac{345}{56}\approx 6.2 \]</div></div>
+    <p>겐타마이신(\(V_1{=}14\), \(V_{ss}{=}56\), \(V_\beta{=}345\) L)은 극성이라 세포외수엔 빨리 퍼지지만 <b>세포 안엔 매우 느리게(투과 제한)</b>, 제거(콩팥)는 빠름 → 제거≫분포 → \(K_{p,app}\) 폭주 → \(V_\beta\) 폭발. "IV bolus의 98% 이상이 분포 평형 전 제거됨" <span class="cite">R&amp;T p.622·630</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh"><span class="ico">⚠️</span> 치명타 — loading dose 6배</div><p style="margin:0;">\(V_\beta\)를 \(V_{ss}\) 대신 쓰면 겐타마이신형 첫 용량이 약 <strong>6배 과대</strong> → 첫 60분 안에 혈장 peak이 신독성·이독성 임계 돌파, 또는 FDA Deficiency Letter. <b>가장 위험한 함정 — "말단 반감기 길다 = 분포 넓다"</b>(작은 \(\beta\)가 큰 \(V_\beta{=}CL/\beta\)처럼 보임).</p></div>
+    <div class="key"><span class="lbl">🔑 부피 선택 규칙</span>loading·정상상태 체내량엔 <strong>\(V_{ss}\)</strong>, bolus 직후 peak엔 <strong>\(V_1\)</strong>, 말단 외삽엔 <strong>\(V_\beta\)</strong>. 친유성(thiopental \(K_p{=}10\)·지방 40%)·zoledronic acid·azithromycin은 데이터 전에 미리 \(V_\beta\) 부풀림 의심.</div>
+  </div>
+</section>
+
+<!-- 12 · 좌표계 안정성 -->
+<section class="card dark top" id="s12">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§8 · 갈림길 ③</span><span class="eyebrow">좌표계 안정성 (PK8)</span></div>
+    <h2>같은 데이터, 좌표계 하나로 <em>107배</em></h2>
+    <p class="lead">가장 낮은 잔차(WRSS)만 고르면 추정 안정성을 못 봄. <b>condition number(조건수, 클수록 불안정)·RSE·상관성</b>까지 봐야 "맞아 보이는 모델"과 "제출 가능한 모델"이 갈림.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>좌표계</th><th>WRSS</th><th>Condition no.</th></tr></thead>
+      <tbody>
+        <tr><td>Bi-exponential (macro)</td><td>0.0437</td><td>125</td></tr>
+        <tr><td>Takada (\(V(t)\))</td><td><span class="em">0.0169 최저</span></td><td><span class="em">3186 폭증</span></td></tr>
+        <tr class="hot"><td><b>ODE 생리</b> (\(CL,V_c,Cl_d,V_t\))</td><td>0.0436</td><td><span class="em">29.69 최저</span></td></tr>
+      </tbody>
+    </table></div>
+    <p>비율 \(3186/29.69{\approx}\)<strong>107배</strong> — 같은 데이터·비슷한 fit인데 좌표계 하나로 추정 안정성이 100배 흔들림 <span class="cite">G&amp;W Table 8.1, p.516</span>. <strong>"lowest WRSS = best model"이 아님</strong> — Takada는 WRSS 최저인데 condition no. 폭증.</p>
+    <div class="box dark" style="--ac:var(--amber)"><div class="bh"><span class="ico">💡</span> 재파라미터화 = preconditioning</div><p style="margin:0;">표기 치장이 아니라 <b>추정 기하를 바꾸는 전처리</b>. 같은 지도라도 접는 방향만 바꾸면 주머니에 잘 들어가거나 찢어짐. PK7도 같은 교훈 — tri가 AIC 약간 낮아도(−67 vs −63) <b>bi가 정밀도·condition no.(446 vs 4104) 우월</b>이라 bi 채택("최소한으로 적절한 모델"). 가중치 방식 다른 모델은 F-test 비교 금지.</p></div>
+    <p class="muted">디버깅 순서 — condition no. 폭증 시 좌표계부터 바꾸지 말고 ① THETA 초기치(자릿수) ② 로그 영역 파라미터화 ③ 재파라미터화. 초기상 안 보이면 2구획 강행 말고 <b>NCA</b>로 <span class="cite">G&amp;W p.517</span>.</p>
+  </div>
+</section>
+
+<!-- 13 · 반감기 함정 -->
+<section class="card top" id="s13">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9 · 갈림길 ④</span><span class="eyebrow f4">반감기 함정</span></div>
+    <h2>plateau 도달은 <em>f1/f2 가중합</em></h2>
+    <div class="formula-hero"><div class="mathblock tall">\[ \underbrace{\frac{C(t)}{C_{ss}}}_{\text{정상상태 접근률}}=\underbrace{f_1(1-e^{-\alpha t})}_{\text{빠른 접근}}+\underbrace{f_2(1-e^{-\beta t})}_{\text{느린 접근}} \]</div></div>
+    <p>"정상상태에 언제 도달?"은 반감기 하나로 못 답함 — <b>두 단계의 가중합</b>. 수도꼭지 두 개로 욕조 채울 때 <b>빠른 꼭지 물량(\(f_1\))이 대부분이면 느린 꼭지 마지막 한 방울이 늦어도 수위는 이미 거의 다 올라옴</b> <span class="cite">G&amp;W Eq.2:168, p.73</span> <span class="cite">R&amp;T Eq.19-27, p.633</span>. 첫·말단 t½ 1·12h, \(f_2{=}0.5\)면 6h에 64%, 50% 도달은 2.75h <span class="cite">R&amp;T p.633</span>.</p>
+    <div class="box" style="--ac:var(--coral)"><div class="bh">Nicardipine — "말단 길다 = loading 필요"의 함정</div><p style="margin:0;">말단 반감기 약 <b>12시간</b>(길어 보임)인데 정주 시 <b>1시간 만에 정상상태 50%</b>, 15시간에 90%(기대 40시간보다 훨씬 빠름). 이유 — 첫 단계 반감기 약 <b>20분</b>이고 \(f_2\) 작음. <strong>말단만 보고 loading 권하면 초기 과량 위험</strong> <span class="cite">R&amp;T Fig.19-10, p.631</span>.</p></div>
+    <div class="key"><span class="lbl">🔑 반감기 분류 규칙</span>"반감기"란 말을 들으면 계산 전에 <strong>"terminal? effective? plasma? tissue?"</strong> + "\(f_2\)는 얼마냐"를 되물어야 함. 단 \(f_2&gt;0.8\)인 많은 약에선 말단상이 plateau를 잘 설명함 — "항상 틀린다"가 아니라 "먼저 물어라".</div>
+  </div>
+</section>
+
+<!-- 14 · 조직 vs 혈장 -->
+<section class="card dark" id="s14">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§9</span><span class="eyebrow">두 시간척도가 갈린다</span></div>
+    <h2>혈장 축적 1.35 vs <em>조직 축적 16</em></h2>
+    <p class="lead">겐타마이신 말단 반감기 87시간이지만 대부분 8시간 안에 제거(첫 단계 약 4시간). 8시간마다 근육주사하면 — 축적 지수 \(1/(1-e^{-kT})\):</p>
+    <div class="stats">
+      <div class="stat"><span class="lab">혈장 (첫 단계 기준)</span><span class="val">1.35<span class="u">배</span></span></div>
+      <span class="arrow">vs</span>
+      <div class="stat"><span class="lab">조직 (말단 항 기준)</span><span class="val" style="color:var(--amber)">16<span class="u">배</span></span></div>
+    </div>
+    <p style="margin-top:14px;"><strong>혈장 축적과 조직 축적은 완전히 다른 시간척도</strong> — 12일(3.3 말단반감기)에야 조직이 정상상태 <span class="cite">R&amp;T Fig.19-14, p.636</span>.</p>
+    <div class="box dark" style="--ac:var(--coral-l)"><div class="bh">신기능 변화 — 어느 단계가 흔들리나</div><p style="margin:0;">신기능 떨어지면 <b>첫 단계 반감기만 길어지고 말단은 거의 안 변함</b>. 결정적 — <strong>\(V_\beta\)는 줄지만 \(V_{ss}\)는 안 변함</strong>(\(V_{ss}\)는 순수 분포항) → <b>공변량(신기능)은 \(V_\beta\)가 아니라 \(CL\)·\(V_{ss}\)에 붙여야 함</b> <span class="cite">R&amp;T p.641</span>. Terminal t½(마지막 페이지)만으론 앞 페이지의 높은 초기 농도를 놓침.</p></div>
+  </div>
+</section>
+
+<!-- 15 · 확장 -->
+<section class="card top" id="s15">
+  <div class="wrap">
+    <div class="khead"><span class="sec">§10</span><span class="eyebrow f5">확장 Framework</span></div>
+    <h2>3구획 · <em>1/k 최적 표본</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f4)"><div class="bh">3구획 진단 신호</div><p style="margin:0;">2구획 잔차 말단이 또 휘거나 semilog가 두 번 꺾이면 3구획(얕은+깊은 조직). \(C(t){=}Ae^{-\alpha t}{+}Be^{-\beta t}{+}C_\gamma e^{-\gamma t}\) — 얕은=잘 관류 조직, 깊은=지방·골수(thiopental·mAb) <span class="cite">G&amp;W Fig.2.52·2.53</span>. <b>단 데이터가 단계를 식별해 줄 때만.</b></p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">1/k 최적 표본 원칙</div><p style="margin:0;">G&amp;W: "표본을 <b>1/(rate constant)</b>에 두라 — 그 파라미터에 대한 최적 시점" <span class="cite">G&amp;W p.512</span>. \(t_\alpha^*{\approx}1/\alpha\), \(t_\beta^*{\approx}1/\beta\).</p></div>
+    </div>
+    <div class="formula-hero"><div class="mathblock">\[ \text{2-comp 설계}=\underbrace{\{t\approx 1/\alpha\}}_{\text{α cluster: }V_1,k_{12},k_{21}}\cup\underbrace{\{t\approx 1/\beta\}}_{\text{β cluster: }CL,\beta} \]</div></div>
+    <p>단일 1/k는 한 파라미터용 — 2구획은 \(1/\alpha\)·\(1/\beta\) <b>두 군집</b>에 표본을 나눠 둬야 완전 식별. 한쪽만 두면 Phantom V2나 \(CL\) 정밀도 붕괴 <span class="cite">G&amp;W p.512</span>. 시간의존 \(V(t)\)(Takada)는 <b>재분포를 한 변수에 흡수한 재파라미터화</b>이지 진짜 비정상성이 아님 — 진짜 비정상성은 depot·효소유도처럼 시스템 파라미터 자체가 변할 때.</p>
+  </div>
+</section>
+
+<!-- 16 · 혼동쌍 -->
+<section class="card top" id="s16">
+  <div class="wrap">
+    <div class="khead"><span class="sec">종합</span><span class="eyebrow" style="color:var(--coral-d)">헷갈리는 짝</span></div>
+    <h2>혼동쌍 <em>핵심</em></h2>
+    <div class="grid2">
+      <div class="box" style="--ac:var(--f1)"><div class="bh">이중지수 vs "제거 경로 2개"</div><p style="margin:0;">\(\alpha,\beta\)는 한 시스템의 두 고유값 — 독립 제거 경로가 아님. \(f_2\) 작은데 말단을 "제거 단계"라 부르면 위험.</p></div>
+      <div class="box" style="--ac:var(--f2)"><div class="bh">\(Q\) vs \(CL\)</div><p style="margin:0;">\(Q\)=중앙↔말초 내부 순환(고속도로), \(CL\)=몸 밖 출구. 섞으면 추정 안정성·해석 동시 실패.</p></div>
+      <div class="box" style="--ac:var(--f3)"><div class="bh">\(V_1,V_{ss}\) vs \(V_\beta\)</div><p style="margin:0;">체내량·loading용 vs 말단 기울기 기반. \(V_\beta\)를 "진짜 체부피"로 쓰면 조직 재분포와 혈장 용량이 한 숫자에 섞임(겐타 345 vs 56).</p></div>
+      <div class="box" style="--ac:var(--f5)"><div class="bh">Terminal vs Effective 반감기</div><p style="margin:0;">마지막 페이지(\(0.693/\beta\)) vs 전체 이야기(\(f_1/f_2\) 가중 plateau). terminal 12h를 plateau에 그대로 쓰면 loading 과량(니카르디핀).</p></div>
+    </div>
+    <p class="muted">+ Better WRSS vs Better deployable — fit 잔차 vs (안정성+해석가능성). WRSS 최저 무조건 채택이 함정 <span class="cite">G&amp;W p.516</span>.</p>
+  </div>
+</section>
+
+<!-- 17 · 자가점검 -->
+<section class="card top" id="s17">
+  <div class="wrap">
+    <div class="khead"><span class="sec">점검</span><span class="eyebrow" style="color:var(--coral-d)">자가점검 · 네 갈림길</span></div>
+    <h2>스스로 <em>점검</em> — Q1~Q4</h2>
+    <div class="qa">
+      <div class="q"><span class="n">Q1.</span> 아스피린 말단상 1구획 \(CL{=}985\), 이중지수 \(CL{=}683\) mL/min. 말단상 해석은 과소? 과대?</div>
+      <div class="a"><b>A.</b> <b>과대(약 44%)</b> — 분포단계 빠른 감소를 제거로 잘못 셈. 유지용량 부풀 위험 <span class="cite">R&amp;T p.620</span>.</div>
+      <div class="q"><span class="n">Q2.</span> 아스피린과 겐타마이신 중 \(V_\beta/V_{ss}\)가 더 큰 약은? 왜 중요?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> <b>겐타마이신</b>(≈6.2 vs 아스피린 ≈1.3) — 말단 기울기 부피를 정상상태 체내량 부피처럼 쓰면 loading 6배 과대 <span class="cite">R&amp;T pp.629–637</span>.</div>
+      <div class="q"><span class="n">Q3.</span> PK8: Takada는 WRSS 최저인데 condition no. 3186, ODE는 29.69. 무엇을 채택?<span class="lv">★★★</span></div>
+      <div class="a"><b>A.</b> <b>ODE 생리.</b> WRSS=fit, condition no.=추정 안정성 — 서로 대체 못 함. 재현성·심사 방어상 안정 좌표 우선("lowest WRSS = best"는 함정) <span class="cite">G&amp;W p.516</span>.</div>
+      <div class="q"><span class="n">Q4.</span> 니카르디핀 말단 12h인데 1h에 50% 도달. loading을 권하면 왜 위험?<span class="lv">★★</span></div>
+      <div class="a"><b>A.</b> plateau 접근이 말단 항이 아니라 <b>\(f_1/f_2\) 가중합</b>으로 정해짐 — 혈장은 이미 빨리 오르는데 말단만 보면 "너무 늦다" 오판해 과도한 loading <span class="cite">R&amp;T p.631</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · 요약 -->
+<section class="card dark center" id="s18">
+  <div class="wrap">
+    <div class="khead" style="justify-content:center;"><span class="sec">요약</span><span class="eyebrow">네 갈림길을 한 장으로</span></div>
+    <h2>곡선 하나, <em>네 번의 갈림길</em></h2>
+    <ol style="counter-reset:s; list-style:none; padding:0; margin:.4em auto; max-width:880px; text-align:left;">
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">①</b> <b style="color:#fff;">채혈</b> — 초기 놓치면 \(CL\) 44% 과대(아스피린). 분포단계 표본 확보.</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">②</b> <b style="color:#fff;">부피</b> — \(V_1\)/\(V_{ss}\)/\(V_\beta\) 셋이 다른 질문. loading은 \(V_{ss}\)(겐타 \(V_\beta\) 쓰면 6배).</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">③</b> <b style="color:#fff;">좌표계</b> — WRSS만 보지 말고 condition no.(107배)·RSE 병행. ODE 생리가 안정.</li>
+      <li style="counter-increment:s; position:relative; padding:7px 0 7px 30px; font-size:clamp(17px,1.45vw,20px);"><b style="color:var(--amber); position:absolute; left:0;">④</b> <b style="color:#fff;">반감기</b> — terminal/effective/plasma/tissue + \(f_2\) 먼저 묻기. plateau는 \(f_1/f_2\) 가중합.</li>
+    </ol>
+    <div class="key" style="max-width:880px; margin:22px auto 0; text-align:left;"><span class="lbl">🧵 한 줄 요약</span>핏줄에 약 한 방 → 두 단계로 꺾인 곡선 하나가 <strong>채혈·부피·좌표계·반감기 네 갈림길</strong>을 만든다. \(CL\)·\(V\)는 원인, α·β·\(t_{1/2}\)는 결과. 다음 — 06 NCA에서 모델 없이 곡선 넓이로 같은 숫자를 뽑는다.</div>
+    <div class="foot">Gabrielsson &amp; Weiner §2.4 + PK7·PK8 · Rowland &amp; Tozer Ch.19 — 수치·인용 원문 대조 (원본: 05_two_compartment_쉬운판.md)</div>
+  </div>
+</section>
+
+</main>
